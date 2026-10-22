@@ -1,5 +1,6 @@
 // Offline support: keep a copy of the game files so it plays without internet.
-const CACHE = 'keyflame-v1';
+// Each build registers this file with a new ?v= so every deploy gets its own cache.
+const CACHE = `keyflame-${new URL(self.location.href).searchParams.get('v') || 'v1'}`;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html', './favicon.svg', './manifest.webmanifest'])));
@@ -21,7 +22,8 @@ self.addEventListener('fetch', (event) => {
   if (req.mode === 'navigate') {
     // Fresh page when online, cached page when offline.
     event.respondWith(
-      fetch(req)
+      // Skip the browser's HTTP cache so a new deploy shows up right away.
+      fetch(req, { cache: 'no-store' })
         .then((res) => {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put('./index.html', copy));
