@@ -96,13 +96,29 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     h('div', { class: 'kb-row kb-row-space' }, pinned ? shiftKey : null, makeKey(' ', 'space', 'key-space')),
   );
   if (!opts.showKeyboard && !pinned) keyboard.classList.add('mini');
-  let resize: ResizeObserver | null = null;
+  // Phone browsers are unreliable with position: fixed (toolbars that slide away,
+  // transformed ancestors, rubber-band scrolling). Instead the whole app becomes a
+  // column exactly as tall as the visible screen: the page scrolls inside, and the
+  // keyboard is the last row of the column, so it can't drift or be covered.
+  const fitViewport = (): void => {
+    const vv = window.visualViewport;
+    document.documentElement.style.setProperty('--vvh', `${Math.round(vv ? vv.height : window.innerHeight)}px`);
+    if (window.scrollY) window.scrollTo(0, 0);
+  };
+  let mountTimer = 0;
   if (pinned) {
     document.body.classList.add('kb-pinned');
-    if (typeof ResizeObserver !== 'undefined') {
-      resize = new ResizeObserver(() => document.body.style.setProperty('--kb-h', `${keyboard.offsetHeight}px`));
-      resize.observe(keyboard);
-    }
+    fitViewport();
+    window.visualViewport?.addEventListener('resize', fitViewport);
+    window.addEventListener('resize', fitViewport);
+    window.addEventListener('orientationchange', fitViewport);
+    // Move the keyboard out of the scrolling page into the app column once it's on screen.
+    const mount = (): void => {
+      const app = el.closest('#app') ?? document.getElementById('app');
+      if (el.isConnected && app) app.append(keyboard);
+      else mountTimer = requestAnimationFrame(mount);
+    };
+    mountTimer = requestAnimationFrame(mount);
   }
 
   let lastTop = -1;
@@ -176,17 +192,20 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   render();
 
   const device = opts.input === 'device';
-  const el = h('div', { class: `typing-view input-${opts.input}` }, textEl, device ? tapPrompt : null, device ? deviceInput : null, hint, device ? null : keyboard);
+  const el = h('div', { class: `typing-view input-${opts.input}` }, textEl, device ? tapPrompt : null, device ? deviceInput : null, hint, device || pinned ? null : keyboard);
   return {
     el,
     session,
     focus,
     destroy: () => {
       document.removeEventListener('keydown', onKeyDown);
-      resize?.disconnect();
       if (pinned) {
+        cancelAnimationFrame(mountTimer);
+        keyboard.remove();
         document.body.classList.remove('kb-pinned');
-        document.body.style.removeProperty('--kb-h');
+        window.visualViewport?.removeEventListener('resize', fitViewport);
+        window.removeEventListener('resize', fitViewport);
+        window.removeEventListener('orientationchange', fitViewport);
       }
     },
   };
