@@ -3,6 +3,7 @@
 import { FINGER_LABEL, ROWS, baseKey, fingerFor } from '../content/keyboard';
 import { TypingSession, type KeystrokeResult } from '../engine/typing';
 import type { InputMode } from '../save/store';
+import { safeText } from '../content/safety';
 import { h } from './dom';
 import { sfx } from './sound';
 
@@ -34,9 +35,11 @@ function thumbFor(ch: string): string {
 const SHIFT_MAP: Record<string, string> = { ';': ':', ',': '<', '.': '>', '/': '?' };
 
 export function createTypingView(opts: TypingViewOptions): TypingView {
-  const session = new TypingSession(opts.text, { advanceOnError: opts.relaxed });
+  // Last safety net: nothing rude reaches the screen, whatever made the text.
+  const text = safeText(opts.text) || 'fly high';
+  const session = new TypingSession(text, { advanceOnError: opts.relaxed });
   const touch = opts.input !== 'keyboard';
-  const chars = [...opts.text].map((c) => h('span', { class: c === ' ' ? 'ch space' : 'ch' }, c));
+  const chars = [...text].map((c) => h('span', { class: c === ' ' ? 'ch space' : 'ch' }, c));
   const textEl = h('div', { class: 'type-text', 'aria-live': 'off' }, ...chars);
   const hint = h('div', { class: 'finger-hint' });
   const keyEls = new Map<string, HTMLElement>();

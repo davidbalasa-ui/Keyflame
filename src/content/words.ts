@@ -3,8 +3,8 @@
 
 export const WORDS: string[] = `
 a as ask asks all add adds lad lads sad dad dads fall falls flask flasks salad salads
-glad gas has had hall half hash dash lash flash slash shall jag jags lag flag flags gal gals
-ash lass glass grass sass kale kales sea seas see sees said safe sake sale self fake
+glad gas has had hall half dash flash shall lag flag flags
+ash glass grass kale kales sea seas see sees said safe sake sale self fake
 lake lakes desk desks shelf deal deals feel feels heal heels leaf leafs flea fleas jade hide side
 ride tide wide slide glide fire fires flier fear dear ear ears tear year yes eye eyes key keys
 red read reads tree trees free freed fresh great greet sweet sweat dragon dragons egg eggs wing

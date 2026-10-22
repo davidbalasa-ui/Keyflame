@@ -1,4 +1,5 @@
 import { PASSAGES, wordsFrom } from './words';
+import { safeRoll, safeText } from './safety';
 import type { TribeId } from '../game/dragons';
 
 export interface Lesson {
@@ -70,10 +71,13 @@ function pick<T>(arr: T[], rand: () => number): T {
   return arr[Math.floor(rand() * arr.length)];
 }
 
+/** A random letter group, re-rolled until it can't spell anything rude. */
 function chunk(keys: string[], len: number, rand: () => number): string {
-  let s = '';
-  for (let i = 0; i < len; i++) s += pick(keys, rand);
-  return s;
+  return safeRoll(() => {
+    let s = '';
+    for (let i = 0; i < len; i++) s += pick(keys, rand);
+    return s;
+  }, keys[0] + keys[0]);
 }
 
 /**
@@ -96,25 +100,25 @@ export function buildLessonText(lesson: Lesson, weak: string[] = [], rand: () =>
       parts.push(pick(words, rand));
     } else if (focus.length && r < 0.45) {
       const a = pick(focus, rand);
-      const b = pick(focus, rand);
-      parts.push(r < 0.2 ? a.repeat(3) : `${a}${b}${a}`);
+      parts.push(safeRoll(() => (r < 0.2 ? a.repeat(3) : `${a}${pick(focus, rand)}${a}`), `${a}${a}`));
     } else if (words.length >= 4 && r < 0.75) {
       parts.push(pick(words, rand));
     } else {
       parts.push(chunk(letters, 3 + Math.floor(rand() * 2), rand));
     }
   }
-  return parts.join(' ');
+  return safeText(parts.join(' '), () => chunk(letters, 3, rand));
 }
 
 /** Race text using only letters the player has learned, so beginners can race too. */
 export function buildRaceText(knownLetters: Set<string>, wordCount: number, rand: () => number = Math.random): string {
   const words = wordsFrom(knownLetters);
   if (words.length >= 12) {
-    return Array.from({ length: wordCount }, () => pick(words, rand)).join(' ');
+    return safeText(Array.from({ length: wordCount }, () => pick(words, rand)).join(' '), () => pick(words, rand));
   }
   const letters = [...knownLetters].filter((k) => /[a-z;]/.test(k));
-  return Array.from({ length: wordCount }, () => (words.length && rand() < 0.5 ? pick(words, rand) : chunk(letters, 3, rand))).join(' ');
+  const text = Array.from({ length: wordCount }, () => (words.length && rand() < 0.5 ? pick(words, rand) : chunk(letters, 3, rand))).join(' ');
+  return safeText(text, () => chunk(letters, 3, rand));
 }
 
 /** Stars earned: 1 for passing, 2 for 95% accuracy, 3 for 95% accuracy and the WPM goal. */
