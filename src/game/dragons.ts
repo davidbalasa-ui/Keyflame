@@ -160,58 +160,180 @@ export function rollPalette(tribe: TribeId, rand: () => number = Math.random): n
   return common[Math.floor(rand() * common.length)];
 }
 
-function tribeFeature(tribe: TribeId, p: Palette, stage: Stage): string {
-  const big = stage === 'adult';
+/** Mixes a #rrggbb color toward black (0) or white (255). */
+function mix(hex: string, target: number, amount: number): string {
+  const n = parseInt(hex.slice(1, 7), 16);
+  return `#${[(n >> 16) & 255, (n >> 8) & 255, n & 255]
+    .map((c) => Math.round(c + (target - c) * amount).toString(16).padStart(2, '0'))
+    .join('')}`;
+}
+const darken = (hex: string, a: number): string => mix(hex, 0, a);
+const lighten = (hex: string, a: number): string => mix(hex, 255, a);
+
+/** A curved spike sweeping back from a point on the dragon's back. */
+function spike(x: number, y: number, h: number, w: number): string {
+  return `M${x - w} ${y} Q${x - w * 0.2} ${y - h * 0.55} ${x - w * 1.2} ${y - h} Q${x + w * 0.6} ${y - h * 0.45} ${x + w} ${y}Z`;
+}
+
+// Points along the back and neck, from hip to head.
+const BACK: Array<[number, number]> = [[90, 75], [103, 69], [116, 66], [129, 65], [142, 64], [153, 60], [162, 54], [170, 46]];
+
+interface TribeParts {
+  /** Drawn behind the body (spines, fins). */
+  back: string;
+  /** Drawn over the body. */
+  front: string;
+  /** Head extras, in head space. */
+  head: string;
+  /** Tail tip, drawn at the end of the tail (pointing left). */
+  tip: string;
+  /** Extras that ride on the front wing, in wing space. */
+  wing: string;
+}
+
+function tribeParts(tribe: TribeId, p: Palette, stage: Stage, line: string): TribeParts {
+  const k = stage === 'adult' ? 1 : stage === 'young' ? 0.7 : 0.45;
+  const a = p.accent;
+  const spineRow = (hs: number[], w = 5): string => BACK.slice(0, hs.length).map(([x, y], i) => spike(x, y + 3, hs[i] * k, w)).join(' ');
   switch (tribe) {
-    case 'emberback': {
-      const spines = [70, 84, 98, 112, 126]
-        .map((x, i) => `<path d="M${x} ${62 - (i === 2 ? 2 : 0)} l6 -${big ? 16 : 10} l6 ${big ? 16 : 10}z" fill="${p.accent}"/>`)
-        .join('');
-      return `<g class="glow">${spines}</g>`;
-    }
+    case 'emberback':
+      return {
+        back: `<path class="glow" d="${spineRow([10, 13, 15, 15, 14, 12, 10, 8])}" fill="${a}" stroke="${line}" stroke-width="1.4"/>`,
+        front: '',
+        head: '',
+        tip: `<path class="glow" d="M2 -2 C-4 -8 -8 -16 -4 -22 C-2 -14 -10 -14 -12 -8 C-16 -14 -22 -10 -22 -2 C-24 6 -14 12 2 4Z" fill="${a}" stroke="${line}" stroke-width="1.4"/>`,
+        wing: '',
+      };
     case 'tidefin':
-      return `<path d="M150 40 q8 -16 20 -10 q-8 6 -10 16z" fill="${p.accent}"/><path d="M22 96 q-14 -14 -18 -2 q4 12 18 8z" fill="${p.accent}"/><path d="M90 58 q10 -${big ? 18 : 10} 26 -4z" fill="${p.accent}" opacity="0.9"/>`;
+      return {
+        back: `<path d="M94 76 C100 ${66 - 16 * k} 120 ${58 - 14 * k} 146 64 Z" fill="${a}" stroke="${line}" stroke-width="1.5"/><path d="M108 70 L112 ${64 - 12 * k} M122 66 L126 ${60 - 12 * k} M136 64 L138 ${60 - 8 * k}" stroke="${line}" stroke-width="1.2" opacity="0.5"/>`,
+        front: '',
+        head: `<path d="M182 44 C176 ${34 - 6 * k} 166 ${30 - 6 * k} 156 ${34 - 4 * k} C164 38 170 44 178 50Z" fill="${a}" stroke="${line}" stroke-width="1.5"/>`,
+        tip: `<path d="M2 0 L-16 -14 Q-10 0 -16 14Z" fill="${a}" stroke="${line}" stroke-width="1.5" stroke-linejoin="round"/>`,
+        wing: '',
+      };
     case 'stormcrest':
-      return `<path d="M156 40 l4 -${big ? 20 : 12} l4 10 l4 -${big ? 16 : 10} l3 14z" fill="${p.accent}" class="glow"/>`;
+      return {
+        back: `<path class="glow" d="${spineRow([6, 9, 11, 11, 10, 9, 8, 7], 4)}" fill="${a}" stroke="${line}" stroke-width="1.3"/>`,
+        front: `<path d="M104 78 l8 6 l-3 4 l8 6 M128 76 l7 6 l-3 4 l7 6" stroke="${a}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>`,
+        head: `<path class="glow" d="M188 32 L184 ${20 - 8 * k} L192 26 L192 ${14 - 8 * k} L198 28Z" fill="${a}" stroke="${line}" stroke-width="1.3"/>`,
+        tip: `<path class="glow" d="M2 -1 L-8 -12 L-7 -3 L-20 -8 L-9 6 L-11 0Z" fill="${a}" stroke="${line}" stroke-width="1.4" stroke-linejoin="round"/>`,
+        wing: '',
+      };
     case 'mossclaw':
-      return `<g fill="${p.accent}"><ellipse cx="140" cy="62" rx="6" ry="3" transform="rotate(-40 140 62)"/><ellipse cx="132" cy="68" rx="6" ry="3" transform="rotate(-30 132 68)"/><ellipse cx="146" cy="54" rx="${big ? 7 : 5}" ry="3" transform="rotate(-50 146 54)"/></g>`;
-    case 'frostspine': {
-      const spikes = [72, 86, 100, 114]
-        .map((x) => `<path d="M${x} 62 l3 -${big ? 18 : 11} l3 ${big ? 18 : 11}z" fill="${p.accent}"/>`)
-        .join('');
-      return `<g class="glow">${spikes}<path d="M60 76 l-10 -6 M66 72 l-8 -10" stroke="${p.accent}" stroke-width="2"/></g>`;
-    }
+      return {
+        back: BACK.slice(0, 7)
+          .map(([x, y], i) => `<ellipse cx="${x - 2}" cy="${y - 2}" rx="${(4 + (i % 2) * 2) * (0.6 + k * 0.4)}" ry="${2.6 + k}" transform="rotate(${-30 - i * 4} ${x - 2} ${y - 2})" fill="${i % 2 ? a : lighten(a, 0.25)}" stroke="${line}" stroke-width="1.2"/>`)
+          .join(''),
+        front: '',
+        head: `<path d="M186 32 C182 ${24 - 6 * k} 176 ${22 - 6 * k} 172 ${24 - 4 * k} C176 28 180 30 184 34Z" fill="${a}" stroke="${line}" stroke-width="1.3"/>`,
+        tip: `<path d="M2 0 C-4 -10 -16 -10 -24 0 C-16 10 -4 10 2 0Z M2 0 L-20 0" fill="${a}" stroke="${line}" stroke-width="1.4"/>`,
+        wing: '',
+      };
+    case 'frostspine':
+      return {
+        back: `<path class="glow" d="${spineRow([12, 16, 19, 19, 17, 14, 12, 9], 3.4)}" fill="${a}" stroke="${line}" stroke-width="1.2"/>`,
+        front: `<path d="M98 84 l5 3 M118 82 l5 3 M138 80 l5 3" stroke="${a}" stroke-width="2" stroke-linecap="round" opacity="0.8"/>`,
+        head: '',
+        tip: `<path class="glow" d="M2 0 L-8 -9 L-24 0 L-8 9Z M-8 -9 L-8 9" fill="${a}" stroke="${line}" stroke-width="1.3" stroke-linejoin="round"/>`,
+        wing: '',
+      };
     case 'duneskimmer':
-      return `<path d="M152 46 Q136 30 120 36 Q136 40 148 52z" fill="${p.accent}"/><path d="M150 50 Q132 46 122 54 Q138 54 148 56z" fill="${p.accent}" opacity="0.8"/><path d="M70 74 Q94 68 118 74" stroke="${p.accent}" stroke-width="3" fill="none" opacity="0.7"/>`;
+      return {
+        back: `<path d="M96 76 C110 ${68 - 8 * k} 130 ${62 - 8 * k} 150 62 L146 66 C128 66 112 70 98 78Z" fill="${a}" stroke="${line}" stroke-width="1.3"/>`,
+        front: `<path d="M96 88 Q112 82 130 86 Q144 88 156 82" stroke="${a}" stroke-width="2.6" fill="none" stroke-linecap="round" opacity="0.75"/>`,
+        head: `<path d="M180 38 C168 ${30 - 6 * k} 156 ${30 - 4 * k} 148 36 C160 36 170 40 178 46Z" fill="${a}" stroke="${line}" stroke-width="1.4"/><path d="M178 46 C166 44 156 48 150 54 C162 52 170 52 178 52Z" fill="${lighten(a, 0.2)}" stroke="${line}" stroke-width="1.3"/>`,
+        tip: `<path d="M2 0 C-8 -6 -18 -10 -26 -8 C-20 -2 -20 2 -26 8 C-18 10 -8 6 2 0Z" fill="${a}" stroke="${line}" stroke-width="1.4"/>`,
+        wing: '',
+      };
     case 'shadeglide':
-      return `<g fill="${p.accent}"><circle cx="84" cy="30" r="1.8"/><circle cx="98" cy="42" r="1.4"/><circle cx="110" cy="30" r="1.6"/><circle cx="120" cy="50" r="1.2"/><circle cx="76" cy="78" r="1.5"/><circle cx="104" cy="72" r="1.3"/><circle cx="90" cy="84" r="1.1"/></g><circle cx="166" cy="49" r="5" fill="${p.accent}" opacity="0.25"/>`;
+      return {
+        back: `<path d="${spineRow([5, 7, 8, 8, 8, 7, 6, 5], 4)}" fill="${darken(p.body, 0.3)}" stroke="${line}" stroke-width="1.2"/>`,
+        front: `<g fill="${a}"><circle cx="100" cy="82" r="1.6"/><circle cx="118" cy="76" r="1.2"/><circle cx="136" cy="80" r="1.5"/><circle cx="150" cy="72" r="1.1"/></g>`,
+        head: `<circle cx="196" cy="42" r="10" fill="${a}" opacity="0.18"/>`,
+        tip: `<path d="M2 0 C-6 -10 -18 -14 -26 -8 C-16 -8 -12 -2 -14 4 C-8 2 -4 2 2 0Z" fill="${a}" stroke="${line}" stroke-width="1.3" opacity="0.9"/>`,
+        wing: `<g fill="${a}"><circle cx="-30" cy="-44" r="1.6"/><circle cx="-48" cy="-30" r="1.3"/><circle cx="-22" cy="-24" r="1.1"/><circle cx="-54" cy="-50" r="1"/><circle cx="-40" cy="-14" r="1.4"/></g>`,
+      };
   }
 }
 
+// The wing membrane with the shoulder at 0,0: a leading arm up to the wrist,
+// three fingers fanning back, and scalloped skin between them.
+const WING_SKIN = 'M0 0 C9 -20 5 -44 -6 -58 L-46 -64 Q-44 -46 -66 -40 Q-52 -28 -70 -14 Q-42 -12 -34 4Z';
+const WING_BONES = 'M-6 -58 L-46 -64 M-6 -58 L-66 -40 M-6 -58 L-70 -14';
+
+let artId = 0;
+
 /**
  * Side-view flying dragon facing right, as an SVG string.
- * The wing sits in its own group so CSS can flap it.
+ * Wings, tail and head sit in their own groups, pivoting at the shoulder,
+ * tail base and neck, so CSS can animate them (see .flap in styles.css).
  */
 export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starfire'): string {
   const p = skin === 'starfire' ? STARFIRE : TRIBES[tribe].palettes[paletteIndex] ?? TRIBES[tribe].palettes[0];
-  const horns = stage === 'hatchling' ? '' : `<path d="M158 44 l-12 -${stage === 'adult' ? 16 : 9} l16 8z" fill="${p.belly}"/>`;
-  const scale = stage === 'hatchling' ? 0.78 : stage === 'young' ? 0.9 : 1;
-  return `<svg class="dragon ${extraClass}" viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <g transform="translate(${(200 - 200 * scale) / 2} ${(140 - 140 * scale) / 2}) scale(${scale})">
-    <g class="wing wing-back"><path d="M96 66 L70 16 Q92 26 104 22 Q114 30 128 26 L112 70z" fill="${p.wing}" opacity="0.7"/></g>
-    <path d="M58 82 Q30 84 18 100 Q10 110 4 104 Q18 106 26 92 Q38 76 60 72z" fill="${p.body}"/>
-    <ellipse cx="94" cy="80" rx="44" ry="21" fill="${p.body}"/>
-    <ellipse cx="98" cy="88" rx="32" ry="11" fill="${p.belly}"/>
-    <path d="M124 74 Q140 60 150 48 L164 56 Q150 72 134 86z" fill="${p.body}"/>
-    <path d="M146 44 Q162 34 180 46 Q192 52 186 58 Q172 62 160 64 Q148 60 146 44z" fill="${p.body}"/>
-    <path d="M168 58 Q180 58 186 58 Q178 64 166 64z" fill="${p.belly}"/>
-    ${horns}
-    <circle cx="166" cy="49" r="${stage === 'hatchling' ? 4.5 : 3.6}" fill="#fff"/>
-    <circle cx="167.2" cy="49" r="${stage === 'hatchling' ? 2.6 : 2}" fill="#1a1a2e"/>
-    <path d="M78 96 l-6 12 l8 -2z M108 96 l-4 13 l8 -3z" fill="${p.wing}"/>
-    ${tribeFeature(tribe, p, stage)}
-    <g class="wing wing-front"><path d="M92 70 L58 6 Q86 20 100 14 Q112 26 130 18 L118 74z" fill="${p.wing}"/><path d="M92 70 L58 6 M100 14 L104 70 M130 18 L114 72" stroke="${p.accent}" stroke-width="2" opacity="0.6"/></g>
-  </g>
+  const id = `kf${++artId}`;
+  const line = darken(p.body, 0.55);
+  const wingDark = darken(p.wing, 0.28);
+  const bellyLine = darken(p.belly, 0.22);
+  const parts = tribeParts(tribe, p, stage, line);
+  const scale = stage === 'hatchling' ? 0.8 : stage === 'young' ? 0.9 : 1;
+  const headScale = stage === 'hatchling' ? 1.3 : stage === 'young' ? 1.12 : 1;
+  const wingScale = stage === 'hatchling' ? 0.72 : stage === 'young' ? 0.95 : 1.14;
+  const eyeR = stage === 'hatchling' ? 7 : 6;
+  const horns =
+    stage === 'hatchling'
+      ? `<path d="M186 32 l-7 -6 l10 1z" fill="${p.belly}" stroke="${line}" stroke-width="1.4" stroke-linejoin="round"/>`
+      : `<path d="M186 34 C180 ${24 - (stage === 'adult' ? 6 : 0)} 170 ${18 - (stage === 'adult' ? 6 : 0)} 158 ${16 - (stage === 'adult' ? 6 : 0)} C166 22 172 30 178 40Z" fill="${p.belly}" stroke="${line}" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M194 30 C192 22 188 ${16 - (stage === 'adult' ? 4 : 0)} 180 ${12 - (stage === 'adult' ? 4 : 0)} C186 18 188 24 188 32Z" fill="${lighten(p.belly, 0.2)}" stroke="${line}" stroke-width="1.4" stroke-linejoin="round"/>`;
+  const plates = [100, 112, 124, 136, 148, 160]
+    .map((x, i) => `M${x} ${104 - i * 0.6 - (i > 3 ? (i - 3) * 4 : 0)} q2 3 1 6`)
+    .join(' ');
+  const wing = (cls: string, fill: string, extra: string, s: number): string =>
+    `<g transform="translate(${cls === 'wing-back' ? '122 68' : '132 70'}) scale(${(wingScale * s).toFixed(2)})"><g class="wing ${cls}">
+      <path d="${WING_SKIN}" fill="${fill}" stroke="${line}" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="${WING_BONES}" stroke="${cls === 'wing-back' ? line : wingDark}" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      <path d="M0 0 C9 -20 5 -44 -6 -58" stroke="${line}" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M-6 -58 l3 -7 l2 7z" fill="${p.belly}" stroke="${line}" stroke-width="1"/>
+      ${extra}
+    </g></g>`;
+  return `<svg class="dragon ${extraClass}" viewBox="-26 -2 266 152" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${lighten(p.body, 0.22)}"/><stop offset="0.55" stop-color="${p.body}"/><stop offset="1" stop-color="${darken(p.body, 0.22)}"/></linearGradient>
+    <linearGradient id="${id}w" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${p.wing}"/><stop offset="1" stop-color="${lighten(p.wing, 0.35)}"/></linearGradient>
+  </defs>
+  <g transform="translate(${(120 - 120 * scale).toFixed(1)} ${(78 - 78 * scale).toFixed(1)}) scale(${scale})"><g class="rig">
+    ${wing('wing-back', darken(p.wing, 0.18), '', 0.86)}
+    <path d="M100 100 C96 110 90 116 80 118 L72 121 L76 116 L70 115 L78 112 C86 108 90 102 92 96Z" fill="${darken(p.body, 0.25)}" stroke="${line}" stroke-width="1.6" stroke-linejoin="round"/>
+    <g transform="translate(84 92)"><g class="tail">
+      <path d="M4 -13 C-18 -17 -38 -9 -50 5 C-60 16 -72 22 -84 18 C-74 29 -58 29 -46 19 C-34 9 -18 6 4 10Z" fill="url(#${id}b)" stroke="${line}" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M2 8 C-18 5 -32 9 -44 18" stroke="${p.belly}" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.9"/>
+      <g transform="translate(-84 19)">${parts.tip}</g>
+    </g></g>
+    ${parts.back}
+    <path d="M78 92 C80 74 104 64 130 66 C146 66 156 64 164 56 C170 50 174 44 178 40 L196 54 C190 60 184 70 176 82 C168 96 150 108 124 109 C100 110 80 106 78 92Z" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M88 101 C104 108 134 108 152 100 C164 92 172 80 180 68 L187 71 C180 84 172 98 158 105 C136 114 104 112 88 101Z" fill="${p.belly}"/>
+    <path d="${plates}" stroke="${bellyLine}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    ${parts.front}
+    <path d="M96 96 C88 104 88 112 96 114 C104 116 112 110 112 100 C110 92 102 90 96 96Z" fill="url(#${id}b)" stroke="${line}" stroke-width="1.6"/>
+    <path d="M100 112 C96 118 90 120 82 121 L76 124 L80 119 L74 118 L82 116 C88 114 92 112 94 108Z" fill="${p.body}" stroke="${line}" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M154 98 C158 106 162 110 168 110 L174 113 L171 108 L177 108 L170 104 C164 102 160 98 158 94Z" fill="${p.body}" stroke="${line}" stroke-width="1.5" stroke-linejoin="round"/>
+    <g transform="translate(184 52) scale(${headScale})"><g class="head"><g transform="translate(-184 -52)">
+      ${horns}
+      ${parts.head}
+      <path d="M176 52 l-10 3 l8 2 l-9 6 l13 -3z" fill="${p.wing}" stroke="${line}" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M174 44 C176 32 190 26 202 30 C210 32 216 36 224 40 C232 42 236 46 234 50 C232 54 226 56 218 56 C208 58 200 60 190 60 C180 60 172 54 174 44Z" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M200 56 C210 56 220 55 228 53 C224 57 214 59 204 59Z" fill="${p.belly}"/>
+      <path d="M204 54 C212 55 222 54 230 51" stroke="${line}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M214 54.6 l1.6 3.2 l1.6 -3.4z" fill="#fff"/>
+      <ellipse cx="228" cy="44.5" rx="1.8" ry="1.2" fill="${line}"/>
+      <ellipse cx="197" cy="42" rx="${eyeR}" ry="${eyeR + 0.5}" fill="#fff" stroke="${line}" stroke-width="1.2"/>
+      <circle cx="199" cy="43" r="${eyeR * 0.6}" fill="#1a1a2e"/>
+      <circle cx="200.6" cy="40.8" r="${eyeR * 0.24}" fill="#fff"/>
+      <ellipse class="lid" cx="197" cy="42" rx="${eyeR + 1}" ry="${eyeR + 1.5}" fill="${p.body}" stroke="${line}" stroke-width="1.2"/>
+      <path d="M189 ${36 - eyeR + 6} C195 ${32 - eyeR + 6} 201 ${32 - eyeR + 6} 206 ${35 - eyeR + 6}" stroke="${line}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    </g></g></g>
+    ${wing('wing-front', `url(#${id}w)`, parts.wing, 1)}
+  </g></g>
 </svg>`;
 }
 
@@ -229,12 +351,20 @@ export function eggSvg(tribe: TribeId, warmth: number, seed = 1): string {
     warmth >= 0.5 ? '<path d="M30 60 l8 2 l4 -6 l7 5 l5 -4" />' : '',
     warmth >= 0.75 ? '<path d="M62 74 l6 -6 l4 6 l6 -3 M40 88 l6 -4 l5 4" />' : '',
   ].join('');
+  const id = `kf${++artId}`;
+  const line = darken(p.body, 0.5);
   return `<svg class="egg" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <ellipse cx="50" cy="112" rx="30" ry="5" fill="#000" opacity="0.15"/>
-  <path d="M50 6 C78 6 90 52 90 74 C90 98 72 112 50 112 C28 112 10 98 10 74 C10 52 22 6 50 6z" fill="${p.body}"/>
-  <path d="M50 6 C78 6 90 52 90 74 C90 98 72 112 50 112 C40 112 32 108 26 102 C58 104 76 80 70 40 C66 20 58 8 50 6z" fill="#000" opacity="0.12"/>
-  ${spots}
-  <ellipse cx="34" cy="38" rx="6" ry="12" fill="#fff" opacity="0.35" transform="rotate(20 34 38)"/>
-  <g fill="none" stroke="#1a1a2e" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${cracks}</g>
+  <defs>
+    <radialGradient id="${id}e" cx="0.38" cy="0.32" r="0.75"><stop offset="0" stop-color="${lighten(p.body, 0.35)}"/><stop offset="0.5" stop-color="${p.body}"/><stop offset="1" stop-color="${darken(p.body, 0.35)}"/></radialGradient>
+    <radialGradient id="${id}g" cx="0.5" cy="0.6" r="0.5"><stop offset="0" stop-color="${p.accent}" stop-opacity="${(0.15 + warmth * 0.55).toFixed(2)}"/><stop offset="1" stop-color="${p.accent}" stop-opacity="0"/></radialGradient>
+  </defs>
+  <ellipse cx="50" cy="66" rx="48" ry="56" fill="url(#${id}g)"/>
+  <ellipse cx="50" cy="113" rx="28" ry="4.5" fill="#000" opacity="0.22"/>
+  <path d="M50 6 C78 6 90 52 90 74 C90 98 72 112 50 112 C28 112 10 98 10 74 C10 52 22 6 50 6z" fill="url(#${id}e)" stroke="${line}" stroke-width="2"/>
+  <g opacity="0.9">${spots}</g>
+  <path d="M50 6 C78 6 90 52 90 74 C90 98 72 112 50 112 C40 112 32 108 26 102 C58 104 76 80 70 40 C66 20 58 8 50 6z" fill="#000" opacity="0.1"/>
+  <ellipse cx="33" cy="36" rx="6" ry="13" fill="#fff" opacity="0.45" transform="rotate(22 33 36)"/>
+  <circle cx="40" cy="22" r="2.4" fill="#fff" opacity="0.6"/>
+  <g fill="none" stroke="${line}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${cracks}</g>
 </svg>`;
 }

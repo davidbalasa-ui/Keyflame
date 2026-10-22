@@ -8,6 +8,7 @@ import { go, inputMode, persist, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
+import { CONFETTI, ParticleField, TRAIL_COLORS } from '../particles';
 import { AdSlot } from '../ads';
 import { hub, refreshEmbers, topBar } from './hub';
 import { nest } from './nest';
@@ -28,8 +29,36 @@ const GHOST_NAMES: Array<{ name: string; tribe: TribeId; palette: number }> = [
   { name: 'Pebbleflare', tribe: 'emberback', palette: 2 },
 ];
 
+function hillsUri(ground: string): string {
+  const svgText = `<svg xmlns='http://www.w3.org/2000/svg' width='520' height='120' preserveAspectRatio='none'><path d='M0 120 L0 70 C60 30 120 30 180 60 C240 90 300 20 380 40 C440 56 480 70 520 70 L520 120z' fill='${ground}'/><path d='M0 120 L0 70 C60 30 120 30 180 60 C240 90 300 20 380 40 C440 56 480 70 520 70 L520 120z' fill='#000' opacity='0.25'/></svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(svgText)}")`;
+}
+
+// Two mountain ridges: a pale far range and a nearer one with shaded faces and snow caps.
+const RIDGE: Array<[number, number]> = [[0, 210], [60, 160], [110, 200], [170, 118], [240, 190], [300, 150], [360, 210], [420, 140], [470, 108], [520, 170], [600, 210]];
+const FAR_RIDGE: Array<[number, number]> = [[0, 190], [80, 130], [150, 170], [230, 110], [320, 160], [390, 120], [500, 150], [560, 125], [600, 190]];
+
+function ridgeSvg(points: Array<[number, number]>, fill: string, cap: string, opacity: number): string {
+  const body = `M0 300 ${points.map(([x, y]) => `L${x} ${y}`).join(' ')} L600 300z`;
+  let shade = '';
+  let caps = '';
+  points.forEach(([x, y], i) => {
+    const l = points[i - 1];
+    const r = points[i + 1];
+    if (!l || !r || y > l[1] || y > r[1] || y > 165) return;
+    shade += `M${x} ${y} L${r[0]} ${r[1]} L${r[0]} 300 L${x + (r[0] - x) * 0.2} 300z `;
+    const f = 0.3;
+    const lx = x + (l[0] - x) * f;
+    const ly = y + (l[1] - y) * f;
+    const rx = x + (r[0] - x) * f;
+    const ry = y + (r[1] - y) * f;
+    caps += `M${x} ${y} L${lx} ${ly} L${(lx + x) / 2} ${ly - 4} L${x} ${ly + 3} L${(rx + x) / 2} ${ry - 5} L${rx} ${ry}z `;
+  });
+  return `<g opacity='${opacity}'><path d='${body}' fill='${fill}'/><path d='${shade}' fill='#000' opacity='0.22'/><path d='${caps}' fill='${cap}' opacity='0.95'/></g>`;
+}
+
 function mountainsUri(ground: string, peak: string): string {
-  const svgText = `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300' preserveAspectRatio='none'><path d='M0 300 L0 210 L60 160 L110 200 L170 120 L240 190 L300 150 L360 210 L420 140 L470 110 L520 170 L600 210 L600 300z' fill='${ground}' opacity='0.8'/><path d='M170 120 L185 135 L160 135z M470 110 L488 128 L455 128z' fill='${peak}'/></svg>`;
+  const svgText = `<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300' preserveAspectRatio='none'>${ridgeSvg(FAR_RIDGE, '#ffffff', peak, 0.16)}${ridgeSvg(RIDGE, ground, peak, 0.85)}</svg>`;
   return `url("data:image/svg+xml,${encodeURIComponent(svgText)}")`;
 }
 
@@ -85,9 +114,11 @@ function run(root: HTMLElement, course: Course): () => void {
   const len = text.length;
 
   const lanes = h('div', { class: 'lanes' });
+  const trailOf = new Map<HTMLElement, string[]>();
   const makeLane = (name: string, tribe: TribeId, palette: number, stage: Stage, cls = '', skin?: 'starfire'): HTMLElement => {
     const racer = h('div', { class: `racer ${cls}` }, svg(dragonSvg(tribe, palette, stage, 'flap', skin), 'racer-art'), h('span', { class: 'racer-name' }, name));
     lanes.append(h('div', { class: 'lane' }, racer));
+    trailOf.set(racer, skin === 'starfire' ? ['#ffd43b', '#b197fc', '#fff3bf', '#ff922b'] : TRAIL_COLORS[tribe]);
     return racer;
   };
 
@@ -105,9 +136,12 @@ function run(root: HTMLElement, course: Course): () => void {
   }
   const meEl = makeLane(me ? me.name : 'You', me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'you', me?.skin);
 
-  const sky = h('div', { class: 'sky' }, h('div', { class: 'layer clouds' }), h('div', { class: 'layer mountains' }), h('div', { class: 'finish-line' }), lanes);
+  const fx = new ParticleField();
+  fx.enabled = !p.settings.reducedMotion;
+  const sky = h('div', { class: `sky sky-${course.id}` }, h('div', { class: 'layer sun' }), h('div', { class: 'layer clouds' }), h('div', { class: 'layer clouds-near' }), fx.canvas, h('div', { class: 'layer mountains' }), h('div', { class: 'layer hills' }), h('div', { class: 'layer speed-lines' }), h('div', { class: 'finish-line' }), lanes);
   sky.style.background = `linear-gradient(180deg, ${course.sky[0]} 0%, ${course.sky[1]} 45%, ${course.sky[2]} 100%)`;
   (sky.querySelector('.mountains') as HTMLElement).style.backgroundImage = mountainsUri(course.ground, course.peak);
+  (sky.querySelector('.hills') as HTMLElement).style.backgroundImage = hillsUri(course.ground);
   const countdown = h('div', { class: 'countdown' }, h('div', {}, h('small', { class: 'taunt' }, `${r.name}: “${r.taunt}”`), h('div', { class: 'count' }, '3')));
   const countEl = countdown.querySelector('.count') as HTMLElement;
   const meter = h('div', { class: 'flame-meter' }, h('span', {}));
@@ -122,6 +156,23 @@ function run(root: HTMLElement, course: Course): () => void {
   let bgOffset = 0;
   let lastFrame = performance.now();
 
+  // Where a racer's tail is, in the particle canvas's coordinates.
+  const tailOf = (el: HTMLElement): { x: number; y: number; w: number; h: number } => {
+    const a = el.getBoundingClientRect();
+    const b = fx.canvas.getBoundingClientRect();
+    return { x: a.left - b.left + a.width * 0.07, y: a.top - b.top + a.height * 0.62, w: a.width, h: a.height };
+  };
+  const trailDebt = new Map<HTMLElement, number>();
+  const trail = (el: HTMLElement, perSecond: number, dt: number, size: number, speed: number): void => {
+    const debt = (trailDebt.get(el) ?? 0) + (perSecond * dt) / 1000;
+    const n = Math.floor(debt);
+    trailDebt.set(el, debt - n);
+    if (!n) return;
+    const t = tailOf(el);
+    const k = t.w / 140;
+    fx.emit(t.x, t.y, { count: n, colors: trailOf.get(el) ?? CONFETTI, kind: 'ember', vx: -speed * k, vy: -6, spread: 36 * k, size: size * k, life: 0.75 });
+  };
+
   const myProgress = (): number => Math.max(0, Math.min(1, (view.session.correct + st.bonus) / len));
 
   const view = createTypingView({
@@ -132,12 +183,18 @@ function run(root: HTMLElement, course: Course): () => void {
     onKey: (res) => {
       const dashed = applyRaceKey(st, res, tune, myProgress());
       if (!res.correct) {
+        const t = tailOf(meEl);
+        fx.emit(t.x + t.w * 0.4, t.y - t.h * 0.1, { count: 6, colors: ['#ffffff', '#ced4da'], kind: 'puff', vx: -30, spread: 50, size: 7, life: 0.6 });
         meEl.classList.remove('wobble-once');
         void meEl.offsetWidth;
         meEl.classList.add('wobble-once');
       }
       if (dashed) {
         sfx.dash();
+        const t = tailOf(meEl);
+        const colors = trailOf.get(meEl) ?? CONFETTI;
+        fx.emit(t.x, t.y, { count: 26, colors, kind: 'streak', vx: -420, spread: 90, size: 5, life: 0.5 });
+        fx.emit(t.x + t.w * 0.3, t.y - t.h * 0.1, { count: 40, colors, kind: 'ember', vx: -160, spread: 160, size: 7, life: 0.9 });
         meEl.classList.remove('dashing');
         void meEl.offsetWidth;
         meEl.classList.add('dashing');
@@ -148,21 +205,39 @@ function run(root: HTMLElement, course: Course): () => void {
     onFinish: () => finish(),
   });
 
-  const place = (el: HTMLElement, prog: number): void => {
-    el.style.left = `calc((100% - var(--rw)) * ${prog.toFixed(4)})`;
+  // Racers glide toward their target spot every frame instead of jumping per key,
+  // and move with transforms so the browser never has to re-lay out the page.
+  const shown = new Map<HTMLElement, number>();
+  let trackW = 0;
+  const place = (el: HTMLElement, prog: number, dt = 1000): void => {
+    const prev = shown.get(el) ?? prog;
+    const next = prev + (prog - prev) * (1 - Math.exp(-dt / 110));
+    shown.set(el, next);
+    el.style.transform = `translate3d(${(next * Math.max(0, trackW - el.offsetWidth)).toFixed(1)}px, 0, 0)`;
   };
 
   const frame = (now: number): void => {
     const dt = now - lastFrame;
     lastFrame = now;
+    trackW = lanes.clientWidth - 14;
+    fx.resize();
     if (started && !finished) {
       const t = now - raceStart;
-      for (const g of ghosts) place(g.el, Math.min(1, ghostProgress(g.wpm, t, len) + 0.004 * Math.sin(t / 900 + g.phase)));
-      place(meEl, myProgress());
+      for (const g of ghosts) place(g.el, Math.min(1, ghostProgress(g.wpm, t, len) + 0.004 * Math.sin(t / 900 + g.phase)), dt);
+      place(meEl, myProgress(), dt);
+      // Wings beat faster the faster you type.
+      meEl.style.setProperty('--flap', `${Math.max(0.36, 0.75 - view.session.rollingWpm(now) / 90).toFixed(2)}s`);
       stats.textContent = `${Math.round(view.session.wpm())} WPM · ${pct(view.session.accuracy())} accuracy`;
       bgOffset += (0.02 + view.session.rollingWpm(now) / 600) * dt;
       sky.style.setProperty('--bg', `${-bgOffset}px`);
+      const wpmNow = view.session.rollingWpm(now);
+      sky.style.setProperty('--speed', Math.min(1, wpmNow / 40).toFixed(2));
+      trail(meEl, 12 + Math.min(40, wpmNow) * 0.9, dt, 4 + Math.min(3, wpmNow / 15), 80 + Math.min(60, wpmNow) * 3);
+      for (const g of ghosts) trail(g.el, 7, dt, 3.5, 60);
+    } else if (finished) {
+      place(meEl, 1, dt);
     }
+    fx.step(dt);
     raf = requestAnimationFrame(frame);
   };
   raf = requestAnimationFrame(frame);
@@ -189,7 +264,7 @@ function run(root: HTMLElement, course: Course): () => void {
   function finish(): void {
     if (finished) return;
     finished = true;
-    place(meEl, 1);
+    place(meEl, 1, 120);
     const myMs = performance.now() - raceStart;
     const sum = view.session.summary();
     // A ghost beats you only if it would have crossed the line first.
@@ -200,6 +275,12 @@ function run(root: HTMLElement, course: Course): () => void {
     persist();
     refreshEmbers();
     if (placeNum === 1) sfx.win();
+    {
+      const { w } = fx.size;
+      const t = tailOf(meEl);
+      fx.emit(t.x + t.w * 0.6, t.y, { count: 60, colors: trailOf.get(meEl) ?? CONFETTI, kind: 'spark', vx: 60, spread: 360, size: 6, life: 1.1 });
+      if (placeNum === 1) for (let i = 0; i < 6; i++) fx.emit((w * (i + 0.5)) / 6, -6, { count: 24, colors: CONFETTI, kind: 'confetti', vy: 40, spread: 220, size: 5, life: 2.4 });
+    }
 
     const ord = ['1st', '2nd', '3rd', '4th', '5th'][placeNum - 1];
     const modal = h(
@@ -226,7 +307,10 @@ function run(root: HTMLElement, course: Course): () => void {
         AdSlot('results'),
       ),
     );
-    root.append(modal);
+    // Let the finish burst play for a moment before the results card covers it.
+    window.setTimeout(() => {
+      if (root.isConnected) root.append(modal);
+    }, p.settings.reducedMotion ? 0 : 900);
   }
 
   root.append(

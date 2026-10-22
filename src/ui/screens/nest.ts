@@ -6,6 +6,7 @@ import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor } from './aerie';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
+import { CONFETTI, TRAIL_COLORS, attachField } from '../particles';
 import { hub, topBar } from './hub';
 import { raceMap } from './race';
 
@@ -134,6 +135,16 @@ function hatchSequence(root: HTMLElement): void {
   const box = h('div', { class: 'modal hatch' }, stageEl, h('h2', {}, 'Hatching…'));
   const modal = h('div', { class: 'modal-backdrop' }, box);
   root.append(modal);
+  const colors = TRAIL_COLORS[egg.tribe];
+  let shake = 0;
+  const fx = attachField(box, (f, dt) => {
+    shake += dt;
+    if (shake < 1600 && Math.random() < dt / 120) {
+      const r = stageEl.getBoundingClientRect();
+      const b = box.getBoundingClientRect();
+      f.emit(r.left - b.left + r.width / 2, r.top - b.top + r.height * 0.5, { colors, kind: 'spark', spread: 160, size: 4, life: 0.6 });
+    }
+  });
   sfx.crack();
   setTimeout(() => sfx.crack(), 500);
   setTimeout(() => sfx.crack(), 1000);
@@ -142,6 +153,14 @@ function hatchSequence(root: HTMLElement): void {
     const dragon = hatchEgg(p, name)!;
     persist();
     sfx.hatch();
+    {
+      const r = stageEl.getBoundingClientRect();
+      const b = box.getBoundingClientRect();
+      const x = r.left - b.left + r.width / 2;
+      const y = r.top - b.top + r.height / 2;
+      fx.emit(x, y, { count: 70, colors, kind: 'spark', spread: 520, size: 7, life: 1.2 });
+      fx.emit(x, y, { count: 50, colors: CONFETTI, kind: 'confetti', vy: -220, spread: 420, size: 5, life: 2.2 });
+    }
     const palette = TRIBES[dragon.tribe].palettes[dragon.palette];
     const nameEl = h('h2', {}, `Meet ${name}!`);
     const setName = (n: string): void => {
@@ -165,5 +184,6 @@ function hatchSequence(root: HTMLElement): void {
       h('div', { class: 'name-pickers' }, sel(NAME_STARTS, start, (v) => ((start = v), setName(start + end))), sel(NAME_ENDS, end, (v) => ((end = v), setName(start + end)))),
       h('div', { class: 'row' }, button('Done', () => go(nest))),
     );
+    box.append(fx.canvas);
   }, 1600);
 }

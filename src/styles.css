@@ -174,6 +174,8 @@ select, textarea {
   padding: 16px 20px;
   max-height: calc(var(--type-size) * 1.6 * 3 + 32px);
   overflow: hidden;
+  position: relative;
+  font-variant-ligatures: none;
   word-break: break-word;
 }
 .ch { border-radius: 4px; }
@@ -210,6 +212,35 @@ select, textarea {
 .keyboard.mini .key { height: 30px; font-size: 13px; }
 @media (hover: none) { .keyboard.mini .key { height: clamp(40px, 9vw, 52px); } }
 
+/* Touch keyboard pinned to the bottom of the screen, sized so ten keys always fit */
+.keyboard.pinned {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; margin: 0;
+  gap: 7px; padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+  background: rgba(20, 13, 44, 0.96); border-top: 2px solid var(--line);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+}
+.keyboard.pinned .kb-row { width: 100%; max-width: 640px; gap: 4px; margin: 0; justify-content: center; }
+.keyboard.pinned .kb-row-1 { padding: 0 3%; }
+.keyboard.pinned .key { flex: 1 1 0; width: auto; min-width: 0; max-width: 60px; height: clamp(42px, 11vw, 54px); font-size: clamp(16px, 4.6vw, 22px); opacity: 0.92; }
+.keyboard.pinned .key-shift { flex: 0 0 auto; width: clamp(56px, 16vw, 90px); max-width: none; }
+.keyboard.pinned .key-space { flex: 1 1 auto; max-width: 360px; }
+body.kb-pinned main { padding-bottom: calc(var(--kb-h, 240px) + 12px); }
+body.kb-pinned .finger-hint { margin: 4px; font-size: 0.9em; }
+/* Compact layout while the pinned keyboard is up, so the text stays visible above it */
+body.kb-pinned .top-bar { padding: 4px 12px; }
+body.kb-pinned .top-bar .rank, body.kb-pinned .top-bar .bar { display: none; }
+body.kb-pinned main { padding-top: 8px; }
+body.kb-pinned main > h1, body.kb-pinned .race-head h1 { font-size: 1.15rem; margin: 0; }
+body.kb-pinned .race-head { gap: 4px 12px; }
+body.kb-pinned .race-head .live-stats, body.kb-pinned .race-head .stats { margin: 0; font-size: 0.9em; }
+body.kb-pinned .perk-line, body.kb-pinned .new-keys { display: none; }
+body.kb-pinned .lane { height: 44px; }
+body.kb-pinned .racer { --rw: 78px; top: -8px; }
+body.kb-pinned .racer-name { font-size: 9px; }
+body.kb-pinned .sky { padding: 6px 0; }
+body.kb-pinned .typing-view { margin-top: 8px; }
+body.kb-pinned .type-text { --type-size: 22px; padding: 10px 14px; max-height: calc(var(--type-size) * 1.6 * 2 + 20px); }
+
 /* Race */
 .race-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
 .race-head h1 { margin: 0; }
@@ -224,13 +255,36 @@ select, textarea {
 }
 .layer { position: absolute; inset: 0; background-repeat: repeat-x; pointer-events: none; }
 .clouds {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Cg fill='%23fff' opacity='0.35'%3E%3Cellipse cx='60' cy='40' rx='50' ry='14'/%3E%3Cellipse cx='260' cy='90' rx='70' ry='16'/%3E%3Cellipse cx='340' cy='30' rx='34' ry='10'/%3E%3C/g%3E%3C/svg%3E");
-  background-position: calc(var(--bg) * 0.3) 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='220'%3E%3Cg fill='%23fff'%3E%3Cg opacity='0.5'%3E%3Ccircle cx='60' cy='46' r='16'/%3E%3Ccircle cx='82' cy='38' r='22'/%3E%3Ccircle cx='108' cy='46' r='16'/%3E%3Crect x='44' y='46' width='80' height='14' rx='7'/%3E%3C/g%3E%3Cg opacity='0.35'%3E%3Ccircle cx='330' cy='96' r='14'/%3E%3Ccircle cx='350' cy='88' r='19'/%3E%3Ccircle cx='374' cy='96' r='13'/%3E%3Crect x='316' y='96' width='72' height='12' rx='6'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background-position: calc(var(--bg) * 0.25) 0;
 }
+.clouds-near {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='760' height='300'%3E%3Cg fill='%23fff' opacity='0.28'%3E%3Ccircle cx='150' cy='60' r='30'/%3E%3Ccircle cx='190' cy='44' r='40'/%3E%3Ccircle cx='238' cy='58' r='30'/%3E%3Crect x='120' y='60' width='150' height='26' rx='13'/%3E%3Ccircle cx='560' cy='150' r='22'/%3E%3Ccircle cx='590' cy='138' r='30'/%3E%3Ccircle cx='626' cy='152' r='22'/%3E%3Crect x='538' y='152' width='110' height='20' rx='10'/%3E%3C/g%3E%3C/svg%3E");
+  background-position: calc(var(--bg) * 0.6) 0;
+}
+.sun {
+  inset: auto; top: 8%; right: 14%; width: 120px; height: 120px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 244, 200, 0.95) 0 22%, rgba(255, 220, 140, 0.45) 36%, rgba(255, 200, 120, 0) 70%);
+  animation: sunPulse 6s ease-in-out infinite;
+}
+.sky-night .sun { background: radial-gradient(circle, #f1f3f5 0 18%, rgba(165, 216, 255, 0.35) 32%, rgba(165, 216, 255, 0) 66%); }
+.sky-night .clouds {
+  background-image: radial-gradient(1.5px 1.5px at 20px 30px, #fff, transparent), radial-gradient(1px 1px at 90px 80px, #fff, transparent), radial-gradient(1.5px 1.5px at 160px 20px, #d0bfff, transparent), radial-gradient(1px 1px at 230px 110px, #fff, transparent), radial-gradient(1.2px 1.2px at 300px 50px, #a5d8ff, transparent);
+  background-size: 320px 140px; background-repeat: repeat; animation: twinkle 3s ease-in-out infinite alternate;
+}
+.fx-layer { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+@keyframes sunPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes twinkle { from { opacity: 0.6; } to { opacity: 1; } }
 .mountains {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='300' preserveAspectRatio='none'%3E%3Cpath d='M0 300 L0 210 L60 160 L110 200 L170 120 L240 190 L300 150 L360 210 L420 140 L470 110 L520 170 L600 210 L600 300z' fill='%233b1f4f' opacity='0.75'/%3E%3Cpath d='M170 120 L185 135 L160 135z M470 110 L488 128 L455 128z' fill='%23ffb347'/%3E%3C/svg%3E");
   background-position: var(--bg) bottom;
   background-size: 600px 100%;
+}
+.hills { background-position: calc(var(--bg) * 1.9) bottom; background-size: 520px 38%; opacity: 0.9; }
+.speed-lines {
+  background-image: repeating-linear-gradient(90deg, transparent 0 140px, rgba(255, 255, 255, 0.28) 140px 190px, transparent 190px 330px);
+  background-size: 330px 2px; background-position: calc(var(--bg) * 3) 30%, 0 0; background-repeat: repeat-x;
+  opacity: var(--speed, 0); transition: opacity 0.4s;
 }
 .finish-line {
   position: absolute; top: 0; bottom: 0; right: 0; width: 14px; z-index: 1;
@@ -238,10 +292,10 @@ select, textarea {
   opacity: 0.85;
 }
 .lanes { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 2px; padding-right: 14px; }
-.lane { position: relative; height: 64px; border-bottom: 1px dashed rgba(255, 255, 255, 0.18); }
-.racer { --rw: 96px; position: absolute; left: 0; top: 0; width: var(--rw); transition: left 0.12s linear; }
+.lane { position: relative; height: 78px; border-bottom: 1px dashed rgba(255, 255, 255, 0.18); }
+.racer { --rw: 140px; position: absolute; left: 0; top: -10px; width: var(--rw); will-change: transform; }
 .racer-art { width: 100%; filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.3)); }
-.racer-name { position: absolute; left: 6px; bottom: -2px; font-size: 11px; background: rgba(0, 0, 0, 0.45); border-radius: 6px; padding: 0 6px; white-space: nowrap; }
+.racer-name { position: absolute; left: 18%; bottom: 0; z-index: 1; font-size: 11px; background: rgba(0, 0, 0, 0.45); border-radius: 6px; padding: 0 6px; white-space: nowrap; }
 .racer.you .racer-name { background: var(--gold); color: #1b1536; font-weight: 600; }
 .racer.ghost-best { opacity: 0.55; }
 .racer.dashing .racer-art { animation: dash 0.6s ease-out; }
@@ -284,24 +338,43 @@ select, textarea {
 
 /* Modals */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(10, 6, 25, 0.7); display: flex; align-items: center; justify-content: center; z-index: 20; padding: 16px; }
-.modal { background: var(--panel); border: 2px solid var(--line); border-radius: 22px; padding: 24px; max-width: 460px; width: 100%; text-align: center; max-height: 92vh; overflow: auto; animation: popIn 0.25s; }
+.modal { position: relative; background: var(--panel); border: 2px solid var(--line); border-radius: 22px; padding: 24px; max-width: 460px; width: 100%; text-align: center; max-height: 92vh; overflow: auto; animation: popIn 0.25s; }
 .modal .row { justify-content: center; }
 .modal-egg { width: 90px; margin: 0 auto; }
 .modal-dragon { width: 180px; margin: 0 auto; }
 .name-pickers { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 .name-preview { font-size: 1.6rem; font-weight: 600; color: var(--gold); margin: 12px 0; }
 
-/* Dragon animation */
-.dragon .wing { transform-box: fill-box; transform-origin: 50% 100%; }
-.flap .wing-front { animation: flap 0.5s ease-in-out infinite alternate; }
-.flap .wing-back { animation: flap 0.5s ease-in-out infinite alternate-reverse; }
+/* Dragon animation: wings pivot at the shoulder and sweep through edge-on to below the body,
+   so a flap reads as a real wingbeat instead of a squash. */
+.dragon { overflow: visible; }
+.dragon .wing, .dragon .tail, .dragon .head { transform-box: view-box; transform-origin: 0 0; }
+.dragon .lid { transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(0); animation: blink 5.2s infinite; }
+.flap .wing-front { animation: flapFront var(--flap, 0.72s) ease-in-out infinite; }
+.flap .wing-back { animation: flapBack var(--flap, 0.72s) ease-in-out infinite; animation-delay: calc(var(--flap, 0.72s) * -0.1); }
+.flap .rig { animation: flyBob var(--flap, 0.72s) ease-in-out infinite; }
+.flap .tail { animation: tailSway calc(var(--flap, 0.72s) * 2.6) ease-in-out infinite; }
+.flap .head { animation: headBob calc(var(--flap, 0.72s) * 2) ease-in-out infinite; }
 .bob { animation: bob 2.4s ease-in-out infinite; }
 .wobble { animation: wobbleEgg 2.6s ease-in-out infinite; }
 .pop-in { animation: popIn 0.5s; }
 .glow { filter: drop-shadow(0 0 3px rgba(255, 220, 120, 0.8)); }
-.sleepy .wing { transform: scaleY(0.6); }
+.sleepy .wing-front { transform: rotate(-12deg) scale(0.9, 0.3); }
+.sleepy .wing-back { transform: rotate(-16deg) scale(0.9, 0.28); }
+.sleepy .lid { transform: scaleY(1); animation: none; }
 
-@keyframes flap { from { transform: scaleY(1); } to { transform: scaleY(0.35) skewX(-8deg); } }
+@keyframes flapFront {
+  0%, 100% { transform: rotate(-8deg) scaleY(1); }
+  45% { transform: rotate(10deg) scaleY(-0.62); }
+}
+@keyframes flapBack {
+  0%, 100% { transform: rotate(-6deg) scaleY(0.95); }
+  45% { transform: rotate(8deg) scaleY(-0.45); }
+}
+@keyframes flyBob { 0%, 100% { transform: translateY(2px); } 45% { transform: translateY(-3px); } }
+@keyframes tailSway { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(7deg); } }
+@keyframes headBob { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(-2deg); } }
+@keyframes blink { 0%, 93%, 100% { transform: scaleY(0); } 96% { transform: scaleY(1); } }
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes wobbleEgg { 0%, 80%, 100% { transform: rotate(0); } 85% { transform: rotate(-6deg); } 90% { transform: rotate(6deg); } 95% { transform: rotate(-3deg); } }
 @keyframes shakeEgg { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-8deg); } 75% { transform: rotate(8deg); } }
@@ -319,8 +392,8 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
   .tile { padding: 18px 10px; min-height: 100px; }
   .tile strong { font-size: 1.3rem; }
   .bar { width: 80px; }
-  .lane { height: 50px; }
-  .racer { --rw: 72px; }
+  .lane { height: 56px; }
+  .racer { --rw: 96px; top: -8px; }
   .unit-head { flex-direction: column; align-items: flex-start; }
   .kb-row { gap: 4px; }
   .kb-row-1 { margin-left: 10px; }
@@ -354,7 +427,7 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 /* Aerie */
 .aerie { position: relative; max-width: 520px; margin: 0 auto; aspect-ratio: 400 / 240; }
 .aerie-back, .aerie-back svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.aerie-dragon { position: absolute; left: 22%; right: 22%; bottom: 8%; }
+.aerie-dragon { position: absolute; left: 12%; right: 12%; bottom: 6%; }
 .flicker { animation: flicker 0.4s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: 50% 100%; }
 @keyframes flicker { from { transform: scaleY(1); } to { transform: scaleY(0.85) scaleX(1.05); } }
 .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }

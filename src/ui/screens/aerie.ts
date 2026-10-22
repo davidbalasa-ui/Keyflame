@@ -2,6 +2,8 @@
 
 import type { Profile } from '../../save/store';
 import { h } from '../dom';
+import { activeDragon } from '../../game/progress';
+import { TRAIL_COLORS, attachField } from '../particles';
 
 export interface Decor {
   id: string;
@@ -63,7 +65,19 @@ export function aerieScene(p: Profile, dragon: HTMLElement): HTMLElement {
   const owned = DECOR.filter((d) => p.decor.includes(d.id));
   const back = h('div', { class: 'aerie-back' });
   back.innerHTML = `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${CAVE}${owned.map((d) => d.art).join('')}</svg>`;
-  return h('div', { class: 'aerie' }, back, h('div', { class: 'aerie-dragon' }, dragon));
+  const scene = h('div', { class: 'aerie' }, back, h('div', { class: 'aerie-dragon' }, dragon));
+  // Soft sparkles drifting up through the cave, in the active dragon's colors.
+  const d = activeDragon(p);
+  const colors = d ? TRAIL_COLORS[d.tribe] : TRAIL_COLORS.emberback;
+  let debt = 0;
+  attachField(scene, (f, dt) => {
+    debt += dt / 170;
+    if (debt < 1) return;
+    debt -= 1;
+    const { w, h: ht } = f.size;
+    f.emit(Math.random() * w, ht * (0.55 + Math.random() * 0.4), { colors, kind: 'ember', vy: -22, spread: 16, size: 4.5, life: 3.4 });
+  });
+  return scene;
 }
 
 export function buyDecor(p: Profile, id: string): boolean {

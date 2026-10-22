@@ -84,16 +84,28 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     return el;
   };
 
+  // On touch screens the keyboard is pinned to the bottom like a phone keyboard,
+  // with shift beside the space bar so every letter row fits ten keys across.
+  const pinned = opts.input === 'touch';
   const keyboard = h(
     'div',
-    { class: 'keyboard', 'aria-hidden': 'true' },
+    { class: `keyboard${pinned ? ' pinned' : ''}`, 'aria-hidden': 'true' },
     ...ROWS.map((row, i) =>
-      h('div', { class: `kb-row kb-row-${i}` }, i === 2 ? shiftKey : null, ...row.map((k) => makeKey(k, k === ';' ? ';' : undefined, k === 'f' || k === 'j' ? 'bump' : ''))),
+      h('div', { class: `kb-row kb-row-${i}` }, i === 2 && !pinned ? shiftKey : null, ...row.map((k) => makeKey(k, k === ';' ? ';' : undefined, k === 'f' || k === 'j' ? 'bump' : ''))),
     ),
-    h('div', { class: 'kb-row' }, makeKey(' ', 'space', 'key-space')),
+    h('div', { class: 'kb-row kb-row-space' }, pinned ? shiftKey : null, makeKey(' ', 'space', 'key-space')),
   );
-  if (!opts.showKeyboard) keyboard.classList.add('mini');
+  if (!opts.showKeyboard && !pinned) keyboard.classList.add('mini');
+  let resize: ResizeObserver | null = null;
+  if (pinned) {
+    document.body.classList.add('kb-pinned');
+    if (typeof ResizeObserver !== 'undefined') {
+      resize = new ResizeObserver(() => document.body.style.setProperty('--kb-h', `${keyboard.offsetHeight}px`));
+      resize.observe(keyboard);
+    }
+  }
 
+  let lastTop = -1;
   function render(): void {
     const i = session.index;
     chars.forEach((el, j) => {
@@ -101,7 +113,15 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
       el.classList.toggle('current', j === i);
       el.classList.toggle('missed', session.missedAt.has(j) && j < i);
     });
-    chars[i]?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    // Keep the current line at the top of the text box. Scrolling only the box (not the page)
+    // stops the page from sliding the text under a pinned keyboard.
+    const cur = chars[i];
+    if (cur && cur.offsetTop !== lastTop) {
+      lastTop = cur.offsetTop;
+      const style = getComputedStyle(textEl);
+      const lineH = parseFloat(style.lineHeight) || 30;
+      textEl.scrollTop = Math.floor((cur.offsetTop - parseFloat(style.paddingTop)) / lineH) * lineH;
+    }
     keyEls.forEach((el) => el.classList.remove('next'));
     const next = session.expected;
     if (next) {
@@ -161,6 +181,13 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     el,
     session,
     focus,
-    destroy: () => document.removeEventListener('keydown', onKeyDown),
+    destroy: () => {
+      document.removeEventListener('keydown', onKeyDown);
+      resize?.disconnect();
+      if (pinned) {
+        document.body.classList.remove('kb-pinned');
+        document.body.style.removeProperty('--kb-h');
+      }
+    },
   };
 }
