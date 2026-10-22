@@ -1,0 +1,16 @@
+{
+  "name": "Keyflame",
+  "short_name": "Keyflame",
+  "description": "Type to fly. Race to hatch. A dragon typing game for kids.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#1b1536",
+  "theme_color": "#1b1536",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

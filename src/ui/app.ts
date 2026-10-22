@@ -1,6 +1,6 @@
 // App state and screen switching.
 
-import { loadSave, writeSave, type Profile, type SaveData } from '../save/store';
+import { loadSave, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
 import { setSoundEnabled } from './sound';
 
 export type Screen = (root: HTMLElement) => (() => void) | void;
@@ -20,6 +20,7 @@ export const BREAK_AFTER_MIN = 20;
 
 export async function startApp(root: HTMLElement, first: Screen): Promise<void> {
   state = { save: await loadSave(), root, cleanup: null, sessionStart: Date.now(), breakShown: false };
+  claimSupporterReturn();
   applySettings();
   go(first);
 }
@@ -76,3 +77,48 @@ export function breakDue(): boolean {
 }
 
 window.addEventListener('pagehide', () => void persistNow());
+
+/** Picks how the player types: 'auto' means the tap keyboard on phones and tablets. */
+export function inputMode(): InputMode {
+  const pick = hasProfile() ? profile().settings.input : 'auto';
+  if (pick !== 'auto') return pick;
+  return matchMedia('(pointer: coarse) and (hover: none)').matches ? 'touch' : 'keyboard';
+}
+
+const PENDING_KEY = 'keyflame-supporter-pending';
+
+/**
+ * The checkout sends buyers back to ?supporter=thanks. This is an honor system:
+ * there are no accounts to check a receipt against yet.
+ */
+function claimSupporterReturn(): void {
+  const url = new URL(location.href);
+  if (url.searchParams.get('supporter') === 'thanks') {
+    url.searchParams.delete('supporter');
+    history.replaceState(null, '', url.toString());
+    try {
+      localStorage.setItem(PENDING_KEY, '1');
+    } catch {
+      // ignore
+    }
+  }
+  applyPendingSupporter();
+}
+
+/** Gives the supporter pack to the rider who is playing, once one is chosen. */
+export function applyPendingSupporter(): void {
+  let pending = false;
+  try {
+    pending = localStorage.getItem(PENDING_KEY) === '1';
+  } catch {
+    return;
+  }
+  if (!pending || !hasProfile()) return;
+  profile().supporter = true;
+  try {
+    localStorage.removeItem(PENDING_KEY);
+  } catch {
+    // ignore
+  }
+  persist();
+}

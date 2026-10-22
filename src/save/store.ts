@@ -16,6 +16,8 @@ export interface OwnedDragon {
   /** Correct keystrokes typed while this dragon was active. */
   xp: number;
   hatchedAt: number;
+  /** Supporter-only cosmetic skin. */
+  skin?: 'starfire';
 }
 
 export interface NestEgg {
@@ -36,7 +38,12 @@ export interface RaceRecord {
   wpm: number;
   accuracy: number;
   place: number;
+  input?: InputMode;
+  course?: string;
 }
+
+/** keyboard = physical keys; touch = the game's tap keyboard; device = the phone's own keyboard. */
+export type InputMode = 'keyboard' | 'touch' | 'device';
 
 export interface Settings {
   sound: boolean;
@@ -44,6 +51,10 @@ export interface Settings {
   dyslexiaFont: boolean;
   largeText: boolean;
   showKeyboard: boolean;
+  /** 'auto' picks touch on phones and tablets, keyboard elsewhere. */
+  input: InputMode | 'auto';
+  /** Lessons let mistakes through and hide the clock. */
+  relaxed: boolean;
 }
 
 export interface Profile {
@@ -53,7 +64,8 @@ export interface Profile {
   embers: number;
   lessons: Record<string, LessonResult>;
   keyStats: KeyStats;
-  totals: { correctKeys: number; races: number; lessons: number; bestWpm: number; minutes: number };
+  /** bestWpm is for physical keyboards; touch typing keeps its own record. */
+  totals: { correctKeys: number; races: number; lessons: number; bestWpm: number; bestTouchWpm: number; minutes: number };
   nest: NestEgg | null;
   basket: TribeId[];
   dragons: OwnedDragon[];
@@ -63,6 +75,13 @@ export interface Profile {
   daily: { date: string; races: number; lessons: number };
   lastBackupAt: number;
   settings: Settings;
+  /** Milestone eggs already awarded. */
+  milestones: string[];
+  /** Courses whose story rival has been beaten. */
+  rivalsBeaten: string[];
+  /** Aerie decorations owned. */
+  decor: string[];
+  supporter: boolean;
 }
 
 export interface SaveData {
@@ -83,7 +102,7 @@ function newId(): string {
 }
 
 export function defaultSettings(): Settings {
-  return { sound: true, reducedMotion: false, dyslexiaFont: false, largeText: false, showKeyboard: true };
+  return { sound: true, reducedMotion: false, dyslexiaFont: false, largeText: false, showKeyboard: true, input: 'auto', relaxed: false };
 }
 
 /** A fresh profile starts with an Emberback egg that hatches quickly, for a first-session win. */
@@ -95,7 +114,7 @@ export function createProfile(name: string): Profile {
     embers: 0,
     lessons: {},
     keyStats: {},
-    totals: { correctKeys: 0, races: 0, lessons: 0, bestWpm: 0, minutes: 0 },
+    totals: { correctKeys: 0, races: 0, lessons: 0, bestWpm: 0, bestTouchWpm: 0, minutes: 0 },
     nest: { tribe: 'emberback', warmth: 0, seed: Math.floor(Math.random() * 1e9) },
     basket: [],
     dragons: [],
@@ -105,6 +124,10 @@ export function createProfile(name: string): Profile {
     daily: { date: today(), races: 0, lessons: 0 },
     lastBackupAt: Date.now(),
     settings: defaultSettings(),
+    milestones: [],
+    rivalsBeaten: [],
+    decor: [],
+    supporter: false,
   };
 }
 
@@ -141,6 +164,10 @@ export function normalizeProfile(raw: unknown): Profile | null {
     dragons: r.dragons ?? [],
     unitsRewarded: r.unitsRewarded ?? [],
     races: r.races ?? [],
+    milestones: r.milestones ?? [],
+    rivalsBeaten: r.rivalsBeaten ?? [],
+    decor: r.decor ?? [],
+    supporter: r.supporter ?? false,
   } as Profile;
 }
 

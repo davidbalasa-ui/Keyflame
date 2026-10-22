@@ -2,13 +2,17 @@ import { TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
 import { activeDragon, eggProgress } from '../../game/progress';
 import { today } from '../../save/store';
 import { breakDue, go, profile } from '../app';
+import { AdSlot } from '../ads';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
+import { aerieScene } from './aerie';
 import { codex } from './codex';
 import { lessons } from './lessons';
 import { nest } from './nest';
-import { race } from './race';
+import { progressPage } from './progressPage';
+import { raceMap } from './race';
 import { settings } from './settings';
+import { supporter } from './supporter';
 import { title } from './title';
 
 /** Rider rank grows with total practice, so it always moves forward. */
@@ -47,7 +51,7 @@ export const hub = (root: HTMLElement): void => {
   const dailyDone = daily.races >= DAILY_RACES || daily.lessons >= 1;
 
   const showcase = d
-    ? h('div', { class: 'showcase' }, svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap bob'), 'showcase-dragon'), h('p', {}, h('strong', {}, d.name), ` the ${TRIBES[d.tribe].name}`))
+    ? h('div', { class: 'showcase' }, aerieScene(p, svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap bob', d.skin), 'showcase-dragon')), h('p', {}, h('strong', {}, d.name), ` the ${TRIBES[d.tribe].name}`))
     : p.nest
       ? h('div', { class: 'showcase' }, svg(eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), 'showcase-egg wobble'), h('p', {}, `Your ${TRIBES[p.nest.tribe].name} egg is ${pct(eggProgress(p))} warm. Every correct key helps!`))
       : null;
@@ -73,13 +77,20 @@ export const hub = (root: HTMLElement): void => {
       h(
         'div',
         { class: 'tiles' },
-        tile('Race', 'Fly against rival dragons', 'tile-race', () => go(race)),
+        tile('Race', 'Fly against rival dragons', 'tile-race', () => go(raceMap)),
         tile('Lessons', 'Learn new keys', 'tile-lessons', () => go(lessons)),
-        tile(eggReady ? 'Nest: egg ready!' : 'Nest', eggReady ? 'Something is hatching…' : 'Eggs and your dragons', 'tile-nest' + (eggReady ? ' pulse' : ''), () => go(nest)),
+        tile(eggReady ? 'Nest: egg ready!' : 'Nest', eggReady ? 'Something is hatching…' : 'Eggs, dragons, and your aerie', 'tile-nest' + (eggReady ? ' pulse' : ''), () => go(nest)),
         tile('Codex', 'Every tribe and color', 'tile-codex', () => go(codex)),
       ),
+      h(
+        'div',
+        { class: 'row center' },
+        button('My progress', () => go(progressPage), 'btn ghost small'),
+        button('Settings and backup', () => go(settings), 'btn ghost small'),
+        p.supporter ? null : button('Support Keyflame', () => go(supporter), 'btn ghost small'),
+      ),
       backupDue ? h('p', { class: 'fine' }, 'It has been a while since your last backup. ', button('Make a backup code', () => go(settings), 'link')) : null,
-      h('div', { class: 'row center' }, button('Settings and backup', () => go(settings), 'btn ghost small')),
+      AdSlot('hub'),
     ),
   );
 
@@ -90,7 +101,7 @@ export const hub = (root: HTMLElement): void => {
       h(
         'div',
         { class: 'modal' },
-        d ? svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'sleepy'), 'modal-dragon') : null,
+        d ? svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'sleepy', d.skin), 'modal-dragon') : null,
         h('h2', {}, 'Time for a stretch?'),
         h('p', {}, 'You have been flying for a while. Your dragon is taking a nap. Rest your eyes and hands, and come back anytime.'),
         button('Okay', () => modal.remove()),

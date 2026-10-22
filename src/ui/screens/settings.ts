@@ -1,15 +1,19 @@
 import { exportBackupCode, type Settings } from '../../save/store';
+import { parentGate } from './supporter';
 import { applySettings, go, persist, persistNow, profile, saveData } from '../app';
 import { button, h } from '../dom';
 import { hub, topBar } from './hub';
 import { title } from './title';
 
-const TOGGLES: Array<[keyof Settings, string]> = [
+type BoolSetting = { [K in keyof Settings]: Settings[K] extends boolean ? K : never }[keyof Settings];
+
+const TOGGLES: Array<[BoolSetting, string]> = [
   ['sound', 'Sound effects'],
   ['showKeyboard', 'Show the full on-screen keyboard'],
   ['largeText', 'Bigger text'],
   ['dyslexiaFont', 'Easier-to-read font'],
   ['reducedMotion', 'Less motion'],
+  ['relaxed', 'Relaxed lessons: no clock, mistakes don’t stop you'],
 ];
 
 export const settings = (root: HTMLElement): void => {
@@ -38,6 +42,32 @@ export const settings = (root: HTMLElement): void => {
           });
           return h('label', { class: 'toggle' }, box, label);
         }),
+      ),
+      h(
+        'section',
+        {},
+        h('h2', {}, 'How do you type?'),
+        (() => {
+          const sel = h(
+            'select',
+            {
+              onchange: () => {
+                p.settings.input = sel.value as Settings['input'];
+                persist();
+              },
+            },
+            ...(
+              [
+                ['auto', 'Pick for me'],
+                ['keyboard', 'A real keyboard'],
+                ['touch', 'Tap the game’s keyboard (phones and tablets)'],
+                ['device', 'My phone or tablet’s own keyboard'],
+              ] as const
+            ).map(([v, label]) => h('option', { value: v, selected: p.settings.input === v }, label)),
+          );
+          return sel;
+        })(),
+        h('p', { class: 'fine' }, 'Touch typing keeps its own records, so phone races and keyboard races are fair.'),
       ),
       h(
         'section',
@@ -77,6 +107,8 @@ export const settings = (root: HTMLElement): void => {
         { class: 'parents' },
         h('h2', {}, 'For parents'),
         h('p', {}, 'Keyflame keeps all progress in this browser. It does not ask for names, emails, or any personal information, and it does not track players. Rider and dragon names are picked from preset word lists.'),
+        h('p', {}, 'If ads are shown, they appear only on menu screens, never while typing, and are limited to non-personalized ads suitable for children. A one-time supporter pack removes them.'),
+        h('p', {}, h('a', { href: './privacy.html', target: '_blank', rel: 'noopener' }, 'Read the privacy policy')),
       ),
       h(
         'section',
@@ -84,11 +116,15 @@ export const settings = (root: HTMLElement): void => {
         h('h2', {}, 'Remove this rider'),
         h('p', { class: 'fine' }, 'This deletes this rider and all their dragons from this device. Make a backup code first if you might want them back.'),
         button('Remove rider', () => {
-          if (!confirm(`Remove ${p.name} and all their dragons from this device?`)) return;
-          const save = saveData();
-          save.profiles = save.profiles.filter((x) => x.id !== p.id);
-          save.activeId = null;
-          void persistNow().then(() => go(title));
+          root.append(
+            parentGate(() => {
+              if (!confirm(`Remove ${p.name} and all their dragons from this device?`)) return;
+              const save = saveData();
+              save.profiles = save.profiles.filter((x) => x.id !== p.id);
+              save.activeId = null;
+              void persistNow().then(() => go(title));
+            }),
+          );
         }, 'btn danger'),
       ),
     ),

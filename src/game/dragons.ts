@@ -1,6 +1,6 @@
 // Original dragon tribes and the procedural art for dragons and eggs.
 
-export type TribeId = 'emberback' | 'tidefin' | 'stormcrest' | 'mossclaw';
+export type TribeId = 'emberback' | 'tidefin' | 'stormcrest' | 'mossclaw' | 'frostspine' | 'duneskimmer' | 'shadeglide';
 
 export interface Palette {
   name: string;
@@ -79,7 +79,52 @@ export const TRIBES: Record<TribeId, Tribe> = {
       { name: 'Ancient Oak', body: '#2b2b2b', belly: '#a9e34b', wing: '#1e3a1e', accent: '#d8f5a2', rare: true },
     ],
   },
+  frostspine: {
+    id: 'frostspine',
+    name: 'Frostspine',
+    home: 'Ice Fields',
+    perk: 'Bonus for words with no mistakes',
+    lore: 'Frostspines are patient and precise. Their breath leaves sparkling frost, and they never rush a turn.',
+    hatchKeys: 2500,
+    palettes: [
+      { name: 'Glacier', body: '#a5d8ff', belly: '#f1f8ff', wing: '#4dabf7', accent: '#e7f5ff' },
+      { name: 'Snowdrift', body: '#f1f3f5', belly: '#ffffff', wing: '#adb5bd', accent: '#74c0fc' },
+      { name: 'Midwinter', body: '#3b5bdb', belly: '#bac8ff', wing: '#283b9c', accent: '#d0ebff' },
+      { name: 'Aurora', body: '#20c997', belly: '#e6fcf5', wing: '#7950f2', accent: '#c3fae8', rare: true },
+    ],
+  },
+  duneskimmer: {
+    id: 'duneskimmer',
+    name: 'Duneskimmer',
+    home: 'Golden Desert',
+    perk: 'Faster sprint finish',
+    lore: 'Duneskimmers race the desert wind at sunrise. Long frills keep the sand out of their eyes.',
+    hatchKeys: 3000,
+    palettes: [
+      { name: 'Sandstone', body: '#e8b86d', belly: '#fff3d6', wing: '#c47f2c', accent: '#8d5b3a' },
+      { name: 'Red Mesa', body: '#c0532b', belly: '#ffd8a8', wing: '#8a3417', accent: '#ffe066' },
+      { name: 'Oasis', body: '#d4a373', belly: '#fefae0', wing: '#2a9d8f', accent: '#e9c46a' },
+      { name: 'Sun Gold', body: '#ffd43b', belly: '#fff9db', wing: '#f08c00', accent: '#ffffff', rare: true },
+    ],
+  },
+  shadeglide: {
+    id: 'shadeglide',
+    name: 'Shadeglide',
+    home: 'Night Caves',
+    perk: 'Typos only half-empty the flame meter',
+    lore: 'Shadeglides fly at night with starlight on their wings. They love old stories and quiet caves.',
+    hatchKeys: 3000,
+    palettes: [
+      { name: 'Midnight', body: '#25235a', belly: '#6c63b5', wing: '#14123a', accent: '#ffe066' },
+      { name: 'Dusk', body: '#5f3dc4', belly: '#b197fc', wing: '#3b1f8a', accent: '#fcc2d7' },
+      { name: 'Moonlit', body: '#495057', belly: '#dee2e6', wing: '#212529', accent: '#a5d8ff' },
+      { name: 'Comet', body: '#0b0b1f', belly: '#3d3d7a', wing: '#1c1c4a', accent: '#ff922b', rare: true },
+    ],
+  },
 };
+
+/** Supporter skin: works on any tribe. */
+export const STARFIRE: Palette = { name: 'Starfire', body: '#7048e8', belly: '#ffd43b', wing: '#f76707', accent: '#fff3bf' };
 
 export type Stage = 'hatchling' | 'young' | 'adult';
 
@@ -130,6 +175,16 @@ function tribeFeature(tribe: TribeId, p: Palette, stage: Stage): string {
       return `<path d="M156 40 l4 -${big ? 20 : 12} l4 10 l4 -${big ? 16 : 10} l3 14z" fill="${p.accent}" class="glow"/>`;
     case 'mossclaw':
       return `<g fill="${p.accent}"><ellipse cx="140" cy="62" rx="6" ry="3" transform="rotate(-40 140 62)"/><ellipse cx="132" cy="68" rx="6" ry="3" transform="rotate(-30 132 68)"/><ellipse cx="146" cy="54" rx="${big ? 7 : 5}" ry="3" transform="rotate(-50 146 54)"/></g>`;
+    case 'frostspine': {
+      const spikes = [72, 86, 100, 114]
+        .map((x) => `<path d="M${x} 62 l3 -${big ? 18 : 11} l3 ${big ? 18 : 11}z" fill="${p.accent}"/>`)
+        .join('');
+      return `<g class="glow">${spikes}<path d="M60 76 l-10 -6 M66 72 l-8 -10" stroke="${p.accent}" stroke-width="2"/></g>`;
+    }
+    case 'duneskimmer':
+      return `<path d="M152 46 Q136 30 120 36 Q136 40 148 52z" fill="${p.accent}"/><path d="M150 50 Q132 46 122 54 Q138 54 148 56z" fill="${p.accent}" opacity="0.8"/><path d="M70 74 Q94 68 118 74" stroke="${p.accent}" stroke-width="3" fill="none" opacity="0.7"/>`;
+    case 'shadeglide':
+      return `<g fill="${p.accent}"><circle cx="84" cy="30" r="1.8"/><circle cx="98" cy="42" r="1.4"/><circle cx="110" cy="30" r="1.6"/><circle cx="120" cy="50" r="1.2"/><circle cx="76" cy="78" r="1.5"/><circle cx="104" cy="72" r="1.3"/><circle cx="90" cy="84" r="1.1"/></g><circle cx="166" cy="49" r="5" fill="${p.accent}" opacity="0.25"/>`;
   }
 }
 
@@ -137,8 +192,8 @@ function tribeFeature(tribe: TribeId, p: Palette, stage: Stage): string {
  * Side-view flying dragon facing right, as an SVG string.
  * The wing sits in its own group so CSS can flap it.
  */
-export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = ''): string {
-  const p = TRIBES[tribe].palettes[paletteIndex] ?? TRIBES[tribe].palettes[0];
+export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starfire'): string {
+  const p = skin === 'starfire' ? STARFIRE : TRIBES[tribe].palettes[paletteIndex] ?? TRIBES[tribe].palettes[0];
   const horns = stage === 'hatchling' ? '' : `<path d="M158 44 l-12 -${stage === 'adult' ? 16 : 9} l16 8z" fill="${p.belly}"/>`;
   const scale = stage === 'hatchling' ? 0.78 : stage === 'young' ? 0.9 : 1;
   return `<svg class="dragon ${extraClass}" viewBox="0 0 200 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

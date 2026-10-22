@@ -2,12 +2,15 @@
 
 import { FINGER_LABEL, ROWS, baseKey, fingerFor } from '../content/keyboard';
 import { TypingSession, type KeystrokeResult } from '../engine/typing';
+import type { InputMode } from '../save/store';
 import { h } from './dom';
 import { sfx } from './sound';
 
 export interface TypingViewOptions {
   text: string;
   showKeyboard: boolean;
+  input: InputMode;
+  relaxed?: boolean;
   /** When false, keys are ignored (for example during a countdown). */
   enabled?: () => boolean;
   onKey?: (r: KeystrokeResult, s: TypingSession) => void;
@@ -18,12 +21,21 @@ export interface TypingView {
   el: HTMLElement;
   session: TypingSession;
   destroy: () => void;
+  focus: () => void;
+}
+
+/** Thumb typing: keys on the left half of the keyboard go to the left thumb. */
+function thumbFor(ch: string): string {
+  if (ch === ' ') return 'either thumb';
+  const f = fingerFor(ch);
+  return f.startsWith('left') ? 'your left thumb' : 'your right thumb';
 }
 
 const SHIFT_MAP: Record<string, string> = { ';': ':', ',': '<', '.': '>', '/': '?' };
 
 export function createTypingView(opts: TypingViewOptions): TypingView {
-  const session = new TypingSession(opts.text);
+  const session = new TypingSession(opts.text, { advanceOnError: opts.relaxed });
+  const touch = opts.input !== 'keyboard';
   const chars = [...opts.text].map((c) => h('span', { class: c === ' ' ? 'ch space' : 'ch' }, c));
   const textEl = h('div', { class: 'type-text', 'aria-live': 'off' }, ...chars);
   const hint = h('div', { class: 'finger-hint' });
@@ -95,13 +107,43 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
       shiftKey.classList.toggle('next', upper);
       const name = next === ' ' ? 'space' : next;
       const finger = fingerFor(next);
-      hint.textContent = `Next: “${name}” with ${finger === 'thumb' ? 'either thumb' : `your ${FINGER_LABEL[finger]}`}${upper ? ' (hold Shift with the other hand)' : ''}`;
+      hint.textContent = touch
+        ? `Next: “${name}” with ${thumbFor(next)}${upper ? ' (tap ⇧ first)' : ''}`
+        : `Next: “${name}” with ${finger === 'thumb' ? 'either thumb' : `your ${FINGER_LABEL[finger]}`}${upper ? ' (hold Shift with the other hand)' : ''}`;
     } else {
       hint.textContent = '';
     }
   }
 
+  // The phone's own keyboard types into a hidden field; we read each character and clear it.
+  const deviceInput = h('textarea', {
+    class: 'device-input',
+    autocomplete: 'off',
+    autocorrect: 'off',
+    autocapitalize: 'off',
+    spellcheck: 'false',
+    inputmode: 'text',
+    enterkeyhint: 'next',
+    'aria-label': 'Type here',
+  });
+  deviceInput.addEventListener('input', () => {
+    const typed = deviceInput.value;
+    deviceInput.value = '';
+    for (const ch of typed) press(ch === '\n' ? ' ' : ch);
+  });
+  const tapPrompt = h('div', { class: 'tap-prompt' }, 'Tap here to open your keyboard');
+  const focus = (): void => {
+    if (opts.input !== 'device') return;
+    deviceInput.focus({ preventScroll: true });
+    textEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  };
+  textEl.addEventListener('click', focus);
+  tapPrompt.addEventListener('click', focus);
+  deviceInput.addEventListener('focus', () => tapPrompt.classList.add('hidden'));
+  deviceInput.addEventListener('blur', () => tapPrompt.classList.remove('hidden'));
+
   const onKeyDown = (e: KeyboardEvent): void => {
+    if (e.target === deviceInput) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (e.key.length !== 1) return;
     e.preventDefault();
@@ -110,10 +152,12 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   document.addEventListener('keydown', onKeyDown);
   render();
 
-  const el = h('div', { class: 'typing-view' }, textEl, hint, keyboard);
+  const device = opts.input === 'device';
+  const el = h('div', { class: `typing-view input-${opts.input}` }, textEl, device ? tapPrompt : null, device ? deviceInput : null, hint, device ? null : keyboard);
   return {
     el,
     session,
+    focus,
     destroy: () => document.removeEventListener('keydown', onKeyDown),
   };
 }

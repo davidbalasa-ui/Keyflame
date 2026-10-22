@@ -54,8 +54,12 @@ export class TypingSession {
   /** Whether the current character already had a mistake. */
   private missedCurrent = false;
 
-  constructor(text: string) {
+  /** Relaxed mode: a wrong key still moves on (it counts as a miss). */
+  readonly advanceOnError: boolean;
+
+  constructor(text: string, opts: { advanceOnError?: boolean } = {}) {
     this.text = text;
+    this.advanceOnError = opts.advanceOnError ?? false;
   }
 
   get expected(): string {
@@ -99,7 +103,12 @@ export class TypingSession {
     this.missedAt.add(this.index);
     this.errors++;
     this.streak = 0;
-    return { correct: false, expected, typed: key, finished: false, streak: 0 };
+    if (this.advanceOnError) {
+      this.index++;
+      this.missedCurrent = false;
+      if (this.done) this.finishedAt = now;
+    }
+    return { correct: false, expected, typed: key, finished: this.done, streak: 0 };
   }
 
   elapsedMs(now: number = performance.now()): number {

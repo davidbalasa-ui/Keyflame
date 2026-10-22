@@ -28,7 +28,7 @@ export const UNITS: Unit[] = [
   { id: 'home', title: 'Home Row', blurb: 'Where your fingers rest. Every dragon starts here.', reward: 'tidefin' },
   { id: 'top', title: 'Top Row', blurb: 'Reach up into the clouds.', reward: 'stormcrest' },
   { id: 'bottom', title: 'Bottom Row', blurb: 'Dig down into the forest floor.', reward: 'mossclaw' },
-  { id: 'sentences', title: 'Sky Stories', blurb: 'Capitals, commas, and real stories.', reward: 'emberback' },
+  { id: 'sentences', title: 'Sky Stories', blurb: 'Capitals, commas, and real stories.', reward: 'shadeglide' },
 ];
 
 const steps: Array<[UnitId, string, string[], Lesson['kind'], number]> = [

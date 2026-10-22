@@ -130,3 +130,114 @@ describe('saves', () => {
     expect(migrate(null).profiles).toEqual([]);
   });
 });
+
+describe('relaxed mode', () => {
+  it('moves past mistakes but still counts them', () => {
+    const s = new TypingSession('ab', { advanceOnError: true });
+    s.type('x', 0);
+    expect(s.index).toBe(1);
+    expect(s.type('b', 100)?.finished).toBe(true);
+    expect(s.errors).toBe(1);
+    expect(s.correct).toBe(1);
+  });
+});
+
+import { applyRaceKey, finishTime, newRaceState, perkTuning } from '../src/game/raceRules';
+import { applyPlacement, courseUnlocked, ghostSpeeds, rivalSpeed } from '../src/game/progress';
+import { badges } from '../src/game/badges';
+import { buyDecor } from '../src/ui/screens/aerie';
+
+describe('race rules', () => {
+  const hit = (expected: string) => ({ correct: true, expected, typed: expected, finished: false, streak: 1 });
+  const miss = { correct: false, expected: 'a', typed: 'x', finished: false, streak: 0 };
+
+  it('a full flame meter adds a dash', () => {
+    const tune = perkTuning(null);
+    const st = newRaceState();
+    let dashes = 0;
+    for (let i = 0; i < tune.dashStreak; i++) if (applyRaceKey(st, hit('a'), tune, 0.1)) dashes++;
+    expect(dashes).toBe(1);
+    expect(st.bonus).toBe(tune.dashBonus);
+  });
+
+  it('Tidefins lose less on a typo, Shadeglides keep half the meter', () => {
+    const t = newRaceState();
+    applyRaceKey(t, miss, perkTuning('tidefin'), 0);
+    expect(t.bonus).toBeCloseTo(-0.4);
+    const s = newRaceState();
+    for (let i = 0; i < 10; i++) applyRaceKey(s, hit('a'), perkTuning('shadeglide'), 0);
+    applyRaceKey(s, miss, perkTuning('shadeglide'), 0);
+    expect(s.meter).toBe(5);
+  });
+
+  it('Frostspines get a bonus for clean words, Duneskimmers sprint', () => {
+    const f = newRaceState();
+    applyRaceKey(f, hit('a'), perkTuning('frostspine'), 0);
+    applyRaceKey(f, hit(' '), perkTuning('frostspine'), 0);
+    expect(f.bonus).toBeCloseTo(0.5);
+    const d = newRaceState();
+    applyRaceKey(d, hit('a'), perkTuning('duneskimmer'), 0.9);
+    expect(d.bonus).toBeCloseTo(0.25);
+  });
+
+  it('finish time matches WPM', () => {
+    expect(finishTime(12, 60)).toBeCloseTo(60000);
+  });
+});
+
+describe('campaign and milestones', () => {
+  it('courses open with lesson units', () => {
+    const p = createProfile('Bold Ranger');
+    expect(courseUnlocked(p, 'volcano')).toBe(true);
+    expect(courseUnlocked(p, 'reef')).toBe(false);
+    p.unitsRewarded.push('home');
+    expect(courseUnlocked(p, 'reef')).toBe(true);
+  });
+
+  it('beating a rival pays once', () => {
+    const p = createProfile('Bold Ranger');
+    const s = { wpm: 20, accuracy: 0.97, correct: 100, errors: 1, durationMs: 60000, keyStats: {} };
+    const first = recordRace(p, s, 1, { input: 'keyboard', courseId: 'volcano', beatRival: true });
+    const again = recordRace(p, s, 1, { input: 'keyboard', courseId: 'volcano', beatRival: true });
+    expect(first.rivalFirstWin).toBe(true);
+    expect(again.rivalFirstWin).toBe(false);
+    expect(first.embers - again.embers).toBe(25);
+  });
+
+  it('three accurate races earn the Frostspine egg', () => {
+    const p = createProfile('Quiet Seeker');
+    const s = { wpm: 10, accuracy: 0.96, correct: 50, errors: 1, durationMs: 60000, keyStats: {} };
+    recordRace(p, s, 2);
+    recordRace(p, s, 2);
+    const third = recordRace(p, s, 2);
+    expect(third.newEgg).toBe('frostspine');
+    expect(p.basket).toContain('frostspine');
+  });
+
+  it('touch records are kept apart and rivals ease off for touch', () => {
+    const p = createProfile('Sunny Spark');
+    const s = { wpm: 30, accuracy: 0.95, correct: 100, errors: 5, durationMs: 60000, keyStats: {} };
+    recordRace(p, s, 1, { input: 'touch', courseId: 'volcano', beatRival: false });
+    expect(p.totals.bestTouchWpm).toBe(30);
+    expect(p.totals.bestWpm).toBe(0);
+    expect(rivalSpeed('reef', 'touch')).toBeLessThan(rivalSpeed('reef', 'keyboard'));
+    expect(ghostSpeeds(p, 'keyboard')[0]).toBeCloseTo(12 * 0.8);
+  });
+
+  it('the placement check skips units for fluent typists', () => {
+    const p = createProfile('Mighty Comet');
+    expect(applyPlacement(p, 30, 0.95)).toBe(3);
+    expect(p.unitsRewarded).toEqual(['home', 'top', 'bottom']);
+    expect(applyPlacement(createProfile('x'), 30, 0.7)).toBe(0);
+  });
+
+  it('badges and decor follow the profile', () => {
+    const p = createProfile('Gentle Glider');
+    expect(badges(p).every((b) => !b.earned)).toBe(true);
+    p.embers = 50;
+    expect(buyDecor(p, 'moss')).toBe(true);
+    expect(buyDecor(p, 'moss')).toBe(false);
+    expect(buyDecor(p, 'stars')).toBe(false);
+    expect(p.embers).toBe(10);
+  });
+});

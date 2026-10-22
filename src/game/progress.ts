@@ -4,7 +4,8 @@
 import { LESSONS, UNITS, lessonsInUnit, type Lesson } from '../content/lessons';
 import { mergeKeyStats, type SessionSummary } from '../engine/typing';
 import { NAME_ENDS, NAME_STARTS, TRIBES, rollPalette, stageFor, type Stage, type TribeId } from './dragons';
-import { today, type OwnedDragon, type Profile } from '../save/store';
+import { today, type InputMode, type OwnedDragon, type Profile } from '../save/store';
+import { courseById } from './courses';
 
 export interface TypingRewards {
   embers: number;
@@ -12,6 +13,39 @@ export interface TypingRewards {
   eggReady: boolean;
   grewTo: Stage | null;
   newEgg: TribeId | null;
+  /** True the first time this course's story rival is beaten. */
+  rivalFirstWin?: boolean;
+  newBest?: boolean;
+}
+
+/** Touch typing is slower than ten-finger typing, so rivals ease off for touch players. */
+export const TOUCH_SPEED_FACTOR = 0.7;
+
+export function isTouch(input: InputMode | undefined): boolean {
+  return input === 'touch' || input === 'device';
+}
+
+/** Puts an egg in the nest, or in the basket if the nest is busy. */
+export function giveEgg(p: Profile, tribe: TribeId): void {
+  if (p.nest) p.basket.push(tribe);
+  else p.nest = { tribe, warmth: 0, seed: Math.floor(Math.random() * 1e9) };
+}
+
+export const MILESTONES: Array<{ id: string; tribe: TribeId; label: string; done: (p: Profile) => boolean }> = [
+  { id: 'accuracy', tribe: 'frostspine', label: 'Finish 3 races with 95% accuracy', done: (p) => p.races.filter((r) => r.accuracy >= 0.95).length >= 3 },
+  { id: 'speed', tribe: 'duneskimmer', label: 'Race at 25 WPM on a keyboard, or 18 WPM on touch', done: (p) => p.totals.bestWpm >= 25 || p.totals.bestTouchWpm >= 18 },
+];
+
+/** Awards any milestone eggs newly earned. */
+export function checkMilestones(p: Profile): TribeId | null {
+  let got: TribeId | null = null;
+  for (const m of MILESTONES) {
+    if (p.milestones.includes(m.id) || !m.done(p)) continue;
+    p.milestones.push(m.id);
+    giveEgg(p, m.tribe);
+    got ??= m.tribe;
+  }
+  return got;
 }
 
 function rollDaily(p: Profile): void {
@@ -53,22 +87,43 @@ function applySession(p: Profile, s: SessionSummary): Omit<TypingRewards, 'ember
   return { warmthAdded, eggReady: eggProgress(p) >= 1, grewTo };
 }
 
+/** Practice that is neither a race nor a lesson, like the placement check. */
+export function recordPractice(p: Profile, s: SessionSummary): Omit<TypingRewards, 'embers' | 'newEgg'> {
+  return applySession(p, s);
+}
+
 /** Embers for a race: a floor for finishing, more for clean typing and placing well. */
 export function raceEmbers(correct: number, accuracy: number, place: number): number {
   const placeBonus = [15, 10, 6, 4][place - 1] ?? 4;
   return Math.max(3, Math.round(correct / 12 * accuracy + placeBonus));
 }
 
-export function recordRace(p: Profile, s: SessionSummary, place: number): TypingRewards {
+export interface RaceInfo {
+  input: InputMode;
+  courseId: string;
+  beatRival: boolean;
+}
+
+export function recordRace(p: Profile, s: SessionSummary, place: number, info: RaceInfo = { input: 'keyboard', courseId: 'volcano', beatRival: false }): TypingRewards {
   const base = applySession(p, s);
-  const embers = raceEmbers(s.correct, s.accuracy, place);
-  p.embers += embers;
+  let embers = raceEmbers(s.correct, s.accuracy, place);
   p.totals.races++;
   p.daily.races++;
-  p.totals.bestWpm = Math.max(p.totals.bestWpm, s.wpm);
-  p.races.unshift({ at: Date.now(), wpm: s.wpm, accuracy: s.accuracy, place });
+  const touch = isTouch(info.input);
+  const prevBest = touch ? p.totals.bestTouchWpm : p.totals.bestWpm;
+  if (touch) p.totals.bestTouchWpm = Math.max(prevBest, s.wpm);
+  else p.totals.bestWpm = Math.max(prevBest, s.wpm);
+  p.races.unshift({ at: Date.now(), wpm: s.wpm, accuracy: s.accuracy, place, input: info.input, course: info.courseId });
   p.races = p.races.slice(0, 50);
-  return { ...base, embers, newEgg: null };
+  let rivalFirstWin = false;
+  if (info.beatRival && !p.rivalsBeaten.includes(info.courseId)) {
+    p.rivalsBeaten.push(info.courseId);
+    rivalFirstWin = true;
+    embers += 25;
+  }
+  p.embers += embers;
+  const newEgg = checkMilestones(p);
+  return { ...base, embers, newEgg, rivalFirstWin, newBest: prevBest > 0 && s.wpm > prevBest, eggReady: eggProgress(p) >= 1 };
 }
 
 export function recordLesson(p: Profile, lesson: Lesson, s: SessionSummary, stars: number): TypingRewards {
@@ -83,7 +138,7 @@ export function recordLesson(p: Profile, lesson: Lesson, s: SessionSummary, star
   p.embers += embers;
   p.totals.lessons++;
   p.daily.lessons++;
-  const newEgg = checkUnitReward(p, lesson.unit);
+  const newEgg = checkUnitReward(p, lesson.unit) ?? checkMilestones(p);
   return { ...base, embers, newEgg, eggReady: eggProgress(p) >= 1 };
 }
 
@@ -94,8 +149,7 @@ export function checkUnitReward(p: Profile, unit: Lesson['unit']): TribeId | nul
   if (!done) return null;
   const tribe = UNITS.find((u) => u.id === unit)!.reward;
   p.unitsRewarded.push(unit);
-  if (p.nest) p.basket.push(tribe);
-  else p.nest = { tribe, warmth: 0, seed: Math.floor(Math.random() * 1e9) };
+  giveEgg(p, tribe);
   return tribe;
 }
 
@@ -138,12 +192,39 @@ export function knownLetters(p: Profile): Set<string> {
   return keys;
 }
 
-/** Rival speeds sit just around the player's recent form, so races stay close. */
-export function ghostSpeeds(p: Profile): number[] {
-  const recent = p.races.slice(0, 5).map((r) => r.wpm);
-  const form = recent.length ? recent.reduce((a, b) => a + b, 0) / recent.length : 12;
-  const f = Math.max(6, form);
-  return [f * 0.8, f * 0.97, f * 1.12];
+/** Rival speeds sit just around the player's recent form for this input, so races stay close. */
+export function ghostSpeeds(p: Profile, input: InputMode = 'keyboard'): number[] {
+  const touch = isTouch(input);
+  const recent = p.races.filter((r) => isTouch(r.input) === touch).slice(0, 5).map((r) => r.wpm);
+  const start = touch ? 8 : 12;
+  const form = recent.length ? recent.reduce((a, b) => a + b, 0) / recent.length : start;
+  const f = Math.max(5, form);
+  return [f * 0.8, f * 1.1];
+}
+
+/** The story rival flies at a fixed speed, eased off for touch players. */
+export function rivalSpeed(courseId: string, input: InputMode): number {
+  const w = courseById(courseId).rival.wpm;
+  return isTouch(input) ? w * TOUCH_SPEED_FACTOR : w;
+}
+
+export function courseUnlocked(p: Profile, courseId: string): boolean {
+  const unit = courseById(courseId).unlockUnit;
+  return unit === null || p.unitsRewarded.includes(unit);
+}
+
+/** Placement check: skips lessons the player already knows. Returns how many units it opened. */
+export function applyPlacement(p: Profile, wpm: number, accuracy: number): number {
+  if (accuracy < 0.88) return 0;
+  const units: Lesson['unit'][] = wpm >= 22 ? ['home', 'top', 'bottom'] : wpm >= 14 ? ['home', 'top'] : wpm >= 7 ? ['home'] : [];
+  for (const u of units) {
+    for (const l of lessonsInUnit(u)) {
+      const prev = p.lessons[l.id];
+      if (!prev || prev.stars === 0) p.lessons[l.id] = { stars: 1, bestWpm: prev?.bestWpm ?? 0, bestAccuracy: prev?.bestAccuracy ?? 0 };
+    }
+    checkUnitReward(p, u);
+  }
+  return units.length;
 }
 
 /** Where a ghost is, 0 to 1, after `ms` of racing. */

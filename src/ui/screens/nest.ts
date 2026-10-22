@@ -1,11 +1,13 @@
 import { GROWTH, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
 import type { OwnedDragon } from '../../save/store';
-import { activeDragon, eggProgress, hatchEgg, randomDragonName } from '../../game/progress';
+import { MILESTONES, activeDragon, eggProgress, hatchEgg, randomDragonName } from '../../game/progress';
+import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
+import { DECOR, aerieScene, buyDecor } from './aerie';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { hub, topBar } from './hub';
-import { race } from './race';
+import { raceMap } from './race';
 
 function growthText(d: OwnedDragon): string {
   const stage = stageFor(d.xp);
@@ -28,9 +30,15 @@ export const nest = (root: HTMLElement): void => {
         h('h2', {}, `${TRIBES[egg.tribe].name} egg`),
         h('div', { class: 'warmth' }, h('span', { style: `width:${pct(prog)}` })),
         h('p', {}, prog >= 1 ? 'It is ready! Listen… crack, crack!' : `${pct(prog)} warm. ${TRIBES[egg.tribe].hatchKeys - egg.warmth} more correct keys to hatch.`),
-        prog >= 1 ? button('Hatch it!', () => hatchSequence(root)) : button('Race to warm it', () => go(race)),
+        prog >= 1 ? button('Hatch it!', () => hatchSequence(root)) : button('Race to warm it', () => go(raceMap)),
       )
-    : h('section', { class: 'nest-panel empty' }, h('h2', {}, 'Your nest is empty'), h('p', {}, 'Finish a lesson unit to earn your next egg.'));
+    : h('section', { class: 'nest-panel empty' }, h('h2', {}, 'Your nest is empty'), h('p', {}, 'Earn your next egg from a lesson unit or a milestone below.'));
+
+  const goals = [
+    ...UNITS.map((u) => ({ tribe: u.reward, label: `Finish the ${u.title} lessons`, done: p.unitsRewarded.includes(u.id) })),
+    ...MILESTONES.map((m) => ({ tribe: m.tribe, label: m.label, done: p.milestones.includes(m.id) })),
+  ];
+  const scene = active ? aerieScene(p, svg(dragonSvg(active.tribe, active.palette, stageFor(active.xp), 'flap bob', active.skin), 'showcase-dragon')) : null;
 
   root.append(
     topBar(() => go(hub)),
@@ -54,11 +62,14 @@ export const nest = (root: HTMLElement): void => {
                 h(
                   'div',
                   { class: 'dragon-card' + (active?.id === d.id ? ' active' : '') },
-                  svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap'), 'card-dragon'),
+                  svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin), 'card-dragon'),
                   h('strong', {}, d.name),
                   h('small', {}, `${TRIBES[d.tribe].palettes[d.palette]?.name} ${TRIBES[d.tribe].name}`),
                   h('small', {}, growthText(d)),
                   h('small', { class: 'perk' }, TRIBES[d.tribe].perk),
+                  p.supporter
+                    ? h('label', { class: 'toggle small' }, h('input', { type: 'checkbox', checked: d.skin === 'starfire', onchange: () => ((d.skin = d.skin ? undefined : 'starfire'), persist(), go(nest)) }), 'Starfire skin')
+                    : null,
                   active?.id === d.id
                     ? h('span', { class: 'badge' }, 'Racing')
                     : button('Race with me', () => {
@@ -71,6 +82,46 @@ export const nest = (root: HTMLElement): void => {
             )
           : h('p', { class: 'fine' }, 'No dragons yet. Your first egg is almost ready!'),
       ),
+      h(
+        'section',
+        {},
+        h('h2', {}, 'How to earn eggs'),
+        h(
+          'ul',
+          { class: 'egg-goals' },
+          ...goals.map((g) => h('li', { class: g.done ? 'done' : '' }, svg(eggSvg(g.tribe, 0, 9), 'mini-egg'), h('span', {}, h('strong', {}, TRIBES[g.tribe].name), ` · ${g.label}`), g.done ? h('span', { class: 'check' }, '✓') : null)),
+        ),
+      ),
+      scene
+        ? h(
+            'section',
+            {},
+            h('h2', {}, 'Your aerie'),
+            scene,
+            h('p', { class: 'fine' }, 'Spend embers to decorate your dragon’s cave. Decorations are just for fun.'),
+            h(
+              'div',
+              { class: 'shop' },
+              ...DECOR.map((item) => {
+                const owned = p.decor.includes(item.id);
+                return h(
+                  'div',
+                  { class: 'shop-item' + (owned ? ' owned' : '') },
+                  h('strong', {}, item.name),
+                  owned
+                    ? h('small', {}, 'In your aerie')
+                    : button(`🔥 ${item.cost}`, () => {
+                        if (buyDecor(p, item.id)) {
+                          sfx.win();
+                          persist();
+                          go(nest);
+                        }
+                      }, 'btn small', { disabled: p.embers < item.cost }),
+                );
+              }),
+            ),
+          )
+        : null,
     ),
   );
 };

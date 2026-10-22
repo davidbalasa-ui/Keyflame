@@ -1,7 +1,7 @@
 import { TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
 import { activeDragon } from '../../game/progress';
 import { MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, importBackupCode, type Profile } from '../../save/store';
-import { applySettings, go, persist, saveData } from '../app';
+import { applyPendingSupporter, applySettings, go, persist, saveData } from '../app';
 import { button, h, svg } from '../dom';
 import { sfx } from '../sound';
 import { hub } from './hub';
@@ -15,6 +15,7 @@ function avatar(p: Profile): HTMLElement {
 function choose(p: Profile): void {
   sfx.click();
   saveData().activeId = p.id;
+  applyPendingSupporter();
   persist();
   applySettings();
   go(hub);
