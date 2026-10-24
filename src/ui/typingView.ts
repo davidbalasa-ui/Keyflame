@@ -44,6 +44,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   const hint = h('div', { class: 'finger-hint' });
   const keyEls = new Map<string, HTMLElement>();
   let shiftOn = false;
+  let capsLock = false;
 
   const press = (key: string): void => {
     if (opts.enabled && !opts.enabled()) return;
@@ -62,21 +63,35 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   };
 
   const shiftKey = h('button', { class: 'key key-shift', type: 'button', 'aria-label': 'Shift' }, '⇧');
+  // Symbol keys show their shifted symbol while shift is on, like a phone keyboard.
+  const setShift = (on: boolean): void => {
+    shiftOn = on;
+    shiftKey.classList.toggle('on', on);
+    for (const [k, sym] of Object.entries(SHIFT_MAP)) {
+      const el = keyEls.get(k);
+      if (el) el.textContent = on ? sym : k;
+    }
+  };
+  // preventDefault on pointerdown stops :active from showing, so pressed keys get a class instead.
+  const flash = (el: HTMLElement): void => {
+    el.classList.remove('down');
+    void el.offsetWidth;
+    el.classList.add('down');
+  };
   shiftKey.addEventListener('pointerdown', (e) => {
     e.preventDefault();
-    shiftOn = !shiftOn;
-    shiftKey.classList.toggle('on', shiftOn);
+    setShift(!shiftOn);
   });
 
   const makeKey = (k: string, label = k.toUpperCase(), cls = ''): HTMLElement => {
     const el = h('button', { class: `key f-${fingerFor(k)} ${cls}`, type: 'button', 'aria-label': k === ' ' ? 'space' : k }, label);
     el.addEventListener('pointerdown', (e) => {
       e.preventDefault();
+      flash(el);
       let ch = k;
       if (shiftOn) {
         ch = SHIFT_MAP[k] ?? k.toUpperCase();
-        shiftOn = false;
-        shiftKey.classList.remove('on');
+        setShift(false);
       }
       press(ch);
     });
@@ -104,6 +119,18 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     const vv = window.visualViewport;
     document.documentElement.style.setProperty('--vvh', `${Math.round(vv ? vv.height : window.innerHeight)}px`);
     if (window.scrollY) window.scrollTo(0, 0);
+    requestAnimationFrame(keepTextVisible);
+  };
+  // On short screens (small phones, any phone turned sideways) the race track pushes the
+  // text below the keyboard. Scroll the page just enough that the text and hint show;
+  // the player's own dragon is in the bottom lane, so it stays in view too.
+  const keepTextVisible = (): void => {
+    if (!el.isConnected) return;
+    const scroller = pinned ? el.closest('main') : document.scrollingElement;
+    if (!scroller) return;
+    const bottom = pinned ? scroller.getBoundingClientRect().bottom : window.innerHeight;
+    const over = hint.getBoundingClientRect().bottom + 4 - bottom;
+    if (over > 0) scroller.scrollTop += over;
   };
   let mountTimer = 0;
   if (pinned) {
@@ -115,8 +142,10 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     // Move the keyboard out of the scrolling page into the app column once it's on screen.
     const mount = (): void => {
       const app = el.closest('#app') ?? document.getElementById('app');
-      if (el.isConnected && app) app.append(keyboard);
-      else mountTimer = requestAnimationFrame(mount);
+      if (el.isConnected && app) {
+        app.append(keyboard);
+        keepTextVisible();
+      } else mountTimer = requestAnimationFrame(mount);
     };
     mountTimer = requestAnimationFrame(mount);
   }
@@ -146,7 +175,9 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
       shiftKey.classList.toggle('next', upper);
       const name = next === ' ' ? 'space' : next;
       const finger = fingerFor(next);
-      hint.textContent = touch
+      hint.textContent = capsLock
+        ? 'Caps Lock is on. Press Caps Lock to turn it off.'
+        : touch
         ? `Next: “${name}” with ${thumbFor(next)}${upper ? ' (tap ⇧ first)' : ''}`
         : `Next: “${name}” with ${finger === 'thumb' ? 'either thumb' : `your ${FINGER_LABEL[finger]}`}${upper ? ' (hold Shift with the other hand)' : ''}`;
     } else {
@@ -165,31 +196,68 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     enterkeyhint: 'next',
     'aria-label': 'Type here',
   });
-  deviceInput.addEventListener('input', () => {
-    const typed = deviceInput.value;
+  // Phone keyboards (Gboard, Samsung Keyboard) "compose" a word: the field goes t, th, the.
+  // Clearing the field mid-word makes them type the word again, so read only what's new
+  // since the last input, and clear the field only once the word is committed.
+  let seen = '';
+  const clearDevice = (): void => {
     deviceInput.value = '';
-    for (const ch of typed) press(ch === '\n' ? ' ' : ch);
+    seen = '';
+  };
+  deviceInput.addEventListener('input', (e) => {
+    const value = deviceInput.value;
+    let same = 0;
+    while (same < seen.length && same < value.length && seen[same] === value[same]) same++;
+    const added = value.slice(same);
+    seen = value;
+    for (const ch of added) press(ch === '\n' ? ' ' : ch);
+    if (!(e as InputEvent).isComposing) clearDevice();
   });
+  deviceInput.addEventListener('compositionend', () => setTimeout(() => {
+    if (deviceInput.value === seen) clearDevice();
+  }));
   const tapPrompt = h('div', { class: 'tap-prompt' }, 'Tap here to open your keyboard');
   const focus = (): void => {
     if (opts.input !== 'device') return;
     deviceInput.focus({ preventScroll: true });
     textEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
   };
-  textEl.addEventListener('click', focus);
-  tapPrompt.addEventListener('click', focus);
-  deviceInput.addEventListener('focus', () => tapPrompt.classList.add('hidden'));
-  deviceInput.addEventListener('blur', () => tapPrompt.classList.remove('hidden'));
+  // Android's back button hides the keyboard but leaves the field focused, and focusing
+  // a focused field does nothing. Blur first so a tap always brings the keyboard back.
+  const reopen = (): void => {
+    deviceInput.blur();
+    focus();
+  };
+  textEl.addEventListener('click', reopen);
+  tapPrompt.addEventListener('click', reopen);
+  // The prompt hides only while the keyboard is really up (it shrinks the visible screen).
+  const fullHeight = window.innerHeight;
+  const syncPrompt = (): void => {
+    const vv = window.visualViewport;
+    const kbUp = document.activeElement === deviceInput && (!vv || vv.height < fullHeight - 120);
+    tapPrompt.classList.toggle('hidden', kbUp);
+  };
+  deviceInput.addEventListener('focus', syncPrompt);
+  deviceInput.addEventListener('blur', syncPrompt);
+  if (opts.input === 'device') window.visualViewport?.addEventListener('resize', syncPrompt);
 
   const onKeyDown = (e: KeyboardEvent): void => {
     if (e.target === deviceInput) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    const caps = e.getModifierState?.('CapsLock') ?? false;
+    if (caps !== capsLock) {
+      capsLock = caps;
+      render();
+    }
     if (e.key.length !== 1) return;
     e.preventDefault();
+    // Holding a key down repeats it; count only the first press.
+    if (e.repeat) return;
     press(e.key);
   };
   document.addEventListener('keydown', onKeyDown);
   render();
+  if (!pinned) requestAnimationFrame(keepTextVisible);
 
   const device = opts.input === 'device';
   const el = h('div', { class: `typing-view input-${opts.input}` }, textEl, device ? tapPrompt : null, device ? deviceInput : null, hint, device || pinned ? null : keyboard);
@@ -199,6 +267,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     focus,
     destroy: () => {
       document.removeEventListener('keydown', onKeyDown);
+      window.visualViewport?.removeEventListener('resize', syncPrompt);
       if (pinned) {
         cancelAnimationFrame(mountTimer);
         keyboard.remove();
