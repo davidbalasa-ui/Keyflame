@@ -192,6 +192,25 @@ export function knownLetters(p: Profile): Set<string> {
   return keys;
 }
 
+/** Races switch from practice sentences to real facts once every letter is learned. */
+export function factsUnlocked(p: Profile): boolean {
+  const known = knownLetters(p);
+  return [...'abcdefghijklmnopqrstuvwxyz'].every((c) => known.has(c));
+}
+
+/** Capital letters are taught in the Capital Letters lesson; before that, facts are typed in lowercase. */
+export function capitalsKnown(p: Profile): boolean {
+  const i = LESSONS.findIndex((l) => l.title === 'Capital Letters');
+  return i >= 0 && (p.lessons[LESSONS[i].id]?.stars ?? 0) > 0;
+}
+
+/** Adds a typed fact to the Fact Book, moving it to the end if it was already there. */
+export function recordFact(p: Profile, id: string): boolean {
+  const isNew = !p.factsSeen.includes(id);
+  p.factsSeen = [...p.factsSeen.filter((f) => f !== id), id];
+  return isNew;
+}
+
 /** Rival speeds sit just around the player's recent form for this input, so races stay close. */
 export function ghostSpeeds(p: Profile, input: InputMode = 'keyboard'): number[] {
   const touch = isTouch(input);

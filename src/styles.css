@@ -493,3 +493,14 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .supporter ul { text-align: left; display: inline-block; }
 .supporter-dragon { max-width: 260px; margin: 0 auto; }
 .gate-input { font: inherit; font-size: 1.4rem; width: 140px; text-align: center; background: var(--bg-2); color: var(--text); border: 2px solid var(--line); border-radius: 12px; padding: 8px; }
+
+/* Fun facts: the after-race card, the reader picker, and the Fact Book. */
+.fact-card { margin: 14px 0; padding: 14px 16px; border-radius: 16px; border: 2px solid var(--gold); background: rgba(255, 212, 59, 0.08); text-align: left; }
+.fact-card strong { color: var(--gold); font-size: 1.05rem; }
+.fact-card p { margin: 6px 0 8px; font-size: 1.1rem; line-height: 1.45; }
+.fact-card small { display: block; }
+.reader-pick { margin: 12px 0 18px; padding: 16px; border-radius: 18px; border: 2px solid var(--gold); background: var(--panel); }
+.reader-pick .row { flex-wrap: wrap; }
+.fact-book details { margin: 6px 0; }
+.fact-book summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
+.fact-book li { margin: 6px 0; line-height: 1.4; }

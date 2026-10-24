@@ -3,6 +3,8 @@
 // (a home-row drill once produced "fags"). Every generator re-rolls anything
 // this filter rejects, and the typing panel checks again before showing text.
 import { PASSAGES, WORDS } from './words';
+import { SENTENCES } from './sentences';
+import { FACTS } from './facts';
 
 // Roots that must never appear inside generated text, matched anywhere in a token.
 // Deliberately broad: a false alarm only means a drill re-rolls a letter group.
@@ -15,11 +17,21 @@ const BLOCKED_ROOTS: string[] = [
   'dead', 'stfu', 'kok', 'dck', 'cnt', 'fk', 'jiz',
 ];
 
+// Real words in facts and sentences that trip a root above but were read and
+// cleared by hand. Tests fail on any other flagged word in written content.
+export const REVIEWED_WORDS = new Set<string>([
+  // ass
+  'compass', 'passes', 'pass', 'class', 'mass', 'grass', 'glass',
+  // butt, die, fart, nig, pee, poo
+  'butterflies', 'butterfly', 'bodies', 'farther', 'nights', 'night', 'speed', 'spoonful',
+]);
+
 // Hand-reviewed words from our own lists. These are allowed even when a root
 // above happens to sit inside them (e.g. "glass", "shell").
 const CURATED = new Set<string>([
   ...WORDS,
-  ...PASSAGES.flatMap((p) => p.split(/\s+/)).map(normalize),
+  ...REVIEWED_WORDS,
+  ...[...PASSAGES, ...SENTENCES, ...FACTS.map((f) => f.text)].flatMap((p) => p.split(/\s+/)).map(normalize),
 ]);
 
 function normalize(token: string): string {

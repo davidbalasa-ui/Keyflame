@@ -1,0 +1,1652 @@
+[
+ {
+  "id": "dr01",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Komodo dragons are the biggest lizards in the world. They use their forked tongues to smell the air.",
+  "source": {
+   "name": "Smithsonian National Zoo: Komodo dragon",
+   "url": "https://www.nationalzoo.si.edu/node/6852"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr02",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A bearded dragon can puff out the spiky skin under its chin. It looks like a beard, and that is how it got its name.",
+  "source": {
+   "name": "Australian Museum: Central bearded dragon",
+   "url": "https://australian.museum/central-bearded-dragon"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr03",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Dragonflies have huge eyes. They can see in almost every direction at once.",
+  "source": {
+   "name": "AMNH: Flying Phenoms (dragonflies)",
+   "url": "https://amnh.org/explore/news-blogs/news-posts/flying-phenoms"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr04",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A dragonfly can fly forward and backward. It can even stay still in one spot, like a tiny helicopter.",
+  "source": {
+   "name": "NPS: Species Spotlight Dragonflies",
+   "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr05",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Leafy sea dragons are fish that look like floating seaweed. Their leafy fins help them hide in the ocean.",
+  "source": {
+   "name": "Australian Geographic: Leafy seadragon",
+   "url": "https://www.australiangeographic.com.au/fact-file/leafy-seadragon-phycodurus-eques/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr06",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "In a sea dragon family, the dad carries the eggs on the underside of his tail until they hatch.",
+  "source": {
+   "name": "Australian Geographic: Leafy seadragon",
+   "url": "https://www.australiangeographic.com.au/fact-file/leafy-seadragon-phycodurus-eques/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr07",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Some small lizards called flying dragons can glide from tree to tree. They spread flaps of skin like wings.",
+  "source": {
+   "name": "National Geographic: Draco lizard",
+   "url": "https://www.nationalgeographic.com/animals/reptiles/facts/draco-lizard"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr08",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A chameleon can move each eye on its own. It can look in two different ways at the same time.",
+  "source": {
+   "name": "San Diego Zoo: Chameleon",
+   "url": "https://animals.sandiegozoo.org/animals/chameleon"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr09",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Geckos can walk up walls and even across ceilings. Tiny hairs on their toes help them stick.",
+  "source": {
+   "name": "San Diego Zoo Wildlife Explorers: Gecko",
+   "url": "https://sdzwildlifeexplorers.org/animals/gecko"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr10",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Many lizards shed their old skin as they grow. A fresh new skin is waiting underneath.",
+  "source": {
+   "name": "San Diego Zoo: Lizard",
+   "url": "https://animals.sandiegozoo.org/animals/lizard"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr11",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Komodo dragons live on hot, dry islands. They like to rest in the shade when the Sun gets too warm.",
+  "source": {
+   "name": "Smithsonian National Zoo: Komodo dragon",
+   "url": "https://www.nationalzoo.si.edu/node/6852"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "dr12",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A bearded dragon can make its beard turn dark. A dark beard can mean it is alarmed or wants to look tough.",
+  "source": {
+   "name": "Australian Museum: Central bearded dragon",
+   "url": "https://australian.museum/central-bearded-dragon"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr13",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Dragonflies have four long wings. When they rest, most dragonflies hold their wings out flat, like an airplane.",
+  "source": {
+   "name": "NPS: Species Spotlight Dragonflies",
+   "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "dr14",
+  "topic": "dragons",
+  "level": "older",
+  "text": "The Komodo dragon lives on a few islands in Indonesia. It can grow to about ten feet long and is the largest lizard alive today.",
+  "source": {
+   "name": "Britannica: Komodo dragon",
+   "url": "https://www.britannica.com/print/article/321622"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr15",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Komodo dragons can hear, but not very well. Their forked tongue is their best tool, picking up smells from far away.",
+  "source": {
+   "name": "Smithsonian National Zoo: Komodo dragon",
+   "url": "https://www.nationalzoo.si.edu/node/6852"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr16",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Bearded dragons come from the dry lands of Australia. They sometimes wave one front leg slowly, which scientists think is a signal to other bearded dragons.",
+  "source": {
+   "name": "Australian Museum: Central bearded dragon",
+   "url": "https://australian.museum/central-bearded-dragon"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr17",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Dragonflies begin life underwater as young insects. When they are ready, they climb up a plant stem and come out with wings.",
+  "source": {
+   "name": "Iowa DNR: 6 cool things about dragonflies",
+   "url": "https://www.iowadnr.gov/news-release/2019-08-08/6-cool-things-you-should-know-about-dragonflies"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr18",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Dragonflies have four wings that can each move on their own. This lets them turn quickly, stop in midair, and even fly backward.",
+  "source": {
+   "name": "Iowa DNR: 6 cool things about dragonflies",
+   "url": "https://www.iowadnr.gov/news-release/2019-08-08/6-cool-things-you-should-know-about-dragonflies"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr19",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Leafy sea dragons live only in the cool waters off southern and western Australia. They drift slowly and sway like seaweed, so few animals ever notice them.",
+  "source": {
+   "name": "Australian Geographic: Leafy seadragon",
+   "url": "https://www.australiangeographic.com.au/fact-file/leafy-seadragon-phycodurus-eques/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr20",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Flying dragon lizards live in the forests of Southeast Asia. They open flaps of skin held out by long ribs and glide from one tree to another.",
+  "source": {
+   "name": "National Geographic: Draco lizard",
+   "url": "https://www.nationalgeographic.com/animals/reptiles/facts/draco-lizard"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr21",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Chameleons change color to show how they feel and to warm up or cool down.",
+  "source": {
+   "name": "San Diego Zoo: Chameleon",
+   "url": "https://animals.sandiegozoo.org/animals/chameleon"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "dr22",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Geckos are among the few lizards that can make sounds. Some squeak, click, or bark softly to talk to each other.",
+  "source": {
+   "name": "San Diego Zoo Wildlife Explorers: Gecko",
+   "url": "https://sdzwildlifeexplorers.org/animals/gecko"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr23",
+  "topic": "dragons",
+  "level": "older",
+  "text": "The marine iguana of the Galapagos Islands is the only lizard that swims in the sea to find its food. It munches on seaweed growing on underwater rocks.",
+  "source": {
+   "name": "National Geographic: Marine iguana",
+   "url": "https://www.nationalgeographic.com/animals/reptiles/facts/marine-iguana"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr24",
+  "topic": "dragons",
+  "level": "older",
+  "text": "The frilled lizard of Australia opens a big, colorful frill around its neck when it feels threatened. The frill helps keep other animals away.",
+  "source": {
+   "name": "Australian Geographic: Frillneck lizard frill",
+   "url": "https://www.australiangeographic.com.au/nature-wildlife/2019/08/the-science-behind-the-frill-of-the-frillneck-lizard/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr25",
+  "topic": "dragons",
+  "level": "older",
+  "text": "The Chinese water dragon is a lizard that loves water. It is a strong swimmer and can stay underwater for many minutes by holding its breath.",
+  "source": {
+   "name": "Smithsonian National Zoo: Asian water dragon",
+   "url": "https://nationalzoo.si.edu/node/10051"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an01",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A giraffe has a long, dark tongue. It uses its tongue to reach leaves high up in tall trees.",
+  "source": {
+   "name": "San Diego Zoo: Giraffe",
+   "url": "https://animals.sandiegozoo.org/animals/giraffe"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an02",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Elephants use their trunks to drink, to smell, to pick things up, and to greet their friends.",
+  "source": {
+   "name": "National Geographic Kids: African elephant",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/african-elephant"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an03",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A hummingbird flaps its wings so fast that they make a humming sound. That is how it got its name.",
+  "source": {
+   "name": "San Diego Zoo: Hummingbird",
+   "url": "https://animals.sandiegozoo.org/animals/hummingbird"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an04",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Honeybees do a little dance to tell other bees where to find flowers full of food.",
+  "source": {
+   "name": "Smithsonian: What is the Waggle Dance",
+   "url": "https://www.si.edu/object/whats-waggle-dance-and-why-do-honey-bees-do-it:yt_LU_KD1enR3Q"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an05",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Penguins cannot fly, but they are great swimmers. Their wings work like flippers in the water.",
+  "source": {
+   "name": "Britannica Kids: Penguin",
+   "url": "https://kids.britannica.com/kids/article/penguin/353611"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an06",
+  "topic": "animals",
+  "level": "younger",
+  "text": "An owl can turn its head about three quarters of the way around to look behind it.",
+  "source": {
+   "name": "San Diego Zoo: Owl",
+   "url": "https://animals.sandiegozoo.org/animals/owl"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an07",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Cats spend a big part of each day sleeping. Some cats sleep for more than half the day.",
+  "source": {
+   "name": "Britannica: Why do cats sleep so much",
+   "url": "https://www.britannica.com/story/why-do-cats-sleep-so-much"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an08",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A baby kangaroo is called a joey. It rides in a warm pouch on its mother.",
+  "source": {
+   "name": "National Geographic Kids: Kangaroo",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/kangaroo"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an09",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Butterflies can taste with their feet. A mother butterfly stands on a leaf to find out if it is a good plant for her eggs.",
+  "source": {
+   "name": "AMNH: Butterfly FAQ",
+   "url": "https://www.amnh.org/exhibitions/butterflies/butterfly-faq"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an10",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Sloths move so slowly that tiny green plants called algae can grow on their fur.",
+  "source": {
+   "name": "Smithsonian National Zoo: Why are sloths so slow",
+   "url": "https://nationalzoo.si.edu/animals/news/why-are-sloths-so-slow-and-other-sloth-facts"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an11",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A snail carries its home on its back. When it feels unsafe, it pulls itself inside its shell.",
+  "source": {
+   "name": "Britannica Students: Snail and slug",
+   "url": "https://kids.britannica.com/students/article/snail-and-slug/277102"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an12",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Polar bears have black skin under their white fur. Thick fur and a layer of fat keep them warm in the snow.",
+  "source": {
+   "name": "Britannica: Why are polar bears white",
+   "url": "https://www.britannica.com/science/Why-Are-Polar-Bears-White"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an13",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Some parrots can learn to copy many words and sounds.",
+  "source": {
+   "name": "Britannica: Why do parrots talk",
+   "url": "https://www.britannica.com/science/Why-Do-Parrots-Talk"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an14",
+  "topic": "animals",
+  "level": "older",
+  "text": "A group of flamingos is often called a flamboyance. Flamingos get their pink color from the tiny shrimp and algae they eat.",
+  "source": {
+   "name": "Smithsonian National Zoo: Why are flamingos pink",
+   "url": "https://nationalzoo.si.edu/animals/news/why-are-flamingos-pink-and-other-flamingo-facts"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an15",
+  "topic": "animals",
+  "level": "older",
+  "text": "Arctic terns fly from the far north of the world to the far south and back again every year. That is one of the longest trips any animal makes.",
+  "source": {
+   "name": "Smithsonian Ocean: Arctic tern",
+   "url": "https://ocean.si.edu/ocean-life/seabirds/arctic-tern"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an16",
+  "topic": "animals",
+  "level": "older",
+  "text": "Elephants make low rumbling sounds to talk to each other. Some of these sounds are so deep that people cannot hear them.",
+  "source": {
+   "name": "National Geographic Kids: African elephant",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/african-elephant"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "an17",
+  "topic": "animals",
+  "level": "older",
+  "text": "To make honey, honeybees must visit a very large number of flowers. They carry the sweet nectar back to the hive.",
+  "source": {
+   "name": "Britannica: How is honey made",
+   "url": "https://www.britannica.com/science/How-Is-Honey-Made"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "an18",
+  "topic": "animals",
+  "level": "older",
+  "text": "Owls can fly almost silently. Soft edges on their feathers help their wings stay quiet as they glide through the night.",
+  "source": {
+   "name": "San Diego Zoo: Owl",
+   "url": "https://animals.sandiegozoo.org/animals/owl"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an19",
+  "topic": "animals",
+  "level": "older",
+  "text": "Hummingbirds can hover in one spot and even fly backward. Their wings move in the shape of a figure eight.",
+  "source": {
+   "name": "San Diego Zoo: Hummingbird",
+   "url": "https://animals.sandiegozoo.org/animals/hummingbird"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an20",
+  "topic": "animals",
+  "level": "older",
+  "text": "A cheetah is the fastest land animal. In a short sprint, it can run about as fast as a car on a highway.",
+  "source": {
+   "name": "Smithsonian National Zoo: Cheetah",
+   "url": "https://nationalzoo.si.edu/animals/cheetah"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an21",
+  "topic": "animals",
+  "level": "older",
+  "text": "Some ants can carry things many times heavier than their own bodies. They often work as a team to move big loads.",
+  "source": {
+   "name": "National Geographic: Ants",
+   "url": "https://www.nationalgeographic.com/animals/invertebrates/facts/ants"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an22",
+  "topic": "animals",
+  "level": "older",
+  "text": "Koalas spend most of the day asleep, often more than eighteen hours. The leaves they eat give them very little energy.",
+  "source": {
+   "name": "San Diego Zoo: Koala",
+   "url": "https://animals.sandiegozoo.org/animals/koala"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an23",
+  "topic": "animals",
+  "level": "older",
+  "text": "Each zebra has its own pattern of stripes, much like a fingerprint. No two zebras have exactly the same stripes.",
+  "source": {
+   "name": "National Geographic Kids: Zebra",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/zebra"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an24",
+  "topic": "animals",
+  "level": "older",
+  "text": "Crows are very clever birds. They can remember the faces of people they have met.",
+  "source": {
+   "name": "Cornell Lab All About Birds: Remember me? Crows do",
+   "url": "https://www.allaboutbirds.org/news/remember-me-crows-do/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an25",
+  "topic": "animals",
+  "level": "older",
+  "text": "The platypus is a mammal that lays eggs. It has a bill like a duck and finds its food underwater with its eyes closed.",
+  "source": {
+   "name": "Australian Museum: Platypus",
+   "url": "https://australian.museum/learn/animals/mammals/platypus/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp01",
+  "topic": "space",
+  "level": "younger",
+  "text": "The Sun is a star. It looks so big because it is much closer to us than any other star.",
+  "source": {
+   "name": "NASA Space Place: All About the Sun",
+   "url": "https://spaceplace.nasa.gov/all-about-the-sun/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp02",
+  "topic": "space",
+  "level": "younger",
+  "text": "The Moon has no air and no wind. Footprints left by astronauts can stay there for a very long time.",
+  "source": {
+   "name": "NASA Space Place: All About the Moon",
+   "url": "https://spaceplace.nasa.gov/all-about-the-moon/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp03",
+  "topic": "space",
+  "level": "younger",
+  "text": "Saturn has big, bright rings. They are made of chunks of ice and rock.",
+  "source": {
+   "name": "NASA Science: Saturn facts",
+   "url": "https://science.nasa.gov/saturn/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp04",
+  "topic": "space",
+  "level": "younger",
+  "text": "Jupiter is the biggest planet in our solar system. More than a thousand Earths could fit inside it.",
+  "source": {
+   "name": "NASA Science: Jupiter facts",
+   "url": "https://science.nasa.gov/jupiter/jupiter-facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp05",
+  "topic": "space",
+  "level": "younger",
+  "text": "Mars looks red because its dirt has rust in it. People call it the Red Planet.",
+  "source": {
+   "name": "NASA Science: Mars facts",
+   "url": "https://science.nasa.gov/mars/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp06",
+  "topic": "space",
+  "level": "younger",
+  "text": "Astronauts on the space station see the Sun rise and set many times every day.",
+  "source": {
+   "name": "NASA: Year in Space crew sunrises and sunsets",
+   "url": "https://www.nasa.gov/image-article/year-space-crew-will-see-10944-sunrises-sunsets/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp07",
+  "topic": "space",
+  "level": "younger",
+  "text": "In space there is no air, so there is no sound. Astronauts use radios to talk to each other.",
+  "source": {
+   "name": "NASA Space Place: How Scary Is Space",
+   "url": "https://spaceplace.nasa.gov/scary-space/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp08",
+  "topic": "space",
+  "level": "younger",
+  "text": "The Moon does not make its own light. It shines because sunlight bounces off it.",
+  "source": {
+   "name": "NASA Space Place: All About the Moon",
+   "url": "https://spaceplace.nasa.gov/all-about-the-moon/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp09",
+  "topic": "space",
+  "level": "younger",
+  "text": "Venus is the hottest planet, even though Mercury is closer to the Sun. Its thick air holds in the heat like a blanket.",
+  "source": {
+   "name": "NASA Space Place: All About Venus",
+   "url": "https://spaceplace.nasa.gov/all-about-venus/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp10",
+  "topic": "space",
+  "level": "older",
+  "text": "A day on Venus is longer than a year on Venus, because the planet spins very slowly as it goes around the Sun.",
+  "source": {
+   "name": "NASA Space Place: All About Venus",
+   "url": "https://spaceplace.nasa.gov/all-about-venus/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp11",
+  "topic": "space",
+  "level": "younger",
+  "text": "Scientists think there are more stars in space than grains of sand on all the beaches on Earth.",
+  "source": {
+   "name": "ESA: More stars than grains of sand on Earth",
+   "url": "https://www.esa.int/ESA_Multimedia/Images/2016/06/More_stars_in_the_Universe_than_grains_of_sand_on_Earth"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp12",
+  "topic": "space",
+  "level": "younger",
+  "text": "Shooting stars are not really stars. They are tiny bits of space rock glowing as they zip through the air.",
+  "source": {
+   "name": "NASA Science: Meteors and meteorites facts",
+   "url": "https://science.nasa.gov/solar-system/meteors-meteorites/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp13",
+  "topic": "space",
+  "level": "younger",
+  "text": "The Moon is slowly moving away from Earth. It drifts a tiny bit farther each year.",
+  "source": {
+   "name": "NASA StarChild: Did you know the Moon",
+   "url": "https://starchild.gsfc.nasa.gov/docs/StarChild/solar_system_level1/moon_know.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp14",
+  "topic": "space",
+  "level": "older",
+  "text": "Olympus Mons on Mars is the tallest volcano in the solar system. It is much taller than Mount Everest.",
+  "source": {
+   "name": "NASA APOD: Olympus Mons",
+   "url": "https://science.nasa.gov/image-article/apod-2023-april-4-olympus-mons-largest-volcano-in-the-solar-system/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp15",
+  "topic": "space",
+  "level": "older",
+  "text": "Light from the Sun takes about eight minutes to reach Earth. When you see the Sun, you are seeing light that left it eight minutes ago.",
+  "source": {
+   "name": "NASA Science: Earth facts",
+   "url": "https://science.nasa.gov/earth/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp16",
+  "topic": "space",
+  "level": "older",
+  "text": "Neptune has the fastest winds in the solar system. They blow faster than the speed of sound on Earth.",
+  "source": {
+   "name": "NASA Science: Neptune facts",
+   "url": "https://science.nasa.gov/neptune/neptune-facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp17",
+  "topic": "space",
+  "level": "older",
+  "text": "Astronauts on the space station float because they are falling around the Earth all the time. They move so fast that they keep missing the ground.",
+  "source": {
+   "name": "NASA: What is microgravity (Grades K-4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-microgravity-grades-k-4/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp18",
+  "topic": "space",
+  "level": "older",
+  "text": "Saturn is so light for its size that it would float in water, if there were a bathtub big enough to hold it.",
+  "source": {
+   "name": "NASA Science: Saturn facts",
+   "url": "https://science.nasa.gov/saturn/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp19",
+  "topic": "space",
+  "level": "older",
+  "text": "Neptune is so far from the Sun that one trip around it takes about a hundred and sixty five Earth years.",
+  "source": {
+   "name": "NASA Science: Neptune facts",
+   "url": "https://science.nasa.gov/neptune/neptune-facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp20",
+  "topic": "space",
+  "level": "older",
+  "text": "A neutron star is so tightly packed that a single spoonful of it would weigh about as much as a mountain.",
+  "source": {
+   "name": "NASA Imagine the Universe: Neutron stars",
+   "url": "https://imagine.gsfc.nasa.gov/science/objects/neutron_stars1.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp21",
+  "topic": "space",
+  "level": "older",
+  "text": "The Milky Way is our home galaxy. On a dark night far from city lights, it looks like a faint, glowing band across the sky.",
+  "source": {
+   "name": "NASA Imagine the Universe: Milky Way",
+   "url": "https://imagine.gsfc.nasa.gov/science/objects/milkyway1.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp22",
+  "topic": "space",
+  "level": "older",
+  "text": "Mercury has almost no air to hold in heat. Its days are scorching hot, and its nights are freezing cold.",
+  "source": {
+   "name": "NASA Space Place: All About Mercury",
+   "url": "https://spaceplace.nasa.gov/all-about-mercury/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp23",
+  "topic": "space",
+  "level": "older",
+  "text": "Jupiter has a giant storm called the Great Red Spot. The storm is wider than the whole Earth and has been swirling for hundreds of years.",
+  "source": {
+   "name": "NASA Science: Tour of storms across the solar system",
+   "url": "https://science.nasa.gov/solar-system/10-things-tour-of-storms-across-the-solar-system/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp24",
+  "topic": "space",
+  "level": "older",
+  "text": "A year on Mercury lasts only about three Earth months. It races around the Sun on the shortest path of any planet.",
+  "source": {
+   "name": "NASA Space Place: All About Mercury",
+   "url": "https://spaceplace.nasa.gov/all-about-mercury/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp25",
+  "topic": "space",
+  "level": "older",
+  "text": "Mars has giant dust storms. Some grow so large that they wrap all the way around the planet.",
+  "source": {
+   "name": "NASA Science: Tour of storms across the solar system",
+   "url": "https://science.nasa.gov/solar-system/10-things-tour-of-storms-across-the-solar-system/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea01",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Lava is melted rock. When it cools down, it turns hard and becomes new rock.",
+  "source": {
+   "name": "USGS: What is the difference between magma and lava?",
+   "url": "https://www.usgs.gov/media/audio/what-difference-between-magma-and-lava"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea02",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Some volcanoes are under the sea. When they grow tall enough, they can make new islands.",
+  "source": {
+   "name": "NOAA Ocean Exploration: How seamounts form",
+   "url": "https://oceanexplorer.noaa.gov/fact-sheet/how-seamounts-form-fact-sheet"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea03",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Mount Everest is the tallest mountain above the sea. It is so high that the air up there is thin and cold.",
+  "source": {
+   "name": "Britannica Kids: Mount Everest",
+   "url": "https://kids.britannica.com/students/article/Mount-Everest/274233"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea04",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Diamonds are made of the same stuff as pencil lead. It is called carbon.",
+  "source": {
+   "name": "EarthDate: Carbon opposites",
+   "url": "https://www.earthdate.org/episodes/carbon-opposites"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea05",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Some caves have stone shapes hanging from the ceiling like icicles. They grow drip by drip.",
+  "source": {
+   "name": "NOAA: Difference between a stalactite and a stalagmite",
+   "url": "https://oceanexplorer.noaa.gov/facts/stalactite.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea06",
+  "topic": "earth",
+  "level": "younger",
+  "text": "The center of the Earth is very hot. It is about as hot as the surface of the Sun.",
+  "source": {
+   "name": "Smithsonian Magazine: Center of the Earth is as hot as the Sun",
+   "url": "https://www.smithsonianmag.com/smart-news/the-center-of-the-earth-is-as-hot-as-the-sun-43631207"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea07",
+  "topic": "earth",
+  "level": "younger",
+  "text": "A rock called pumice is so full of tiny air holes that it can float on water.",
+  "source": {
+   "name": "ScienceDaily: How pumice floats",
+   "url": "https://www.sciencedaily.com/releases/2017/05/170523144110.htm"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea08",
+  "topic": "earth",
+  "level": "younger",
+  "text": "A geyser is a hot spring that shoots water and steam high into the air.",
+  "source": {
+   "name": "USGS: Geysers",
+   "url": "https://pubs.usgs.gov/gip/volc/geysers.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea09",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Sand on many beaches is made of tiny bits of rock and shell, worn down by the waves.",
+  "source": {
+   "name": "NOAA Ocean Podcast: Sand",
+   "url": "https://oceanservice.noaa.gov/podcast/july23/nop67-sand.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea10",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Most of the Earth is covered by water. That is why it looks blue from space.",
+  "source": {
+   "name": "NASA: Earth, a water world",
+   "url": "https://www.nasa.gov/image-article/earth-water-world"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea11",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Salt is a crystal. If you look very closely, each grain of salt is a tiny cube.",
+  "source": {
+   "name": "Windows to the Universe: Halite",
+   "url": "https://windows2universe.org/earth/geology/images/halite_JPG_image.html"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea12",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Some lakes are so salty that people can float on top of the water with no effort.",
+  "source": {
+   "name": "Wonderopolis: Is the Dead Sea deadly?",
+   "url": "https://wonderopolis.org/wonder/Is-the-Dead-Sea-Deadly"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea13",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Glaciers are huge rivers of ice. They move very, very slowly across the land.",
+  "source": {
+   "name": "NASA Climate Kids: 10 things about glaciers",
+   "url": "https://climatekids.nasa.gov/10-things-glaciers"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea14",
+  "topic": "earth",
+  "level": "older",
+  "text": "Volcanic ash makes soil very rich. That is why farmers often grow crops on the slopes of old volcanoes.",
+  "source": {
+   "name": "British Geological Survey: Living with volcanoes",
+   "url": "https://www.bgs.ac.uk/discovering-geology/earth-hazards/volcanoes/living-with-volcanoes/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea15",
+  "topic": "earth",
+  "level": "older",
+  "text": "The islands of Hawaii were made by volcanoes rising from the sea floor. Some of those volcanoes are still adding new land today.",
+  "source": {
+   "name": "NPS Hawaii Volcanoes: Volcanoes",
+   "url": "https://www.nps.gov/havo/learn/nature/volcanoes.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea16",
+  "topic": "earth",
+  "level": "older",
+  "text": "Obsidian is a shiny black glass made when lava cools very quickly. It cools so fast that crystals do not have time to form.",
+  "source": {
+   "name": "USGS Volcano Watch: Obsidian",
+   "url": "https://www.usgs.gov/news/volcano-watch-obsidian-a-scarce-commodity-hawaii"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea17",
+  "topic": "earth",
+  "level": "older",
+  "text": "Mount Everest grows a tiny bit taller each year. Huge plates of rock under the ground slowly push together, and that helps lift it up.",
+  "source": {
+   "name": "Smithsonian Magazine: Why Mount Everest grows taller each year",
+   "url": "https://www.smithsonianmag.com/smart-news/geologists-reveal-a-surprising-reason-why-mount-everest-grows-taller-each-year-180985175/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea18",
+  "topic": "earth",
+  "level": "older",
+  "text": "The Earth is made of layers, a bit like a peach: a thin crust, a thick mantle, and a metal core in the middle.",
+  "source": {
+   "name": "USGS: Inside the Earth",
+   "url": "https://pubs.usgs.gov/gip/dynamic/inside.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea19",
+  "topic": "earth",
+  "level": "older",
+  "text": "Geodes look like plain round rocks on the outside. When they are cracked open, many are lined with sparkling crystals.",
+  "source": {
+   "name": "HowStuffWorks: Geodes",
+   "url": "https://science.howstuffworks.com/environmental/earth/geology/geodes.htm"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea20",
+  "topic": "earth",
+  "level": "older",
+  "text": "Antarctica is the largest desert on Earth. A desert is any place that gets very little rain or snow, even if it is freezing cold.",
+  "source": {
+   "name": "Live Science: Largest desert on Earth",
+   "url": "https://www.livescience.com/largest-desert-on-earth"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea21",
+  "topic": "earth",
+  "level": "older",
+  "text": "Quartz is one of the most common minerals in the crust of the Earth. Much of the sand on beaches is made of tiny grains of quartz.",
+  "source": {
+   "name": "Britannica: Quartz",
+   "url": "https://www.britannica.com/summary/quartz"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea22",
+  "topic": "earth",
+  "level": "older",
+  "text": "Yellowstone National Park has about half of all the geysers in the world. Its most famous geyser, Old Faithful, erupts many times each day.",
+  "source": {
+   "name": "NPS Yellowstone: Old Faithful treasures, geysers",
+   "url": "https://www.nps.gov/features/yell/ofvec/exhibits/treasures/ugb/index.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea23",
+  "topic": "earth",
+  "level": "older",
+  "text": "The Earth acts like a giant magnet. That is why the needle of a compass points north.",
+  "source": {
+   "name": "Wonderopolis: How does a compass work?",
+   "url": "https://wonderopolis.org/wonder/how-does-a-compass-work"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea24",
+  "topic": "earth",
+  "level": "older",
+  "text": "Iceland sits on a crack between two huge plates of rock. That is why it has so many volcanoes and hot springs.",
+  "source": {
+   "name": "Smithsonian Magazine: Iceland's volcanoes",
+   "url": "https://www.smithsonianmag.com/travel/icelands-volcanoes-37746633/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea25",
+  "topic": "earth",
+  "level": "older",
+  "text": "Rubies and sapphires are the same mineral, called corundum. Tiny amounts of other metals make rubies red and sapphires blue.",
+  "source": {
+   "name": "Geoscience Australia: Sapphire and ruby",
+   "url": "https://www.ga.gov.au/education/minerals-energy/australian-mineral-facts/sapphire"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we01",
+  "topic": "weather",
+  "level": "younger",
+  "text": "A rainbow appears when sunlight shines through raindrops. The light splits into many colors.",
+  "source": {
+   "name": "Met Office: How are rainbows formed?",
+   "url": "https://metoffice.gov.uk/learning/optics/rainbows/how-are-rainbows-formed"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we02",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Most snowflakes have six sides or six arms. Each one is made of tiny ice crystals.",
+  "source": {
+   "name": "NOAA SciJinks: Snow crystals",
+   "url": "https://scijinks.gov/snow-crystals"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we03",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Clouds are made of tiny drops of water or bits of ice floating in the air.",
+  "source": {
+   "name": "NASA GPM: What are clouds made of?",
+   "url": "https://gpm.nasa.gov/resources/faq/what-are-clouds-made-are-they-more-likely-form-polluted-air-or-pristine-air"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we04",
+  "topic": "weather",
+  "level": "younger",
+  "text": "A flash of lightning is hotter than the surface of the Sun.",
+  "source": {
+   "name": "NWS: Lightning safety",
+   "url": "https://www.weather.gov/wrn/summer2019-lightning-sm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we05",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Thunder is the sound that lightning makes. Light travels faster than sound, so we see the flash first.",
+  "source": {
+   "name": "NWS: Lightning science, thunder",
+   "url": "https://www.weather.gov/safety/lightning-science-thunder"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we06",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Fog is a cloud that sits low, right down near the ground.",
+  "source": {
+   "name": "NOAA SciJinks: Fog",
+   "url": "https://scijinks.gov/fog"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we07",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Hail is made of balls of ice that fall from big storm clouds.",
+  "source": {
+   "name": "NOAA NSSL: Severe Weather 101, Hail",
+   "url": "https://nssl.noaa.gov/education/svrwx101/hail"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we08",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Wind is moving air. The Sun warms some places more than others, and that makes the air move.",
+  "source": {
+   "name": "Fox Weather: What makes wind?",
+   "url": "https://foxweather.com/learn/what-makes-wind"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we09",
+  "topic": "weather",
+  "level": "younger",
+  "text": "On cold nights, water in the air can freeze onto grass and windows. This sparkly ice is called frost.",
+  "source": {
+   "name": "Wikipedia: Frost",
+   "url": "https://en.wikipedia.org/wiki/Frost"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we10",
+  "topic": "weather",
+  "level": "younger",
+  "text": "On cool mornings, little drops of water called dew can appear on grass and spider webs.",
+  "source": {
+   "name": "Met Office: Dew",
+   "url": "https://www.metoffice.gov.uk/learning/temperature/dew"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we11",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Snow looks white, but each snowflake is made of clear ice.",
+  "source": {
+   "name": "Live Science: Why is snow white?",
+   "url": "https://www.livescience.com/791-bleak-outlook-snowy-peaks.html"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we12",
+  "topic": "weather",
+  "level": "younger",
+  "text": "A weather vane turns in the breeze. Its arrow points to where the wind is coming from.",
+  "source": {
+   "name": "Penn State: Watching the wind",
+   "url": "https://learningweather.psu.edu/node/40"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we13",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Puddles dry up because the Sun warms the water. The water turns into a gas and floats into the air.",
+  "source": {
+   "name": "USGS Water Science School: Evaporation and the water cycle",
+   "url": "https://www.usgs.gov/water-science-school/science/evaporation-and-water-cycle"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we14",
+  "topic": "weather",
+  "level": "older",
+  "text": "A big, puffy cloud can weigh about as much as a hundred elephants. It floats because its tiny droplets are spread out over a huge space.",
+  "source": {
+   "name": "EarthDate: Puffy clouds weigh in",
+   "url": "https://www.earthdate.org/episodes/puffy-clouds-weigh-in"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we15",
+  "topic": "weather",
+  "level": "older",
+  "text": "Scientists say it is very unlikely that two snowflakes are ever exactly alike. Each one takes its own path through the sky as it grows.",
+  "source": {
+   "name": "Mental Floss: Are no two snowflakes alike?",
+   "url": "https://www.mentalfloss.com/article/20296/it-true-no-two-snowflakes-are-alike"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we16",
+  "topic": "weather",
+  "level": "older",
+  "text": "Raindrops are not really shaped like teardrops. Small ones are round, and bigger ones flatten out on the bottom like a bun as they fall.",
+  "source": {
+   "name": "USGS Water Science School: Raindrops are different shapes",
+   "url": "https://www.usgs.gov/water-science-school/science/are-raindrops-shaped-teardrops"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we17",
+  "topic": "weather",
+  "level": "older",
+  "text": "You can tell how far away a storm is by timing the seconds between lightning and thunder. Every five seconds is about one mile.",
+  "source": {
+   "name": "NWS: Lightning science, thunder",
+   "url": "https://www.weather.gov/safety/lightning-science-thunder"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we18",
+  "topic": "weather",
+  "level": "older",
+  "text": "Rainbows are really full circles. From the ground we usually see only an arc, but people in airplanes can sometimes see the whole ring.",
+  "source": {
+   "name": "Met Office: Full circle rainbow",
+   "url": "https://www.metoffice.gov.uk/learning/rainbows/full-circle-rainbow"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we19",
+  "topic": "weather",
+  "level": "older",
+  "text": "Mawsynram in India is one of the rainiest places on Earth. It gets more rain in a year than many cities get in ten years.",
+  "source": {
+   "name": "Universe Today: Wettest place on Earth",
+   "url": "https://www.universetoday.com/15029/wettest-place-on-earth"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we20",
+  "topic": "weather",
+  "level": "older",
+  "text": "The Atacama Desert in Chile is one of the driest places on Earth. Some places there have gone years without any rain.",
+  "source": {
+   "name": "Wikipedia: Atacama Desert",
+   "url": "https://en.wikipedia.org/wiki/Atacama_Desert"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we21",
+  "topic": "weather",
+  "level": "older",
+  "text": "Every day, weather balloons are sent up from hundreds of places around the world. They carry instruments high into the sky to measure the air.",
+  "source": {
+   "name": "NWS: Upper air, weather balloons",
+   "url": "https://www.weather.gov/okx/upperair"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we22",
+  "topic": "weather",
+  "level": "older",
+  "text": "A ring around the Moon is called a halo. It forms when moonlight passes through tiny ice crystals in thin, high clouds.",
+  "source": {
+   "name": "EarthSky: What makes a halo around the Moon",
+   "url": "https://earthsky.org/earth/what-makes-a-halo-around-the-moon"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we23",
+  "topic": "weather",
+  "level": "older",
+  "text": "Sun dogs are bright spots of light that sometimes appear on each side of the Sun. Like halos, they are made by ice crystals in the sky.",
+  "source": {
+   "name": "Met Office: Parhelion (sun dogs)",
+   "url": "https://www.metoffice.gov.uk/learning/optics/parhelion"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we24",
+  "topic": "weather",
+  "level": "older",
+  "text": "Antarctica is the coldest place on Earth. Even in summer, much of it stays far below freezing.",
+  "source": {
+   "name": "NASA SVS: Coldest place on Earth",
+   "url": "https://svs.gsfc.nasa.gov/4126/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we25",
+  "topic": "weather",
+  "level": "older",
+  "text": "Lake effect snow happens when cold wind blows across a warmer lake. The wind picks up moisture and drops heavy snow on the land beyond it.",
+  "source": {
+   "name": "NOAA SciJinks: What is lake effect snow?",
+   "url": "https://scijinks.gov/about/k-12-education/ice-snow/what-lake-effect-snow"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc01",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "An octopus has three hearts. Its body is soft, with no bones at all.",
+  "source": {
+   "name": "Smithsonian Magazine: Ten wild facts about octopuses",
+   "url": "https://www.smithsonianmag.com/science-nature/ten-wild-facts-about-octopuses-they-have-three-hearts-big-brains-and-blue-blood-7625828/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc02",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Sea otters sometimes hold paws while they float and rest, so they do not drift apart.",
+  "source": {
+   "name": "Discover: Sea otters hold hands while sleeping",
+   "url": "https://discovermagazine.com/planet-earth/sea-otters-hold-hands-while-sleeping-and-they-even-cuddle"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "oc03",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "The blue whale is the biggest animal on Earth. It can be about as long as a basketball court.",
+  "source": {
+   "name": "Dolphin Safari: How big is a blue whale?",
+   "url": "https://www.dolphinsafari.com/how-big-is-a-blue-whale/"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "oc04",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Starfish are not really fish, so scientists call them sea stars. Many of them have five arms.",
+  "source": {
+   "name": "NOAA Ocean Service: Sea star, not a fish",
+   "url": "https://oceanservice.noaa.gov/facts/starfish.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc05",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Seahorses swim standing up. They hold on to sea grass with their curly tails.",
+  "source": {
+   "name": "National Geographic Kids: Seahorse",
+   "url": "https://kids.nationalgeographic.com/animals/seahorse/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc06",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Clownfish live among the stinging arms of sea anemones. A special coat on their skin keeps them from getting stung.",
+  "source": {
+   "name": "National Geographic Kids: Clown anemonefish",
+   "url": "https://kids.nationalgeographic.com/animals/fish/clown-anemonefish"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc07",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Most of the ocean is very deep and dark. Some fish down there make their own light.",
+  "source": {
+   "name": "NOAA Ocean Exploration: Bioluminescence",
+   "url": "https://oceanexplorer.noaa.gov/edu/themes/bioluminescence/essays.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc08",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Dolphins rest one half of their brain at a time. That way they can keep swimming and breathing.",
+  "source": {
+   "name": "Smithsonian Magazine: Dolphins sleep with half their brain",
+   "url": "https://www.smithsonianmag.com/smart-news/dolphins-sleep-with-only-half-their-brain-at-a-time-81426439/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc09",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "The ocean is salty because rivers carry tiny bits of salt from rocks into the sea.",
+  "source": {
+   "name": "WHOI: What makes the ocean salty?",
+   "url": "https://www.whoi.edu/know-your-ocean/what-makes-the-ocean-salty/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc10",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Sea turtles can swim across whole oceans. Many come back to the same beach where they hatched.",
+  "source": {
+   "name": "Olive Ridley Project: How sea turtles return to the same beach",
+   "url": "https://oliveridleyproject.org/ufaqs/how-are-sea-turtles-able-to-return-to-the-same-beach-to-nest"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "oc11",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Crabs walk sideways because of the way their legs bend.",
+  "source": {
+   "name": "UT Marine Science Institute: Why crabs scuttle sideways",
+   "url": "https://utmsi.utexas.edu/science-and-the-sea/print-article/why-crabs-scuttle-sideways/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc12",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Whales breathe air through blowholes on the top of their heads.",
+  "source": {
+   "name": "NPS: Whale traveling trunk",
+   "url": "https://www.nps.gov/teachers/classrooms/upload/Whale-Traveling-Trunk_rev3_508_final_with-cover.pdf"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "oc13",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Sea stars have a tiny eye at the tip of each arm. The eyes can tell light from dark.",
+  "source": {
+   "name": "Discover: Sea stars see",
+   "url": "https://www.discovermagazine.com/planet-earth/sea-stars-see"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "oc14",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The Pacific is the largest ocean. It is so big that all of the land on Earth could fit inside it.",
+  "source": {
+   "name": "Live Science: Biggest ocean",
+   "url": "https://www.livescience.com/32621-what-is-the-biggest-ocean.html"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "oc15",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The Great Barrier Reef off Australia is the largest structure on Earth built by living things. Astronauts can see it from space.",
+  "source": {
+   "name": "NASA Earth Observatory: Great Barrier Reef",
+   "url": "https://earthobservatory.nasa.gov/images/3270/great-barrier-reef"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc16",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The Mariana Trench is the deepest known part of the ocean. If Mount Everest were placed inside it, the peak would still be more than a mile under water.",
+  "source": {
+   "name": "NOAA NCEI: Mariana Trench",
+   "url": "https://www.ncei.noaa.gov/node/239"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc17",
+  "topic": "oceans",
+  "level": "older",
+  "text": "An octopus can change both the color and the texture of its skin in a blink. This helps it blend in with rocks and coral.",
+  "source": {
+   "name": "Smithsonian Magazine: Octopus-skin inspired material",
+   "url": "https://www.smithsonianmag.com/smart-news/inspired-by-octopus-skin-this-synthetic-material-can-change-color-and-texture-on-demand-180987976/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc18",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Humpback whales sing long songs made of moans, cries, and squeaks. Their songs can travel for many miles through the water.",
+  "source": {
+   "name": "UT Marine Science Institute: The migration of whale songs",
+   "url": "https://utmsi.utexas.edu/science-and-the-sea/print-article/the-migration-of-whale-songs/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc19",
+  "topic": "oceans",
+  "level": "older",
+  "text": "About half of the oxygen we breathe is made in the ocean, by tiny floating living things called plankton.",
+  "source": {
+   "name": "NOAA Ocean Service: How much oxygen comes from the ocean?",
+   "url": "https://oceanservice.noaa.gov/facts/ocean-oxygen.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc20",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Coral may look like rock or plants, but each coral is made of many tiny animals called polyps.",
+  "source": {
+   "name": "NOAA Ocean Exploration: Corals are animals",
+   "url": "https://oceanexplorer.noaa.gov/facts/coral-animal.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc21",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Sea otters have the thickest fur of any animal. A single square inch of their fur can hold up to a million hairs.",
+  "source": {
+   "name": "NOAA Ocean Today: Sea otter anatomy",
+   "url": "https://oceantoday.noaa.gov/seaotteranatomy"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc22",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Most ocean waves are made by wind blowing across the water. The longer and harder the wind blows, the bigger the waves become.",
+  "source": {
+   "name": "NOAA Ocean Service: Waves tutorial",
+   "url": "https://oceanservice.noaa.gov/education/tutorial_currents/03coastal1.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc23",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The long tusk of a narwhal is really a tooth. It grows in a spiral and can be longer than a grown person is tall.",
+  "source": {
+   "name": "National Geographic Kids: Narwhal",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/narwhal/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc24",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The longest mountain range on Earth is under the sea. It runs along the middle of the ocean floor, around the whole planet.",
+  "source": {
+   "name": "NOAA Ocean Service: Mid-ocean ridge",
+   "url": "https://oceanservice.noaa.gov/facts/midoceanridge.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc25",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Emperor penguins dive deeper than any other bird. They can swim down more than a quarter of a mile to find food.",
+  "source": {
+   "name": "Australian Antarctic Division: Emperor penguin dive depth",
+   "url": "https://www.antarctica.gov.au/about-antarctica/animals/penguins/emperor-penguin/how-deep-can-they-dive/"
+  },
+  "check": "ok"
+ }
+]

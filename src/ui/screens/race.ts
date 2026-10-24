@@ -1,7 +1,9 @@
 import { buildRaceText } from '../../content/lessons';
 import { COURSES, courseById, type Course } from '../../game/courses';
 import { TRIBES, dragonSvg, eggSvg, stageFor, type Stage, type TribeId } from '../../game/dragons';
-import { activeDragon, courseUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordRace, rivalSpeed } from '../../game/progress';
+import { activeDragon, capitalsKnown, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
+import { FACTS, READING_LEVEL_LABEL, TOPIC_LABEL, pickFact, type ReadingLevel } from '../../content/facts';
+import { weakKeys } from '../../engine/typing';
 import { applyRaceKey, finishTime, newRaceState, perkTuning } from '../../game/raceRules';
 import { UNITS } from '../../content/lessons';
 import { go, inputMode, persist, profile } from '../app';
@@ -11,6 +13,7 @@ import { createTypingView } from '../typingView';
 import { CONFETTI, ParticleField, TRAIL_COLORS } from '../particles';
 import { AdSlot } from '../ads';
 import { hub, refreshEmbers, topBar } from './hub';
+import { codex } from './codex';
 import { nest } from './nest';
 
 interface Racer {
@@ -62,6 +65,23 @@ function mountainsUri(ground: string, peak: string): string {
   return `url("data:image/svg+xml,${encodeURIComponent(svgText)}")`;
 }
 
+/** Asks once which facts to race with. It can be changed later in Settings. */
+function readerPicker(done: () => void): HTMLElement {
+  const p = profile();
+  const choose = (level: ReadingLevel): void => {
+    p.settings.readingLevel = level;
+    persist();
+    done();
+  };
+  return h(
+    'section',
+    { class: 'reader-pick' },
+    h('h2', {}, 'You know every letter!'),
+    h('p', {}, 'Races now use real fun facts, so you learn something every time you fly. Which facts should we use?'),
+    h('div', { class: 'row' }, button(READING_LEVEL_LABEL.younger, () => choose('younger')), button(READING_LEVEL_LABEL.older, () => choose('older'))),
+  );
+}
+
 /** Campaign map: pick a course; new courses open as lesson units are finished. */
 export const raceMap = (root: HTMLElement): void => {
   const p = profile();
@@ -72,6 +92,7 @@ export const raceMap = (root: HTMLElement): void => {
       { class: 'race-map' },
       h('h1', {}, 'Choose a course'),
       h('p', { class: 'fine' }, 'Beat each course’s champion to earn a big ember bonus. Finish lesson units to open new courses.'),
+      factsUnlocked(p) && !p.settings.readingLevel ? readerPicker(() => go(raceMap)) : null,
       h(
         'div',
         { class: 'course-grid' },
@@ -110,7 +131,10 @@ function run(root: HTMLElement, course: Course): () => void {
   const tune = perkTuning(me?.tribe ?? null);
   const best = touch ? p.totals.bestTouchWpm : p.totals.bestWpm;
   const words = best < (touch ? 14 : 20) ? 14 : 22;
-  const text = buildRaceText(knownLetters(p), words);
+  const known = knownLetters(p);
+  // Once every letter is learned, races are real facts instead of practice sentences.
+  const fact = factsUnlocked(p) ? pickFact(p.settings.readingLevel ?? 'younger', p.factsSeen, weakKeys(p.keyStats, [...known])) : null;
+  const text = fact ? (capitalsKnown(p) ? fact.text : fact.text.toLowerCase()) : buildRaceText(known, words);
   const len = text.length;
 
   const lanes = h('div', { class: 'lanes' });
@@ -272,6 +296,7 @@ function run(root: HTMLElement, course: Course): () => void {
     const placeNum = ahead.length + 1;
     const beatRival = !ahead.some((g) => g.rival);
     const reward = recordRace(p, sum, placeNum, { input, courseId: course.id, beatRival });
+    const newFact = fact ? recordFact(p, fact.id) : false;
     persist();
     refreshEmbers();
     if (placeNum === 1) sfx.win();
@@ -297,10 +322,21 @@ function run(root: HTMLElement, course: Course): () => void {
         reward.grewTo && me ? h('p', { class: 'reward' }, `${me.name} grew into a ${reward.grewTo} dragon!`) : null,
         reward.newEgg ? h('div', { class: 'reward' }, svg(eggSvg(reward.newEgg, 0, 5), 'mini-egg'), `You earned a ${TRIBES[reward.newEgg].name} egg!`) : null,
         reward.eggReady ? h('p', { class: 'reward' }, 'Your egg is ready to hatch!') : null,
+        fact
+          ? h(
+              'div',
+              { class: 'fact-card' },
+              h('strong', {}, 'Did you know?'),
+              h('p', {}, fact.text),
+              h('small', { class: 'fine' }, `${TOPIC_LABEL[fact.topic]} · ${newFact ? `New in your Fact Book (${p.factsSeen.length} of ${FACTS.length})` : 'Already in your Fact Book'}`),
+              p.settings.readingLevel === 'older' && fact.source.name ? h('small', { class: 'fine' }, `Source: ${fact.source.name}`) : null,
+            )
+          : null,
         h(
           'div',
           { class: 'row' },
           button('Map', () => go(raceMap), 'btn ghost'),
+          fact ? button('Fact Book', () => go(codex), 'btn ghost') : null,
           reward.eggReady || reward.newEgg ? button('Go to nest', () => go(nest), 'btn ghost') : null,
           button('Race again', () => go(race(course.id))),
         ),
