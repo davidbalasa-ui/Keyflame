@@ -249,6 +249,22 @@ body.kb-pinned .racer-name { font-size: 9px; }
 body.kb-pinned .sky { padding: 6px 0; }
 body.kb-pinned .typing-view { margin-top: 8px; }
 body.kb-pinned .type-text { --type-size: 22px; padding: 10px 14px; max-height: calc(var(--type-size) * 1.6 * 2 + 20px); }
+/* Phones turned sideways and other short screens: smaller keys leave room for the text */
+@media (max-height: 520px) {
+  .keyboard.pinned { gap: 4px; padding-top: 4px; padding-bottom: calc(4px + env(safe-area-inset-bottom)); }
+  .keyboard.pinned .key { height: clamp(30px, 8.5vh, 40px); font-size: 16px; }
+  body.kb-pinned main { padding-top: 4px; }
+  body.kb-pinned .type-text { --type-size: 20px; padding: 6px 12px; }
+}
+/* Pressed state for tapped keys (pointerdown is cancelled, so :active doesn't show) */
+.key.down { animation: key-down 0.12s; }
+@keyframes key-down { 0% { transform: translateY(3px) scale(0.94); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35); filter: brightness(1.15); } }
+/* Laptop screens: shrink the race track and keys so the whole keyboard fits under the text */
+@media (min-width: 601px) and (max-height: 860px) {
+  body:not(.kb-pinned) .lane { height: 60px; }
+  body:not(.kb-pinned) .racer { --rw: 112px; }
+  body:not(.kb-pinned) .keyboard:not(.mini) .key { height: 44px; }
+}
 
 /* Race */
 .race-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
