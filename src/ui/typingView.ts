@@ -1,6 +1,6 @@
 // The typing panel used by lessons and races: text, finger hint, and keyboard.
 
-import { FINGER_LABEL, ROWS, baseKey, fingerFor } from '../content/keyboard';
+import { FINGER_LABEL, ROWS, SHIFT_SYMBOL, baseKey, fingerFor, keyLabel } from '../content/keyboard';
 import { TypingSession, type KeystrokeResult } from '../engine/typing';
 import type { InputMode } from '../save/store';
 import { safeText } from '../content/safety';
@@ -32,7 +32,7 @@ function thumbFor(ch: string): string {
   return f.startsWith('left') ? 'your left thumb' : 'your right thumb';
 }
 
-const SHIFT_MAP: Record<string, string> = { ';': ':', ',': '<', '.': '>', '/': '?' };
+const SHIFT_MAP = SHIFT_SYMBOL;
 
 export function createTypingView(opts: TypingViewOptions): TypingView {
   // Last safety net: nothing rude reaches the screen, whatever made the text.
@@ -63,14 +63,16 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   };
 
   const shiftKey = h('button', { class: 'key key-shift', type: 'button', 'aria-label': 'Shift' }, '⇧');
-  // Symbol keys show their shifted symbol while shift is on, like a phone keyboard.
+  // Keys read lowercase and switch to capitals and symbols while shift is on, like a phone keyboard.
+  const showShifted = (on: boolean): void => {
+    keyEls.forEach((el, k) => {
+      if (k !== ' ') el.textContent = keyLabel(k, on);
+    });
+  };
   const setShift = (on: boolean): void => {
     shiftOn = on;
     shiftKey.classList.toggle('on', on);
-    for (const [k, sym] of Object.entries(SHIFT_MAP)) {
-      const el = keyEls.get(k);
-      if (el) el.textContent = on ? sym : k;
-    }
+    showShifted(on);
   };
   // preventDefault on pointerdown stops :active from showing, so pressed keys get a class instead.
   const flash = (el: HTMLElement): void => {
@@ -83,7 +85,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     setShift(!shiftOn);
   });
 
-  const makeKey = (k: string, label = k.toUpperCase(), cls = ''): HTMLElement => {
+  const makeKey = (k: string, label = keyLabel(k, false), cls = ''): HTMLElement => {
     const el = h('button', { class: `key f-${fingerFor(k)} ${cls}`, type: 'button', 'aria-label': k === ' ' ? 'space' : k }, label);
     el.addEventListener('pointerdown', (e) => {
       e.preventDefault();
@@ -106,9 +108,9 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     'div',
     { class: `keyboard${pinned ? ' pinned' : ''}`, 'aria-hidden': 'true' },
     ...ROWS.map((row, i) =>
-      h('div', { class: `kb-row kb-row-${i}` }, i === 2 && !pinned ? shiftKey : null, ...row.map((k) => makeKey(k, k === ';' ? ';' : undefined, k === 'f' || k === 'j' ? 'bump' : ''))),
+      h('div', { class: `kb-row kb-row-${i}` }, i === 2 && !pinned ? shiftKey : null, ...row.map((k) => makeKey(k, undefined, k === 'f' || k === 'j' ? 'bump' : ''))),
     ),
-    h('div', { class: 'kb-row kb-row-space' }, pinned ? shiftKey : null, makeKey(' ', 'space', 'key-space')),
+    h('div', { class: 'kb-row kb-row-space' }, pinned ? shiftKey : null, makeKey(' ', undefined, 'key-space')),
   );
   if (!opts.showKeyboard && !pinned) keyboard.classList.add('mini');
   // Phone browsers are unreliable with position: fixed (toolbars that slide away,
@@ -241,8 +243,13 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   deviceInput.addEventListener('blur', syncPrompt);
   if (opts.input === 'device') window.visualViewport?.addEventListener('resize', syncPrompt);
 
+  // Holding a real Shift key shows capitals on the guide keyboard too.
+  const onShift = (e: KeyboardEvent): void => {
+    if (e.key === 'Shift' && !shiftOn) showShifted(e.type === 'keydown');
+  };
   const onKeyDown = (e: KeyboardEvent): void => {
     if (e.target === deviceInput) return;
+    onShift(e);
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const caps = e.getModifierState?.('CapsLock') ?? false;
     if (caps !== capsLock) {
@@ -256,6 +263,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     press(e.key);
   };
   document.addEventListener('keydown', onKeyDown);
+  document.addEventListener('keyup', onShift);
   render();
   if (!pinned) requestAnimationFrame(keepTextVisible);
 
@@ -267,6 +275,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     focus,
     destroy: () => {
       document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('keyup', onShift);
       window.visualViewport?.removeEventListener('resize', syncPrompt);
       if (pinned) {
         cancelAnimationFrame(mountTimer);

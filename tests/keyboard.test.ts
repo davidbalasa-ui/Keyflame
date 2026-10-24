@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { LESSONS, buildLessonText, buildRaceText } from '../src/content/lessons';
 import { PASSAGES } from '../src/content/words';
-import { ROWS, baseKey, fingerFor, typableOnTouch } from '../src/content/keyboard';
+import { ROWS, baseKey, fingerFor, keyLabel, typableOnTouch } from '../src/content/keyboard';
 import { seededRandom } from '../src/game/dragons';
 
 const untypable = (text: string): string[] => [...new Set([...text].filter((c) => !typableOnTouch(c)))];
@@ -44,5 +44,19 @@ describe('finger hints', () => {
     expect(fingerFor('5')).toBe('left-index');
     expect(fingerFor("'")).toBe('right-pinky');
     expect(fingerFor(' ')).toBe('thumb');
+  });
+});
+
+describe('key labels', () => {
+  // David saw capitals on every key with shift off; keys must read lowercase until shift is on.
+  it('shows lowercase letters and plain symbols with shift off', () => {
+    for (const k of ROWS.flat()) expect(keyLabel(k, false)).toBe(k);
+  });
+
+  it('shows capitals and shifted symbols with shift on', () => {
+    expect(keyLabel('a', true)).toBe('A');
+    expect(keyLabel(';', true)).toBe(':');
+    expect(keyLabel('/', true)).toBe('?');
+    expect(keyLabel(' ', true)).toBe('space');
   });
 });
