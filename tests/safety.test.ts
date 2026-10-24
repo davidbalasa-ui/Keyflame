@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { hasBlockedRoot, isSafeText, isSafeToken, safeText } from '../src/content/safety';
+import { REVIEWED_WORDS, hasBlockedRoot, isSafeText, isSafeToken, safeText } from '../src/content/safety';
 import { LESSONS, buildLessonText, buildRaceText } from '../src/content/lessons';
 import { PASSAGES, WORDS } from '../src/content/words';
 import { NAME_ENDS, NAME_STARTS, seededRandom } from '../src/game/dragons';
 import { NAME_ADJECTIVES, NAME_NOUNS } from '../src/save/store';
 
-const WORD_SET = new Set(WORDS);
+const REVIEWED = new Set([...WORDS, ...REVIEWED_WORDS]);
+const words = (text: string): string[] => text.toLowerCase().replace(/[^a-z ]/g, ' ').split(/\s+/).filter(Boolean);
 
 describe('word safety', () => {
   it('blocks rude words and their variants', () => {
@@ -27,20 +28,19 @@ describe('word safety', () => {
     for (const w of WORDS) expect(exactBad.has(w), w).toBe(false);
   });
 
-  it('every generated lesson drill is clean, across thousands of runs', () => {
+  it('every lesson text is clean, across thousands of runs', () => {
     for (const l of LESSONS) {
       const rand = seededRandom(l.id.length * 977 + 13);
       for (let i = 0; i < 1500; i++) {
         const text = buildLessonText(l, i % 3 ? [] : l.keys.slice(0, 2), rand);
-        // Generated groups must clear the strict root check, not just the curated list.
-        if (l.kind === 'passage') expect(PASSAGES).toContain(text);
-        else for (const tok of text.split(' ')) if (!WORD_SET.has(tok)) expect(hasBlockedRoot(tok), `${l.title}: ${tok}`).toBe(false);
+        // Every word must clear the strict root check, unless it was reviewed by hand.
+        for (const tok of words(text)) if (!REVIEWED.has(tok)) expect(hasBlockedRoot(tok), `${l.title}: ${tok}`).toBe(false);
         expect(text.length).toBeGreaterThan(10);
       }
     }
   }, 60000);
 
-  it('every generated race is clean for every letter set', () => {
+  it('every race is clean for every letter set', () => {
     const sets = new Set<string>();
     for (const l of LESSONS) sets.add(l.keys.filter((k) => k !== ' ').join(''));
     sets.add('asdfghjkl;');
@@ -50,7 +50,7 @@ describe('word safety', () => {
       const rand = seededRandom(letters.length);
       for (let i = 0; i < 1500; i++) {
         const text = buildRaceText(known, 25, rand);
-        for (const tok of text.split(' ')) if (!WORD_SET.has(tok)) expect(hasBlockedRoot(tok), `${letters}: ${tok}`).toBe(false);
+        for (const tok of words(text)) if (!REVIEWED.has(tok)) expect(hasBlockedRoot(tok), `${letters}: ${tok}`).toBe(false);
       }
     }
   }, 60000);
