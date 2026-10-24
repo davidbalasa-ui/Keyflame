@@ -68,3 +68,12 @@ export function fingerFor(ch: string): Finger {
 }
 
 export const HOME_KEYS = new Set(['a', 's', 'd', 'f', 'j', 'k', 'l', ';']);
+
+/** What a symbol key types with shift on. */
+export const SHIFT_SYMBOL: Record<string, string> = { ';': ':', ',': '<', '.': '>', '/': '?' };
+
+/** The label on an on-screen key: lowercase like a phone keyboard, capitals and symbols only while shift is on. */
+export function keyLabel(k: string, shifted: boolean): string {
+  if (k === ' ') return 'space';
+  return shifted ? (SHIFT_SYMBOL[k] ?? k.toUpperCase()) : k;
+}
