@@ -3,6 +3,7 @@ import { READING_LEVEL_LABEL, type ReadingLevel } from '../../content/facts';
 import { parentGate } from './supporter';
 import { applySettings, go, persist, persistNow, profile, saveData } from '../app';
 import { button, h } from '../dom';
+import { canInstall, installApp, isInstalled, isOfflineReady, onInstallChange } from '../install';
 import { hub, topBar } from './hub';
 import { title } from './title';
 
@@ -122,6 +123,7 @@ export const settings = (root: HTMLElement): void => {
           copied,
         ),
       ),
+      offlineSection(),
       h(
         'section',
         { class: 'parents' },
@@ -150,3 +152,31 @@ export const settings = (root: HTMLElement): void => {
     ),
   );
 };
+
+function offlineSection(): HTMLElement {
+  const body = h('div');
+  const render = (): boolean => {
+    if (!body.isConnected && body.childNodes.length) return false;
+    body.replaceChildren(
+      isInstalled()
+        ? h('p', {}, 'Keyflame is installed on this device.')
+        : canInstall()
+          ? h(
+              'div',
+              {},
+              h('p', {}, 'Install Keyflame to open it like any other app on this computer, from the Start menu or the dock.'),
+              button('Install Keyflame', () => void installApp()),
+            )
+          : h('p', { class: 'fine' }, 'To install it like an app: in Chrome or Edge, click the install icon at the right end of the address bar. In Safari on a Mac, choose File, then Add to Dock.'),
+      h(
+        'p',
+        { class: 'fine' },
+        isOfflineReady() ? 'The whole game is saved on this device, so it plays without internet.' : 'Saving the game for offline play…',
+      ),
+    );
+    return true;
+  };
+  render();
+  onInstallChange(render);
+  return h('section', {}, h('h2', {}, 'Play offline'), body);
+}

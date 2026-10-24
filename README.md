@@ -23,7 +23,7 @@ npm run build    # static site in dist/
 Pushing to `main` runs `.github/workflows/deploy.yml`, which tests, builds, and publishes to GitHub Pages.
 Turn it on once in the repo: **Settings → Pages → Source: GitHub Actions**.
 
-The game installs as an app from the browser menu ("Add to Home Screen") and plays offline after the first visit.
+The game installs as an app (Chrome or Edge on a PC: the install icon in the address bar, or the "Install Keyflame" link on the title screen and in Settings; phones: "Add to Home Screen"). The first visit saves every game file and font on the device, so it plays offline from then on. The build writes the file list into `sw.js` (see `vite.config.ts`).
 
 ## Ads and the supporter pack (off until set up)
 
