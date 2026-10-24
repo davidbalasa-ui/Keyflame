@@ -4717,5 +4717,731 @@
    "url": "https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/Apollo11_Press-Kit_restored.pdf"
   },
   "check": "ok"
+ },
+ {
+  "id": "dr117",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A green iguana uses its strong tail like a paddle to swim. It can hold its breath underwater for a long time.",
+  "source": {
+   "name": "SeaWorld: Green iguana",
+   "url": "https://seaworld.org/animals/facts/reptiles/green-iguana/"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr118",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Adult green iguanas eat mostly fruits, flowers, and leaves. A grown male can reach a length of about four to six feet.",
+  "source": {
+   "name": "SeaWorld: Green iguana",
+   "url": "https://seaworld.org/animals/facts/reptiles/green-iguana/"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr119",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Basilisk lizards can run across the top of the water on their back legs. After about fifteen feet, they sink down and swim.",
+  "source": {
+   "name": "National Geographic: basilisks walk on water",
+   "url": "https://www.nationalgeographic.com/animals/2004/06/news-jesus-lizards-basilisks-walk-water"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr120",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Each step of a basilisk lizard slaps the water and makes a small pocket of air around its foot. That air pocket holds the lizard up for a moment while it runs.",
+  "source": {
+   "name": "National Geographic: basilisks walk on water",
+   "url": "https://www.nationalgeographic.com/animals/2004/06/news-jesus-lizards-basilisks-walk-water"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr121",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Horned lizards have wide, flat bodies with spiky skin. They look a bit like tiny toads, but they are really lizards.",
+  "source": {
+   "name": "Texas Parks and Wildlife: horned lizard facts",
+   "url": "https://tpwd.texas.gov/huntwild/wild/wildlife_diversity/texas_nature_trackers/horned_lizard/facts/"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr122",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Texas horned lizards are only about four or five inches long. Their gray, brown, and rust colors help them blend in with the plants and dry ground around them.",
+  "source": {
+   "name": "Texas Parks and Wildlife: horned lizard facts",
+   "url": "https://tpwd.texas.gov/huntwild/wild/wildlife_diversity/texas_nature_trackers/horned_lizard/facts/"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr123",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "The leatherback is the biggest sea turtle. It has no hard shell, and its back is covered with firm, rubbery skin.",
+  "source": {
+   "name": "NOAA Ocean Service: Leatherback turtle",
+   "url": "https://oceanservice.noaa.gov/facts/leatherback.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr124",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Leatherback sea turtles nest in warm places such as Florida and Puerto Rico, yet they swim as far north as the waters off Canada.",
+  "source": {
+   "name": "NOAA Ocean Service: Leatherback turtle",
+   "url": "https://oceanservice.noaa.gov/facts/leatherback.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr125",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A green anole has a pink or red flap of skin under its chin called a dewlap. It shows the flap off to others.",
+  "source": {
+   "name": "NPS Big Thicket: Anoles",
+   "url": "https://www.nps.gov/bith/learn/nature/anoles.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr126",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A green anole is not always green. It can change its color from bright green to brown, and back again.",
+  "source": {
+   "name": "NPS Bluestone Lake: Anoles",
+   "url": "https://www.nps.gov/bith/learn/nature/anoles.htm"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "dr127",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Galapagos giant tortoises are the largest tortoises alive today. A big one can be about five feet long and weigh more than five hundred pounds.",
+  "source": {
+   "name": "San Diego Zoo library: Galapagos tortoises fact sheet",
+   "url": "https://ielc.libguides.com/sdzg/factsheets/galapagostortoises"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr128",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Giant tortoises munch on grass, shrubs, and prickly pear cactus. Their long necks help them reach the plants.",
+  "source": {
+   "name": "San Diego Zoo library: Galapagos tortoises fact sheet",
+   "url": "https://ielc.libguides.com/sdzg/factsheets/galapagostortoises"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr129",
+  "topic": "dragons",
+  "level": "older",
+  "text": "The top of a turtle shell is called the carapace, and the bottom is called the plastron. The two parts usually join along the sides to make a strong box around the body.",
+  "source": {
+   "name": "Britannica: Turtle",
+   "url": "https://www.britannica.com/animal/turtle-reptile"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr130",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A box turtle has a hinge on the bottom of its shell. It can pull in its head and legs and shut its shell tight.",
+  "source": {
+   "name": "Smithsonian National Zoo: Eastern box turtle",
+   "url": "https://nationalzoo.si.edu/node/10462"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "dr131",
+  "topic": "dragons",
+  "level": "older",
+  "text": "An eastern box turtle has a dark brown shell with bright orange and yellow marks. Those colors help it blend in with the leaves and damp soil of the forest floor.",
+  "source": {
+   "name": "Smithsonian National Zoo: Eastern box turtle",
+   "url": "https://nationalzoo.si.edu/node/10462"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr132",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "The eastern blue tongue lizard has a bright blue tongue. It sticks the tongue out to show it off against its pink mouth.",
+  "source": {
+   "name": "Australian Museum: Eastern blue tongue lizard",
+   "url": "https://australian.museum/learn/animals/reptiles/eastern-blue-tongue-lizard/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr134",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A ball python curls up in a tight ball when it feels nervous. That is how it got its name.",
+  "source": {
+   "name": "Buffalo Zoo: Royal ball python",
+   "url": "https://buffalozoo.org/animal/royalball-python/"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr135",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Ball pythons live in central and western Africa, along the edges of forests. They grow to about three to five feet long, which is smaller than most of the large snakes.",
+  "source": {
+   "name": "Buffalo Zoo: Royal ball python",
+   "url": "https://buffalozoo.org/animal/royalball-python/"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr136",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Garter snakes often have a thin yellow stripe down the back. They are good swimmers, and some can climb into low bushes.",
+  "source": {
+   "name": "NPS: Garter snake fast facts",
+   "url": "https://www.nps.gov/articles/000/garter-snake-fast-facts.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr138",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A corn snake is orange with red blotches outlined in black. Its belly has a black and white check pattern.",
+  "source": {
+   "name": "Smithsonian National Zoo: Corn snake",
+   "url": "https://nationalzoo.si.edu/animals/corn-snake"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr139",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Corn snakes live in the woods, meadows, and rocky hillsides of the eastern United States. They are shy, so they like to climb trees or hide under logs and rocks.",
+  "source": {
+   "name": "Smithsonian National Zoo: Corn snake",
+   "url": "https://nationalzoo.si.edu/animals/corn-snake"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr140",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A weedy seadragon has a long, pipe shaped snout with a tiny mouth at the end. It is a cousin of the seahorse.",
+  "source": {
+   "name": "Australian Museum: Weedy seadragon",
+   "url": "https://australian.museum/learn/animals/fishes/weedy-seadragon-phyllopteryx-taeniolatus/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr141",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Weedy seadragons are red and yellow with tiny purple and blue marks. Small leafy flaps on their bodies look like bits of seaweed, which helps them hide on the reef.",
+  "source": {
+   "name": "Australian Museum: Weedy seadragon",
+   "url": "https://australian.museum/learn/animals/fishes/weedy-seadragon-phyllopteryx-taeniolatus/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr143",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "There are about three thousand kinds of dragonflies. They live near ponds, lakes, and streams in most parts of the world.",
+  "source": {
+   "name": "Britannica Kids: Dragonfly",
+   "url": "https://kids.britannica.com/kids/article/dragonfly/390734"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "oc139",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Kelp is a big brown seaweed that grows in cool water. It can grow about a foot and a half in one day.",
+  "source": {
+   "name": "NOAA Ocean Service: Kelp",
+   "url": "https://oceanservice.noaa.gov/facts/kelp.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc140",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Kelp forests need sunlight, so they grow in fairly shallow water. Seals, sea lions, otters, and birds such as gulls and herons all visit these underwater forests for food or shelter.",
+  "source": {
+   "name": "NOAA Ocean Service: Kelp",
+   "url": "https://oceanservice.noaa.gov/facts/kelp.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc141",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A fish called the cabezon lives on the rocky bottom of kelp forests. It guards its brightly colored eggs.",
+  "source": {
+   "name": "NOAA Sanctuaries: Monterey Bay living gallery",
+   "url": "https://sanctuaries.noaa.gov/pgallery/mbliving.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc142",
+  "topic": "oceans",
+  "level": "older",
+  "text": "People have looked closely at only a tiny part of the deep sea floor, an area about the size of Rhode Island. Most of the deep ocean is still waiting to be seen.",
+  "source": {
+   "name": "NOAA Ocean Exploration: How much of the ocean has been explored?",
+   "url": "https://oceanexplorer.noaa.gov/facts/explored.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc143",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Satellites have mapped the whole sea floor, but only in a blurry way. Ships that use sonar make much sharper maps, and so far they have mapped only part of it.",
+  "source": {
+   "name": "NOAA Ocean Exploration: How much of the ocean has been explored?",
+   "url": "https://oceanexplorer.noaa.gov/facts/explored.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc144",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "An ROV is a robot that explores under the sea. Some are as small as a laptop, and some are as big as a small truck.",
+  "source": {
+   "name": "NOAA Ocean Exploration: ROV fact sheet",
+   "url": "https://oceanexplorer.noaa.gov/fact-sheet/rov-fact-sheet"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc145",
+  "topic": "oceans",
+  "level": "older",
+  "text": "A tether of cables links an ROV to its ship and brings it power. The ROV has bright lights, several cameras, and a robot arm that can pick up samples for scientists to study.",
+  "source": {
+   "name": "NOAA Ocean Exploration: ROV fact sheet",
+   "url": "https://oceanexplorer.noaa.gov/fact-sheet/rov-fact-sheet"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc146",
+  "topic": "oceans",
+  "level": "older",
+  "text": "In nineteen sixty, two men rode a deep diving craft called the Trieste to the bottom of the Challenger Deep. The trip down took almost five hours, and they stayed on the bottom for about twenty minutes.",
+  "source": {
+   "name": "EarthDate: The Deepest Dive",
+   "url": "https://www.earthdate.org/episodes/the-deepest-dive"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "oc147",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Seashells are made by soft bodied animals called mollusks, such as snails and clams. The hard shell gives their soft bodies support and protection.",
+  "source": {
+   "name": "Smithsonian Magazine: The story behind the seashells by the seashore",
+   "url": "https://www.smithsonianmag.com/blogs/national-museum-of-natural-history/2022/06/22/the-story-behind-the-seashells-by-the-seashore/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc148",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Many seashells are made of calcium carbonate, the same mineral found in eggshells. The animal makes its shell bigger by adding new material along the edge.",
+  "source": {
+   "name": "Smithsonian Magazine: The story behind the seashells by the seashore",
+   "url": "https://www.smithsonianmag.com/blogs/national-museum-of-natural-history/2022/06/22/the-story-behind-the-seashells-by-the-seashore/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc149",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A hermit crab does not make a shell of its own. It finds an empty shell and uses it as a home.",
+  "source": {
+   "name": "Smithsonian Magazine: The story behind the seashells by the seashore",
+   "url": "https://www.smithsonianmag.com/blogs/national-museum-of-natural-history/2022/06/22/the-story-behind-the-seashells-by-the-seashore/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc151",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Some beaches in Hawaii and Iceland have black sand. It forms when hot lava meets the sea and breaks into dark grains.",
+  "source": {
+   "name": "Ocean Conservancy: Top facts about the beach",
+   "url": "https://oceanconservancy.org/?p=67699"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "oc152",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Some beaches in Bermuda and the Bahamas have pink sand. Tiny sea creatures called foraminifera leave behind pink shells, and these mix with crushed coral.",
+  "source": {
+   "name": "Ocean Conservancy: Top facts about the beach",
+   "url": "https://oceanconservancy.org/?p=67699"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "oc153",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A puffin flaps its wings up to four hundred times a minute. Under water, it uses its wings like paddles to swim.",
+  "source": {
+   "name": "National Geographic Kids: Atlantic puffin",
+   "url": "https://kids.nationalgeographic.com/animals/birds/atlantic-puffin/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc154",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Puffins dig burrows with their beaks and claws, often between big rocks. They line the burrow with feathers and grass, and many pairs use the same one again year after year.",
+  "source": {
+   "name": "National Geographic Kids: Atlantic puffin",
+   "url": "https://kids.nationalgeographic.com/animals/birds/atlantic-puffin/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc155",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A Laysan albatross can spread its wings more than six feet wide. It glides over the open ocean.",
+  "source": {
+   "name": "USGS: Laysan albatross",
+   "url": "https://www.usgs.gov/media/images/laysan-albatross"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc156",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Arctic terns spend summer in the far north and then fly south to enjoy another summer near Antarctica. That means they see more daylight than almost any other animal.",
+  "source": {
+   "name": "Cornell Lab All About Birds: Arctic Tern",
+   "url": "https://www.allaboutbirds.org/guide/arctic_Tern"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "oc157",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Arctic terns nest on the ground in big groups called colonies. They can live for decades.",
+  "source": {
+   "name": "Cornell Lab All About Birds: Arctic Tern",
+   "url": "https://www.allaboutbirds.org/guide/arctic_Tern"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc158",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "The ocean sunfish is among the heaviest bony fish in the world. It can weigh as much as five thousand pounds.",
+  "source": {
+   "name": "Smithsonian Magazine: Unraveling the mysteries of the ocean sunfish",
+   "url": "https://www.smithsonianmag.com/science-nature/unraveling-the-mysteries-of-the-ocean-sunfish-115258763/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc159",
+  "topic": "oceans",
+  "level": "older",
+  "text": "An ocean sunfish has a flat, round body and no true tail. It often lies on its side near the surface, as if it were soaking up the sunshine.",
+  "source": {
+   "name": "Smithsonian Magazine: Unraveling the mysteries of the ocean sunfish",
+   "url": "https://www.smithsonianmag.com/science-nature/unraveling-the-mysteries-of-the-ocean-sunfish-115258763/"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "oc160",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The top of a wave is called the crest, and the low spot between waves is the trough. The distance from one crest to the next is the wavelength.",
+  "source": {
+   "name": "Smithsonian Ocean: The anatomy of a wave",
+   "url": "https://ocean.si.edu/node/110591"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc161",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A wave carries energy across the sea. The water itself does not travel very far.",
+  "source": {
+   "name": "NOAA Ocean Today: Why does the ocean have waves?",
+   "url": "https://oceantoday.noaa.gov/fullmoon-whydoestheoceanhavewaves/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc162",
+  "topic": "oceans",
+  "level": "older",
+  "text": "A tide station in San Francisco has been measuring the height of the sea for more than a hundred and fifty years. Tides are caused by the pull of gravity from the Sun, Moon, and Earth.",
+  "source": {
+   "name": "NOAA Ocean Service: Tides and tidal waves",
+   "url": "https://oceanservice.noaa.gov/facts/tidalwave.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we148",
+  "topic": "weather",
+  "level": "younger",
+  "text": "A windsock is a cloth tube that shows which way the wind blows. It droops in light wind and stands out straight in strong wind.",
+  "source": {
+   "name": "Wikipedia: Windsock",
+   "url": "https://en.wikipedia.org/wiki/Windsock"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we149",
+  "topic": "weather",
+  "level": "older",
+  "text": "Airports use windsocks so pilots can check the wind. When a windsock stands straight out, the wind is blowing at about seventeen miles per hour or more.",
+  "source": {
+   "name": "Wikipedia: Windsock",
+   "url": "https://en.wikipedia.org/wiki/Windsock"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we150",
+  "topic": "weather",
+  "level": "younger",
+  "text": "A barometer is a tool that measures air pressure. People use it to help guess what the weather will do next.",
+  "source": {
+   "name": "Wonderopolis: What does a barometer measure?",
+   "url": "https://wonderopolis.org/wonder/what-does-a-barometer-measure"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we151",
+  "topic": "weather",
+  "level": "older",
+  "text": "A falling reading on a barometer can mean the weather is about to change. High air pressure usually brings clear skies, and low pressure often brings clouds and rain.",
+  "source": {
+   "name": "Wonderopolis: What does a barometer measure?",
+   "url": "https://wonderopolis.org/wonder/what-does-a-barometer-measure"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we152",
+  "topic": "weather",
+  "level": "older",
+  "text": "A common rain gauge has a small inner tube that holds exactly one inch of rain. If more rain falls, the extra spills into a bigger tube around it.",
+  "source": {
+   "name": "NWS: CoCoRaHS measuring rain",
+   "url": "https://www.weather.gov/media/epz/mesonet/CoCoRaHS-MeasuringRain.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we153",
+  "topic": "weather",
+  "level": "younger",
+  "text": "On many days a rain gauge reads zero. Weather watchers still write that number down.",
+  "source": {
+   "name": "NWS: CoCoRaHS measuring rain",
+   "url": "https://www.weather.gov/media/epz/mesonet/CoCoRaHS-MeasuringRain.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we154",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Inside a classic thermometer is a thin glass tube of colored liquid. The liquid takes up more room when warm and less room when cool.",
+  "source": {
+   "name": "NOAA NESDIS: Thermometer activity",
+   "url": "https://nesdis.noaa.gov/s3/2023-02/thermometer%20activity%20web.pdf"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "we155",
+  "topic": "weather",
+  "level": "older",
+  "text": "A navy officer named Francis Beaufort made a wind scale for ships more than two hundred years ago. It runs from zero to twelve, and people still use it today.",
+  "source": {
+   "name": "NWS Miami: Beaufort wind scale",
+   "url": "https://www.weather.gov/mfl/beaufort"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we156",
+  "topic": "weather",
+  "level": "younger",
+  "text": "You can judge the wind by watching smoke and leaves. In very calm air, smoke rises straight up.",
+  "source": {
+   "name": "NWS Miami: Beaufort wind scale",
+   "url": "https://www.weather.gov/mfl/beaufort"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we157",
+  "topic": "weather",
+  "level": "younger",
+  "text": "A cup anemometer has three or four small cups on a spinning stand. The faster the wind blows, the faster the cups spin.",
+  "source": {
+   "name": "Met Office: How we measure wind",
+   "url": "https://weather.metoffice.gov.uk/guides/observations/how-we-measure-wind"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we158",
+  "topic": "weather",
+  "level": "older",
+  "text": "At weather stations, wind tools sit at the top of a mast about ten meters tall. Wind speed is usually given in knots, and one knot is a little more than one mile per hour.",
+  "source": {
+   "name": "Met Office: How we measure wind",
+   "url": "https://weather.metoffice.gov.uk/guides/observations/how-we-measure-wind"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we159",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Winds are named for where they blow from. An east wind comes from the east and blows toward the west.",
+  "source": {
+   "name": "Met Office: How we measure wind",
+   "url": "https://weather.metoffice.gov.uk/guides/observations/how-we-measure-wind"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we160",
+  "topic": "weather",
+  "level": "older",
+  "text": "Icicles begin when sunshine melts snow on a roof and the drips freeze at the cold edge. More water runs down, and it freezes at the tip, so the icicle grows longer.",
+  "source": {
+   "name": "Wonderopolis: How are icicles formed?",
+   "url": "https://wonderopolis.org/wonder/how-are-icicles-formed"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we161",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Icicles end in a point. Water runs down them and freezes at the tip, so they get long and thin.",
+  "source": {
+   "name": "Wonderopolis: How are icicles formed?",
+   "url": "https://wonderopolis.org/wonder/how-are-icicles-formed"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we162",
+  "topic": "weather",
+  "level": "older",
+  "text": "Some frost forms straight from water vapor in the air, without turning into liquid first. It makes tiny ice crystals shaped like scales, needles, or fans.",
+  "source": {
+   "name": "UNDRR PreventionWeb: Frost (hoar frost)",
+   "url": "https://www.preventionweb.net/understanding-disaster-risk/terminology/hips/mh0505"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we163",
+  "topic": "weather",
+  "level": "older",
+  "text": "Frost likes clear, calm nights. Objects near the ground lose heat to the sky and get cold enough to pull water vapor out of the air.",
+  "source": {
+   "name": "UNDRR PreventionWeb: Frost (hoar frost)",
+   "url": "https://www.preventionweb.net/understanding-disaster-risk/terminology/hips/mh0505"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "we164",
+  "topic": "weather",
+  "level": "older",
+  "text": "As a snow crystal drifts through a cloud, changes in temperature and dampness change its shape. Some grow into flat plates, and others grow into long needles or stars.",
+  "source": {
+   "name": "NOAA SciJinks: Snow crystals",
+   "url": "https://scijinks.gov/snow-crystals"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we165",
+  "topic": "weather",
+  "level": "older",
+  "text": "Weather watchers measure snow by pushing a ruler straight down to the ground in several spots. Then they find the average of the readings.",
+  "source": {
+   "name": "NWS Roanoke: Measuring snow and sleet",
+   "url": "https://www.weather.gov/rnk/Measure_SnowSleet"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we166",
+  "topic": "weather",
+  "level": "older",
+  "text": "A snow board is a flat piece of wood set in an open spot away from trees. After each measurement it is swept clear, so the next reading shows only the new snow.",
+  "source": {
+   "name": "NWS Roanoke: Measuring snow and sleet",
+   "url": "https://www.weather.gov/rnk/Measure_SnowSleet"
+  },
+  "check": "ok"
  }
 ]
