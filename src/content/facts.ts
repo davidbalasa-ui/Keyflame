@@ -35,6 +35,9 @@ export const READING_LEVEL_LABEL: Record<ReadingLevel, string> = {
 /** Characters the tap keyboard can type (shift gives : and ?). Content must stay inside this set. */
 export const TYPEABLE = /^[A-Za-z ,.;:/?]+$/;
 
+/** Facts are also typed in lowercase before Shift is taught, so they avoid : and ? too. */
+export const FACT_CHARS = /^[A-Za-z ,.;]+$/;
+
 export function factById(id: string): Fact | undefined {
   return FACTS.find((f) => f.id === id);
 }

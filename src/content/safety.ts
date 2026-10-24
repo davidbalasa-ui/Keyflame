@@ -21,11 +21,13 @@ const BLOCKED_ROOTS: string[] = [
 // cleared by hand. Tests fail on any other flagged word in written content.
 export const REVIEWED_WORDS = new Set<string>([
   // ass
-  'compass', 'passes', 'pass', 'class', 'mass', 'grass', 'glass',
+  'compass', 'passes', 'passages', 'pass', 'class', 'mass', 'grass', 'glass',
   // butt, die, fart, nig, pee, poo
-  'butterflies', 'butterfly', 'bodies', 'farther', 'farthest', 'nights', 'night', 'speed', 'spoonful',
+  'butterflies', 'butterfly', 'bodies', 'farther', 'farthest', 'nights', 'night', 'midnight', 'japan', 'speed', 'spoonful',
   // hoe, die
-  'echoes', 'indies',
+  'echoes', 'indies', 'horseshoe', 'horseshoes',
+  // butt
+  'butter', 'buttercup', 'buttons', 'button',
 ]);
 
 // Hand-reviewed words from our own lists. These are allowed even when a root

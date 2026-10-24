@@ -1015,7 +1015,7 @@
   "id": "ea18",
   "topic": "earth",
   "level": "older",
-  "text": "The Earth is made of layers, a bit like a peach: a thin crust, a thick mantle, and a metal core in the middle.",
+  "text": "The Earth is made of layers, a bit like a peach. It has a thin crust, a thick mantle, and a metal core in the middle.",
   "source": {
    "name": "USGS: Inside the Earth",
    "url": "https://pubs.usgs.gov/gip/dynamic/inside.html"
@@ -2269,7 +2269,7 @@
   "id": "sp117",
   "topic": "space",
   "level": "older",
-  "text": "In sixteen ten, Galileo Galilei spotted four moons circling Jupiter: Io, Europa, Ganymede and Callisto. They are still called the Galilean moons today.",
+  "text": "In sixteen ten, Galileo Galilei spotted four moons circling Jupiter. They are named Io, Europa, Ganymede and Callisto.",
   "source": {
    "name": "NASA Science: Jupiter facts",
    "url": "https://science.nasa.gov/jupiter/facts/"
@@ -3659,6 +3659,1062 @@
   "source": {
    "name": "Britannica Kids: Seal",
    "url": "https://kids.britannica.com/kids/article/seal/353754"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an129",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Seven spotted ladybugs are red or orange. They have three spots on each side and one spot in the middle.",
+  "source": {
+   "name": "National Geographic Kids: Ladybug",
+   "url": "https://kids.nationalgeographic.com/animals/invertebrates/facts/ladybug"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an130",
+  "topic": "animals",
+  "level": "older",
+  "text": "There are about five thousand kinds of ladybugs around the world. Gardeners and farmers are happy to see them because they help keep plants healthy.",
+  "source": {
+   "name": "National Geographic Kids: Ladybug",
+   "url": "https://kids.nationalgeographic.com/animals/invertebrates/facts/ladybug"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an131",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Fireflies are not flies at all. They are a kind of beetle that can light up in the dark.",
+  "source": {
+   "name": "Smithsonian Magazine: 14 fun facts about fireflies",
+   "url": "https://www.smithsonianmag.com/science-nature/14-fun-facts-about-fireflies-142999290/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an132",
+  "topic": "animals",
+  "level": "older",
+  "text": "Many kinds of fireflies have their own special pattern of flashes. Their light can be yellow, green, or orange, and it gives off almost no heat.",
+  "source": {
+   "name": "Smithsonian Magazine: 14 fun facts about fireflies",
+   "url": "https://www.smithsonianmag.com/science-nature/14-fun-facts-about-fireflies-142999290/"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "an133",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Monarch butterflies have orange wings with black lines and white dots along the edges. Their wings are about as wide as your hand.",
+  "source": {
+   "name": "National Geographic: Monarch butterfly",
+   "url": "https://www.nationalgeographic.com/animals/invertebrates/facts/monarch-butterfly"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an134",
+  "topic": "animals",
+  "level": "older",
+  "text": "Some monarch butterflies fly up to three thousand miles to reach warmer places for the winter. They cannot live through freezing weather, so they travel south before it gets cold.",
+  "source": {
+   "name": "National Geographic: Monarch butterfly",
+   "url": "https://www.nationalgeographic.com/animals/invertebrates/facts/monarch-butterfly"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an135",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A honeybee hive usually has just one queen. She lays the eggs that become the next bees.",
+  "source": {
+   "name": "National Geographic Kids: Honeybee",
+   "url": "https://kids.nationalgeographic.com/animals/invertebrates/facts/honeybee"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an136",
+  "topic": "animals",
+  "level": "older",
+  "text": "Worker honeybees have many jobs. They gather pollen and nectar, build and clean the hive, and fan air through it with their wings.",
+  "source": {
+   "name": "National Geographic Kids: Honeybee",
+   "url": "https://kids.nationalgeographic.com/animals/invertebrates/facts/honeybee"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an137",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Ants have bent antennae that look like tiny elbows. The antennae help them sense the world around them.",
+  "source": {
+   "name": "National Geographic: Ants",
+   "url": "https://www.nationalgeographic.com/animals/invertebrates/facts/ants"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an138",
+  "topic": "animals",
+  "level": "older",
+  "text": "Scientists know of more than twelve thousand kinds of ants. Some build nests underground, some build mounds above the ground, and some live in trees.",
+  "source": {
+   "name": "National Geographic: Ants",
+   "url": "https://www.nationalgeographic.com/animals/invertebrates/facts/ants"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an141",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Crickets chirp by rubbing their front wings together. Warmer weather makes them chirp faster.",
+  "source": {
+   "name": "Britannica Kids: Cricket",
+   "url": "https://kids.britannica.com/kids/article/cricket/353014"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an143",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A frog starts as an egg. The egg hatches into a tadpole with a long tail and gills, just like a fish.",
+  "source": {
+   "name": "Britannica Kids: Frog",
+   "url": "https://kids.britannica.com/students/article/frog/585335"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an144",
+  "topic": "animals",
+  "level": "older",
+  "text": "Frogs can breathe through their moist skin as well as with their lungs. Their large, bulging eyes let them see in almost every direction.",
+  "source": {
+   "name": "San Diego Zoo: Frog and Toad",
+   "url": "https://animals.sandiegozoo.org/animals/frog-and-toad"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an145",
+  "topic": "animals",
+  "level": "older",
+  "text": "Toads usually have drier, bumpy skin and shorter legs. Frogs usually have smooth, moist skin, longer legs, and a home close to water.",
+  "source": {
+   "name": "San Diego Zoo: Frog and Toad",
+   "url": "https://animals.sandiegozoo.org/animals/frog-and-toad"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an146",
+  "topic": "animals",
+  "level": "younger",
+  "text": "An axolotl is a salamander with feathery gills that stick out behind its head. It lives in the water its whole life.",
+  "source": {
+   "name": "Britannica Kids: Axolotl",
+   "url": "https://kids.britannica.com/students/article/axolotl/631212"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an147",
+  "topic": "animals",
+  "level": "older",
+  "text": "Most salamanders change a lot as they grow up, but an axolotl keeps its baby features even as an adult. That is why it keeps its feathery gills all its life.",
+  "source": {
+   "name": "Britannica Kids: Axolotl",
+   "url": "https://kids.britannica.com/students/article/axolotl/631212"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "an148",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A spotted salamander is bluish black with bright yellow or orange spots. It is about seven inches long.",
+  "source": {
+   "name": "National Geographic Kids: Spotted salamander",
+   "url": "https://kids.nationalgeographic.com/animals/amphibians/facts/spotted-salamander"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an149",
+  "topic": "animals",
+  "level": "older",
+  "text": "Spotted salamanders stay hidden under rocks, leaves, and logs during the day. They come out at night, and their young live in the water until they lose their gills.",
+  "source": {
+   "name": "National Geographic Kids: Spotted salamander",
+   "url": "https://kids.nationalgeographic.com/animals/amphibians/facts/spotted-salamander"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an150",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A dog has a super nose. Its sense of smell is many thousands of times better than ours.",
+  "source": {
+   "name": "National Geographic: Domestic dog",
+   "url": "https://www.nationalgeographic.com/animals/mammals/facts/domestic-dog"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an151",
+  "topic": "animals",
+  "level": "older",
+  "text": "Some dogs have important jobs, such as guiding people who cannot see or helping rescue teams search for lost people. There are several hundred kinds of dogs, and they all belong to one species.",
+  "source": {
+   "name": "National Geographic: Domestic dog",
+   "url": "https://www.nationalgeographic.com/animals/mammals/facts/domestic-dog"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an152",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A cat uses its whiskers to feel the world around it. Whiskers are tiny sense organs that are made for touch.",
+  "source": {
+   "name": "Britannica Kids: Cat",
+   "url": "https://kids.britannica.com/students/article/cat/273297"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an153",
+  "topic": "animals",
+  "level": "older",
+  "text": "Cat claws stay tucked away most of the time, which keeps them sharp. Cats can see much better in dim light than people can, but not in total darkness.",
+  "source": {
+   "name": "Britannica Kids: Cat",
+   "url": "https://kids.britannica.com/students/article/cat/273297"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "an154",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A rabbit has strong front teeth that never stop growing. They are shaped like little chisels.",
+  "source": {
+   "name": "Britannica Kids: Rabbit and hare",
+   "url": "https://kids.britannica.com/students/article/rabbit-and-hare/276627"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an155",
+  "topic": "animals",
+  "level": "older",
+  "text": "Each ear of a rabbit can move on its own to catch sounds from different directions. Its eyes sit on the sides of its head, so it can see in nearly every direction.",
+  "source": {
+   "name": "Britannica Kids: Rabbit and hare",
+   "url": "https://kids.britannica.com/students/article/rabbit-and-hare/276627"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an156",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Hamsters have big cheek pouches for carrying food. They are most active in the evening and at night.",
+  "source": {
+   "name": "Britannica Kids: Hamster",
+   "url": "https://kids.britannica.com/students/article/hamster/274753"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an157",
+  "topic": "animals",
+  "level": "older",
+  "text": "Wild hamsters dig burrows with separate rooms for sleeping and for storing food. Adult golden hamsters, the kind many people keep as pets, are only about five or six inches long.",
+  "source": {
+   "name": "Britannica Kids: Hamster",
+   "url": "https://kids.britannica.com/students/article/hamster/274753"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an158",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A baby horse is called a foal. It can stand up soon after it is born.",
+  "source": {
+   "name": "Britannica Kids: Horse",
+   "url": "https://kids.britannica.com/students/article/horse/274947"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an159",
+  "topic": "animals",
+  "level": "older",
+  "text": "Horses can doze while standing because special tendons and ligaments lock the joints in their legs. Adult horses sleep only a few hours each day.",
+  "source": {
+   "name": "Britannica Kids: Horse",
+   "url": "https://kids.britannica.com/students/article/horse/274947"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an160",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Some kinds of cows, such as Jersey and Holstein cows, are raised mainly for their milk. Milk can be made into cheese and butter.",
+  "source": {
+   "name": "Britannica Kids: Cattle",
+   "url": "https://kids.britannica.com/kids/article/cattle/352928"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an161",
+  "topic": "animals",
+  "level": "older",
+  "text": "Highland cattle have long, shaggy hair, while Brahman cattle have loose skin and long, drooping ears. There are many breeds of cattle, and they differ in color and size.",
+  "source": {
+   "name": "Britannica Kids: Cattle",
+   "url": "https://kids.britannica.com/kids/article/cattle/352928"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an162",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A pig has a leathery snout that is very sensitive to touch. It uses its snout to root around in the ground.",
+  "source": {
+   "name": "National Geographic Kids: Pig",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/pig"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an163",
+  "topic": "animals",
+  "level": "older",
+  "text": "Pigs roll in mud to cool off, but they are actually quite clean animals. They are also among the smartest farm animals.",
+  "source": {
+   "name": "National Geographic Kids: Pig",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/pig"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an164",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Most farm sheep grow a thick coat called wool. People use wool to make cloth.",
+  "source": {
+   "name": "Britannica Kids: Sheep",
+   "url": "https://kids.britannica.com/kids/article/sheep/353768"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an165",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Both male and female goats can have horns. Most male goats also grow beards.",
+  "source": {
+   "name": "Britannica Kids: Goat",
+   "url": "https://kids.britannica.com/kids/article/goat/353188"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an166",
+  "topic": "animals",
+  "level": "older",
+  "text": "Wild goats can scramble up steep cliffs and rocks without slipping. People drink the milk of farm goats and use it to make cheese.",
+  "source": {
+   "name": "Britannica Kids: Goat",
+   "url": "https://kids.britannica.com/kids/article/goat/353188"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an167",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Both hens and roosters have a comb. It is a bit of skin that sticks up from the top of the head.",
+  "source": {
+   "name": "Britannica Kids: Chicken",
+   "url": "https://kids.britannica.com/kids/article/chicken/352949"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an168",
+  "topic": "animals",
+  "level": "older",
+  "text": "A hen can lay more than two hundred eggs in a year. Chickens have short wings and heavy bodies, so they cannot fly very far.",
+  "source": {
+   "name": "Britannica Kids: Chicken",
+   "url": "https://kids.britannica.com/kids/article/chicken/352949"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea120",
+  "topic": "earth",
+  "level": "younger",
+  "text": "The Grand Canyon is about a mile deep in places. The Colorado River carved it.",
+  "source": {
+   "name": "NPS Grand Canyon FAQ",
+   "url": "https://nps.gov/grca/faqs.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea121",
+  "topic": "earth",
+  "level": "older",
+  "text": "The Grand Canyon is about two hundred seventy seven miles long and up to about eighteen miles wide. The Colorado River flows along the bottom.",
+  "source": {
+   "name": "NPS Grand Canyon FAQ",
+   "url": "https://nps.gov/grca/faqs.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea122",
+  "topic": "earth",
+  "level": "older",
+  "text": "The North Rim of the Grand Canyon is about a thousand feet higher than the South Rim. The rims are only about ten miles apart in a straight line, but hiking between them takes about twenty one miles.",
+  "source": {
+   "name": "NPS Grand Canyon FAQ",
+   "url": "https://nps.gov/grca/faqs.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea123",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Niagara Falls is really three waterfalls side by side. The biggest one is shaped like a horseshoe.",
+  "source": {
+   "name": "Britannica Kids Niagara Falls",
+   "url": "https://kids.britannica.com/students/article/276083"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea124",
+  "topic": "earth",
+  "level": "older",
+  "text": "During summer days, more than one hundred fifty thousand cubic meters of water rush over Niagara Falls every minute. Most of that water goes over the big Horseshoe Falls.",
+  "source": {
+   "name": "Britannica Kids Niagara Falls",
+   "url": "https://kids.britannica.com/students/article/276083"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea125",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Niagara Falls is very loud and misty. Visitors can ride boats close to the bottom of the falls and feel the cool spray on their faces.",
+  "source": {
+   "name": "Britannica Kids Niagara Falls",
+   "url": "https://kids.britannica.com/students/article/276083"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea126",
+  "topic": "earth",
+  "level": "older",
+  "text": "The Niagara River flows from Lake Erie to Lake Ontario, and the falls sit between New York and Ontario. Big power plants nearby use the moving water to make electricity.",
+  "source": {
+   "name": "Britannica Kids Niagara Falls",
+   "url": "https://kids.britannica.com/students/article/276083"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea130",
+  "topic": "earth",
+  "level": "older",
+  "text": "Uluru is more than two miles long and more than a mile wide. It sits in a national park near the middle of Australia.",
+  "source": {
+   "name": "Britannica Kids Uluru",
+   "url": "https://kids.britannica.com/students/article/UluruAyers-Rock/487521"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea131",
+  "topic": "earth",
+  "level": "older",
+  "text": "Mammoth Cave in Kentucky is the longest known cave system in the world. It has more than four hundred miles of mapped passages.",
+  "source": {
+   "name": "Britannica Mammoth Cave National Park",
+   "url": "https://www.britannica.com:443/print/article/360973"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea132",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Deep inside Mammoth Cave, the air stays cool all year, at about fifty four degrees Fahrenheit.",
+  "source": {
+   "name": "Britannica Mammoth Cave National Park",
+   "url": "https://www.britannica.com:443/print/article/360973"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea133",
+  "topic": "earth",
+  "level": "older",
+  "text": "Mammoth Cave formed as water slowly dissolved limestone. That kind of rock is soft enough for water to wear away, and the work is still going on today.",
+  "source": {
+   "name": "Britannica Mammoth Cave National Park",
+   "url": "https://www.britannica.com:443/print/article/360973"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea134",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Some stone shapes in Mammoth Cave have fun names, such as Frozen Niagara.",
+  "source": {
+   "name": "Britannica Mammoth Cave National Park",
+   "url": "https://www.britannica.com:443/print/article/360973"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea135",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Talc is the softest mineral. It is so soft that a fingernail can scratch it. Diamond is the hardest.",
+  "source": {
+   "name": "Minerals4Kids hardness",
+   "url": "https://min4kids.org/?p=380"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea137",
+  "topic": "earth",
+  "level": "older",
+  "text": "Many people think only diamonds can scratch glass. In fact, many other minerals that rank six or higher on the Mohs scale can scratch it too.",
+  "source": {
+   "name": "Minerals4Kids hardness",
+   "url": "https://min4kids.org/?p=380"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea138",
+  "topic": "earth",
+  "level": "younger",
+  "text": "A copper coin can scratch some very soft minerals, such as talc and gypsum.",
+  "source": {
+   "name": "Minerals4Kids hardness",
+   "url": "https://min4kids.org/?p=380"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea139",
+  "topic": "earth",
+  "level": "older",
+  "text": "Rocks come in three main kinds. Igneous rocks form when melted rock cools, sedimentary rocks form from pressed layers, and metamorphic rocks are changed by heat and pressure.",
+  "source": {
+   "name": "NPS Teachers rock types lesson",
+   "url": "https://www.nps.gov/teachers/classrooms/roca-roca-roca.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea140",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Granite forms when melted rock cools slowly underground. Basalt forms when lava cools at the surface.",
+  "source": {
+   "name": "NPS Teachers rock types lesson",
+   "url": "https://www.nps.gov/teachers/classrooms/roca-roca-roca.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea141",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Sandstone and shale are rocks made of tiny bits pressed together in layers.",
+  "source": {
+   "name": "NPS Teachers rock types lesson",
+   "url": "https://www.nps.gov/teachers/classrooms/roca-roca-roca.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea142",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Slate and gneiss are rocks that were changed by heat and pressure underground. Gneiss is said like the word nice.",
+  "source": {
+   "name": "NPS Teachers rock types lesson",
+   "url": "https://www.nps.gov/teachers/classrooms/roca-roca-roca.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea143",
+  "topic": "earth",
+  "level": "older",
+  "text": "Mount Fuji is the tallest mountain in Japan, at about twelve thousand four hundred feet. It is a snowcapped cone with a nearly perfect shape, and artists love to paint it.",
+  "source": {
+   "name": "Britannica Kids Mount Fuji",
+   "url": "https://kids.britannica.com/students/article/Mount-Fuji-or-Fujiyama/274455"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea144",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Five small lakes sit at the northern base of Mount Fuji. On calm days, Lake Kawaguchi shows the mountain in its water like a mirror.",
+  "source": {
+   "name": "Britannica Kids Mount Fuji",
+   "url": "https://kids.britannica.com/students/article/Mount-Fuji-or-Fujiyama/274455"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea145",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Greenland is the biggest island in the world. Ice covers most of it.",
+  "source": {
+   "name": "Britannica Kids Greenland",
+   "url": "https://kids.britannica.com/students/article/Greenland/274658"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea146",
+  "topic": "earth",
+  "level": "older",
+  "text": "The ice sheet on Greenland is almost two miles thick in places. Only the ice sheet of Antarctica is bigger.",
+  "source": {
+   "name": "Britannica Kids Greenland",
+   "url": "https://kids.britannica.com/students/article/Greenland/274658"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea147",
+  "topic": "earth",
+  "level": "older",
+  "text": "Parts of Greenland get midnight sun, with daylight all night long, for weeks in summer. In the long, dark winter, the sky there often fills with bright colors.",
+  "source": {
+   "name": "Britannica Kids Greenland",
+   "url": "https://kids.britannica.com/students/article/Greenland/274658"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea148",
+  "topic": "earth",
+  "level": "older",
+  "text": "Measured from its base on the sea floor, Mauna Kea in Hawaii is about thirty three thousand feet tall. That is taller than Mount Everest.",
+  "source": {
+   "name": "EarthDate Worlds Tallest Mountain",
+   "url": "https://www.earthdate.org/episodes/worlds-tallest-mountain"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea150",
+  "topic": "earth",
+  "level": "younger",
+  "text": "An emerald is a deep green gem. Tiny amounts of a metal called chromium give it its color.",
+  "source": {
+   "name": "EarthDate The Ever Green Stone",
+   "url": "https://www.earthdate.org/episodes/the-ever-green-stone"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea151",
+  "topic": "earth",
+  "level": "older",
+  "text": "Emerald scores about seven and a half to eight on the Mohs scale, while diamond scores ten. Tiny cracks inside many emeralds mean that they can chip easily.",
+  "source": {
+   "name": "EarthDate The Ever Green Stone",
+   "url": "https://www.earthdate.org/episodes/the-ever-green-stone"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "ea152",
+  "topic": "earth",
+  "level": "older",
+  "text": "In a cave in Mexico, giant crystals of selenite, a form of gypsum, fill a huge underground room. Some of the crystals are about thirty seven feet long.",
+  "source": {
+   "name": "Wikipedia Cave of the Crystals",
+   "url": "https://en.wikipedia.org/wiki/Cave_of_the_Crystals"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea153",
+  "topic": "earth",
+  "level": "younger",
+  "text": "A gold nugget is a lump of gold that water has worn smooth. Many are as small as a pea or a nut.",
+  "source": {
+   "name": "Britannica nugget",
+   "url": "https://www.britannica.com:443/science/nugget"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea154",
+  "topic": "earth",
+  "level": "older",
+  "text": "Great Salt Lake in Utah is usually three to five times saltier than the ocean. Fish cannot live in it, but tiny brine shrimp do, and many birds stop there on long trips.",
+  "source": {
+   "name": "USGS Great Salt Lake",
+   "url": "https://www.usgs.gov/centers/ut-water/science/great-salt-lake-general-information-and-publications"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp145",
+  "topic": "space",
+  "level": "older",
+  "text": "The space station moves at about seventeen thousand five hundred miles an hour. It circles the Earth about once every ninety minutes.",
+  "source": {
+   "name": "NASA ISS Activity Book (middle school)",
+   "url": "https://www.nasa.gov/wp-content/uploads/2020/06/np-2015-03-008-jsc_iss_activity_book_middle_school_web_5-20-15.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp146",
+  "topic": "space",
+  "level": "younger",
+  "text": "Astronauts sleep in sleeping bags that are strapped to a wall. They also use a sleep mask and earplugs to block out light and noise.",
+  "source": {
+   "name": "NASA Living and Working in Space fact sheet",
+   "url": "https://www.nasa.gov/centers/johnson/pdf/167746main_FS_LivingandWorkinginSpace508c.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp147",
+  "topic": "space",
+  "level": "older",
+  "text": "The living space inside the space station is about as big as a house with six bedrooms. With its solar panels spread out, the whole station is as wide as a football field.",
+  "source": {
+   "name": "NASA ISS Activity Book (middle school)",
+   "url": "https://www.nasa.gov/wp-content/uploads/2020/06/np-2015-03-008-jsc_iss_activity_book_middle_school_web_5-20-15.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp148",
+  "topic": "space",
+  "level": "younger",
+  "text": "Astronauts on the space station exercise for about two hours every day. It keeps their muscles and bones strong.",
+  "source": {
+   "name": "NASA Living and Working in Space fact sheet",
+   "url": "https://www.nasa.gov/centers/johnson/pdf/167746main_FS_LivingandWorkinginSpace508c.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp152",
+  "topic": "space",
+  "level": "younger",
+  "text": "A spacesuit is like a tiny spacecraft that you wear. It gives an astronaut air to breathe and water to drink.",
+  "source": {
+   "name": "NASA: What Is a Spacesuit? (grades K to 4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-a-spacesuit-grades-k-4/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp153",
+  "topic": "space",
+  "level": "younger",
+  "text": "The visor on a spacesuit helmet has a thin gold coating. It shields the eyes of the astronaut from bright sunlight.",
+  "source": {
+   "name": "NASA: What Is a Spacesuit? (grades K to 4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-a-spacesuit-grades-k-4/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp154",
+  "topic": "space",
+  "level": "older",
+  "text": "Under a spacesuit, astronauts wear a special layer with thin tubes in it. Cool water flows through the tubes to keep the astronaut from getting too hot.",
+  "source": {
+   "name": "NASA: What Is a Spacesuit? (grades K to 4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-a-spacesuit-grades-k-4/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp155",
+  "topic": "space",
+  "level": "older",
+  "text": "The backpack of a spacesuit stores oxygen, removes the carbon dioxide that an astronaut breathes out, and supplies electricity. A fan and a water tank are inside it too.",
+  "source": {
+   "name": "NASA: What Is a Spacesuit? (grades K to 4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-a-spacesuit-grades-k-4/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp156",
+  "topic": "space",
+  "level": "younger",
+  "text": "A spacesuit is made of many layers. Each layer does a different job, like keeping the air inside the suit.",
+  "source": {
+   "name": "NASA: What Is a Spacesuit? (grades K to 4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-a-spacesuit-grades-k-4/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp157",
+  "topic": "space",
+  "level": "younger",
+  "text": "A comet is a ball of ice, rock and dust. When it gets close to the Sun, it warms up and grows a long tail.",
+  "source": {
+   "name": "NASA Space Place: Comet Fun Sheet",
+   "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp158",
+  "topic": "space",
+  "level": "older",
+  "text": "A comet can have more than one tail. Its gas tail points straight away from the Sun, while its dust tail curves along the path of the comet.",
+  "source": {
+   "name": "NASA Space Place: Comet Fun Sheet",
+   "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp159",
+  "topic": "space",
+  "level": "older",
+  "text": "When a comet warms up near the Sun, a cloud called the coma forms around its solid center. The cloud can be hundreds of thousands of miles across.",
+  "source": {
+   "name": "NASA Space Place: Comet Fun Sheet",
+   "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp160",
+  "topic": "space",
+  "level": "younger",
+  "text": "The solid center of a comet is usually less than about six miles across. Its glowing cloud can be much bigger.",
+  "source": {
+   "name": "NASA Space Place: Comet Fun Sheet",
+   "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp161",
+  "topic": "space",
+  "level": "younger",
+  "text": "Comet Halley comes back to our part of the sky about every seventy six years. It is next expected in the year twenty sixty one.",
+  "source": {
+   "name": "NASA Science: 1P Halley",
+   "url": "https://science.nasa.gov/solar-system/comets/1p-halley"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp162",
+  "topic": "space",
+  "level": "older",
+  "text": "Dust left behind by Comet Halley makes two meteor showers each year. One comes in May and the other in October.",
+  "source": {
+   "name": "NASA Science: 1P Halley",
+   "url": "https://science.nasa.gov/solar-system/comets/1p-halley"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp163",
+  "topic": "space",
+  "level": "older",
+  "text": "Every few years, a comet comes close enough and grows bright enough to be seen without a telescope.",
+  "source": {
+   "name": "NASA Space Place: Comet Fun Sheet",
+   "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "sp164",
+  "topic": "space",
+  "level": "younger",
+  "text": "The Big Dipper is a group of stars that looks like a big ladle for dipping soup.",
+  "source": {
+   "name": "NASA Space Place: Star Finder",
+   "url": "https://spaceplace.nasa.gov/starfinder2/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp165",
+  "topic": "space",
+  "level": "older",
+  "text": "Astronomers divide the sky into eighty eight official star patterns. They use them like landmarks to find stars and to name stars and meteor showers.",
+  "source": {
+   "name": "NASA Space Place: Star Finder",
+   "url": "https://spaceplace.nasa.gov/starfinder2/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp166",
+  "topic": "space",
+  "level": "older",
+  "text": "The stars in a star pattern may look close together, but they are not connected. They can be at very different distances from the Earth.",
+  "source": {
+   "name": "NASA Space Place: Star Finder",
+   "url": "https://spaceplace.nasa.gov/starfinder2/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp167",
+  "topic": "space",
+  "level": "older",
+  "text": "Which star patterns you can see depends on where you live and on the time of year, because the Earth travels around the Sun.",
+  "source": {
+   "name": "NASA Space Place: Star Finder",
+   "url": "https://spaceplace.nasa.gov/starfinder2/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp168",
+  "topic": "space",
+  "level": "younger",
+  "text": "Stars are still in the sky during the day. The bright light of the Sun hides them.",
+  "source": {
+   "name": "NASA Space Place: Star Finder",
+   "url": "https://spaceplace.nasa.gov/starfinder2/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp169",
+  "topic": "space",
+  "level": "older",
+  "text": "Sailors have long used the stars to find their way across the sea. Robot spacecraft also compare star patterns to maps of the sky to know where they are pointing.",
+  "source": {
+   "name": "NASA Space Place: Star Finder",
+   "url": "https://spaceplace.nasa.gov/starfinder2/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp170",
+  "topic": "space",
+  "level": "younger",
+  "text": "Blue stars are hotter than red stars. The color of a star is a clue to how hot it is.",
+  "source": {
+   "name": "NASA Imagine the Universe: star colors activity",
+   "url": "https://imagine.gsfc.nasa.gov/science/activities/try_l1/stars_solution.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp171",
+  "topic": "space",
+  "level": "younger",
+  "text": "Apollo eleven had three astronauts. Neil Armstrong and Buzz Aldrin walked on the Moon, while Michael Collins circled above them.",
+  "source": {
+   "name": "Britannica Kids: Apollo 11",
+   "url": "https://kids.britannica.com/students/article/Apollo-11/631767"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp172",
+  "topic": "space",
+  "level": "younger",
+  "text": "The lunar module of Apollo eleven was named Eagle. It landed on a flat plain called the Sea of Tranquility.",
+  "source": {
+   "name": "Britannica Kids: Apollo 11",
+   "url": "https://kids.britannica.com/students/article/Apollo-11/631767"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp173",
+  "topic": "space",
+  "level": "older",
+  "text": "The Apollo eleven astronauts spent more than twenty one hours on the Moon. Only about two hours of that time was spent walking on the surface.",
+  "source": {
+   "name": "Britannica Kids: Apollo 11",
+   "url": "https://kids.britannica.com/students/article/Apollo-11/631767"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp175",
+  "topic": "space",
+  "level": "older",
+  "text": "A plaque on the leg of the Apollo eleven lunar module showed a map of the Earth. It said that men from Earth came in peace for all mankind.",
+  "source": {
+   "name": "NASA Apollo 11 Press Kit",
+   "url": "https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/Apollo11_Press-Kit_restored.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp176",
+  "topic": "space",
+  "level": "older",
+  "text": "Apollo eleven astronauts left a seismometer on the Moon to measure moonquakes. They also set up a reflector that bounces laser beams back to the Earth.",
+  "source": {
+   "name": "NASA Apollo 11 Press Kit",
+   "url": "https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/Apollo11_Press-Kit_restored.pdf"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp179",
+  "topic": "space",
+  "level": "younger",
+  "text": "The whole Apollo eleven trip to the Moon and back took about eight days.",
+  "source": {
+   "name": "NASA Apollo 11 Press Kit",
+   "url": "https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/Apollo11_Press-Kit_restored.pdf"
   },
   "check": "ok"
  }

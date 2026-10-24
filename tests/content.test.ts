@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FACTS, TYPEABLE, pickFact, wordCount } from '../src/content/facts';
+import { FACTS, FACT_CHARS, pickFact, wordCount } from '../src/content/facts';
 import { DRILLS, SENTENCES } from '../src/content/sentences';
 import { LESSONS, buildLessonText, buildRaceText, sentencesFor } from '../src/content/lessons';
 import { REVIEWED_WORDS, hasBlockedRoot, isSafeText } from '../src/content/safety';
@@ -30,7 +30,7 @@ describe('fun facts', () => {
   });
 
   it('only uses characters the tap keyboard can type', () => {
-    for (const f of FACTS) expect(TYPEABLE.test(f.text), `${f.id}: ${f.text}`).toBe(true);
+    for (const f of FACTS) expect(FACT_CHARS.test(f.text), `${f.id}: ${f.text}`).toBe(true);
   });
 
   it('has no unreviewed word that trips the safety check', () => {
