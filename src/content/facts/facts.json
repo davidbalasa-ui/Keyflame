@@ -113,12 +113,12 @@
   "id": "dr11",
   "topic": "dragons",
   "level": "younger",
-  "text": "Komodo dragons live on hot, dry islands. They like to rest in the shade when the Sun gets too warm.",
+  "text": "Komodo dragons live on hot, rugged islands. They like to rest in the shade when the Sun gets too warm.",
   "source": {
-   "name": "Smithsonian National Zoo: Komodo dragon",
-   "url": "https://www.nationalzoo.si.edu/node/6852"
+   "name": "San Diego Zoo: Komodo dragon",
+   "url": "https://animals.sandiegozoo.org/animals/komodo-dragon"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "dr12",
@@ -228,7 +228,7 @@
    "name": "San Diego Zoo: Chameleon",
    "url": "https://animals.sandiegozoo.org/animals/chameleon"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "dr22",
@@ -313,10 +313,10 @@
   "level": "younger",
   "text": "Honeybees do a little dance to tell other bees where to find flowers full of food.",
   "source": {
-   "name": "Smithsonian: What is the Waggle Dance",
-   "url": "https://www.si.edu/object/whats-waggle-dance-and-why-do-honey-bees-do-it:yt_LU_KD1enR3Q"
+   "name": "National Geographic: Bee waggle dance",
+   "url": "https://www.nationalgeographic.com/science/article/how-headbutts-and-dances-give-bees-a-hive-mind"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an05",
@@ -445,10 +445,10 @@
   "level": "older",
   "text": "Elephants make low rumbling sounds to talk to each other. Some of these sounds are so deep that people cannot hear them.",
   "source": {
-   "name": "National Geographic Kids: African elephant",
-   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/african-elephant"
+   "name": "Smithsonian National Zoo: Asian elephant",
+   "url": "https://nationalzoo.si.edu/animals/asian-elephant"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "an17",
@@ -896,10 +896,10 @@
   "level": "younger",
   "text": "A rock called pumice is so full of tiny air holes that it can float on water.",
   "source": {
-   "name": "ScienceDaily: How pumice floats",
-   "url": "https://www.sciencedaily.com/releases/2017/05/170523144110.htm"
+   "name": "NPS: Pyroclasts and Pyroclastic Rocks",
+   "url": "https://www.nps.gov/subjects/volcanoes/pyroclasts.htm"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea08",
@@ -940,10 +940,10 @@
   "level": "younger",
   "text": "Salt is a crystal. If you look very closely, each grain of salt is a tiny cube.",
   "source": {
-   "name": "Windows to the Universe: Halite",
-   "url": "https://windows2universe.org/earth/geology/images/halite_JPG_image.html"
+   "name": "Britannica Kids: Salt",
+   "url": "https://kids.britannica.com/students/article/salt/276870"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea12",
@@ -951,10 +951,10 @@
   "level": "younger",
   "text": "Some lakes are so salty that people can float on top of the water with no effort.",
   "source": {
-   "name": "Wonderopolis: Is the Dead Sea deadly?",
-   "url": "https://wonderopolis.org/wonder/Is-the-Dead-Sea-Deadly"
+   "name": "NOAA JetStream: The Dead Sea",
+   "url": "https://www.noaa.gov/jetstream/dead-max"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea13",
@@ -1072,10 +1072,10 @@
   "level": "older",
   "text": "The Earth acts like a giant magnet. That is why the needle of a compass points north.",
   "source": {
-   "name": "Wonderopolis: How does a compass work?",
-   "url": "https://wonderopolis.org/wonder/how-does-a-compass-work"
+   "name": "Britannica Kids: Magnetic compass",
+   "url": "https://kids.britannica.com/students/article/magnetic-compass/273759"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea24",
@@ -1182,10 +1182,10 @@
   "level": "younger",
   "text": "Wind is moving air. The Sun warms some places more than others, and that makes the air move.",
   "source": {
-   "name": "Fox Weather: What makes wind?",
-   "url": "https://foxweather.com/learn/what-makes-wind"
+   "name": "Britannica Kids: Wind",
+   "url": "https://kids.britannica.com/students/article/wind/277759"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we09",
@@ -1193,10 +1193,10 @@
   "level": "younger",
   "text": "On cold nights, water in the air can freeze onto grass and windows. This sparkly ice is called frost.",
   "source": {
-   "name": "Wikipedia: Frost",
-   "url": "https://en.wikipedia.org/wiki/Frost"
+   "name": "Britannica: Frost",
+   "url": "https://www.britannica.com/science/frost-meteorology"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we10",
@@ -1213,12 +1213,12 @@
   "id": "we11",
   "topic": "weather",
   "level": "younger",
-  "text": "Snow looks white, but each snowflake is made of clear ice.",
+  "text": "Snow looks white because light bounces around in the ice and scatters back to your eyes.",
   "source": {
-   "name": "Live Science: Why is snow white?",
-   "url": "https://www.livescience.com/791-bleak-outlook-snowy-peaks.html"
+   "name": "USGS: Why is snow white",
+   "url": "https://www.usgs.gov/media/audio/why-snow-white"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we12",
@@ -1246,12 +1246,12 @@
   "id": "we14",
   "topic": "weather",
   "level": "older",
-  "text": "A big, puffy cloud can weigh about as much as a hundred elephants. It floats because its tiny droplets are spread out over a huge space.",
+  "text": "A cloud one cubic kilometer big holds water that weighs as much as about one hundred elephants. It floats because the moist air in it is lighter than the dry air around it.",
   "source": {
-   "name": "EarthDate: Puffy clouds weigh in",
-   "url": "https://www.earthdate.org/episodes/puffy-clouds-weigh-in"
+   "name": "USGS Water Science School: How much does a cloud weigh",
+   "url": "https://www.usgs.gov/water-science-school/science/how-much-does-a-cloud-weigh"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we15",
@@ -1259,10 +1259,10 @@
   "level": "older",
   "text": "Scientists say it is very unlikely that two snowflakes are ever exactly alike. Each one takes its own path through the sky as it grows.",
   "source": {
-   "name": "Mental Floss: Are no two snowflakes alike?",
-   "url": "https://www.mentalfloss.com/article/20296/it-true-no-two-snowflakes-are-alike"
+   "name": "National Geographic: No two snowflakes the same",
+   "url": "https://www.nationalgeographic.com/science/article/no-two-snowflakes-the-same"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we16",
@@ -1303,10 +1303,10 @@
   "level": "older",
   "text": "Mawsynram in India is one of the rainiest places on Earth. It gets more rain in a year than many cities get in ten years.",
   "source": {
-   "name": "Universe Today: Wettest place on Earth",
-   "url": "https://www.universetoday.com/15029/wettest-place-on-earth"
+   "name": "NASA Photojournal: Mawsynram, India",
+   "url": "https://science.nasa.gov/photojournal/mawsynram-india/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we20",
@@ -1314,10 +1314,10 @@
   "level": "older",
   "text": "The Atacama Desert in Chile is one of the driest places on Earth. Some places there have gone years without any rain.",
   "source": {
-   "name": "Wikipedia: Atacama Desert",
-   "url": "https://en.wikipedia.org/wiki/Atacama_Desert"
+   "name": "NASA Astrobiology: The driest place on Earth",
+   "url": "https://astrobiology.nasa.gov/news/the-driest-place-on-earth/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we21",
@@ -1336,10 +1336,10 @@
   "level": "older",
   "text": "A ring around the Moon is called a halo. It forms when moonlight passes through tiny ice crystals in thin, high clouds.",
   "source": {
-   "name": "EarthSky: What makes a halo around the Moon",
-   "url": "https://earthsky.org/earth/what-makes-a-halo-around-the-moon"
+   "name": "NWS La Crosse: Halos, sundogs and pillars",
+   "url": "https://www.weather.gov/arx/why_halos_sundogs_pillars"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we23",
@@ -1389,12 +1389,12 @@
   "id": "oc02",
   "topic": "oceans",
   "level": "younger",
-  "text": "Sea otters sometimes hold paws while they float and rest, so they do not drift apart.",
+  "text": "Sea otters sometimes hold paws while they sleep, so they do not drift away from their group.",
   "source": {
-   "name": "Discover: Sea otters hold hands while sleeping",
-   "url": "https://discovermagazine.com/planet-earth/sea-otters-hold-hands-while-sleeping-and-they-even-cuddle"
+   "name": "Seattle Aquarium: Sea otter",
+   "url": "https://www.seattleaquarium.org/animal/sea-otter/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "oc03",
@@ -1402,10 +1402,10 @@
   "level": "younger",
   "text": "The blue whale is the biggest animal on Earth. It can be about as long as a basketball court.",
   "source": {
-   "name": "Dolphin Safari: How big is a blue whale?",
-   "url": "https://www.dolphinsafari.com/how-big-is-a-blue-whale/"
+   "name": "NOAA Fisheries: Blue whale",
+   "url": "https://www.fisheries.noaa.gov/species/blue-whale"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "oc04",
@@ -1477,12 +1477,12 @@
   "id": "oc10",
   "topic": "oceans",
   "level": "younger",
-  "text": "Sea turtles can swim across whole oceans. Many come back to the same beach where they hatched.",
+  "text": "Sea turtles can swim thousands of miles. Many females return to the beach where they were born to lay eggs.",
   "source": {
-   "name": "Olive Ridley Project: How sea turtles return to the same beach",
-   "url": "https://oliveridleyproject.org/ufaqs/how-are-sea-turtles-able-to-return-to-the-same-beach-to-nest"
+   "name": "Smithsonian Ocean: Sea turtles",
+   "url": "https://ocean.si.edu/ocean-life/reptiles/sea-turtles"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "oc11",
@@ -1501,21 +1501,21 @@
   "level": "younger",
   "text": "Whales breathe air through blowholes on the top of their heads.",
   "source": {
-   "name": "NPS: Whale traveling trunk",
-   "url": "https://www.nps.gov/teachers/classrooms/upload/Whale-Traveling-Trunk_rev3_508_final_with-cover.pdf"
+   "name": "Smithsonian Ocean: Whales and dolphins",
+   "url": "https://ocean.si.edu/ocean-life/marine-mammals/whales"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "oc13",
   "topic": "oceans",
   "level": "younger",
-  "text": "Sea stars have a tiny eye at the tip of each arm. The eyes can tell light from dark.",
+  "text": "Sea stars have a tiny eye spot at the tip of each arm. The eye spots can tell light from dark.",
   "source": {
-   "name": "Discover: Sea stars see",
-   "url": "https://www.discovermagazine.com/planet-earth/sea-stars-see"
+   "name": "NPS: Creature Feature Sea Stars",
+   "url": "https://www.nps.gov/articles/000/creaturefeatureacadiaseastar.htm"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "oc14",
@@ -1523,10 +1523,10 @@
   "level": "older",
   "text": "The Pacific is the largest ocean. It is so big that all of the land on Earth could fit inside it.",
   "source": {
-   "name": "Live Science: Biggest ocean",
-   "url": "https://www.livescience.com/32621-what-is-the-biggest-ocean.html"
+   "name": "NOAA Ocean Service: Largest ocean basin",
+   "url": "https://oceanservice.noaa.gov/facts/biggestocean.html"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "oc15",
@@ -1688,10 +1688,10 @@
   "level": "younger",
   "text": "Flying snakes of Southeast Asia can glide through the air from tree to tree. They flatten their bodies to about twice their normal width.",
   "source": {
-   "name": "Science News: Flying snakes glide through the treetops",
-   "url": "https://www.sciencenews.org/article/slithering-air-flying-snakes-glide-through-treetops"
+   "name": "National Geographic: Flying snakes",
+   "url": "https://www.nationalgeographic.com/animals/reptiles/facts/flying-snakes"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr107",
@@ -1702,7 +1702,7 @@
    "name": "Science News: Flying snakes glide through the treetops",
    "url": "https://www.sciencenews.org/article/slithering-air-flying-snakes-glide-through-treetops"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "dr108",
@@ -1710,10 +1710,10 @@
   "level": "older",
   "text": "Giant tortoises of the Galapagos Islands have two main shell shapes. Some have very round domed shells and live in cooler highlands. Others have saddleback shells that flare up at the front.",
   "source": {
-   "name": "Yale Institute of Biospheric Studies: Giant tortoise shells",
-   "url": "https://yibs.yale.edu/news/how-giant-tortoise-gets-its-back"
+   "name": "San Diego Zoo: Galapagos giant tortoise",
+   "url": "https://animals.sandiegozoo.org/animals/galapagos-giant-tortoise"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr110",
@@ -1721,21 +1721,21 @@
   "level": "younger",
   "text": "An alligator has a wide, rounded snout. A crocodile has a narrower snout that looks more pointed.",
   "source": {
-   "name": "PBS Nature: Alligator vs crocodile",
-   "url": "https://www.pbs.org/wnet/nature/blog/alligator-vs-crocodile-whats-the-difference"
+   "name": "Britannica: Alligators vs crocodiles",
+   "url": "https://www.britannica.com/story/whats-the-difference-between-alligators-and-crocodiles"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr111",
   "topic": "dragons",
   "level": "older",
-  "text": "Alligators live mostly in freshwater places such as swamps, marshes, rivers, and lakes. Crocodiles can live in freshwater too, and many also live along coasts where the water is salty.",
+  "text": "Alligators prefer freshwater places such as swamps, marshes, rivers, and lakes. Crocodiles are usually found in salty water along coasts.",
   "source": {
-   "name": "PBS Nature: Alligator vs crocodile",
-   "url": "https://www.pbs.org/wnet/nature/blog/alligator-vs-crocodile-whats-the-difference"
+   "name": "Britannica: Alligators vs crocodiles",
+   "url": "https://www.britannica.com/story/whats-the-difference-between-alligators-and-crocodiles"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr112",
@@ -1757,7 +1757,7 @@
    "name": "NPS: Species Spotlight Dragonflies",
    "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "dr114",
@@ -1823,7 +1823,7 @@
    "name": "San Diego Zoo: Wombat",
    "url": "https://animals.sandiegozoo.org/animals/wombat"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an104",
@@ -1834,7 +1834,7 @@
    "name": "San Diego Zoo: Wombat",
    "url": "https://animals.sandiegozoo.org/animals/wombat"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an105",
@@ -1842,10 +1842,10 @@
   "level": "younger",
   "text": "A beaver slaps its flat tail on the water to make a loud splash. It also uses the tail to help it swim.",
   "source": {
-   "name": "Nat Geo Kids: Beaver",
-   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/beaver"
+   "name": "Smithsonian National Zoo: Beaver",
+   "url": "https://nationalzoo.si.edu/animals/beaver"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an106",
@@ -1853,21 +1853,21 @@
   "level": "older",
   "text": "Beavers have orange front teeth that never stop growing. They gnaw on wood, which keeps the teeth from getting too long.",
   "source": {
-   "name": "Nat Geo Kids: Beaver",
-   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/beaver"
+   "name": "Smithsonian National Zoo: Beaver",
+   "url": "https://nationalzoo.si.edu/animals/beaver"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an107",
   "topic": "animals",
   "level": "younger",
-  "text": "A giant panda spends most of the day eating bamboo. It sits up and holds the stalks in its paws.",
+  "text": "A giant panda spends about twelve hours a day eating bamboo. It holds the stalks in its front paws.",
   "source": {
-   "name": "Nat Geo Kids: Giant Panda",
+   "name": "Nat Geo Kids: Giant panda",
    "url": "https://kids.nationalgeographic.com/animals/mammals/facts/giant-panda"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an108",
@@ -1875,21 +1875,21 @@
   "level": "older",
   "text": "Giant pandas have a special wrist bone that works a bit like a thumb. It helps them hold bamboo stalks tightly while they eat.",
   "source": {
-   "name": "Nat Geo Kids: Giant Panda",
+   "name": "Nat Geo Kids: Giant panda",
    "url": "https://kids.nationalgeographic.com/animals/mammals/facts/giant-panda"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an109",
   "topic": "animals",
   "level": "younger",
-  "text": "A river otter has webbed feet. They work like paddles and help it swim fast.",
+  "text": "A river otter has webbed feet. They help it paddle and steer in the water.",
   "source": {
    "name": "San Diego Zoo: Otter",
    "url": "https://animals.sandiegozoo.org/animals/otter"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an110",
@@ -1900,7 +1900,7 @@
    "name": "San Diego Zoo: Otter",
    "url": "https://animals.sandiegozoo.org/animals/otter"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an111",
@@ -1908,10 +1908,10 @@
   "level": "younger",
   "text": "Camels have two rows of long eyelashes. They help keep sand out of their eyes in windy deserts.",
   "source": {
-   "name": "Britannica: Camel",
-   "url": "https://www.britannica.com/animal/camel"
+   "name": "San Diego Zoo: Camel",
+   "url": "https://animals.sandiegozoo.org/animals/camel"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an112",
@@ -1919,10 +1919,10 @@
   "level": "older",
   "text": "A camel hump does not hold water. It stores fat, which the camel can use for energy when food is hard to find.",
   "source": {
-   "name": "Britannica: Do Camels Store Water in Their Humps?",
+   "name": "Britannica: Do camels store water in their humps",
    "url": "https://www.britannica.com/story/do-camels-store-water-in-their-humps"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an113",
@@ -1933,18 +1933,18 @@
    "name": "San Diego Zoo: Gorilla",
    "url": "https://animals.sandiegozoo.org/animals/gorilla"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an114",
   "topic": "animals",
   "level": "older",
-  "text": "Adult male gorillas grow a patch of silver hair on their backs, so they are called silverbacks. They lead a family group called a troop.",
+  "text": "A gorilla troop is led by a strong, experienced male called a silverback. He decides where the troop travels and when it rests.",
   "source": {
    "name": "San Diego Zoo: Gorilla",
    "url": "https://animals.sandiegozoo.org/animals/gorilla"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an115",
@@ -1955,7 +1955,7 @@
    "name": "San Diego Zoo: Hedgehog",
    "url": "https://animals.sandiegozoo.org/animals/hedgehog"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an116",
@@ -1966,7 +1966,7 @@
    "name": "San Diego Zoo: Hedgehog",
    "url": "https://animals.sandiegozoo.org/animals/hedgehog"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an117",
@@ -1977,7 +1977,7 @@
    "name": "NPS: How Bats Fly",
    "url": "https://www.nps.gov/subjects/bats/how-bats-fly.htm"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an118",
@@ -1996,21 +1996,21 @@
   "level": "younger",
   "text": "Bald eagles build huge nests of sticks high in trees. A pair may add to the same nest year after year.",
   "source": {
-   "name": "Nat Geo Kids: Bald Eagle",
+   "name": "Nat Geo Kids: Bald eagle",
    "url": "https://kids.nationalgeographic.com/animals/birds/facts/bald-eagle"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an120",
   "topic": "animals",
   "level": "older",
-  "text": "A bald eagle has eyesight that is much sharper than ours. It can spot small things from very far away while it soars high in the sky.",
+  "text": "A bald eagle has eyesight that is much sharper than ours. It can see things from up to a mile away while it soars high in the sky.",
   "source": {
-   "name": "Nat Geo Kids: Bald Eagle",
+   "name": "Nat Geo Kids: Bald eagle",
    "url": "https://kids.nationalgeographic.com/animals/birds/facts/bald-eagle"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an121",
@@ -2021,7 +2021,7 @@
    "name": "Britannica Kids: Woodpecker",
    "url": "https://kids.britannica.com/kids/article/woodpecker/353932"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an122",
@@ -2029,10 +2029,10 @@
   "level": "older",
   "text": "Acorn woodpeckers store thousands of acorns in holes they drill in trees. Family groups share the work of looking after this food store.",
   "source": {
-   "name": "Cornell Lab: Acorn Woodpecker",
+   "name": "Cornell Lab: Acorn woodpecker",
    "url": "https://www.allaboutbirds.org/guide/Acorn_Woodpecker/overview"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an123",
@@ -2043,18 +2043,18 @@
    "name": "Smithsonian National Zoo: Ostrich",
    "url": "https://nationalzoo.si.edu/animals/ostrich"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an124",
   "topic": "animals",
   "level": "older",
-  "text": "An ostrich has the biggest eyes of any land animal, and its eggs are the largest of any bird. One egg is about as big as two dozen chicken eggs.",
+  "text": "An ostrich has the biggest eyes of any bird, and its eggs are the largest of any bird. One egg weighs about as much as two dozen chicken eggs.",
   "source": {
    "name": "Smithsonian National Zoo: Ostrich",
    "url": "https://nationalzoo.si.edu/animals/ostrich"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an125",
@@ -2082,23 +2082,23 @@
   "id": "an127",
   "topic": "animals",
   "level": "younger",
-  "text": "A gray squirrel buries nuts in many places. Later it sniffs them out again, even under snow.",
+  "text": "A gray squirrel hides nuts in lots of spots. Sometimes it forgets where it put them.",
   "source": {
    "name": "Nat Geo Kids: Eastern Gray Squirrel",
    "url": "https://kids.nationalgeographic.com/animals/mammals/facts/eastern-gray-squirrel"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an128",
   "topic": "animals",
   "level": "older",
-  "text": "Squirrels use their bushy tails for balance when they leap along branches. The tail also works like a warm blanket in cold weather.",
+  "text": "Squirrels use their bushy tails for balance when they leap from branch to branch, a bit like a tightrope walker uses a long pole.",
   "source": {
-   "name": "Nat Geo Kids: Eastern Gray Squirrel",
-   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/eastern-gray-squirrel"
+   "name": "University of Notre Dame: Springing Squirrels",
+   "url": "https://sites.nd.edu/biomechanics-in-the-wild/2024/11/06/springing-squirrels-the-mechanics-of-squirrel-leaping-and-landing/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "sp101",
@@ -2318,7 +2318,7 @@
    "name": "NASA Science: Saturn facts",
    "url": "https://science.nasa.gov/saturn/facts/"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "sp122",
@@ -2335,12 +2335,12 @@
   "id": "sp123",
   "topic": "space",
   "level": "younger",
-  "text": "Neptune looks blue. A gas called methane in its air soaks up red light, so more blue light bounces back to us.",
+  "text": "Neptune looks blue. A gas called methane in its air soaks up other colors, so more blue light bounces back to us.",
   "source": {
    "name": "NASA Science: Neptune facts",
    "url": "https://science.nasa.gov/neptune/facts/"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "sp124",
@@ -2615,7 +2615,7 @@
    "name": "Britannica Kids: Lake Baikal",
    "url": "https://kids.britannica.com/students/article/Lake-Baikal/11804"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea105",
@@ -2648,7 +2648,7 @@
    "name": "Britannica Kids: Sahara",
    "url": "https://kids.britannica.com/students/article/Sahara/108296"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea108",
@@ -2703,7 +2703,7 @@
    "name": "Smithsonian Magazine: Giants Causeway",
    "url": "https://www.smithsonianmag.com/smart-news/researchers-reveal-how-giants-causeway-was-formed-180968806/"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea113",
@@ -2714,7 +2714,7 @@
    "name": "Smithsonian Magazine: Giants Causeway",
    "url": "https://www.smithsonianmag.com/smart-news/researchers-reveal-how-giants-causeway-was-formed-180968806/"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea114",
@@ -2725,7 +2725,7 @@
    "name": "NPS Yellowstone: Geysers",
    "url": "https://www.nps.gov/yell/learn/nature/geysers.htm"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea115",
@@ -2896,12 +2896,12 @@
   "id": "we112",
   "topic": "weather",
   "level": "younger",
-  "text": "Clouds are not only on Earth. The top clouds of Jupiter are made of ammonia ice instead of water.",
+  "text": "Clouds are not only on Earth. Jupiter has clouds made of a gas called ammonia.",
   "source": {
-   "name": "NASA: What are clouds? (grades K-4)",
+   "name": "NASA: What are clouds?",
    "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "we113",
@@ -2940,12 +2940,12 @@
   "id": "we116",
   "topic": "weather",
   "level": "older",
-  "text": "Yearly rainfall can be less than a tenth of an inch in some deserts. In the rainiest parts of the tropics, it can be more than four hundred inches.",
+  "text": "Yearly rainfall can be less than a tenth of an inch in some deserts. In the rainiest parts of the tropics, it can be more than nine hundred inches.",
   "source": {
    "name": "USGS Water Science School: Rain and precipitation",
    "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "we118",
@@ -2956,7 +2956,7 @@
    "name": "USGS Water Science School: Rain and precipitation",
    "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "we119",
@@ -3215,12 +3215,12 @@
   "id": "we143",
   "topic": "weather",
   "level": "younger",
-  "text": "In the main bow of a rainbow, red is on the outside edge and violet is on the inside edge.",
+  "text": "In the main bow of a rainbow, red is on the outside edge and blue is along the inside edge.",
   "source": {
    "name": "NWS Flagstaff: Rainbows",
    "url": "https://www.weather.gov/fgz/Rainbow"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "we144",
@@ -3248,12 +3248,12 @@
   "id": "we146",
   "topic": "weather",
   "level": "older",
-  "text": "People see auroras most often in far northern places like Canada, Greenland and Alaska, and also near the South Pole.",
+  "text": "People see auroras most often in far northern places like Canada, Greenland and Alaska.",
   "source": {
    "name": "NOAA SciJinks: Aurora art",
    "url": "https://scijinks.gov/about/k-12-education/optical-phenomena/aurora-art"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "we147",
@@ -3297,7 +3297,7 @@
    "name": "Smithsonian Ocean: Cephalopods",
    "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "oc105",
@@ -3330,7 +3330,7 @@
    "name": "Smithsonian Ocean: Cephalopods",
    "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "oc108",
@@ -3347,12 +3347,12 @@
   "id": "oc109",
   "topic": "oceans",
   "level": "younger",
-  "text": "A big California sea lion can grow as long as seven feet and weigh up to seven hundred pounds.",
+  "text": "A big California sea lion can grow as long as eight feet and weigh up to one thousand pounds.",
   "source": {
    "name": "National Geographic Kids: California sea lion",
    "url": "https://kids.nationalgeographic.com/animals/mammals/facts/california-sea-lion"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "oc110",
@@ -3622,12 +3622,12 @@
   "id": "oc135",
   "topic": "oceans",
   "level": "younger",
-  "text": "A baby manatee is called a calf. It stays close to its mother for about two years.",
+  "text": "A baby manatee is called a calf. It stays close to its mother for up to two years.",
   "source": {
-   "name": "Britannica Kids: Manatee",
-   "url": "https://kids.britannica.com/kids/article/manatee/353416"
+   "name": "SeaWorld: Manatee care of young",
+   "url": "https://seaworld.org/animals/all-about/manatee/care-of-young/"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "oc136",
@@ -3649,7 +3649,7 @@
    "name": "Britannica Kids: Seal",
    "url": "https://kids.britannica.com/kids/article/seal/353754"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "oc138",
@@ -3699,12 +3699,12 @@
   "id": "an132",
   "topic": "animals",
   "level": "older",
-  "text": "Many kinds of fireflies have their own special pattern of flashes. Their light can be yellow, green, or orange, and it gives off almost no heat.",
+  "text": "Many kinds of fireflies have their own special pattern of flashes. Their light can be yellow, green, or orange.",
   "source": {
    "name": "Smithsonian Magazine: 14 fun facts about fireflies",
    "url": "https://www.smithsonianmag.com/science-nature/14-fun-facts-about-fireflies-142999290/"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "an133",
@@ -3836,7 +3836,7 @@
    "name": "Britannica Kids: Axolotl",
    "url": "https://kids.britannica.com/students/article/axolotl/631212"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "an148",
@@ -3902,7 +3902,7 @@
    "name": "Britannica Kids: Cat",
    "url": "https://kids.britannica.com/students/article/cat/273297"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "an154",
@@ -4141,10 +4141,10 @@
   "level": "older",
   "text": "The Niagara River flows from Lake Erie to Lake Ontario, and the falls sit between New York and Ontario. Big power plants nearby use the moving water to make electricity.",
   "source": {
-   "name": "Britannica Kids Niagara Falls",
+   "name": "Britannica Kids: Niagara Falls",
    "url": "https://kids.britannica.com/students/article/276083"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea130",
@@ -4152,10 +4152,10 @@
   "level": "older",
   "text": "Uluru is more than two miles long and more than a mile wide. It sits in a national park near the middle of Australia.",
   "source": {
-   "name": "Britannica Kids Uluru",
+   "name": "Britannica Kids: Uluru",
    "url": "https://kids.britannica.com/students/article/UluruAyers-Rock/487521"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea131",
@@ -4207,10 +4207,10 @@
   "level": "younger",
   "text": "Talc is the softest mineral. It is so soft that a fingernail can scratch it. Diamond is the hardest.",
   "source": {
-   "name": "Minerals4Kids hardness",
+   "name": "Minerals4Kids: Hardness",
    "url": "https://min4kids.org/?p=380"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea137",
@@ -4218,10 +4218,10 @@
   "level": "older",
   "text": "Many people think only diamonds can scratch glass. In fact, many other minerals that rank six or higher on the Mohs scale can scratch it too.",
   "source": {
-   "name": "Minerals4Kids hardness",
+   "name": "Minerals4Kids: Hardness",
    "url": "https://min4kids.org/?p=380"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea138",
@@ -4229,10 +4229,10 @@
   "level": "younger",
   "text": "A copper coin can scratch some very soft minerals, such as talc and gypsum.",
   "source": {
-   "name": "Minerals4Kids hardness",
+   "name": "Minerals4Kids: Hardness",
    "url": "https://min4kids.org/?p=380"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea139",
@@ -4339,21 +4339,21 @@
   "level": "older",
   "text": "Measured from its base on the sea floor, Mauna Kea in Hawaii is about thirty three thousand feet tall. That is taller than Mount Everest.",
   "source": {
-   "name": "EarthDate Worlds Tallest Mountain",
+   "name": "EarthDate: Worlds Tallest Mountain",
    "url": "https://www.earthdate.org/episodes/worlds-tallest-mountain"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea150",
   "topic": "earth",
   "level": "younger",
-  "text": "An emerald is a deep green gem. Tiny amounts of a metal called chromium give it its color.",
+  "text": "An emerald is a deep green gem. Tiny amounts of metals such as chromium give it its color.",
   "source": {
-   "name": "EarthDate The Ever Green Stone",
+   "name": "EarthDate: The Ever Green Stone",
    "url": "https://www.earthdate.org/episodes/the-ever-green-stone"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea151",
@@ -4361,10 +4361,10 @@
   "level": "older",
   "text": "Emerald scores about seven and a half to eight on the Mohs scale, while diamond scores ten. Tiny cracks inside many emeralds mean that they can chip easily.",
   "source": {
-   "name": "EarthDate The Ever Green Stone",
+   "name": "EarthDate: The Ever Green Stone",
    "url": "https://www.earthdate.org/episodes/the-ever-green-stone"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea152",
@@ -4568,12 +4568,12 @@
   "id": "sp163",
   "topic": "space",
   "level": "older",
-  "text": "Every few years, a comet comes close enough and grows bright enough to be seen without a telescope.",
+  "text": "About once a year, a comet comes close enough and grows bright enough to be seen without a telescope.",
   "source": {
    "name": "NASA Space Place: Comet Fun Sheet",
    "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "sp164",
@@ -4722,23 +4722,23 @@
   "id": "dr117",
   "topic": "dragons",
   "level": "younger",
-  "text": "A green iguana uses its strong tail like a paddle to swim. It can hold its breath underwater for a long time.",
+  "text": "A green iguana uses its strong tail to swim. It can hold its breath underwater for up to thirty minutes.",
   "source": {
    "name": "SeaWorld: Green iguana",
    "url": "https://seaworld.org/animals/facts/reptiles/green-iguana/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr118",
   "topic": "dragons",
   "level": "older",
-  "text": "Adult green iguanas eat mostly fruits, flowers, and leaves. A grown male can reach a length of about four to six feet.",
+  "text": "Adult green iguanas eat mostly fruits, flowers, and leaves. A grown male can reach a length of about four to six and a half feet.",
   "source": {
    "name": "SeaWorld: Green iguana",
    "url": "https://seaworld.org/animals/facts/reptiles/green-iguana/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr119",
@@ -4768,21 +4768,21 @@
   "level": "younger",
   "text": "Horned lizards have wide, flat bodies with spiky skin. They look a bit like tiny toads, but they are really lizards.",
   "source": {
-   "name": "Texas Parks and Wildlife: horned lizard facts",
+   "name": "Texas Parks and Wildlife: Horned lizard facts",
    "url": "https://tpwd.texas.gov/huntwild/wild/wildlife_diversity/texas_nature_trackers/horned_lizard/facts/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr122",
   "topic": "dragons",
   "level": "older",
-  "text": "Texas horned lizards are only about four or five inches long. Their gray, brown, and rust colors help them blend in with the plants and dry ground around them.",
+  "text": "Texas horned lizards are only about three and a half to five inches long. Their gray, brown, and rust colors help them blend in with the plants and dry ground around them.",
   "source": {
-   "name": "Texas Parks and Wildlife: horned lizard facts",
+   "name": "Texas Parks and Wildlife: Horned lizard facts",
    "url": "https://tpwd.texas.gov/huntwild/wild/wildlife_diversity/texas_nature_trackers/horned_lizard/facts/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr123",
@@ -4823,21 +4823,21 @@
   "level": "younger",
   "text": "A green anole is not always green. It can change its color from bright green to brown, and back again.",
   "source": {
-   "name": "NPS Bluestone Lake: Anoles",
-   "url": "https://www.nps.gov/bith/learn/nature/anoles.htm"
+   "name": "Kennesaw State University: Green anole color change",
+   "url": "https://digitalcommons.kennesaw.edu/undergradsymposiumksu/spring2025/spring2025/35/"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "dr127",
   "topic": "dragons",
   "level": "older",
-  "text": "Galapagos giant tortoises are the largest tortoises alive today. A big one can be about five feet long and weigh more than five hundred pounds.",
+  "text": "Galapagos giant tortoises are among the largest tortoises alive today. A big one can be about five feet long.",
   "source": {
    "name": "San Diego Zoo library: Galapagos tortoises fact sheet",
    "url": "https://ielc.libguides.com/sdzg/factsheets/galapagostortoises"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr128",
@@ -4848,7 +4848,7 @@
    "name": "San Diego Zoo library: Galapagos tortoises fact sheet",
    "url": "https://ielc.libguides.com/sdzg/factsheets/galapagostortoises"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr129",
@@ -4865,12 +4865,12 @@
   "id": "dr130",
   "topic": "dragons",
   "level": "younger",
-  "text": "A box turtle has a hinge on the bottom of its shell. It can pull in its head and legs and shut its shell tight.",
+  "text": "A box turtle has a hinge on the bottom of its shell. It can pull in its head and legs and shut its shell almost completely.",
   "source": {
    "name": "Smithsonian National Zoo: Eastern box turtle",
    "url": "https://nationalzoo.si.edu/node/10462"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "dr131",
@@ -4903,7 +4903,7 @@
    "name": "Buffalo Zoo: Royal ball python",
    "url": "https://buffalozoo.org/animal/royalball-python/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr135",
@@ -4914,7 +4914,7 @@
    "name": "Buffalo Zoo: Royal ball python",
    "url": "https://buffalozoo.org/animal/royalball-python/"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "dr136",
@@ -4975,12 +4975,12 @@
   "id": "dr143",
   "topic": "dragons",
   "level": "younger",
-  "text": "There are about three thousand kinds of dragonflies. They live near ponds, lakes, and streams in most parts of the world.",
+  "text": "There are about twenty five hundred kinds of dragonflies. They live near ponds, lakes, and streams in most parts of the world.",
   "source": {
    "name": "Britannica Kids: Dragonfly",
    "url": "https://kids.britannica.com/kids/article/dragonfly/390734"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "oc139",
@@ -5063,12 +5063,12 @@
   "id": "oc146",
   "topic": "oceans",
   "level": "older",
-  "text": "In nineteen sixty, two men rode a deep diving craft called the Trieste to the bottom of the Challenger Deep. The trip down took almost five hours, and they stayed on the bottom for about twenty minutes.",
+  "text": "In nineteen sixty, two men rode a deep diving craft called the Trieste to the bottom of the Challenger Deep. They stayed on the bottom for about twenty minutes.",
   "source": {
    "name": "EarthDate: The Deepest Dive",
    "url": "https://www.earthdate.org/episodes/the-deepest-dive"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "oc147",
@@ -5112,7 +5112,7 @@
    "name": "Ocean Conservancy: Top facts about the beach",
    "url": "https://oceanconservancy.org/?p=67699"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "oc152",
@@ -5123,7 +5123,7 @@
    "name": "Ocean Conservancy: Top facts about the beach",
    "url": "https://oceanconservancy.org/?p=67699"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "oc153",
@@ -5162,12 +5162,12 @@
   "id": "oc156",
   "topic": "oceans",
   "level": "older",
-  "text": "Arctic terns spend summer in the far north and then fly south to enjoy another summer near Antarctica. That means they see more daylight than almost any other animal.",
+  "text": "Arctic terns spend summer in the far north and then fly south to enjoy another summer near Antarctica. The round trip is about twenty five thousand miles each year.",
   "source": {
    "name": "Cornell Lab All About Birds: Arctic Tern",
    "url": "https://www.allaboutbirds.org/guide/arctic_Tern"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "oc157",
@@ -5195,12 +5195,12 @@
   "id": "oc159",
   "topic": "oceans",
   "level": "older",
-  "text": "An ocean sunfish has a flat, round body and no true tail. It often lies on its side near the surface, as if it were soaking up the sunshine.",
+  "text": "An ocean sunfish has a flat, round body and no true tail. It often rests near the surface, as if it were soaking up the sunshine.",
   "source": {
-   "name": "Smithsonian Magazine: Unraveling the mysteries of the ocean sunfish",
+   "name": "Smithsonian Magazine: Ocean sunfish",
    "url": "https://www.smithsonianmag.com/science-nature/unraveling-the-mysteries-of-the-ocean-sunfish-115258763/"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "oc160",
@@ -5241,10 +5241,10 @@
   "level": "younger",
   "text": "A windsock is a cloth tube that shows which way the wind blows. It droops in light wind and stands out straight in strong wind.",
   "source": {
-   "name": "Wikipedia: Windsock",
-   "url": "https://en.wikipedia.org/wiki/Windsock"
+   "name": "SKYbrary: Windsock",
+   "url": "https://skybrary.aero/articles/windsock"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we149",
@@ -5252,10 +5252,10 @@
   "level": "older",
   "text": "Airports use windsocks so pilots can check the wind. When a windsock stands straight out, the wind is blowing at about seventeen miles per hour or more.",
   "source": {
-   "name": "Wikipedia: Windsock",
-   "url": "https://en.wikipedia.org/wiki/Windsock"
+   "name": "SKYbrary: Windsock",
+   "url": "https://skybrary.aero/articles/windsock"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we150",
@@ -5266,7 +5266,7 @@
    "name": "Wonderopolis: What does a barometer measure?",
    "url": "https://wonderopolis.org/wonder/what-does-a-barometer-measure"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we151",
@@ -5277,7 +5277,7 @@
    "name": "Wonderopolis: What does a barometer measure?",
    "url": "https://wonderopolis.org/wonder/what-does-a-barometer-measure"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we152",
@@ -5310,7 +5310,7 @@
    "name": "NOAA NESDIS: Thermometer activity",
    "url": "https://nesdis.noaa.gov/s3/2023-02/thermometer%20activity%20web.pdf"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "we155",
@@ -5376,7 +5376,7 @@
    "name": "Wonderopolis: How are icicles formed?",
    "url": "https://wonderopolis.org/wonder/how-are-icicles-formed"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we161",
@@ -5387,7 +5387,7 @@
    "name": "Wonderopolis: How are icicles formed?",
    "url": "https://wonderopolis.org/wonder/how-are-icicles-formed"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we162",
@@ -5395,10 +5395,10 @@
   "level": "older",
   "text": "Some frost forms straight from water vapor in the air, without turning into liquid first. It makes tiny ice crystals shaped like scales, needles, or fans.",
   "source": {
-   "name": "UNDRR PreventionWeb: Frost (hoar frost)",
+   "name": "UNDRR PreventionWeb: Hoar frost",
    "url": "https://www.preventionweb.net/understanding-disaster-risk/terminology/hips/mh0505"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we163",
@@ -5406,10 +5406,10 @@
   "level": "older",
   "text": "Frost likes clear, calm nights. Objects near the ground lose heat to the sky and get cold enough to pull water vapor out of the air.",
   "source": {
-   "name": "UNDRR PreventionWeb: Frost (hoar frost)",
+   "name": "UNDRR PreventionWeb: Hoar frost",
    "url": "https://www.preventionweb.net/understanding-disaster-risk/terminology/hips/mh0505"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we164",
