@@ -1,7 +1,16 @@
+// Fonts ship with the game so it looks the same offline.
+import '@fontsource/fredoka/latin-400.css';
+import '@fontsource/fredoka/latin-500.css';
+import '@fontsource/fredoka/latin-600.css';
+import '@fontsource/fredoka/latin-700.css';
+import '@fontsource/atkinson-hyperlegible/latin-400.css';
+import '@fontsource/atkinson-hyperlegible/latin-700.css';
 import './styles.css';
 import { startApp } from './ui/app';
+import { watchInstall } from './ui/install';
 import { title } from './ui/screens/title';
 
+watchInstall();
 void startApp(document.getElementById('app')!, title);
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

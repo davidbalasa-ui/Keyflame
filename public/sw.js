@@ -2,9 +2,17 @@
 // Each build registers this file with a new ?v= so every deploy gets its own cache.
 const CACHE = `keyflame-${new URL(self.location.href).searchParams.get('v') || 'v1'}`;
 
+// The build (vite.config.ts) swaps in the full list of game files here, so the
+// whole game is saved on install, before the player ever goes offline.
+const PRECACHE = /* PRECACHE_LIST */ ['./', './index.html'];
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html', './favicon.svg', './manifest.webmanifest'])));
-  self.skipWaiting();
+  event.waitUntil(
+    caches
+      .open(CACHE)
+      .then((c) => c.addAll(PRECACHE.map((url) => new Request(url, { cache: 'no-cache' }))))
+      .then(() => self.skipWaiting()),
+  );
 });
 
 self.addEventListener('activate', (event) => {
@@ -25,21 +33,25 @@ self.addEventListener('fetch', (event) => {
       // Skip the browser's HTTP cache so a new deploy shows up right away.
       fetch(req, { cache: 'no-store' })
         .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put('./index.html', copy));
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then((c) => c.put(url.origin + url.pathname, copy));
+          }
           return res;
         })
-        .catch(() => caches.match('./index.html')),
+        .catch(() => caches.match(req, { ignoreSearch: true, ignoreVary: true }).then((hit) => hit || caches.match('./'))),
     );
     return;
   }
-  // Game files and fonts: cached copy first, then fill the cache from the network.
+  // Game files: cached copy first, then fill the cache from the network.
+  // ignoreVary: the game's scripts are fetched with an Origin header that the
+  // saved copies were not, and some hosts answer with Vary: Origin.
   event.respondWith(
-    caches.match(req).then(
+    caches.match(req, { ignoreVary: true }).then(
       (hit) =>
         hit ||
         fetch(req).then((res) => {
-          if (res.ok || res.type === 'opaque') {
+          if (res.ok && url.origin === self.location.origin) {
             const copy = res.clone();
             caches.open(CACHE).then((c) => c.put(req, copy));
           }

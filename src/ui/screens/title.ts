@@ -3,6 +3,7 @@ import { activeDragon } from '../../game/progress';
 import { MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, importBackupCode, type Profile } from '../../save/store';
 import { applyPendingSupporter, applySettings, go, persist, saveData } from '../app';
 import { button, h, svg } from '../dom';
+import { canInstall, installApp, onInstallChange } from '../install';
 import { sfx } from '../sound';
 import { hub } from './hub';
 
@@ -44,9 +45,24 @@ export const title = (root: HTMLElement): void => {
       h('h2', {}, save.profiles.length ? 'Who is riding today?' : 'Start your first ride'),
       cards,
       h('p', { class: 'fine' }, button('Restore from a backup code', () => restore(root), 'link')),
+      installLink(),
     ),
   );
 };
+
+/** Shown only where the browser can install the game as an app. */
+function installLink(): HTMLElement {
+  const p = h('p', { class: 'fine' }, button('Install Keyflame to play offline', () => void installApp(), 'link'));
+  const render = (): boolean => {
+    if (!p.isConnected && p.dataset.shown) return false;
+    p.hidden = !canInstall();
+    p.dataset.shown = '1';
+    return true;
+  };
+  render();
+  onInstallChange(render);
+  return p;
+}
 
 function newRider(root: HTMLElement): void {
   // Names come from preset parts so kids never type personal information.
