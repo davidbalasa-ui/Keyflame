@@ -77,3 +77,45 @@ export function keyLabel(k: string, shifted: boolean): string {
   if (k === ' ') return 'space';
   return shifted ? (SHIFT_SYMBOL[k] ?? k.toUpperCase()) : k;
 }
+
+/** A key on the phone-style tap keyboard; w is its width in letter-key units (a row is 10 units). */
+export interface TouchKey {
+  k: string;
+  w: number;
+}
+
+/**
+ * The tap keyboard follows a standard phone layout (Gboard, Samsung Keyboard): the middle row
+ * is inset by half a key, shift and z..m sit where a phone puts them, and the symbols live
+ * around the space bar. 'shift' is the shift key.
+ */
+export const TOUCH_ROWS: TouchKey[][] = [
+  ROWS[0].map((k) => ({ k, w: 1 })),
+  ROWS[1].filter((k) => k !== ';').map((k) => ({ k, w: 1 })),
+  [{ k: 'shift', w: 1.5 }, ...'zxcvbnm'.split('').map((k) => ({ k, w: 1 })), { k: '/', w: 1.5 }],
+  [{ k: ';', w: 1.5 }, { k: ',', w: 1 }, { k: ' ', w: 6 }, { k: '.', w: 1.5 }],
+];
+
+/** Indent of each touch row, in key units, so the middle row sits half a key in. */
+export const TOUCH_ROW_INSET = [0, 0.5, 0, 0];
+
+/** Where a key's centre sits across the tap keyboard, from 0 (left edge) to 10 (right edge). */
+export function touchKeyCenter(ch: string): number | null {
+  const base = baseKey(ch);
+  for (const [r, row] of TOUCH_ROWS.entries()) {
+    let x = TOUCH_ROW_INSET[r];
+    for (const key of row) {
+      if (key.k === base) return x + key.w / 2;
+      x += key.w;
+    }
+  }
+  return null;
+}
+
+/** Which thumb reaches a key on the tap keyboard. */
+export function touchThumb(ch: string): 'left' | 'right' | 'either' {
+  if (ch === ' ') return 'either';
+  const x = touchKeyCenter(ch);
+  if (x === null) return fingerFor(ch).startsWith('left') ? 'left' : 'right';
+  return x < 5 ? 'left' : 'right';
+}
