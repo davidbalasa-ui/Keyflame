@@ -23,7 +23,9 @@ export const REVIEWED_WORDS = new Set<string>([
   // ass
   'compass', 'passes', 'pass', 'class', 'mass', 'grass', 'glass',
   // butt, die, fart, nig, pee, poo
-  'butterflies', 'butterfly', 'bodies', 'farther', 'nights', 'night', 'speed', 'spoonful',
+  'butterflies', 'butterfly', 'bodies', 'farther', 'farthest', 'nights', 'night', 'speed', 'spoonful',
+  // hoe, die
+  'echoes', 'indies',
 ]);
 
 // Hand-reviewed words from our own lists. These are allowed even when a root

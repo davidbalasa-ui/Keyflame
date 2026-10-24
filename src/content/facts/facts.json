@@ -1648,5 +1648,2018 @@
    "url": "https://www.antarctica.gov.au/about-antarctica/animals/penguins/emperor-penguin/how-deep-can-they-dive/"
   },
   "check": "ok"
+ },
+ {
+  "id": "dr103",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Green sea turtles eat seaweed and sea grass. Scientists think this plant meal turns their body fat green, which gave them their name.",
+  "source": {
+   "name": "National Geographic Kids: Green sea turtle",
+   "url": "https://www.natgeokids.com/nz/?p=8338"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr104",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Green sea turtles can swim more than a thousand miles across the open ocean. Scientists think they use the magnetic field of the Earth to find their way.",
+  "source": {
+   "name": "National Geographic Kids: Green sea turtle",
+   "url": "https://www.natgeokids.com/nz/?p=8338"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr105",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "A green sea turtle can rest underwater for several hours. When it is busy swimming, it comes up to breathe every few minutes.",
+  "source": {
+   "name": "National Geographic Kids: Green sea turtle",
+   "url": "https://www.natgeokids.com/nz/?p=8338"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr106",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Flying snakes of Southeast Asia can glide through the air from tree to tree. They flatten their bodies to about twice their normal width.",
+  "source": {
+   "name": "Science News: Flying snakes glide through the treetops",
+   "url": "https://www.sciencenews.org/article/slithering-air-flying-snakes-glide-through-treetops"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr107",
+  "topic": "dragons",
+  "level": "older",
+  "text": "A flying snake leaps from a branch and moves its body in a wavy S shape as it glides. It can even turn in midair, and the best glider in one study sailed about seventy feet.",
+  "source": {
+   "name": "Science News: Flying snakes glide through the treetops",
+   "url": "https://www.sciencenews.org/article/slithering-air-flying-snakes-glide-through-treetops"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "dr108",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Giant tortoises of the Galapagos Islands have two main shell shapes. Some have very round domed shells and live in cooler highlands. Others have saddleback shells that flare up at the front.",
+  "source": {
+   "name": "Yale Institute of Biospheric Studies: Giant tortoise shells",
+   "url": "https://yibs.yale.edu/news/how-giant-tortoise-gets-its-back"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr110",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "An alligator has a wide, rounded snout. A crocodile has a narrower snout that looks more pointed.",
+  "source": {
+   "name": "PBS Nature: Alligator vs crocodile",
+   "url": "https://www.pbs.org/wnet/nature/blog/alligator-vs-crocodile-whats-the-difference"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr111",
+  "topic": "dragons",
+  "level": "older",
+  "text": "Alligators live mostly in freshwater places such as swamps, marshes, rivers, and lakes. Crocodiles can live in freshwater too, and many also live along coasts where the water is salty.",
+  "source": {
+   "name": "PBS Nature: Alligator vs crocodile",
+   "url": "https://www.pbs.org/wnet/nature/blog/alligator-vs-crocodile-whats-the-difference"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "dr112",
+  "topic": "dragons",
+  "level": "older",
+  "text": "A dragonfly has five eyes. Its two large eyes are made of thousands of tiny lenses, and some kinds can even see ultraviolet light that people cannot see.",
+  "source": {
+   "name": "NPS: Species Spotlight Dragonflies",
+   "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr113",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Some dragonflies can zoom along at more than twenty miles per hour. That makes them some of the fastest flying insects.",
+  "source": {
+   "name": "NPS: Species Spotlight Dragonflies",
+   "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "dr114",
+  "topic": "dragons",
+  "level": "older",
+  "text": "A young dragonfly lives underwater and sheds its skin six to fifteen times as it grows. After it climbs out as an adult, it takes several hours for its wings to fill and its body to harden.",
+  "source": {
+   "name": "NPS: Species Spotlight Dragonflies",
+   "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr115",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Most of the life of a dragonfly is spent as a young insect in the water. It grows wings only at the very end.",
+  "source": {
+   "name": "NPS: Species Spotlight Dragonflies",
+   "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "dr116",
+  "topic": "dragons",
+  "level": "younger",
+  "text": "Dragonflies can fly sideways as easily as forward. They can make sharp turns in the air faster than most other insects.",
+  "source": {
+   "name": "NPS: Species Spotlight Dragonflies",
+   "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an101",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A red panda can munch about twenty thousand bamboo leaves in one day.",
+  "source": {
+   "name": "Nat Geo Kids: Red Panda",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/red-panda"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an102",
+  "topic": "animals",
+  "level": "older",
+  "text": "Red pandas can turn their ankles around so far that they climb down tree trunks headfirst. They also swing their long tails to stay balanced on branches.",
+  "source": {
+   "name": "Nat Geo Kids: Red Panda",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/red-panda"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "an103",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A wombat digs long tunnels with its strong claws. The tunnels make a cozy home underground.",
+  "source": {
+   "name": "San Diego Zoo: Wombat",
+   "url": "https://animals.sandiegozoo.org/animals/wombat"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an104",
+  "topic": "animals",
+  "level": "older",
+  "text": "Wombats are marsupials, so a baby wombat grows up in a pouch on its mother. The pouch opens toward the back, which helps keep dirt out while she digs.",
+  "source": {
+   "name": "San Diego Zoo: Wombat",
+   "url": "https://animals.sandiegozoo.org/animals/wombat"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an105",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A beaver slaps its flat tail on the water to make a loud splash. It also uses the tail to help it swim.",
+  "source": {
+   "name": "Nat Geo Kids: Beaver",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/beaver"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an106",
+  "topic": "animals",
+  "level": "older",
+  "text": "Beavers have orange front teeth that never stop growing. They gnaw on wood, which keeps the teeth from getting too long.",
+  "source": {
+   "name": "Nat Geo Kids: Beaver",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/beaver"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an107",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A giant panda spends most of the day eating bamboo. It sits up and holds the stalks in its paws.",
+  "source": {
+   "name": "Nat Geo Kids: Giant Panda",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/giant-panda"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an108",
+  "topic": "animals",
+  "level": "older",
+  "text": "Giant pandas have a special wrist bone that works a bit like a thumb. It helps them hold bamboo stalks tightly while they eat.",
+  "source": {
+   "name": "Nat Geo Kids: Giant Panda",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/giant-panda"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an109",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A river otter has webbed feet. They work like paddles and help it swim fast.",
+  "source": {
+   "name": "San Diego Zoo: Otter",
+   "url": "https://animals.sandiegozoo.org/animals/otter"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an110",
+  "topic": "animals",
+  "level": "older",
+  "text": "River otters have a thick coat of fur that keeps water away from their skin. They spend lots of time swimming and sliding along muddy banks.",
+  "source": {
+   "name": "San Diego Zoo: Otter",
+   "url": "https://animals.sandiegozoo.org/animals/otter"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an111",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Camels have two rows of long eyelashes. They help keep sand out of their eyes in windy deserts.",
+  "source": {
+   "name": "Britannica: Camel",
+   "url": "https://www.britannica.com/animal/camel"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an112",
+  "topic": "animals",
+  "level": "older",
+  "text": "A camel hump does not hold water. It stores fat, which the camel can use for energy when food is hard to find.",
+  "source": {
+   "name": "Britannica: Do Camels Store Water in Their Humps?",
+   "url": "https://www.britannica.com/story/do-camels-store-water-in-their-humps"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an113",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Gorillas build a new nest of leaves and branches to sleep in each night.",
+  "source": {
+   "name": "San Diego Zoo: Gorilla",
+   "url": "https://animals.sandiegozoo.org/animals/gorilla"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an114",
+  "topic": "animals",
+  "level": "older",
+  "text": "Adult male gorillas grow a patch of silver hair on their backs, so they are called silverbacks. They lead a family group called a troop.",
+  "source": {
+   "name": "San Diego Zoo: Gorilla",
+   "url": "https://animals.sandiegozoo.org/animals/gorilla"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an115",
+  "topic": "animals",
+  "level": "younger",
+  "text": "When a hedgehog feels unsafe, it curls into a tight ball. Its spiky coat then points in every direction.",
+  "source": {
+   "name": "San Diego Zoo: Hedgehog",
+   "url": "https://animals.sandiegozoo.org/animals/hedgehog"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an116",
+  "topic": "animals",
+  "level": "older",
+  "text": "A hedgehog has thousands of spines, which are really stiff hairs. It is most active at night, when it searches for food.",
+  "source": {
+   "name": "San Diego Zoo: Hedgehog",
+   "url": "https://animals.sandiegozoo.org/animals/hedgehog"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an117",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Bats are the only mammals that can truly fly. Their wings are thin skin stretched over long finger bones.",
+  "source": {
+   "name": "NPS: How Bats Fly",
+   "url": "https://www.nps.gov/subjects/bats/how-bats-fly.htm"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an118",
+  "topic": "animals",
+  "level": "older",
+  "text": "Most bats use sound to find their way in the dark. They make high squeaks and listen for the echoes that bounce back.",
+  "source": {
+   "name": "Britannica: Bat",
+   "url": "https://www.britannica.com/animal/bat-mammal"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an119",
+  "topic": "animals",
+  "level": "younger",
+  "text": "Bald eagles build huge nests of sticks high in trees. A pair may add to the same nest year after year.",
+  "source": {
+   "name": "Nat Geo Kids: Bald Eagle",
+   "url": "https://kids.nationalgeographic.com/animals/birds/facts/bald-eagle"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an120",
+  "topic": "animals",
+  "level": "older",
+  "text": "A bald eagle has eyesight that is much sharper than ours. It can spot small things from very far away while it soars high in the sky.",
+  "source": {
+   "name": "Nat Geo Kids: Bald Eagle",
+   "url": "https://kids.nationalgeographic.com/animals/birds/facts/bald-eagle"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an121",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A woodpecker taps on trees with its strong beak. Stiff tail feathers help it hold on to the trunk.",
+  "source": {
+   "name": "Britannica Kids: Woodpecker",
+   "url": "https://kids.britannica.com/kids/article/woodpecker/353932"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an122",
+  "topic": "animals",
+  "level": "older",
+  "text": "Acorn woodpeckers store thousands of acorns in holes they drill in trees. Family groups share the work of looking after this food store.",
+  "source": {
+   "name": "Cornell Lab: Acorn Woodpecker",
+   "url": "https://www.allaboutbirds.org/guide/Acorn_Woodpecker/overview"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an123",
+  "topic": "animals",
+  "level": "younger",
+  "text": "An ostrich is the biggest bird in the world. It cannot fly, but it can run very fast on its long legs.",
+  "source": {
+   "name": "Smithsonian National Zoo: Ostrich",
+   "url": "https://nationalzoo.si.edu/animals/ostrich"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an124",
+  "topic": "animals",
+  "level": "older",
+  "text": "An ostrich has the biggest eyes of any land animal, and its eggs are the largest of any bird. One egg is about as big as two dozen chicken eggs.",
+  "source": {
+   "name": "Smithsonian National Zoo: Ostrich",
+   "url": "https://nationalzoo.si.edu/animals/ostrich"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an125",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A male peafowl has a long train of colorful feathers. The train is covered in shiny spots that look like eyes.",
+  "source": {
+   "name": "Nat Geo Kids: Indian Peafowl",
+   "url": "https://kids.nationalgeographic.com/animals/birds/facts/indian-peafowl"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an126",
+  "topic": "animals",
+  "level": "older",
+  "text": "Peafowl can fly short distances, even with long feathers. At night they often fly up to rest high in tall trees, where they feel safe.",
+  "source": {
+   "name": "Nat Geo Kids: Indian Peafowl",
+   "url": "https://kids.nationalgeographic.com/animals/birds/facts/indian-peafowl"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an127",
+  "topic": "animals",
+  "level": "younger",
+  "text": "A gray squirrel buries nuts in many places. Later it sniffs them out again, even under snow.",
+  "source": {
+   "name": "Nat Geo Kids: Eastern Gray Squirrel",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/eastern-gray-squirrel"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "an128",
+  "topic": "animals",
+  "level": "older",
+  "text": "Squirrels use their bushy tails for balance when they leap along branches. The tail also works like a warm blanket in cold weather.",
+  "source": {
+   "name": "Nat Geo Kids: Eastern Gray Squirrel",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/eastern-gray-squirrel"
+  },
+  "check": "weak source"
+ },
+ {
+  "id": "sp101",
+  "topic": "space",
+  "level": "younger",
+  "text": "Mercury is the smallest planet in our solar system. It is only a little more than one third as wide as the Earth.",
+  "source": {
+   "name": "NASA Science: Mercury facts",
+   "url": "https://science.nasa.gov/mercury/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp102",
+  "topic": "space",
+  "level": "older",
+  "text": "Mercury has no moons and no rings. It is the closest planet to the Sun, and it is only a little bigger than our Moon.",
+  "source": {
+   "name": "NASA Science: Mercury facts",
+   "url": "https://science.nasa.gov/mercury/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp103",
+  "topic": "space",
+  "level": "older",
+  "text": "One full day and night on Mercury, from one sunrise to the next, lasts about a hundred and seventy six Earth days. That is twice as long as a year on Mercury.",
+  "source": {
+   "name": "NASA Science: Mercury facts",
+   "url": "https://science.nasa.gov/mercury/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp104",
+  "topic": "space",
+  "level": "younger",
+  "text": "Venus spins the opposite way from most planets. If you could stand there, the Sun would rise in the west.",
+  "source": {
+   "name": "NASA Science: Venus facts",
+   "url": "https://science.nasa.gov/venus/venus-facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp105",
+  "topic": "space",
+  "level": "younger",
+  "text": "Only the Sun and the Moon look brighter in our sky than Venus. Many people mistake it for a very bright star.",
+  "source": {
+   "name": "NASA Science: Venus facts",
+   "url": "https://science.nasa.gov/venus/venus-facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp106",
+  "topic": "space",
+  "level": "older",
+  "text": "Venus is almost the same size as the Earth, about ninety five percent as wide. Thick clouds cover the whole planet, and winds at the cloud tops blow faster than two hundred miles an hour.",
+  "source": {
+   "name": "NASA Science: Venus facts",
+   "url": "https://science.nasa.gov/venus/venus-facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp107",
+  "topic": "space",
+  "level": "younger",
+  "text": "Almost all of the water on our planet is salty ocean water. Only a small part is fresh water that we can drink.",
+  "source": {
+   "name": "NASA Science: Earth facts",
+   "url": "https://science.nasa.gov/earth/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp109",
+  "topic": "space",
+  "level": "younger",
+  "text": "The air around the Earth is mostly nitrogen. Only about one part in five is the oxygen that we breathe.",
+  "source": {
+   "name": "NASA Science: Earth facts",
+   "url": "https://science.nasa.gov/earth/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp110",
+  "topic": "space",
+  "level": "older",
+  "text": "The Earth is about ninety three million miles from the Sun. Scientists call this distance one astronomical unit and use it like a ruler to measure space.",
+  "source": {
+   "name": "NASA Science: Earth facts",
+   "url": "https://science.nasa.gov/earth/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp111",
+  "topic": "space",
+  "level": "younger",
+  "text": "Mars has two small moons. Their names are Phobos and Deimos.",
+  "source": {
+   "name": "NASA Science: Mars facts",
+   "url": "https://science.nasa.gov/mars/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp112",
+  "topic": "space",
+  "level": "younger",
+  "text": "A day on Mars lasts about twenty four and a half hours. That is very close to a day on the Earth.",
+  "source": {
+   "name": "NASA Science: Mars facts",
+   "url": "https://science.nasa.gov/mars/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp113",
+  "topic": "space",
+  "level": "older",
+  "text": "Valles Marineris is a giant canyon on Mars, about twenty four hundred miles long. It is the largest canyon in the solar system.",
+  "source": {
+   "name": "NASA Science: Mars facts",
+   "url": "https://science.nasa.gov/mars/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp114",
+  "topic": "space",
+  "level": "older",
+  "text": "Sunlight takes about thirteen minutes to reach Mars, because Mars is much farther from the Sun than the Earth is.",
+  "source": {
+   "name": "NASA Science: Mars facts",
+   "url": "https://science.nasa.gov/mars/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp115",
+  "topic": "space",
+  "level": "younger",
+  "text": "A day on Jupiter lasts less than ten hours. It spins faster than any other planet in the solar system.",
+  "source": {
+   "name": "NASA Science: Jupiter facts",
+   "url": "https://science.nasa.gov/jupiter/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp116",
+  "topic": "space",
+  "level": "younger",
+  "text": "Jupiter has faint rings made of tiny, dark bits. A spacecraft called Voyager one found them.",
+  "source": {
+   "name": "NASA Science: Jupiter facts",
+   "url": "https://science.nasa.gov/jupiter/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp117",
+  "topic": "space",
+  "level": "older",
+  "text": "In sixteen ten, Galileo Galilei spotted four moons circling Jupiter: Io, Europa, Ganymede and Callisto. They are still called the Galilean moons today.",
+  "source": {
+   "name": "NASA Science: Jupiter facts",
+   "url": "https://science.nasa.gov/jupiter/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp118",
+  "topic": "space",
+  "level": "younger",
+  "text": "Ganymede is a moon of Jupiter, and it is the biggest moon in the solar system. It is even bigger than the planet Mercury.",
+  "source": {
+   "name": "NASA Science: Jupiter facts",
+   "url": "https://science.nasa.gov/jupiter/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp119",
+  "topic": "space",
+  "level": "younger",
+  "text": "Saturn has wide rings, but they are very thin. In many places they are only about thirty feet thick.",
+  "source": {
+   "name": "NASA Science: Saturn facts",
+   "url": "https://science.nasa.gov/saturn/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp120",
+  "topic": "space",
+  "level": "older",
+  "text": "Near the north pole of Saturn, a strong river of wind blows in the shape of a six sided hexagon. The shape is about twenty thousand miles across.",
+  "source": {
+   "name": "NASA Science: Saturn facts",
+   "url": "https://science.nasa.gov/saturn/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp121",
+  "topic": "space",
+  "level": "older",
+  "text": "A moon of Saturn has lakes of liquid methane, and another moon, Enceladus, shoots out jets of water. Scientists think both moons may have oceans hidden inside.",
+  "source": {
+   "name": "NASA Science: Saturn facts",
+   "url": "https://science.nasa.gov/saturn/facts/"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "sp122",
+  "topic": "space",
+  "level": "older",
+  "text": "Neptune was found with math. An astronomer used odd wobbles in the path of another planet to predict where to look, and the planet was spotted in eighteen forty six.",
+  "source": {
+   "name": "NASA Science: Neptune facts",
+   "url": "https://science.nasa.gov/neptune/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp123",
+  "topic": "space",
+  "level": "younger",
+  "text": "Neptune looks blue. A gas called methane in its air soaks up red light, so more blue light bounces back to us.",
+  "source": {
+   "name": "NASA Science: Neptune facts",
+   "url": "https://science.nasa.gov/neptune/facts/"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "sp124",
+  "topic": "space",
+  "level": "older",
+  "text": "Voyager two was the first spacecraft to fly past Neptune. It made the trip in the summer of nineteen eighty nine.",
+  "source": {
+   "name": "NASA Science: Neptune facts",
+   "url": "https://science.nasa.gov/neptune/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp125",
+  "topic": "space",
+  "level": "older",
+  "text": "Triton, the biggest moon of Neptune, circles the planet in the opposite direction to the way Neptune spins. It was found just seventeen days after the planet itself.",
+  "source": {
+   "name": "NASA Science: Neptune facts",
+   "url": "https://science.nasa.gov/neptune/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp126",
+  "topic": "space",
+  "level": "younger",
+  "text": "The Sun is about a hundred times wider than the Earth. More than a million Earths could fit inside it.",
+  "source": {
+   "name": "NASA Science: Sun facts",
+   "url": "https://science.nasa.gov/sun/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp127",
+  "topic": "space",
+  "level": "younger",
+  "text": "Almost all of the stuff in our solar system is in the Sun. All the planets together are only a tiny part.",
+  "source": {
+   "name": "NASA Science: Sun facts",
+   "url": "https://science.nasa.gov/sun/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp128",
+  "topic": "space",
+  "level": "older",
+  "text": "The center of the Sun is about fifteen million degrees Celsius. That is hot enough for the nuclear fusion that keeps the Sun shining.",
+  "source": {
+   "name": "NASA Science: Sun facts",
+   "url": "https://science.nasa.gov/sun/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp129",
+  "topic": "space",
+  "level": "older",
+  "text": "Sunspots are dark patches on the surface of the Sun. Some are far wider than the whole Earth.",
+  "source": {
+   "name": "NASA Science: Sun facts",
+   "url": "https://science.nasa.gov/sun/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp130",
+  "topic": "space",
+  "level": "older",
+  "text": "The Sun spins, but not like a solid ball. It takes about twenty five Earth days to turn at its middle and about thirty six days near its poles.",
+  "source": {
+   "name": "NASA Science: Sun facts",
+   "url": "https://science.nasa.gov/sun/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp131",
+  "topic": "space",
+  "level": "older",
+  "text": "After the Sun, the closest star to us is Proxima Centauri. Its light takes about four years to reach the Earth.",
+  "source": {
+   "name": "NASA Science: Sun facts",
+   "url": "https://science.nasa.gov/sun/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp132",
+  "topic": "space",
+  "level": "younger",
+  "text": "We always see the same side of the Moon. It turns just once each time it goes around the Earth.",
+  "source": {
+   "name": "NASA Science: Moon facts",
+   "url": "https://science.nasa.gov/moon/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp133",
+  "topic": "space",
+  "level": "younger",
+  "text": "Gravity on the Moon is only one sixth as strong as on the Earth. That is why astronauts seemed to bounce when they walked.",
+  "source": {
+   "name": "NASA Science: Moon facts",
+   "url": "https://science.nasa.gov/moon/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp134",
+  "topic": "space",
+  "level": "younger",
+  "text": "Apollo astronauts brought back more than eight hundred pounds of Moon rock and dust for scientists to study.",
+  "source": {
+   "name": "NASA Science: Moon facts",
+   "url": "https://science.nasa.gov/moon/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp135",
+  "topic": "space",
+  "level": "older",
+  "text": "Tycho is a crater on the Moon that is more than fifty miles wide. Craters last a very long time there, because there is no wind or rain to wear them away.",
+  "source": {
+   "name": "NASA Science: Moon facts",
+   "url": "https://science.nasa.gov/moon/facts/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp136",
+  "topic": "space",
+  "level": "older",
+  "text": "The dark patches you can see on the Moon are called maria, a word that means seas. They are not water. They are flat plains filled with hardened lava.",
+  "source": {
+   "name": "NASA Space Place: All About the Moon",
+   "url": "https://spaceplace.nasa.gov/all-about-the-moon/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp137",
+  "topic": "space",
+  "level": "older",
+  "text": "The first people landed on the Moon in July of nineteen sixty nine, during a mission called Apollo eleven.",
+  "source": {
+   "name": "NASA Space Place: All About the Moon",
+   "url": "https://spaceplace.nasa.gov/all-about-the-moon/en/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp138",
+  "topic": "space",
+  "level": "younger",
+  "text": "Hubble is a telescope that flies around the Earth. It was sent into space in nineteen ninety.",
+  "source": {
+   "name": "NASA Science: Hubble",
+   "url": "https://science.nasa.gov/mission/hubble/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp139",
+  "topic": "space",
+  "level": "older",
+  "text": "The Hubble telescope has helped scientists learn what the air is made of on planets that circle other stars.",
+  "source": {
+   "name": "NASA Science: Hubble",
+   "url": "https://science.nasa.gov/mission/hubble/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp140",
+  "topic": "space",
+  "level": "younger",
+  "text": "The Webb telescope has a giant mirror covered with a thin layer of gold. It was built to look at the sky in infrared light.",
+  "source": {
+   "name": "NASA Science: Webb",
+   "url": "https://science.nasa.gov/mission/webb/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp141",
+  "topic": "space",
+  "level": "older",
+  "text": "The Webb telescope folded up like origami to fit inside a rocket, then opened out in space. Its sunshield has five layers to block heat from the Sun, Earth and Moon.",
+  "source": {
+   "name": "NASA Science: Webb",
+   "url": "https://science.nasa.gov/mission/webb/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp142",
+  "topic": "space",
+  "level": "older",
+  "text": "Each Voyager spacecraft carries a Golden Record filled with sounds and pictures from the Earth. A team led by Carl Sagan chose what to put on it.",
+  "source": {
+   "name": "NASA Science: Voyager",
+   "url": "https://science.nasa.gov/mission/voyager/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp143",
+  "topic": "space",
+  "level": "older",
+  "text": "Voyager one turned its camera back and took a picture of the Earth from about three point seven billion miles away. The Earth looked like a tiny speck of dust in a sunbeam.",
+  "source": {
+   "name": "NASA Science: Voyager",
+   "url": "https://science.nasa.gov/mission/voyager/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "sp144",
+  "topic": "space",
+  "level": "older",
+  "text": "Voyager one and Voyager two both flew out past the bubble of particles and magnetic fields around the Sun, into the space between the stars.",
+  "source": {
+   "name": "NASA Science: Voyager",
+   "url": "https://science.nasa.gov/mission/voyager/"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea101",
+  "topic": "earth",
+  "level": "older",
+  "text": "The Amazon River carries more water than any other river on Earth. Its huge basin drains a vast part of South America.",
+  "source": {
+   "name": "Britannica: Amazon River",
+   "url": "https://www.britannica.com/place/Amazon-River"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea102",
+  "topic": "earth",
+  "level": "older",
+  "text": "The Amazon River is about four thousand miles long. That makes it one of the longest rivers on the planet.",
+  "source": {
+   "name": "Britannica: Amazon River",
+   "url": "https://www.britannica.com/place/Amazon-River"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea103",
+  "topic": "earth",
+  "level": "older",
+  "text": "Lake Baikal is the deepest lake on Earth. At its deepest point it is more than a mile from top to bottom.",
+  "source": {
+   "name": "Britannica: Lake Baikal",
+   "url": "https://www.britannica.com/place/Lake-Baikal"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea104",
+  "topic": "earth",
+  "level": "older",
+  "text": "Lake Baikal holds about one fifth of all the liquid fresh water found on the surface of the Earth. No other lake holds more.",
+  "source": {
+   "name": "Britannica Kids: Lake Baikal",
+   "url": "https://kids.britannica.com/students/article/Lake-Baikal/11804"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea105",
+  "topic": "earth",
+  "level": "younger",
+  "text": "A kind of seal lives only in Lake Baikal. It swims in fresh water, not in the salty sea.",
+  "source": {
+   "name": "Britannica Kids: Lake Baikal",
+   "url": "https://kids.britannica.com/students/article/Lake-Baikal/11804"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea106",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Lake Baikal freezes over in winter. The ice stays from about January until May or June.",
+  "source": {
+   "name": "Britannica Kids: Lake Baikal",
+   "url": "https://kids.britannica.com/students/article/Lake-Baikal/11804"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea107",
+  "topic": "earth",
+  "level": "older",
+  "text": "The Sahara fills most of northern Africa and covers more than three million square miles. It is the biggest hot desert on Earth.",
+  "source": {
+   "name": "Britannica Kids: Sahara",
+   "url": "https://kids.britannica.com/students/article/Sahara/108296"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea108",
+  "topic": "earth",
+  "level": "younger",
+  "text": "Sand dunes cover only about one quarter of the Sahara. Most of this big desert is not sandy at all.",
+  "source": {
+   "name": "Britannica Kids: Sahara",
+   "url": "https://kids.britannica.com/students/article/Sahara/108296"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea109",
+  "topic": "earth",
+  "level": "younger",
+  "text": "People in the Sahara grow date palms at oases. An oasis is a spot where water can be found in the desert.",
+  "source": {
+   "name": "Britannica Kids: Sahara",
+   "url": "https://kids.britannica.com/students/article/Sahara/108296"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea110",
+  "topic": "earth",
+  "level": "older",
+  "text": "Mount Kilimanjaro in Tanzania is the tallest mountain in Africa. It is about nineteen thousand feet high.",
+  "source": {
+   "name": "National Geographic Education: Kilimanjaro",
+   "url": "https://education.nationalgeographic.org/resource/kilimanjaro"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea111",
+  "topic": "earth",
+  "level": "older",
+  "text": "Mount Kilimanjaro stands alone instead of being part of a mountain range. It is made of three volcanic cones named Kibo, Mawenzi and Shira.",
+  "source": {
+   "name": "National Geographic Education: Kilimanjaro",
+   "url": "https://education.nationalgeographic.org/resource/kilimanjaro"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea112",
+  "topic": "earth",
+  "level": "older",
+  "text": "The Giants Causeway in Northern Ireland has about forty thousand stone columns. Most of them have six sides, like a honeycomb.",
+  "source": {
+   "name": "Smithsonian Magazine: Giants Causeway",
+   "url": "https://www.smithsonianmag.com/smart-news/researchers-reveal-how-giants-causeway-was-formed-180968806/"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea113",
+  "topic": "earth",
+  "level": "older",
+  "text": "The stone columns of the Giants Causeway formed when a flow of lava cooled and shrank. As it shrank, the rock cracked into tall columns.",
+  "source": {
+   "name": "Smithsonian Magazine: Giants Causeway",
+   "url": "https://www.smithsonianmag.com/smart-news/researchers-reveal-how-giants-causeway-was-formed-180968806/"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea114",
+  "topic": "earth",
+  "level": "older",
+  "text": "Steamboat Geyser in Yellowstone is the tallest active geyser in the world. Its water can shoot three hundred to four hundred feet into the air.",
+  "source": {
+   "name": "NPS Yellowstone: Geysers",
+   "url": "https://www.nps.gov/yell/learn/nature/geysers.htm"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "ea115",
+  "topic": "earth",
+  "level": "older",
+  "text": "A geyser has a narrow place in its underground pipes that traps hot water. When steam bubbles push the water upward, the geyser bursts out.",
+  "source": {
+   "name": "NPS Yellowstone: Geysers",
+   "url": "https://www.nps.gov/yell/learn/nature/geysers.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea116",
+  "topic": "earth",
+  "level": "younger",
+  "text": "The General Sherman Tree is a giant sequoia in Sequoia National Park. Its trunk is about thirty six feet wide at the bottom.",
+  "source": {
+   "name": "NPS Sequoia: General Sherman Tree",
+   "url": "https://www.nps.gov/seki/learn/nature/sherman.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea117",
+  "topic": "earth",
+  "level": "younger",
+  "text": "The General Sherman Tree weighs nearly fourteen hundred tons. That is a lot of wood for a single tree.",
+  "source": {
+   "name": "NPS Sequoia: General Sherman Tree",
+   "url": "https://www.nps.gov/seki/learn/nature/sherman.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea118",
+  "topic": "earth",
+  "level": "older",
+  "text": "The National Park Service takes care of more than four thousand caves. Some of them stretch for more than a hundred miles underground.",
+  "source": {
+   "name": "NPS: Caves",
+   "url": "https://www.nps.gov/subjects/caves/index.htm"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "ea119",
+  "topic": "earth",
+  "level": "younger",
+  "text": "The Great Barrier Reef is more than a thousand miles long. It is made of thousands of smaller reefs and many islands.",
+  "source": {
+   "name": "Britannica: Great Barrier Reef",
+   "url": "https://www.britannica.com/place/Great-Barrier-Reef"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we101",
+  "topic": "weather",
+  "level": "older",
+  "text": "High clouds float more than three miles above the ground. Low clouds stay below about a mile and a quarter.",
+  "source": {
+   "name": "NOAA SciJinks: Types of clouds",
+   "url": "https://scijinks.gov/about/k-12-education/atmosphere/types-of-clouds"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we102",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Cirrus clouds are made mostly of ice crystals. The wind stretches the crystals into thin, wispy strands.",
+  "source": {
+   "name": "NOAA SciJinks: Types of clouds",
+   "url": "https://scijinks.gov/about/k-12-education/atmosphere/types-of-clouds"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we104",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Some clouds look like rows of little puffs. They are made of tiny drops of liquid water and hardly ever bring rain.",
+  "source": {
+   "name": "NOAA SciJinks: Types of clouds",
+   "url": "https://scijinks.gov/about/k-12-education/atmosphere/types-of-clouds"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we105",
+  "topic": "weather",
+  "level": "older",
+  "text": "Stratus clouds spread out in flat gray layers and seldom bring much rain or snow. On hills and mountains, they can look like fog.",
+  "source": {
+   "name": "NOAA SciJinks: Types of clouds",
+   "url": "https://scijinks.gov/about/k-12-education/atmosphere/types-of-clouds"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we106",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Jets high in the sky leave long white trails called contrails. These trails are clouds made from water vapor in the engine air.",
+  "source": {
+   "name": "NOAA SciJinks: Types of clouds",
+   "url": "https://scijinks.gov/about/k-12-education/atmosphere/types-of-clouds"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we107",
+  "topic": "weather",
+  "level": "older",
+  "text": "Huge storm clouds grow on hot days, when warm, wet air rises very high. From far away, they look like giant towers or mountains in the sky.",
+  "source": {
+   "name": "NOAA SciJinks: Types of clouds",
+   "url": "https://scijinks.gov/about/k-12-education/atmosphere/types-of-clouds"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we108",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Puffy white clouds look like balls of cotton. They often float in the sky on sunny days.",
+  "source": {
+   "name": "NASA: What are clouds? (grades K-4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we109",
+  "topic": "weather",
+  "level": "older",
+  "text": "Most of the water in the sky is an invisible gas called water vapor. When the air cools, the vapor turns into drops that gather around specks of dust, ice or sea salt.",
+  "source": {
+   "name": "NASA: What are clouds? (grades K-4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we110",
+  "topic": "weather",
+  "level": "older",
+  "text": "Rain starts when tiny cloud drops join together. Once the drops grow heavy enough, gravity pulls them down to the ground.",
+  "source": {
+   "name": "NASA: What are clouds? (grades K-4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we111",
+  "topic": "weather",
+  "level": "younger",
+  "text": "At night, clouds work like a blanket and keep the ground warmer. In the day, they give us shade.",
+  "source": {
+   "name": "NASA: What are clouds? (grades K-4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we112",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Clouds are not only on Earth. The top clouds of Jupiter are made of ammonia ice instead of water.",
+  "source": {
+   "name": "NASA: What are clouds? (grades K-4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "we113",
+  "topic": "weather",
+  "level": "older",
+  "text": "When the air is cold enough, clouds can make snow, sleet or freezing rain instead of plain rain.",
+  "source": {
+   "name": "NASA: What are clouds? (grades K-4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we114",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Mars has clouds that look a lot like the clouds on Earth.",
+  "source": {
+   "name": "NASA: What are clouds? (grades K-4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we115",
+  "topic": "weather",
+  "level": "older",
+  "text": "Scientists use satellites to study clouds from space. The pictures help them learn about the weather on Earth.",
+  "source": {
+   "name": "NASA: What are clouds? (grades K-4)",
+   "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we116",
+  "topic": "weather",
+  "level": "older",
+  "text": "Yearly rainfall can be less than a tenth of an inch in some deserts. In the rainiest parts of the tropics, it can be more than four hundred inches.",
+  "source": {
+   "name": "USGS Water Science School: Rain and precipitation",
+   "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "we118",
+  "topic": "weather",
+  "level": "older",
+  "text": "Mount Waialeale, in Hawaii, gets about three hundred seventy inches of rain in an average year. It is one of the rainiest places in the United States.",
+  "source": {
+   "name": "USGS Water Science School: Rain and precipitation",
+   "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "we119",
+  "topic": "weather",
+  "level": "older",
+  "text": "In the year eighteen sixty one, the town of Cherrapunji in India measured about nine hundred inches of rain in a single year.",
+  "source": {
+   "name": "USGS Water Science School: Rain and precipitation",
+   "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we120",
+  "topic": "weather",
+  "level": "older",
+  "text": "One inch of rain falling on a single acre of ground is about twenty seven thousand gallons of water. That much water weighs more than a hundred tons.",
+  "source": {
+   "name": "USGS Water Science School: Rain and precipitation",
+   "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we121",
+  "topic": "weather",
+  "level": "older",
+  "text": "A common rule says ten inches of snow melts into about one inch of water. Wet, heavy snow holds more water, and light, fluffy snow holds less.",
+  "source": {
+   "name": "USGS Water Science School: Rain and precipitation",
+   "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we123",
+  "topic": "weather",
+  "level": "older",
+  "text": "The tiny gas molecules in the air scatter blue light much more than red light. That scattering is why the daytime sky looks blue.",
+  "source": {
+   "name": "Met Office: Why the sky is blue and sunsets red",
+   "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/why-is-the-sky-blue"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we124",
+  "topic": "weather",
+  "level": "older",
+  "text": "Violet light scatters even more than blue light. But sunlight has less violet, and our eyes see blue better, so the sky looks blue instead of purple.",
+  "source": {
+   "name": "Met Office: Why the sky is blue and sunsets red",
+   "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/why-is-the-sky-blue"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we125",
+  "topic": "weather",
+  "level": "younger",
+  "text": "The sky looks paler near the horizon than it does straight overhead. The light has to cross much more air to reach you.",
+  "source": {
+   "name": "Met Office: Why the sky is blue and sunsets red",
+   "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/why-is-the-sky-blue"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we126",
+  "topic": "weather",
+  "level": "older",
+  "text": "At sunset, the Sun is low, so its light crosses a thick layer of air. The blue light gets scattered away, and the red and orange light is left.",
+  "source": {
+   "name": "Met Office: Why the sky is blue and sunsets red",
+   "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/why-is-the-sky-blue"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we127",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Space looks black because it has almost no air. With no air molecules, there is nothing to scatter the sunlight.",
+  "source": {
+   "name": "NWS Flagstaff: Why is the sky blue",
+   "url": "https://www.weather.gov/fgz/SkyBlue"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we128",
+  "topic": "weather",
+  "level": "older",
+  "text": "High up on a mountain, there are fewer air molecules overhead. The sky there can look a deeper blue, or even a bluish violet.",
+  "source": {
+   "name": "NWS Flagstaff: Why is the sky blue",
+   "url": "https://www.weather.gov/fgz/SkyBlue"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we129",
+  "topic": "weather",
+  "level": "older",
+  "text": "Violet has the shortest wavelength of the colors we can see, and red has the longest. That difference decides how much each color is scattered by the air.",
+  "source": {
+   "name": "NWS Flagstaff: Why is the sky blue",
+   "url": "https://www.weather.gov/fgz/SkyBlue"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we130",
+  "topic": "weather",
+  "level": "older",
+  "text": "Extra bits in the air, such as dust, can make a sunrise or a sunset look more colorful.",
+  "source": {
+   "name": "NWS Flagstaff: Why is the sky blue",
+   "url": "https://www.weather.gov/fgz/SkyBlue"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we131",
+  "topic": "weather",
+  "level": "older",
+  "text": "The Earth is closest to the Sun in January and farthest from it in July. The gap is only about three million miles, so distance does not cause the seasons.",
+  "source": {
+   "name": "NASA Space Place: What causes the seasons",
+   "url": "https://spaceplace.nasa.gov/seasons"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we132",
+  "topic": "weather",
+  "level": "older",
+  "text": "The axis of the Earth leans about twenty three degrees. It points the same way all year long while the Earth travels around the Sun, and that tilt makes the seasons.",
+  "source": {
+   "name": "NOAA NESDIS: Why does Earth have seasons",
+   "url": "https://www.nesdis.noaa.gov/about/k-12-education/understanding-our-planet/why-does-earth-have-seasons"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we133",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Around June, the North Pole leans toward the Sun. That gives the north half of the world its summer.",
+  "source": {
+   "name": "NASA Space Place: What causes the seasons",
+   "url": "https://spaceplace.nasa.gov/seasons"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we134",
+  "topic": "weather",
+  "level": "younger",
+  "text": "When it is summer in the north half of the world, it is winter in the south half. The seasons are opposite.",
+  "source": {
+   "name": "NOAA NESDIS: Why does Earth have seasons",
+   "url": "https://www.nesdis.noaa.gov/about/k-12-education/understanding-our-planet/why-does-earth-have-seasons"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we135",
+  "topic": "weather",
+  "level": "older",
+  "text": "In the north half of the world, the winter Sun rises in the southeast and sets in the southwest. In summer, the Sun climbs much higher and passes more directly overhead.",
+  "source": {
+   "name": "NOAA NESDIS: Why does Earth have seasons",
+   "url": "https://www.nesdis.noaa.gov/about/k-12-education/understanding-our-planet/why-does-earth-have-seasons"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we136",
+  "topic": "weather",
+  "level": "younger",
+  "text": "The Earth spins around once each day. That spin gives us day and night.",
+  "source": {
+   "name": "NASA Space Place: What causes the seasons",
+   "url": "https://spaceplace.nasa.gov/seasons"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we137",
+  "topic": "weather",
+  "level": "older",
+  "text": "To see a rainbow, you need the Sun behind you and raindrops in front of you. The light bends and bounces inside each drop.",
+  "source": {
+   "name": "Met Office: Rainbows",
+   "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/rainbows"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we138",
+  "topic": "weather",
+  "level": "younger",
+  "text": "When the Sun is high, you see only a small rainbow arc near the ground. A lower Sun gives a taller arc.",
+  "source": {
+   "name": "Met Office: Rainbows",
+   "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/rainbows"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we139",
+  "topic": "weather",
+  "level": "older",
+  "text": "Isaac Newton made the idea of seven rainbow colors popular. In truth, a rainbow has a smooth range of colors that blend into each other.",
+  "source": {
+   "name": "Met Office: Rainbows",
+   "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/rainbows"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we140",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Moonlight can make a rainbow too, called a moonbow. It usually looks white to our eyes and needs a bright, nearly full Moon.",
+  "source": {
+   "name": "Met Office: Rainbows",
+   "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/rainbows"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we141",
+  "topic": "weather",
+  "level": "older",
+  "text": "A double rainbow has a fainter bow on the outside with its colors in reverse order. The light bounces twice inside the raindrops to make it.",
+  "source": {
+   "name": "Met Office: Rainbows",
+   "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/rainbows"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we142",
+  "topic": "weather",
+  "level": "older",
+  "text": "Light leaves the raindrops that make a rainbow at an angle of about forty two degrees. That is why the Sun must be lower than forty two degrees in the sky.",
+  "source": {
+   "name": "NWS Flagstaff: Rainbows",
+   "url": "https://www.weather.gov/fgz/Rainbow"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we143",
+  "topic": "weather",
+  "level": "younger",
+  "text": "In the main bow of a rainbow, red is on the outside edge and violet is on the inside edge.",
+  "source": {
+   "name": "NWS Flagstaff: Rainbows",
+   "url": "https://www.weather.gov/fgz/Rainbow"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "we144",
+  "topic": "weather",
+  "level": "older",
+  "text": "Auroras come from space weather. Charged particles from the Sun reach the Earth and meet its magnetic field, which makes the sky glow.",
+  "source": {
+   "name": "NOAA SciJinks: Aurora art",
+   "url": "https://scijinks.gov/about/k-12-education/optical-phenomena/aurora-art"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we145",
+  "topic": "weather",
+  "level": "younger",
+  "text": "Auroras are mostly green. They can also have hints of yellow, pink, purple and white.",
+  "source": {
+   "name": "NOAA SciJinks: Aurora art",
+   "url": "https://scijinks.gov/about/k-12-education/optical-phenomena/aurora-art"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "we146",
+  "topic": "weather",
+  "level": "older",
+  "text": "People see auroras most often in far northern places like Canada, Greenland and Alaska, and also near the South Pole.",
+  "source": {
+   "name": "NOAA SciJinks: Aurora art",
+   "url": "https://scijinks.gov/about/k-12-education/optical-phenomena/aurora-art"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "we147",
+  "topic": "weather",
+  "level": "older",
+  "text": "Auroras can be photographed from space. Astronauts on the International Space Station and satellites have both taken pictures of them.",
+  "source": {
+   "name": "NOAA SciJinks: Aurora art",
+   "url": "https://scijinks.gov/about/k-12-education/optical-phenomena/aurora-art"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc102",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "An octopus has eight arms. A squid has eight arms and two extra long ones called tentacles.",
+  "source": {
+   "name": "Smithsonian Ocean: Cephalopods",
+   "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc103",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Squid, cuttlefish, and octopuses use a molecule with copper in it to carry oxygen around the body. This molecule gives their insides a blue color.",
+  "source": {
+   "name": "Smithsonian Ocean: Cephalopods",
+   "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc104",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Some octopuses can open jars to get what is inside. Scientists think they are very smart and good at solving puzzles.",
+  "source": {
+   "name": "Smithsonian Ocean: Cephalopods",
+   "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "oc105",
+  "topic": "oceans",
+  "level": "older",
+  "text": "A squid pulls water into its body and shoots it out of a funnel. The water goes one way and the squid goes the other, like a tiny jet.",
+  "source": {
+   "name": "Smithsonian Ocean: Cephalopods",
+   "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc106",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "The nautilus has a shell with chambers full of gas. It can float up or down, a bit like a submarine.",
+  "source": {
+   "name": "Smithsonian Ocean: Cephalopods",
+   "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc107",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The giant squid is the longest cephalopod in the world. Scientists think the biggest ones can reach about forty feet from end to end.",
+  "source": {
+   "name": "Smithsonian Ocean: Cephalopods",
+   "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "oc108",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A pygmy squid is so small that it could sit on the tip of your finger.",
+  "source": {
+   "name": "Smithsonian Ocean: Cephalopods",
+   "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc109",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A big California sea lion can grow as long as seven feet and weigh up to seven hundred pounds.",
+  "source": {
+   "name": "National Geographic Kids: California sea lion",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/california-sea-lion"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "oc110",
+  "topic": "oceans",
+  "level": "older",
+  "text": "California sea lions can dive down to about nine hundred feet. They can hold their breath for nearly ten minutes by slowing down their heartbeat.",
+  "source": {
+   "name": "National Geographic Kids: California sea lion",
+   "url": "https://kids.nationalgeographic.com/animals/mammals/facts/california-sea-lion"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc111",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "There are five named oceans on Earth. They all join together, so they really make one big world ocean.",
+  "source": {
+   "name": "National Geographic Kids: Ocean habitat",
+   "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc112",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The five oceans are the Pacific, the Atlantic, the Indian, the Southern, and the Arctic. Together they make one huge body of salt water.",
+  "source": {
+   "name": "National Geographic Kids: Ocean habitat",
+   "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc113",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "The ocean is very deep. On average, it is a little more than two miles from the top to the bottom.",
+  "source": {
+   "name": "National Geographic Kids: Ocean habitat",
+   "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc114",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Scientists think there may be as many as seven hundred thousand kinds of sea life, and most of them have not been named yet.",
+  "source": {
+   "name": "National Geographic Kids: Ocean habitat",
+   "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc115",
+  "topic": "oceans",
+  "level": "older",
+  "text": "About ninety five percent of sea animals are invertebrates, which means they have no backbone. Crabs, jellyfish, and octopuses are all invertebrates.",
+  "source": {
+   "name": "National Geographic Kids: Ocean habitat",
+   "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc116",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Some giant manta rays have wings that stretch twenty feet from tip to tip. That is wider than most cars are long.",
+  "source": {
+   "name": "National Geographic Kids: Ocean habitat",
+   "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc117",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Scientists say most of the deep ocean has never been seen by people. That leaves a huge amount still to discover.",
+  "source": {
+   "name": "National Geographic Kids: Ocean habitat",
+   "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc118",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Temperature, depth, and distance from shore all decide which plants and animals can live in a part of the ocean.",
+  "source": {
+   "name": "National Geographic Kids: Ocean habitat",
+   "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc119",
+  "topic": "oceans",
+  "level": "older",
+  "text": "One study by ocean scientists found that about three quarters of the animals in the deep sea make their own light.",
+  "source": {
+   "name": "Monterey Bay Aquarium: Bioluminescence",
+   "url": "https://www.montereybayaquarium.org/about-us/stories/bioluminescence"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc121",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Most light made by ocean animals is blue green, probably because those colors travel the farthest through sea water.",
+  "source": {
+   "name": "Monterey Bay Aquarium: Bioluminescence",
+   "url": "https://www.montereybayaquarium.org/about-us/stories/bioluminescence"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc122",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Hatchetfish have rows of tiny lights on their bellies. The glow matches the light shining down from above.",
+  "source": {
+   "name": "Monterey Bay Aquarium: Bioluminescence",
+   "url": "https://www.montereybayaquarium.org/about-us/stories/bioluminescence"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc123",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A lanternfish has tiny lights along its belly. Some also have a light by the nose that works like a headlight.",
+  "source": {
+   "name": "Smithsonian Ocean: Lanternfish",
+   "url": "https://ocean.si.edu/ocean-life/fish/lanternfish"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc124",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The Moon pulls on the ocean with about twice as much force as the Sun does, because the Moon is so much closer to the Earth.",
+  "source": {
+   "name": "NOAA Ocean Service: Tides tutorial",
+   "url": "https://oceanservice.noaa.gov/education/tutorial_tides/lessons/ups_downs.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc125",
+  "topic": "oceans",
+  "level": "older",
+  "text": "The Earth has two tidal bulges of water at once, one on each side. That is why high tides happen on opposite sides of the planet at the same time.",
+  "source": {
+   "name": "NOAA Ocean Service: Tides tutorial",
+   "url": "https://oceanservice.noaa.gov/education/tutorial_tides/lessons/ups_downs.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc126",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Spring tides have nothing to do with the season. They happen when the Sun and Moon line up. That brings very high highs and very low lows.",
+  "source": {
+   "name": "NOAA Ocean Service: Tides tutorial",
+   "url": "https://oceanservice.noaa.gov/education/tutorial_tides/lessons/ups_downs.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc127",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Neap tides are the gentlest tides. They happen when the Sun and Moon sit at a right angle to each other as seen from the Earth.",
+  "source": {
+   "name": "NOAA Ocean Service: Tides tutorial",
+   "url": "https://oceanservice.noaa.gov/education/tutorial_tides/lessons/ups_downs.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc128",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Tides are the slow rise and fall of the sea. The Moon helps pull the water up.",
+  "source": {
+   "name": "NOAA Ocean Service: Tides tutorial",
+   "url": "https://oceanservice.noaa.gov/education/tutorial_tides/lessons/ups_downs.html"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc129",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Coral can grow on old ships that were sunk on purpose to make new homes for fish. Over time, the ships turn into reefs.",
+  "source": {
+   "name": "Smithsonian Ocean: Coral reefs",
+   "url": "https://ocean.si.edu/ecosystems/coral-reefs"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc130",
+  "topic": "oceans",
+  "level": "older",
+  "text": "An atoll is a ring of coral reef with a calm lagoon in the middle. It builds up slowly over many years around an island.",
+  "source": {
+   "name": "Smithsonian Ocean: Coral reefs",
+   "url": "https://ocean.si.edu/ecosystems/coral-reefs"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc131",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Corals, sponges, and algae are the main parts of most coral reefs. Colorful fish swim all around them.",
+  "source": {
+   "name": "Smithsonian Ocean: Coral reefs",
+   "url": "https://ocean.si.edu/ecosystems/coral-reefs"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc132",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Tiny algae live inside coral polyps. The algae and the polyps share a partnership that helps them both.",
+  "source": {
+   "name": "Smithsonian Ocean: Coral reefs",
+   "url": "https://ocean.si.edu/ecosystems/coral-reefs"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc133",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A manatee can grow about fifteen feet long. It eats only plants.",
+  "source": {
+   "name": "Britannica Kids: Manatee",
+   "url": "https://kids.britannica.com/kids/article/manatee/353416"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc134",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Manatees breathe air with lungs, so they swim up to the surface for breaths. Their flat, round tails push them forward through the water.",
+  "source": {
+   "name": "Britannica Kids: Manatee",
+   "url": "https://kids.britannica.com/kids/article/manatee/353416"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc135",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "A baby manatee is called a calf. It stays close to its mother for about two years.",
+  "source": {
+   "name": "Britannica Kids: Manatee",
+   "url": "https://kids.britannica.com/kids/article/manatee/353416"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "oc136",
+  "topic": "oceans",
+  "level": "older",
+  "text": "There are three kinds of manatee. One lives near the Amazon River, one near West Africa, and one around Florida and the West Indies.",
+  "source": {
+   "name": "Britannica Kids: Manatee",
+   "url": "https://kids.britannica.com/kids/article/manatee/353416"
+  },
+  "check": "ok"
+ },
+ {
+  "id": "oc137",
+  "topic": "oceans",
+  "level": "older",
+  "text": "Most seals can stay under water for twenty to thirty minutes. Weddell seals can stay down for more than an hour.",
+  "source": {
+   "name": "Britannica Kids: Seal",
+   "url": "https://kids.britannica.com/kids/article/seal/353754"
+  },
+  "check": "recheck"
+ },
+ {
+  "id": "oc138",
+  "topic": "oceans",
+  "level": "younger",
+  "text": "Elephant seals are the biggest seals. They can be longer than twenty feet and weigh more than eight thousand pounds.",
+  "source": {
+   "name": "Britannica Kids: Seal",
+   "url": "https://kids.britannica.com/kids/article/seal/353754"
+  },
+  "check": "ok"
  }
 ]

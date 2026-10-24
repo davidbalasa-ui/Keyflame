@@ -131,3 +131,13 @@ describe('lesson sentences', () => {
     }
   });
 });
+
+describe('one-typo safety', () => {
+  // A dropped letter can turn a clean word into a rude one ("flag" once could have).
+  const BAD = new Set(['fag', 'fags', 'shit', 'fuck', 'cock', 'cunt', 'dick', 'sex', 'slut', 'twat', 'piss', 'tits', 'cum', 'damn', 'crap', 'dyke', 'homo', 'rape', 'whore', 'bitch', 'nazi', 'porn', 'boob', 'butt', 'poop', 'penis', 'kkk', 'fart']);
+  it('no word in facts or sentences becomes a rude word by dropping one letter', () => {
+    for (const text of [...FACTS.map((f) => f.text), ...SENTENCES])
+      for (const w of tokens(text))
+        for (let i = 0; i < w.length; i++) expect(BAD.has(w.slice(0, i) + w.slice(i + 1)), `${w} in "${text}"`).toBe(false);
+  });
+});
