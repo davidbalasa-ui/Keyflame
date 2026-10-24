@@ -1,4 +1,5 @@
 import { exportBackupCode, type Settings } from '../../save/store';
+import { READING_LEVEL_LABEL, type ReadingLevel } from '../../content/facts';
 import { parentGate } from './supporter';
 import { applySettings, go, persist, persistNow, profile, saveData } from '../app';
 import { button, h } from '../dom';
@@ -69,6 +70,25 @@ export const settings = (root: HTMLElement): void => {
           return sel;
         })(),
         h('p', { class: 'fine' }, 'Touch typing keeps its own records, so phone races and keyboard races are fair.'),
+      ),
+      h(
+        'section',
+        {},
+        h('h2', {}, 'Fun facts in races'),
+        (() => {
+          const sel = h(
+            'select',
+            {
+              onchange: () => {
+                p.settings.readingLevel = sel.value as ReadingLevel;
+                persist();
+              },
+            },
+            ...(['younger', 'older'] as const).map((v) => h('option', { value: v, selected: (p.settings.readingLevel ?? 'younger') === v }, READING_LEVEL_LABEL[v])),
+          );
+          return sel;
+        })(),
+        h('p', { class: 'fine' }, 'Once you know every letter, races use real facts at this reading level.'),
       ),
       h(
         'section',

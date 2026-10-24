@@ -1,6 +1,6 @@
 // The typing panel used by lessons and races: text, finger hint, and keyboard.
 
-import { FINGER_LABEL, ROWS, SHIFT_SYMBOL, baseKey, fingerFor, keyLabel } from '../content/keyboard';
+import { FINGER_LABEL, ROWS, SHIFT_SYMBOL, TOUCH_ROWS, baseKey, fingerFor, keyLabel, touchThumb } from '../content/keyboard';
 import { TypingSession, type KeystrokeResult } from '../engine/typing';
 import type { InputMode } from '../save/store';
 import { safeText } from '../content/safety';
@@ -25,11 +25,10 @@ export interface TypingView {
   focus: () => void;
 }
 
-/** Thumb typing: keys on the left half of the keyboard go to the left thumb. */
+/** Thumb typing: keys on the left half of the phone keyboard go to the left thumb. */
 function thumbFor(ch: string): string {
-  if (ch === ' ') return 'either thumb';
-  const f = fingerFor(ch);
-  return f.startsWith('left') ? 'your left thumb' : 'your right thumb';
+  const t = touchThumb(ch);
+  return t === 'either' ? 'either thumb' : `your ${t} thumb`;
 }
 
 const SHIFT_MAP = SHIFT_SYMBOL;
@@ -80,16 +79,18 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     void el.offsetWidth;
     el.classList.add('down');
   };
-  shiftKey.addEventListener('pointerdown', (e) => {
-    e.preventDefault();
-    setShift(!shiftOn);
-  });
+  // What each key does when tapped. Taps are matched to keys by the keyboard itself (below).
+  const actions = new Map<HTMLElement, () => void>();
+  actions.set(shiftKey, () => setShift(!shiftOn));
 
-  const makeKey = (k: string, label = keyLabel(k, false), cls = ''): HTMLElement => {
-    const el = h('button', { class: `key f-${fingerFor(k)} ${cls}`, type: 'button', 'aria-label': k === ' ' ? 'space' : k }, label);
-    el.addEventListener('pointerdown', (e) => {
-      e.preventDefault();
-      flash(el);
+  const makeKey = (k: string, cls = '', w?: number): HTMLElement => {
+    if (k === 'shift') {
+      if (w) shiftKey.style.flex = `${w} 1 0`;
+      return shiftKey;
+    }
+    const el = h('button', { class: `key f-${fingerFor(k)} ${k === 'f' || k === 'j' ? 'bump' : ''} ${k === ' ' ? 'key-space' : ''} ${cls}`, type: 'button', 'aria-label': k === ' ' ? 'space' : k }, keyLabel(k, false));
+    if (w) el.style.flex = `${w} 1 0`;
+    actions.set(el, () => {
       let ch = k;
       if (shiftOn) {
         ch = SHIFT_MAP[k] ?? k.toUpperCase();
@@ -101,17 +102,43 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     return el;
   };
 
-  // On touch screens the keyboard is pinned to the bottom like a phone keyboard,
-  // with shift beside the space bar so every letter row fits ten keys across.
+  // On touch screens the keyboard is pinned to the bottom and laid out like a phone keyboard.
+  // Elsewhere it mirrors a real keyboard, with shift left of Z.
   const pinned = opts.input === 'touch';
   const keyboard = h(
     'div',
     { class: `keyboard${pinned ? ' pinned' : ''}`, 'aria-hidden': 'true' },
-    ...ROWS.map((row, i) =>
-      h('div', { class: `kb-row kb-row-${i}` }, i === 2 && !pinned ? shiftKey : null, ...row.map((k) => makeKey(k, undefined, k === 'f' || k === 'j' ? 'bump' : ''))),
-    ),
-    h('div', { class: 'kb-row kb-row-space' }, pinned ? shiftKey : null, makeKey(' ', undefined, 'key-space')),
+    ...(pinned
+      ? TOUCH_ROWS.map((row, i) => h('div', { class: `kb-row kb-row-${i}` }, ...row.map(({ k, w }) => makeKey(k, '', w))))
+      : [
+          ...ROWS.map((row, i) => h('div', { class: `kb-row kb-row-${i}` }, i === 2 ? shiftKey : null, ...row.map((k) => makeKey(k)))),
+          h('div', { class: 'kb-row kb-row-space' }, makeKey(' ')),
+        ]),
   );
+  // A tap counts for the nearest key, so a thumb landing in the gap between two keys (or just
+  // past the edge of the keyboard) still types instead of doing nothing, as on a phone keyboard.
+  const nearestKey = (x: number, y: number): HTMLElement | null => {
+    let best: HTMLElement | null = null;
+    let bestD = Infinity;
+    for (const el of actions.keys()) {
+      const b = el.getBoundingClientRect();
+      const dx = Math.max(b.left - x, 0, x - b.right);
+      const dy = Math.max(b.top - y, 0, y - b.bottom);
+      const d = dx * dx + dy * dy;
+      if (d < bestD) {
+        bestD = d;
+        best = el;
+      }
+    }
+    return best;
+  };
+  keyboard.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const el = nearestKey(e.clientX, e.clientY);
+    if (!el) return;
+    flash(el);
+    actions.get(el)?.();
+  });
   if (!opts.showKeyboard && !pinned) keyboard.classList.add('mini');
   // Phone browsers are unreliable with position: fixed (toolbars that slide away,
   // transformed ancestors, rubber-band scrolling). Instead the whole app becomes a

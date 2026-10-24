@@ -4,6 +4,7 @@
 import type { KeyStats } from '../engine/typing';
 import type { TribeId } from '../game/dragons';
 import type { UnitId } from '../content/lessons';
+import type { ReadingLevel } from '../content/facts';
 
 export const SAVE_VERSION = 1;
 export const MAX_PROFILES = 4;
@@ -55,6 +56,8 @@ export interface Settings {
   input: InputMode | 'auto';
   /** Lessons let mistakes through and hide the clock. */
   relaxed: boolean;
+  /** Which facts races use once every letter is learned; null until the player picks. */
+  readingLevel: ReadingLevel | null;
 }
 
 export interface Profile {
@@ -82,6 +85,8 @@ export interface Profile {
   /** Aerie decorations owned. */
   decor: string[];
   supporter: boolean;
+  /** Facts typed in races, oldest first. This is the player's Fact Book. */
+  factsSeen: string[];
 }
 
 export interface SaveData {
@@ -102,7 +107,7 @@ function newId(): string {
 }
 
 export function defaultSettings(): Settings {
-  return { sound: true, reducedMotion: false, dyslexiaFont: false, largeText: false, showKeyboard: true, input: 'auto', relaxed: false };
+  return { sound: true, reducedMotion: false, dyslexiaFont: false, largeText: false, showKeyboard: true, input: 'auto', relaxed: false, readingLevel: null };
 }
 
 /** A fresh profile starts with an Emberback egg that hatches quickly, for a first-session win. */
@@ -128,6 +133,7 @@ export function createProfile(name: string): Profile {
     rivalsBeaten: [],
     decor: [],
     supporter: false,
+    factsSeen: [],
   };
 }
 
@@ -168,6 +174,7 @@ export function normalizeProfile(raw: unknown): Profile | null {
     rivalsBeaten: r.rivalsBeaten ?? [],
     decor: r.decor ?? [],
     supporter: r.supporter ?? false,
+    factsSeen: Array.isArray(r.factsSeen) ? r.factsSeen.filter((id) => typeof id === 'string') : [],
   } as Profile;
 }
 
