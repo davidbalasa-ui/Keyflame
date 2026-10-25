@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check:overflow": "node scripts/check-overflow.mjs"
   },
   "devDependencies": {
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
