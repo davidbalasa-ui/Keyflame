@@ -663,7 +663,7 @@
   "id": "sp11",
   "topic": "space",
   "level": "younger",
-  "text": "Scientists think there are more stars than grains of sand. They mean the sand on every beach on Earth.",
+  "text": "Think of every grain of sand on every beach on Earth. Scientists think space has even more stars than that.",
   "source": {
    "name": "ESA: More stars than grains of sand on Earth",
    "url": "https://www.esa.int/ESA_Multimedia/Images/2016/06/More_stars_in_the_Universe_than_grains_of_sand_on_Earth"
@@ -2170,7 +2170,7 @@
   "id": "sp107",
   "topic": "space",
   "level": "younger",
-  "text": "Almost all water on Earth is salty ocean water. Only a small part is fresh water. We can drink it.",
+  "text": "Almost all water on Earth is salty ocean water. Only a small part is fresh water, the kind we drink.",
   "source": {
    "name": "NASA Science: Earth facts",
    "url": "https://science.nasa.gov/earth/facts/"
@@ -3446,7 +3446,7 @@
   "id": "oc118",
   "topic": "oceans",
   "level": "older",
-  "text": "Temperature, depth, and distance from shore decide what can live in a part of the ocean. These things decide which plants and animals live there.",
+  "text": "Temperature, depth, and distance from shore all matter in the ocean. Together they decide which plants and animals can live in each part.",
   "source": {
    "name": "National Geographic Kids: Ocean habitat",
    "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
@@ -3457,7 +3457,7 @@
   "id": "oc119",
   "topic": "oceans",
   "level": "older",
-  "text": "One study by ocean scientists found this. About three quarters of the animals in the deep sea make their own light.",
+  "text": "Ocean scientists did a study of animals in the deep sea. They found that about three quarters of them make their own light.",
   "source": {
    "name": "Monterey Bay Aquarium: Bioluminescence",
    "url": "https://www.montereybayaquarium.org/about-us/stories/bioluminescence"
@@ -4128,7 +4128,7 @@
   "id": "ea125",
   "topic": "earth",
   "level": "younger",
-  "text": "Niagara Falls is very loud and misty. People can ride boats close to the bottom. They can feel the cool spray on their faces.",
+  "text": "Niagara Falls is very loud and misty. People can ride boats close to the bottom of the falls. They can feel the cool spray on their faces.",
   "source": {
    "name": "Britannica Kids Niagara Falls",
    "url": "https://kids.britannica.com/students/article/276083"
@@ -4249,7 +4249,7 @@
   "id": "ea140",
   "topic": "earth",
   "level": "younger",
-  "text": "Granite forms when melted rock cools slowly deep in the ground. Basalt forms when lava cools on top.",
+  "text": "Granite forms when melted rock cools slowly deep in the ground. Basalt forms when lava cools on the surface.",
   "source": {
    "name": "NPS Teachers rock types lesson",
    "url": "https://www.nps.gov/teachers/classrooms/roca-roca-roca.htm"
@@ -4568,7 +4568,7 @@
   "id": "sp163",
   "topic": "space",
   "level": "older",
-  "text": "About once a year, a comet comes close. It grows bright enough to be seen. People do not need a telescope to see it.",
+  "text": "About once a year, a comet comes close enough and grows bright enough to see with just your eyes. No telescope is needed.",
   "source": {
    "name": "NASA Space Place: Comet Fun Sheet",
    "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
