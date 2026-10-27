@@ -312,9 +312,12 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
   const bellyLine = darken(p.belly, 0.22);
   const parts = tribeParts(tribe, p, stage, line);
   const scale = stage === 'hatchling' ? 0.8 : stage === 'young' ? 0.9 : 1;
-  const headScale = stage === 'hatchling' ? 1.3 : stage === 'young' ? 1.12 : 1;
-  const wingScale = stage === 'hatchling' ? 0.72 : stage === 'young' ? 0.95 : 1.14;
-  const eyeR = stage === 'hatchling' ? 7 : 6;
+  const headScale = stage === 'hatchling' ? 1.36 : stage === 'young' ? 1.2 : 1.1;
+  const wingScale = stage === 'hatchling' ? 0.76 : stage === 'young' ? 1.02 : 1.22;
+  const eyeR = stage === 'hatchling' ? 8.6 : stage === 'young' ? 7.8 : 7.2;
+  const shine = lighten(p.body, 0.5);
+  // Eye color comes from the accent, kept away from white so the iris always reads.
+  const iris = mix(p.accent, 0, 0.12);
   const horns =
     stage === 'hatchling'
       ? `<path d="M186 32 l-7 -6 l10 1z" fill="${p.belly}" stroke="${line}" stroke-width="1.4" stroke-linejoin="round"/>`
@@ -326,15 +329,19 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
   const wing = (cls: string, fill: string, extra: string, s: number): string =>
     `<g transform="translate(${cls === 'wing-back' ? '122 68' : '132 70'}) scale(${(wingScale * s).toFixed(2)})"><g class="wing ${cls}">
       <path d="${WING_SKIN}" fill="${fill}" stroke="${line}" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M-6 -58 L-46 -64 Q-44 -46 -66 -40Z M-6 -58 L-70 -14 Q-42 -12 -34 4 L0 0 C6 -16 4 -40 -6 -58Z" fill="${darken(p.wing, 0.35)}" opacity="0.3"/>
+      <path d="M-46 -64 Q-44 -46 -66 -40 Q-52 -28 -70 -14 Q-42 -12 -34 4" stroke="${lighten(p.wing, 0.45)}" stroke-width="1.6" fill="none" opacity="0.5" stroke-linecap="round"/>
       <path d="${WING_BONES}" stroke="${cls === 'wing-back' ? line : wingDark}" stroke-width="2.4" stroke-linecap="round" fill="none"/>
       <path d="M0 0 C9 -20 5 -44 -6 -58" stroke="${line}" stroke-width="4" stroke-linecap="round" fill="none"/>
       <path d="M-6 -58 l3 -7 l2 7z" fill="${p.belly}" stroke="${line}" stroke-width="1"/>
       ${extra}
     </g></g>`;
-  return `<svg class="dragon ${extraClass}" viewBox="-26 -2 266 152" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  return `<svg class="dragon ${extraClass}" viewBox="-26 -12 266 162" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
   <defs>
     <linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${lighten(p.body, 0.22)}"/><stop offset="0.55" stop-color="${p.body}"/><stop offset="1" stop-color="${darken(p.body, 0.22)}"/></linearGradient>
     <linearGradient id="${id}w" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${p.wing}"/><stop offset="1" stop-color="${lighten(p.wing, 0.35)}"/></linearGradient>
+    <radialGradient id="${id}i" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="${lighten(iris, 0.45)}"/><stop offset="0.6" stop-color="${iris}"/><stop offset="1" stop-color="${darken(iris, 0.5)}"/></radialGradient>
+    <radialGradient id="${id}h" cx="0.55" cy="0.3" r="0.6"><stop offset="0" stop-color="#fff" stop-opacity="0.32"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
     ${marking ? `<clipPath id="${id}c"><path d="${BODY}"/></clipPath>` : ''}
   </defs>
   <g transform="translate(${(120 - 120 * scale).toFixed(1)} ${(78 - 78 * scale).toFixed(1)}) scale(${scale})"><g class="rig">
@@ -348,24 +355,32 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
     ${parts.back}
     <path d="${BODY}" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
     ${markingArt(marking, p, `${id}c`)}
+    <ellipse cx="140" cy="76" rx="22" ry="10" fill="url(#${id}h)"/>
+    <path d="M84 84 C90 74 106 69 130 69 C146 69 157 66 165 58 C169 54 172 50 175 46" stroke="${shine}" stroke-width="2.4" fill="none" opacity="0.45" stroke-linecap="round"/>
     <path d="M88 101 C104 108 134 108 152 100 C164 92 172 80 180 68 L187 71 C180 84 172 98 158 105 C136 114 104 112 88 101Z" fill="${p.belly}"/>
     <path d="${plates}" stroke="${bellyLine}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
     ${parts.front}
     <path d="M96 96 C88 104 88 112 96 114 C104 116 112 110 112 100 C110 92 102 90 96 96Z" fill="url(#${id}b)" stroke="${line}" stroke-width="1.6"/>
     <path d="M100 112 C96 118 90 120 82 121 L76 124 L80 119 L74 118 L82 116 C88 114 92 112 94 108Z" fill="${p.body}" stroke="${line}" stroke-width="1.5" stroke-linejoin="round"/>
     <path d="M154 98 C158 106 162 110 168 110 L174 113 L171 108 L177 108 L170 104 C164 102 160 98 158 94Z" fill="${p.body}" stroke="${line}" stroke-width="1.5" stroke-linejoin="round"/>
+    <g fill="#fffdf5" stroke="${line}" stroke-width="0.7" stroke-linejoin="round">${[[174, 113, 1], [177, 108, 1], [76, 124, -1], [74, 118, -1], [72, 121, -1], [70, 115, -1]].map(([x, y, d]) => `<path d="M${x} ${y} l${2.8 * d} 0.6 l${-1.6 * d} 2.2z"/>`).join('')}</g>
     <g transform="translate(184 52) scale(${headScale})"><g class="head"><g transform="translate(-184 -52)">
       ${horns}
       ${parts.head}
       <path d="M176 52 l-10 3 l8 2 l-9 6 l13 -3z" fill="${p.wing}" stroke="${line}" stroke-width="1.2" stroke-linejoin="round"/>
-      <path d="M174 44 C176 32 190 26 202 30 C210 32 216 36 224 40 C232 42 236 46 234 50 C232 54 226 56 218 56 C208 58 200 60 190 60 C180 60 172 54 174 44Z" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
-      <path d="M200 56 C210 56 220 55 228 53 C224 57 214 59 204 59Z" fill="${p.belly}"/>
-      <path d="M204 54 C212 55 222 54 230 51" stroke="${line}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <path d="M174 44 C176 30 192 24 205 29 C213 32 219 36 225 40 C231 43 233 47 231 51 C229 55 223 57 216 57 C207 59 199 61 190 61 C180 61 172 54 174 44Z" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M200 57 C209 57 218 56 225 54 C221 58 212 60 204 60Z" fill="${p.belly}"/>
+      <path d="M204 55 C212 56 220 55 227 52" stroke="${line}" stroke-width="1.6" fill="none" stroke-linecap="round"/>
       <path d="M214 54.6 l1.6 3.2 l1.6 -3.4z" fill="#fff"/>
-      <ellipse cx="228" cy="44.5" rx="1.8" ry="1.2" fill="${line}"/>
-      <ellipse cx="197" cy="42" rx="${eyeR}" ry="${eyeR + 0.5}" fill="#fff" stroke="${line}" stroke-width="1.2"/>
-      <circle cx="199" cy="43" r="${eyeR * 0.6}" fill="#1a1a2e"/>
-      <circle cx="200.6" cy="40.8" r="${eyeR * 0.24}" fill="#fff"/>
+      <ellipse cx="225.5" cy="45" rx="1.8" ry="1.3" fill="${line}"/>
+      <path d="M180 41 C184 33 194 29 206 31" stroke="${shine}" stroke-width="2.2" fill="none" opacity="0.5" stroke-linecap="round"/>
+      <path d="M212 37 C217 38 223 40 228 43" stroke="${shine}" stroke-width="1.8" fill="none" opacity="0.4" stroke-linecap="round"/>
+      <ellipse cx="210" cy="51" rx="3.6" ry="2.2" fill="#ff8fab" opacity="0.35"/>
+      <ellipse cx="197" cy="42" rx="${eyeR}" ry="${eyeR + 0.6}" fill="#fff" stroke="${line}" stroke-width="1.3"/>
+      <circle cx="198.6" cy="42.8" r="${eyeR * 0.74}" fill="url(#${id}i)"/>
+      <ellipse cx="199.2" cy="43" rx="${eyeR * 0.34}" ry="${eyeR * 0.5}" fill="#120c22"/>
+      <circle cx="201.2" cy="40.2" r="${eyeR * 0.27}" fill="#fff"/>
+      <circle cx="196.8" cy="45.6" r="${eyeR * 0.12}" fill="#fff" opacity="0.85"/>
       <ellipse class="lid" cx="197" cy="42" rx="${eyeR + 1}" ry="${eyeR + 1.5}" fill="${p.body}" stroke="${line}" stroke-width="1.2"/>
       <path d="M189 ${36 - eyeR + 6} C195 ${32 - eyeR + 6} 201 ${32 - eyeR + 6} 206 ${35 - eyeR + 6}" stroke="${line}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
     </g></g></g>
