@@ -1,8 +1,12 @@
 import { CONFIG } from '../../config';
 import { dragonSvg } from '../../game/dragons';
-import { go, profile } from '../app';
+import { redeemSupporterCode } from '../../game/supporter';
+import { go, persist, profile } from '../app';
 import { button, h, svg } from '../dom';
+import { sfx } from '../sound';
+import { achievementsPage } from './achievementsPage';
 import { hub, topBar } from './hub';
+import { nest } from './nest';
 
 const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 
@@ -42,21 +46,56 @@ export function parentGate(onPass: () => void): HTMLElement {
 export const supporter = (root: HTMLElement): void => {
   const p = profile();
   const ready = !!CONFIG.supporterCheckoutUrl;
+
+  const codeBox = (): HTMLElement => {
+    const input = h('input', { type: 'text', class: 'sup-code-input', placeholder: 'KF-XXXX-XXXX-XXXX', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Supporter code' });
+    const msg = h('p', { class: 'fine' });
+    const unlock = (): void => {
+      if (!redeemSupporterCode(p, input.value)) {
+        msg.textContent = 'That code doesn’t look right. Check each letter and try again.';
+        return;
+      }
+      sfx.coin();
+      persist();
+      go(supporter);
+    };
+    input.addEventListener('keydown', (e) => (e as KeyboardEvent).key === 'Enter' && unlock());
+    return h('section', { class: 'sup-code' }, h('h2', {}, 'Have a supporter code?'), h('p', { class: 'fine' }, 'Bought the pack on another device, or for another rider? Type the code here.'), h('div', { class: 'row center' }, input, button('Unlock', unlock)), msg);
+  };
+
+  const owned = (): HTMLElement =>
+    h(
+      'section',
+      { class: 'supporter-owned' },
+      h('p', { class: 'reward' }, 'You are a Keyflame supporter. Thank you!'),
+      p.supporterCode
+        ? h('div', { class: 'sup-code-show' }, h('p', {}, 'Your supporter code'), h('strong', { class: 'sup-code-value' }, p.supporterCode), h('p', { class: 'fine' }, 'Write it down. It unlocks the pack for another rider or on another device. Each code is for your family only.'))
+        : null,
+      h('div', { class: 'row center' }, button('Dress a dragon in Starfire', () => go(nest)), button('Pick the Supporter title', () => go(achievementsPage), 'btn ghost')),
+    );
+
   root.append(
     topBar(() => go(hub)),
     h(
       'main',
       { class: 'supporter' },
-      h('h1', {}, 'Support Keyflame'),
+      h('h1', {}, p.supporter ? 'Your supporter pack' : 'Support Keyflame'),
       svg(dragonSvg('emberback', 0, 'adult', 'flap bob', 'starfire'), 'supporter-dragon'),
-      h('p', {}, `Keyflame is made to be free and fun. There are no ads. Later, a one-time ${CONFIG.supporterPrice} supporter pack will help pay for the website, and say thank you with:`),
-      h('ul', {}, h('li', {}, 'The Starfire skin, which any of your dragons can wear'), h('li', {}, 'A Supporter title next to your name')),
+      p.supporter ? null : h('p', {}, `Keyflame is made to be free and fun. There are no ads. A one-time ${CONFIG.supporterPrice} supporter pack helps pay for the website, and says thank you with:`),
+      h(
+        'ul',
+        { class: 'pack-list' },
+        h('li', {}, h('strong', {}, 'The Starfire skin: '), 'a night sky full of twinkling stars, a constellation on the wings, gold trim, and a spinning star on the tail. Any of your dragons can wear it.'),
+        h('li', {}, h('strong', {}, 'The Keyflame Supporter title '), 'to show under your name.'),
+        h('li', {}, h('strong', {}, 'A supporter code '), 'that unlocks the pack on other devices. No account needed.'),
+      ),
       h('p', { class: 'fine' }, 'It never makes your dragons faster. Everyone races on the same skill.'),
       p.supporter
-        ? h('p', { class: 'reward' }, 'You are a supporter. Thank you!')
+        ? owned()
         : ready
-          ? button(`Ask a grown-up to buy it (${CONFIG.supporterPrice})`, () => root.append(parentGate(() => (location.href = CONFIG.supporterCheckoutUrl))))
+          ? h('div', { class: 'row center' }, button(`Ask a grown-up to buy it (${CONFIG.supporterPrice})`, () => root.append(parentGate(() => (location.href = CONFIG.supporterCheckoutUrl)))))
           : h('p', { class: 'reward' }, 'The supporter pack is coming soon!'),
+      p.supporter ? null : codeBox(),
     ),
   );
 };

@@ -7,6 +7,7 @@ import type { Profile } from '../save/store';
 import { COURSES } from './courses';
 import { TOTAL_LOOKS, codexSets, foundLooks } from './collection';
 import { TRIBES, stageFor } from './dragons';
+import { SUPPORTER_TITLE, SUPPORTER_TITLE_ID } from './supporter';
 
 export type Medal = 'bronze' | 'silver' | 'gold' | 'platinum' | 'legend';
 const MEDALS: Medal[] = ['bronze', 'silver', 'gold', 'platinum', 'legend'];
@@ -189,6 +190,7 @@ export function achievementById(p: Profile, id: string): Achievement | undefined
 /** The title the player picked, if they still have it. */
 export function currentTitle(p: Profile): string | null {
   if (!p.title) return null;
+  if (p.title === SUPPORTER_TITLE_ID) return p.supporter ? SUPPORTER_TITLE : null;
   const a = achievementById(p, p.title);
   return a?.earned ? a.title : null;
 }
