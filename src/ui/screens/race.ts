@@ -18,7 +18,7 @@ import { hub, refreshEmbers, topBar } from './hub';
 import { codex } from './codex';
 import { nest } from './nest';
 import { seasonAt } from '../../content/seasons';
-import { CHALLENGE_EMBERS, seasonChallenges, seasonPalette } from '../../game/seasons';
+import { CHALLENGE_EMBERS } from '../../game/seasons';
 
 interface Racer {
   name: string;
@@ -97,7 +97,6 @@ export const raceMap = (root: HTMLElement): void => {
       h('h1', {}, 'Choose a course'),
       h('p', { class: 'fine' }, 'Beat each course’s champion to earn a big ember bonus. Finish lesson units to open new courses.'),
       factsUnlocked(p) && !p.settings.readingLevel ? readerPicker(() => go(raceMap)) : null,
-      seasonBanner(),
       h(
         'div',
         { class: 'course-grid' },
@@ -123,34 +122,6 @@ export const raceMap = (root: HTMLElement): void => {
     ),
   );
 };
-
-/** This month's season: its idea, its color, and the three challenges. No timers. */
-function seasonBanner(): HTMLElement | null {
-  const p = profile();
-  const s = seasonAt();
-  if (!s) return null;
-  const challenges = seasonChallenges(p);
-  const done = challenges.filter((c) => c.done).length;
-  return h(
-    'section',
-    { class: 'season-banner', style: `--s1:${s.sky[0]};--s2:${s.sky[1]};--s3:${s.sky[2]}` },
-    svg(dragonSvg('emberback', seasonPalette(s), 'adult', 'flap bob'), 'season-dragon'),
-    h(
-      'div',
-      { class: 'season-body' },
-      h('small', { class: 'season-kicker' }, 'This month’s season'),
-      h('h2', {}, s.name),
-      h('p', {}, s.idea),
-      h('p', { class: 'fine' }, `Eggs that hatch this month may come out ${s.color.name}. Every race flies under the ${s.name} sky.`),
-      h(
-        'ul',
-        { class: 'season-challenges' },
-        ...challenges.map((c) => h('li', { class: c.done ? 'done' : '' }, h('span', {}, `${c.done ? '✓' : '○'} ${c.text}`), h('span', { class: 'bar' }, h('span', { style: `width:${pct(c.value / c.goal)}` })), h('small', { class: 'fine' }, c.done ? `Done · +${CHALLENGE_EMBERS} embers` : `${c.value.toLocaleString('en-US')} / ${c.goal.toLocaleString('en-US')}`))),
-      ),
-      h('small', { class: 'fine' }, done === challenges.length ? `All done! You earned the title “${s.title}”.` : `Finish all ${challenges.length} for the title “${s.title}”.`),
-    ),
-  );
-}
 
 export function race(courseId: string) {
   return (root: HTMLElement): (() => void) => run(root, courseById(courseId));

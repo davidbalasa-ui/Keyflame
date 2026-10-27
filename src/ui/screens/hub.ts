@@ -13,6 +13,7 @@ import { lessons } from './lessons';
 import { nest } from './nest';
 import { progressPage } from './progressPage';
 import { raceMap } from './race';
+import { seasonButton } from './seasonPage';
 import { settings } from './settings';
 import { supporter } from './supporter';
 import { title } from './title';
@@ -83,6 +84,7 @@ export const hub = (root: HTMLElement): (() => void) => {
       'main',
       { class: 'hub' },
       showcase,
+      seasonButton(),
       h(
         'div',
         { class: 'daily' + (dailyDone ? ' done' : '') },

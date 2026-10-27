@@ -145,7 +145,9 @@ body.hub-fit .showcase > p { flex: none; margin: 2px 0 0; }
 /* Keep the scene's shape: as wide as the box allows, or as tall as the space left under it. */
 body.hub-fit .showcase .aerie { flex: none; max-width: none; width: min(100cqw, calc((100cqh - 30px) * 400 / 240)); }
 body.hub-fit .showcase-egg { flex: 1 1 0; min-height: 0; width: auto; height: 100%; max-height: 220px; }
+body.hub-fit .showcase-egg svg { height: 100%; width: auto; display: block; margin: 0 auto; }
 body.hub-fit .daily { flex: none; }
+body.hub-fit .season-btn { flex: none; }
 body.hub-fit .tiles { flex: none; width: 100%; max-width: 760px; }
 
 /* Round icon buttons under the tiles; the trophy is the big glowing one. */
@@ -559,6 +561,28 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .season-challenges li { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; }
 .season-challenges .bar { grid-column: 1 / -1; }
 .season-challenges li.done > span:first-child { color: var(--gold); font-weight: 600; }
+/* Season button on the hub: one slim row, so the hub still fits one screen. */
+.season-btn {
+  border: none; font: inherit; color: #fff; cursor: pointer; width: 100%; max-width: 760px; margin: 6px 0 0; padding: 4px 14px 4px 6px; border-radius: 16px; text-align: left;
+  background: linear-gradient(100deg, var(--s1), var(--s2) 55%, var(--s3)); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3);
+}
+.season-btn-in { display: flex; align-items: center; gap: 10px; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); }
+.season-btn-dragon { width: 74px; flex: none; }
+.season-btn-text { flex: 1; min-width: 0; display: flex; flex-direction: column; line-height: 1.2; }
+.season-btn-text strong { font-size: 1.1rem; }
+.season-btn-go { font-size: 1.8rem; font-weight: 700; }
+.season-page { max-width: 760px; margin: 0 auto; }
+.season-count { font-size: 1.6rem; font-weight: 700; color: var(--gold); margin: 4px 0 8px !important; }
+.season-how { background: var(--panel); border-radius: 16px; padding: 12px 16px; margin: 0 0 16px; }
+.season-how h2 { margin: 0 0 8px; font-size: 1.2rem; }
+.season-how ul { margin: 0; padding-left: 4px; list-style: none; display: grid; gap: 6px; }
+.season-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.season-card { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #fff; border-radius: 14px; padding: 8px; text-align: center; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7); background: linear-gradient(180deg, var(--s1), var(--s2) 55%, var(--s3)); }
+.season-card-dragon { width: 120px; }
+@media (max-height: 560px) {
+  body.hub-fit .season-btn-dragon { width: 52px; }
+  body.hub-fit .season-btn-text small:first-child { display: none; }
+}
 @media (max-width: 560px) {
   .season-banner { flex-direction: column; }
   .season-dragon { width: 110px; }

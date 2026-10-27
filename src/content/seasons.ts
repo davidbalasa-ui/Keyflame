@@ -1,6 +1,7 @@
-// Monthly seasons, all 36 built ahead of time (November 2026 to October 2029) so they
-// never need upkeep. The game picks one from the date; after October 2029 the list
-// starts over, so every season comes back in the same month later on.
+// Monthly seasons, all 36 built ahead of time (January 2027 to December 2029) so they
+// never need upkeep. The game picks one from the date; after December 2029 the list
+// starts over, so every season comes back in the same month later on. Seasons start
+// on January 1 so every rider can join the first one from its first day.
 // Themes were drafted with help from DeepSeek, then audited by hand: original names
 // only, no holidays, nothing scary, and only letters and spaces so every name can be typed.
 
@@ -29,14 +30,6 @@ export interface Season {
 }
 
 export const SEASONS: Season[] = [
-  { id: '2026-11', name: 'First Frost Flight', idea: 'Race through crisp air as the first frost sparkles on the ground.', title: 'Frost Flier',
-    sky: ['#2b3a67', '#7d8fb3', '#d6e0f0'],
-    color: { name: 'Silver', body: '#aeb8c4', belly: '#eef2f6', wing: '#6b7785', accent: '#74c0fc' },
-    challenges: [['races', 5], ['keys', 2000], ['perfect', 1]] },
-  { id: '2026-12', name: 'Winter Star Summit', idea: 'Soar among the brightest stars of the longest nights.', title: 'Star Summit Rider',
-    sky: ['#0b1033', '#26306e', '#5c6bb0'],
-    color: { name: 'Midnight Blue', body: '#233a8c', belly: '#8fa3e8', wing: '#121f52', accent: '#ffe066' },
-    challenges: [['wins', 2], ['days', 4], ['races', 8]] },
   { id: '2027-01', name: 'Ice Cave Glide', idea: 'Zoom through glittering ice caves lit by frozen waterfalls.', title: 'Ice Cave Explorer',
     sky: ['#0e3b5c', '#3d8fbf', '#bfe6f5'],
     color: { name: 'Ice Blue', body: '#74c0fc', belly: '#e7f5ff', wing: '#1c7ed6', accent: '#e599f7' },
@@ -173,10 +166,18 @@ export const SEASONS: Season[] = [
     sky: ['#c2410c', '#f08c00', '#ffd8a8'],
     color: { name: 'Canyon Gold', body: '#d9a32b', belly: '#fff3d6', wing: '#8a4f14', accent: '#e8590c' },
     challenges: [['races', 6], ['keys', 2500], ['perfect', 1]] },
+  { id: '2029-11', name: 'First Frost Flight', idea: 'Race through crisp air as the first frost sparkles on the ground.', title: 'Frost Flier',
+    sky: ['#2b3a67', '#7d8fb3', '#d6e0f0'],
+    color: { name: 'Silver', body: '#aeb8c4', belly: '#eef2f6', wing: '#6b7785', accent: '#74c0fc' },
+    challenges: [['races', 5], ['keys', 2000], ['perfect', 1]] },
+  { id: '2029-12', name: 'Winter Star Summit', idea: 'Soar among the brightest stars of the longest nights.', title: 'Star Summit Rider',
+    sky: ['#0b1033', '#26306e', '#5c6bb0'],
+    color: { name: 'Midnight Blue', body: '#233a8c', belly: '#8fa3e8', wing: '#121f52', accent: '#ffe066' },
+    challenges: [['wins', 2], ['days', 4], ['races', 8]] },
 ];
 
-const FIRST_YEAR = 2026;
-const FIRST_MONTH = 11;
+const FIRST_YEAR = 2027;
+const FIRST_MONTH = 1;
 
 /** How many months after the first season a date falls, in local time. */
 function monthIndex(now: Date): number {
@@ -187,6 +188,15 @@ function monthIndex(now: Date): number {
 export function seasonAt(now: Date = new Date()): Season | null {
   const i = monthIndex(now);
   return i < 0 ? null : SEASONS[i % SEASONS.length];
+}
+
+/** The first day of the first season, in local time. */
+export const SEASONS_START = new Date(FIRST_YEAR, FIRST_MONTH - 1, 1);
+
+/** Whole days until seasons begin: 0 once they have started. Counts calendar days, not hours. */
+export function daysUntilSeasons(now: Date = new Date()): number {
+  const day = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.max(0, Math.round((SEASONS_START.getTime() - day.getTime()) / 86400000));
 }
 
 /** A key for one month a season runs, so a season that comes back starts fresh. */

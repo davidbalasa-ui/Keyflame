@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { SEASONS, challengeText, pastSeasons, seasonAt } from '../src/content/seasons';
+import { SEASONS, challengeText, daysUntilSeasons, pastSeasons, seasonAt } from '../src/content/seasons';
 import { REVIEWED_WORDS, hasBlockedRoot } from '../src/content/safety';
 import { typableOnTouch } from '../src/content/keyboard';
 import { ALL_TITLES, achievements, currentTitle } from '../src/game/achievements';
@@ -14,10 +14,10 @@ const run = (correct = 100, accuracy = 0.96) => ({ wpm: 20, accuracy, correct, e
 const words = (s: string): string[] => s.toLowerCase().split(/[^a-z]+/).filter(Boolean);
 
 describe('season calendar', () => {
-  it('has 36 seasons, one per month from November 2026 to October 2029', () => {
+  it('has 36 seasons, one per month from January 2027 to December 2029', () => {
     expect(SEASONS).toHaveLength(36);
-    let y = 2026;
-    let m = 11;
+    let y = 2027;
+    let m = 1;
     for (const s of SEASONS) {
       expect(s.id).toBe(`${y}-${String(m).padStart(2, '0')}`);
       // First and last day of the month, so time zones at the edges are covered.
@@ -27,16 +27,30 @@ describe('season calendar', () => {
     }
   });
 
-  it('has no season before launch and starts over after October 2029', () => {
-    expect(seasonAt(at(2026, 10, 31))).toBeNull();
-    expect(seasonAt(at(2029, 11))).toBe(SEASONS[0]);
-    expect(seasonAt(at(2032, 11))).toBe(SEASONS[0]);
-    expect(seasonAt(at(2030, 2))?.name).toBe(SEASONS[3].name);
+  it('has no season before January 2027 and starts over after December 2029', () => {
+    expect(seasonAt(at(2026, 11))).toBeNull();
+    expect(seasonAt(new Date(2026, 11, 31, 23, 59))).toBeNull();
+    expect(seasonAt(at(2030, 1, 1))).toBe(SEASONS[0]);
+    expect(seasonAt(at(2033, 1))).toBe(SEASONS[0]);
+    expect(seasonAt(at(2030, 4))?.name).toBe(SEASONS[3].name);
+  });
+
+  it('keeps every theme in the month it was written for', () => {
+    expect(seasonAt(at(2027, 1))?.name).toBe('Ice Cave Glide');
+    expect(seasonAt(at(2029, 11))?.name).toBe('First Frost Flight');
+    expect(seasonAt(at(2029, 12))?.name).toBe('Winter Star Summit');
+  });
+
+  it('counts whole days until seasons start, with no clock', () => {
+    expect(daysUntilSeasons(new Date(2026, 9, 27, 23, 30))).toBe(66);
+    expect(daysUntilSeasons(new Date(2026, 11, 31, 8))).toBe(1);
+    expect(daysUntilSeasons(at(2027, 1, 1))).toBe(0);
+    expect(daysUntilSeasons(at(2028, 6))).toBe(0);
   });
 
   it('lists earlier seasons for the Starfall Vault', () => {
-    expect(pastSeasons(at(2026, 10))).toEqual([]);
-    expect(pastSeasons(at(2027, 1)).map((s) => s.id)).toEqual(['2027-01', '2026-12', '2026-11']);
+    expect(pastSeasons(at(2026, 12))).toEqual([]);
+    expect(pastSeasons(at(2027, 3)).map((s) => s.id)).toEqual(['2027-03', '2027-02', '2027-01']);
     expect(pastSeasons(at(2035, 1))).toHaveLength(36);
   });
 });
@@ -108,7 +122,7 @@ describe('season colors on dragons', () => {
     const p = createProfile('Bright Comet');
     p.nest!.warmth = 9999;
     const d = hatchEgg(p, 'Ashclaw', () => 0.01, at(2027, 2))!;
-    expect(d.palette).toBe(seasonPalette(SEASONS[3]));
+    expect(d.palette).toBe(seasonPalette(seasonAt(at(2027, 2))!));
     expect(foundLooks(p).size).toBe(0);
   });
 });
@@ -116,7 +130,7 @@ describe('season colors on dragons', () => {
 describe('season challenges', () => {
   it('counts races, wins and days, and pays each challenge once', () => {
     const p = createProfile('Swift Flyer');
-    const now = at(2026, 11, 2);
+    const now = at(2029, 11, 2);
     const s = seasonAt(now)!;
     expect(s.challenges.map(([k]) => k)).toEqual(['races', 'keys', 'perfect']);
     const embers = p.embers;
@@ -132,15 +146,15 @@ describe('season challenges', () => {
 
   it('earns the season title, which stays after the month ends', () => {
     const p = createProfile('Bold Racer');
-    const now = at(2026, 11, 3);
+    const now = at(2029, 11, 3);
     noteSeasonRace(p, run(2000, 1), 1, now);
     for (let i = 0; i < 4; i++) noteSeasonRace(p, run(), 1, now);
-    const a = achievements(p, now).find((x) => x.id === 'season-2026-11')!;
+    const a = achievements(p, now).find((x) => x.id === 'season-2029-11')!;
     expect(a.earned).toBe(true);
     expect(a.title).toBe('Frost Flier');
     p.title = a.id;
     expect(currentTitle(p)).toBe('Frost Flier');
-    expect(achievements(p, at(2027, 5)).find((x) => x.id === 'season-2026-11')?.earned).toBe(true);
+    expect(achievements(p, at(2030, 5)).find((x) => x.id === 'season-2029-11')?.earned).toBe(true);
   });
 
   it('lists only the current season and finished ones', () => {
