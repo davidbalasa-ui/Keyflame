@@ -93,7 +93,7 @@ export const supporter = (root: HTMLElement): void => {
       p.supporter
         ? owned()
         : ready
-          ? h('div', { class: 'row center' }, button(`Ask a grown-up to buy it (${CONFIG.supporterPrice})`, () => root.append(parentGate(() => (location.href = CONFIG.supporterCheckoutUrl)))))
+          ? h('div', { class: 'row center' }, button(`For grown-ups: get the pack (${CONFIG.supporterPrice})`, () => root.append(parentGate(() => (location.href = CONFIG.supporterCheckoutUrl)))))
           : h('p', { class: 'reward' }, 'The supporter pack is coming soon!'),
       p.supporter ? null : codeBox(),
     ),
