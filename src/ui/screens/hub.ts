@@ -2,7 +2,6 @@ import { TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
 import { activeDragon, eggProgress } from '../../game/progress';
 import { today } from '../../save/store';
 import { breakDue, go, profile } from '../app';
-import { AdSlot } from '../ads';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { aerieScene } from './aerie';
@@ -90,7 +89,6 @@ export const hub = (root: HTMLElement): void => {
         p.supporter ? null : button('Support Keyflame', () => go(supporter), 'btn ghost small'),
       ),
       backupDue ? h('p', { class: 'fine' }, 'It has been a while since your last backup. ', button('Make a backup code', () => go(settings), 'link')) : null,
-      AdSlot('hub'),
     ),
   );
 

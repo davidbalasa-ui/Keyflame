@@ -1,7 +1,7 @@
 import { buildRaceText } from '../../content/lessons';
 import { COURSES, courseById, type Course } from '../../game/courses';
 import { TRIBES, dragonSvg, eggSvg, stageFor, type Stage, type TribeId } from '../../game/dragons';
-import { activeDragon, capitalsKnown, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
+import { activeDragon, capitalsKnown, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
 import { FACTS, READING_LEVEL_LABEL, TOPIC_LABEL, pickFact, type ReadingLevel } from '../../content/facts';
 import { weakKeys } from '../../engine/typing';
 import { applyRaceKey, finishTime, newRaceState, perkTuning } from '../../game/raceRules';
@@ -11,7 +11,7 @@ import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
 import { CONFETTI, ParticleField, TRAIL_COLORS } from '../particles';
-import { AdSlot } from '../ads';
+import { celebration, crownSvg, flameSvg, type RewardCard } from '../celebrate';
 import { hub, refreshEmbers, topBar } from './hub';
 import { codex } from './codex';
 import { nest } from './nest';
@@ -295,6 +295,7 @@ function run(root: HTMLElement, course: Course): () => void {
     const ahead = ghosts.filter((g) => finishTime(g.wpm, len) < myMs);
     const placeNum = ahead.length + 1;
     const beatRival = !ahead.some((g) => g.rival);
+    const prevBest = touch ? p.totals.bestTouchWpm : p.totals.bestWpm;
     const reward = recordRace(p, sum, placeNum, { input, courseId: course.id, beatRival });
     const newFact = fact ? recordFact(p, fact.id) : false;
     persist();
@@ -307,46 +308,56 @@ function run(root: HTMLElement, course: Course): () => void {
       if (placeNum === 1) for (let i = 0; i < 6; i++) fx.emit((w * (i + 0.5)) / 6, -6, { count: 24, colors: CONFETTI, kind: 'confetti', vy: 40, spread: 220, size: 5, life: 2.4 });
     }
 
-    const ord = ['1st', '2nd', '3rd', '4th', '5th'][placeNum - 1];
-    const modal = h(
-      'div',
-      { class: 'modal-backdrop' },
-      h(
-        'div',
-        { class: 'modal' },
-        h('h2', {}, placeNum === 1 ? 'You won the race!' : `You finished ${ord} of ${ghosts.length + 1}`),
-        reward.rivalFirstWin ? h('p', { class: 'reward' }, `You beat ${r.name}, the ${course.name} champion! +25 bonus embers`) : !beatRival ? h('p', { class: 'fine' }, `${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`) : null,
-        reward.newBest ? h('p', { class: 'reward' }, 'New personal best!') : null,
-        h('p', {}, `${Math.round(sum.wpm)} WPM · ${pct(sum.accuracy)} accuracy`),
-        h('p', {}, `+${reward.embers} embers${reward.warmthAdded ? ` · +${reward.warmthAdded} warmth for your egg` : ''}`),
-        reward.grewTo && me ? h('p', { class: 'reward' }, `${me.name} grew into a ${reward.grewTo} dragon!`) : null,
-        reward.newEgg ? h('div', { class: 'reward' }, svg(eggSvg(reward.newEgg, 0, 5), 'mini-egg'), `You earned a ${TRIBES[reward.newEgg].name} egg!`) : null,
-        reward.eggReady ? h('p', { class: 'reward' }, 'Your egg is ready to hatch!') : null,
-        fact
-          ? h(
-              'div',
-              { class: 'fact-card' },
-              h('strong', {}, 'Did you know?'),
-              h('p', {}, fact.text),
-              h('small', { class: 'fine' }, `${TOPIC_LABEL[fact.topic]} · ${newFact ? `New in your Fact Book (${p.factsSeen.length} of ${FACTS.length})` : 'Already in your Fact Book'}`),
-              p.settings.readingLevel === 'older' && fact.source.name ? h('small', { class: 'fine' }, `Source: ${fact.source.name}`) : null,
-            )
-          : null,
-        h(
+    const rewards: RewardCard[] = [{ art: flameSvg(), title: 'Embers', value: reward.embers, tone: 'ember' }];
+    if (reward.rivalFirstWin) rewards.push({ art: crownSvg(), title: `${r.name} beaten!`, value: 'Champion!', note: 'Includes +25 bonus embers', tone: 'gold' });
+    if (reward.warmthAdded && p.nest) {
+      const ready = eggProgress(p) >= 1;
+      rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Visit your nest' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
+    }
+    if (reward.newEgg) rewards.push({ art: eggSvg(reward.newEgg, 0, 5), title: `${TRIBES[reward.newEgg].name} egg`, value: 'New egg!', tone: 'egg' });
+    if (reward.grewTo && me) rewards.push({ art: dragonSvg(me.tribe, me.palette, reward.grewTo, '', me.skin), title: `${me.name} grew!`, value: 'Grew up!', note: `Now a ${reward.grewTo} dragon`, tone: 'grow' });
+
+    const lines: string[] = [];
+    if (reward.rivalFirstWin) lines.push(`You beat ${r.name}, the ${course.name} champion!`);
+    else if (!beatRival) lines.push(`${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`);
+
+    const factCard = fact
+      ? h(
           'div',
-          { class: 'row' },
-          button('Map', () => go(raceMap), 'btn ghost'),
-          fact ? button('Fact Book', () => go(codex), 'btn ghost') : null,
-          reward.eggReady || reward.newEgg ? button('Go to nest', () => go(nest), 'btn ghost') : null,
-          button('Race again', () => go(race(course.id))),
-        ),
-        AdSlot('results'),
+          { class: 'fact-card' },
+          h('strong', {}, 'Did you know?'),
+          h('p', {}, fact.text),
+          h('small', { class: 'fine' }, `${TOPIC_LABEL[fact.topic]} · ${newFact ? `New in your Fact Book (${p.factsSeen.length} of ${FACTS.length})` : 'Already in your Fact Book'}`),
+          p.settings.readingLevel === 'older' && fact.source.name ? h('small', { class: 'fine' }, `Source: ${fact.source.name}`) : null,
+        )
+      : null;
+
+    const celebrate = celebration({
+      place: placeNum,
+      racers: ghosts.length + 1,
+      wpm: sum.wpm,
+      accuracy: sum.accuracy,
+      prevBest,
+      newBest: !!reward.newBest,
+      lines,
+      rewards,
+      dragonArt: dragonSvg(me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'flap', me?.skin),
+      trailColors: trailOf.get(meEl),
+      extra: factCard,
+      reducedMotion: p.settings.reducedMotion,
+      actions: h(
+        'div',
+        { class: 'row' },
+        button('Map', () => go(raceMap), 'btn ghost'),
+        fact ? button('Fact Book', () => go(codex), 'btn ghost') : null,
+        reward.eggReady || reward.newEgg ? button('Go to nest', () => go(nest), 'btn ghost') : null,
+        button('Race again', () => go(race(course.id))),
       ),
-    );
-    // Let the finish burst play for a moment before the results card covers it.
+    });
+    // Let the finish burst on the track play for a moment first.
     window.setTimeout(() => {
-      if (root.isConnected) root.append(modal);
-    }, p.settings.reducedMotion ? 0 : 900);
+      if (root.isConnected) root.append(celebrate);
+    }, p.settings.reducedMotion ? 0 : 700);
   }
 
   root.append(

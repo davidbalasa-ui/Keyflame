@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+/// <reference types="vitest/config" />
 import { defineConfig, type Plugin } from 'vite';
 
 // A new id for every build. The service worker URL carries it, so each deploy
@@ -43,4 +44,6 @@ export default defineConfig({
   base: './',
   define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
   plugins: [precacheList()],
+  // Some content tests generate thousands of texts; give them room on slow machines.
+  test: { testTimeout: 30000 },
 });

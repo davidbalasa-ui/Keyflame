@@ -35,4 +35,21 @@ export const sfx = {
   crack: () => tone(900, 60, 'square', 0.03, 400),
   hatch: () => [392, 523, 659, 784, 988].forEach((f, i) => setTimeout(() => tone(f, 220, 'sine', 0.06), i * 120)),
   click: () => tone(520, 50, 'sine', 0.03),
+  /** A short victory fanfare for first place. */
+  fanfare: () => {
+    const notes: Array<[number, number, number]> = [[523, 0, 140], [523, 150, 140], [523, 300, 140], [659, 450, 420], [587, 900, 160], [659, 1060, 160], [784, 1220, 520]];
+    for (const [f, at, ms] of notes) {
+      setTimeout(() => {
+        tone(f, ms, 'triangle', 0.06);
+        tone(f / 2, ms, 'sine', 0.035);
+      }, at);
+    }
+  },
+  /** A friendly two-note cheer for finishing outside the top three. */
+  cheer: () => [440, 660].forEach((f, i) => setTimeout(() => tone(f, 200, 'triangle', 0.045), i * 140)),
+  /** A bright blip as a reward card lands. */
+  coin: () => {
+    tone(988, 70, 'square', 0.025);
+    setTimeout(() => tone(1319, 140, 'square', 0.025), 70);
+  },
 };
