@@ -2,7 +2,7 @@ import { GROWTH, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggSvg, isSeasonPale
 import { EGG_PRICE, claimSets, foundLooks, lookKey } from '../../game/collection';
 import { codex } from './codex';
 import type { OwnedDragon } from '../../save/store';
-import { MILESTONES, activeDragon, eggProgress, hatchEgg, randomDragonName } from '../../game/progress';
+import { EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, warmWithEmbers } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor } from './aerie';
@@ -11,14 +11,15 @@ import { sfx } from '../sound';
 import { CONFETTI, TRAIL_COLORS, attachField } from '../particles';
 import { claimNewAchievements, earnedIds } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
-import { hub, topBar } from './hub';
+import { hub, refreshEmbers, topBar } from './hub';
 import { raceMap } from './race';
 
 function growthText(d: OwnedDragon): string {
   const stage = stageFor(d.xp);
-  if (stage === 'adult') return 'Fully grown';
+  const evo = d.stars ? `${STAR_NAMES[d.stars]}${d.stars >= MAX_STARS ? ' (full stars)' : ''} · ` : '';
+  if (stage === 'adult') return `${evo}Fully grown`;
   const goal = stage === 'hatchling' ? GROWTH.young : GROWTH.adult;
-  return `${stage === 'hatchling' ? 'Hatchling' : 'Young'} · ${goal - d.xp} keys to grow`;
+  return `${evo}${stage === 'hatchling' ? 'Hatchling' : 'Young'} · ${goal - d.xp} keys to grow`;
 }
 
 export const nest = (root: HTMLElement): void => {
@@ -35,7 +36,19 @@ export const nest = (root: HTMLElement): void => {
         h('h2', {}, `${TRIBES[egg.tribe].name} egg`),
         h('div', { class: 'warmth' }, h('span', { style: `width:${pct(prog)}` })),
         h('p', {}, prog >= 1 ? 'It is ready! Listen… crack, crack!' : `${pct(prog)} warm. ${TRIBES[egg.tribe].hatchKeys - egg.warmth} more correct keys to hatch.`),
-        prog >= 1 ? button('Hatch it!', () => hatchSequence(root)) : button('Race to warm it', () => go(raceMap)),
+        prog >= 1
+          ? button('Hatch it!', () => hatchSequence(root))
+          : h(
+              'div',
+              { class: 'row center' },
+              button('Race to warm it', () => go(raceMap)),
+              button(`Warm with 🔥 ${WARM_PRICE}`, () => {
+                if (!warmWithEmbers(p)) return;
+                sfx.coin();
+                persist();
+                go(nest);
+              }, 'btn ghost', canWarmWithEmbers(p) ? { title: `Adds ${Math.round(WARM_SHARE * 100)}% warmth` } : { disabled: true, title: `Costs ${WARM_PRICE} embers` }),
+            ),
       )
     : h('section', { class: 'nest-panel empty' }, h('h2', {}, 'Your nest is empty'), h('p', {}, 'Earn your next egg from a lesson unit or a milestone below.'), p.dragons.length ? button(`Get an egg for 🔥 ${EGG_PRICE} in the Codex`, () => go(codex), 'btn ghost') : null);
 
@@ -43,7 +56,7 @@ export const nest = (root: HTMLElement): void => {
     ...UNITS.map((u) => ({ tribe: u.reward, label: `Finish the ${u.title} lessons`, done: p.unitsRewarded.includes(u.id) })),
     ...MILESTONES.map((m) => ({ tribe: m.tribe, label: m.label, done: p.milestones.includes(m.id) })),
   ];
-  const scene = active ? aerieScene(p, svg(dragonSvg(active.tribe, active.palette, stageFor(active.xp), 'flap bob', active.skin, active.marking), 'showcase-dragon')) : null;
+  const scene = active ? aerieScene(p, svg(dragonSvg(active.tribe, active.palette, stageFor(active.xp), 'flap bob', active.skin, active.marking, active.stars), 'showcase-dragon')) : null;
 
   root.append(
     topBar(() => go(hub)),
@@ -67,8 +80,8 @@ export const nest = (root: HTMLElement): void => {
                 h(
                   'div',
                   { class: 'dragon-card' + (active?.id === d.id ? ' active' : '') },
-                  svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking), 'card-dragon'),
-                  h('strong', {}, d.name),
+                  svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking, d.stars), 'card-dragon'),
+                  h('strong', {}, d.name, d.stars ? h('span', { class: 'stars', 'aria-label': `${d.stars} evolution stars` }, ' ' + '★'.repeat(d.stars)) : null),
                   h('small', {}, `${paletteFor(d.tribe, d.palette).name} ${TRIBES[d.tribe].name}`),
                   h('small', {}, growthText(d)),
                   h('small', { class: 'perk' }, TRIBES[d.tribe].perk),
@@ -156,20 +169,42 @@ function hatchSequence(root: HTMLElement): void {
   setTimeout(() => {
     const before = earnedIds(p);
     const looksBefore = foundLooks(p);
-    const dragon = hatchEgg(p, name)!;
-    const isNewLook = !looksBefore.has(lookKey(dragon.tribe, dragon.palette, dragon.marking));
+    const result = hatchNest(p, name)!;
     const sets = claimSets(p);
     const fresh = claimNewAchievements(p, before);
     persist();
     sfx.hatch();
-    {
+    const burst = (count = 70): void => {
       const r = stageEl.getBoundingClientRect();
       const b = box.getBoundingClientRect();
       const x = r.left - b.left + r.width / 2;
       const y = r.top - b.top + r.height / 2;
-      fx.emit(x, y, { count: 70, colors, kind: 'spark', spread: 520, size: 7, life: 1.2 });
+      fx.emit(x, y, { count, colors, kind: 'spark', spread: 520, size: 7, life: 1.2 });
       fx.emit(x, y, { count: 50, colors: CONFETTI, kind: 'confetti', vy: -220, spread: 420, size: 5, life: 2.2 });
+    };
+    const extras = (): HTMLElement[] => [
+      ...sets.map((x) => h('p', { class: 'reward' }, `Codex set done: ${TRIBES[x.tribe].name} ${x.label.toLowerCase()}! +${x.embers} embers`)),
+      ...fresh.map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),
+    ];
+    if (!result.dragon) {
+      burst();
+      refreshEmbers();
+      box.replaceChildren(
+        h('h2', {}, `+${MAXED_EMBERS} embers!`),
+        h('p', {}, `Every ${TRIBES[egg.tribe].name} look you could get is already at full stars, so this egg turned into ${MAXED_EMBERS} embers.`),
+        ...extras(),
+        h('div', { class: 'row' }, button('Done', () => go(nest))),
+        fx.canvas,
+      );
+      return;
     }
+    if (result.evolved) {
+      evolveSequence(box, fx, result.dragon, extras());
+      return;
+    }
+    const dragon = result.dragon;
+    const isNewLook = !looksBefore.has(lookKey(dragon.tribe, dragon.palette, dragon.marking));
+    burst();
     const palette = paletteFor(dragon.tribe, dragon.palette);
     const season = isSeasonPalette(dragon.palette);
     const nameEl = h('h2', {}, `Meet ${name}!`);
@@ -191,12 +226,61 @@ function hatchSequence(root: HTMLElement): void {
       h('p', {}, `A ${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}${season ? ', a season color!' : palette.rare ? ', a rare color!' : '!'}`),
       h('p', { class: 'fine' }, season ? 'It joins the season looks in your Codex.' : isNewLook ? 'A new look for your Codex!' : 'You already have this look in your Codex.'),
       h('p', { class: 'fine' }, TRIBES[dragon.tribe].lore),
-      ...sets.map((x) => h('p', { class: 'reward' }, `Codex set done: ${TRIBES[x.tribe].name} ${x.label.toLowerCase()}! +${x.embers} embers`)),
-      ...fresh.map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),
+      ...extras(),
       h('p', {}, 'Pick a name:'),
       h('div', { class: 'name-pickers' }, sel(NAME_STARTS, start, (v) => ((start = v), setName(start + end))), sel(NAME_ENDS, end, (v) => ((end = v), setName(start + end)))),
       h('div', { class: 'row' }, button('Done', () => go(nest))),
     );
     box.append(fx.canvas);
   }, 1600);
+}
+
+/**
+ * A repeated look evolves the dragon that already wears it: flashes build up, a big
+ * burst in the tribe's colors hides the swap, and the evolved dragon is there after.
+ */
+function evolveSequence(box: HTMLElement, fx: ReturnType<typeof attachField>, d: OwnedDragon, extras: HTMLElement[]): void {
+  const stars = d.stars ?? 1;
+  const colors = TRAIL_COLORS[d.tribe];
+  const glow = paletteFor(d.tribe, d.palette).accent;
+  const stage = stageFor(d.xp);
+  const art = (n: number, cls: string): HTMLElement => svg(dragonSvg(d.tribe, d.palette, stage, cls, d.skin, d.marking, n), 'hatch-dragon');
+  const before = art(stars - 1, 'flap');
+  const flash = h('div', { class: 'evo-flash', style: `--glow:${glow}` });
+  const title = h('h2', {}, `${d.name} is changing…`);
+  box.replaceChildren(h('div', { class: 'evo-stage' }, before, flash), title, fx.canvas);
+  const at = (): [number, number] => {
+    const r = before.getBoundingClientRect();
+    const b = box.getBoundingClientRect();
+    return [r.left - b.left + r.width / 2, r.top - b.top + r.height / 2];
+  };
+  // Three quick flashes, each brighter than the last.
+  [0, 450, 850].forEach((t, i) =>
+    setTimeout(() => {
+      flash.classList.remove('pulse-' + i);
+      void flash.offsetWidth;
+      flash.classList.add('pulse-' + (i + 1));
+      fx.emit(...at(), { count: 18 + i * 12, colors, kind: 'spark', spread: 200 + i * 80, size: 4 + i, life: 0.6 });
+      sfx.crack();
+    }, t),
+  );
+  setTimeout(() => {
+    flash.classList.add('boom');
+    const [x, y] = at();
+    fx.emit(x, y, { count: 140, colors: [...colors, glow, '#ffffff'], kind: 'spark', spread: 760, size: 9, life: 1.6 });
+    fx.emit(x, y, { count: 60, colors: CONFETTI, kind: 'confetti', vy: -260, spread: 520, size: 6, life: 2.4 });
+    sfx.hatch();
+  }, 1300);
+  // The swap happens while the burst covers the dragon.
+  setTimeout(() => before.replaceWith(art(stars, 'flap bob')), 1500);
+  setTimeout(() => {
+    title.textContent = `${d.name} evolved!`;
+    box.append(
+      h('p', { class: 'evo-stars', 'aria-label': `${stars} of ${MAX_STARS} stars` }, '★'.repeat(stars) + '☆'.repeat(MAX_STARS - stars)),
+      h('p', {}, `${STAR_NAMES[stars]} ${d.name} · +${EVOLVE_XP.toLocaleString('en-US')} keys of growth`),
+      h('p', { class: 'fine' }, stars >= MAX_STARS ? 'Full stars! This look will not hatch again, so your next eggs bring something else.' : `You found this look again, so ${d.name} grew stronger. ${MAX_STARS - stars} more ${MAX_STARS - stars === 1 ? 'star' : 'stars'} to go.`),
+      ...extras,
+      h('div', { class: 'row' }, button('Done', () => go(nest))),
+    );
+  }, 2300);
 }

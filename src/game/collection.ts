@@ -3,7 +3,7 @@
 // which are only ever earned by typing.
 
 import type { Profile } from '../save/store';
-import { giveEgg } from './progress';
+import { giveEgg, tribeMaxed } from './progress';
 import { MARKINGS, TRIBES, isSeasonPalette, type TribeId } from './dragons';
 
 export const LOOKS_PER_TRIBE = 4 * MARKINGS.length;
@@ -63,8 +63,9 @@ export function claimSets(p: Profile): CodexSet[] {
 }
 
 /** Tribes whose eggs can be bought: ones the player has already hatched. */
-export function canBuyEgg(p: Profile, tribe: TribeId): 'ok' | 'unknown' | 'embers' | 'full' {
+export function canBuyEgg(p: Profile, tribe: TribeId): 'ok' | 'unknown' | 'embers' | 'full' | 'maxed' {
   if (!p.dragons.some((d) => d.tribe === tribe)) return 'unknown';
+  if (tribeMaxed(p, tribe)) return 'maxed';
   if (p.nest && p.basket.length >= MAX_BASKET) return 'full';
   if (p.embers < EGG_PRICE) return 'embers';
   return 'ok';
