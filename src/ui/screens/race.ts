@@ -141,8 +141,8 @@ function run(root: HTMLElement, course: Course): () => void {
 
   const lanes = h('div', { class: 'lanes' });
   const trailOf = new Map<HTMLElement, string[]>();
-  const makeLane = (name: string, tribe: TribeId, palette: number, stage: Stage, cls = '', skin?: 'starfire'): HTMLElement => {
-    const racer = h('div', { class: `racer ${cls}` }, svg(dragonSvg(tribe, palette, stage, 'flap', skin), 'racer-art'), h('span', { class: 'racer-name' }, name));
+  const makeLane = (name: string, tribe: TribeId, palette: number, stage: Stage, cls = '', skin?: 'starfire', marking = 0): HTMLElement => {
+    const racer = h('div', { class: `racer ${cls}` }, svg(dragonSvg(tribe, palette, stage, 'flap', skin, marking), 'racer-art'), h('span', { class: 'racer-name' }, name));
     lanes.append(h('div', { class: 'lane' }, racer));
     trailOf.set(racer, skin === 'starfire' ? ['#ffd43b', '#b197fc', '#fff3bf', '#ff922b'] : TRAIL_COLORS[tribe]);
     return racer;
@@ -158,9 +158,9 @@ function run(root: HTMLElement, course: Course): () => void {
     }),
   ];
   if (best > 0) {
-    ghosts.push({ name: 'Your best', wpm: best, phase: 4.2, el: makeLane('Your best', me?.tribe ?? 'emberback', me?.palette ?? 0, 'adult', 'ghost-best', me?.skin) });
+    ghosts.push({ name: 'Your best', wpm: best, phase: 4.2, el: makeLane('Your best', me?.tribe ?? 'emberback', me?.palette ?? 0, 'adult', 'ghost-best', me?.skin, me?.marking) });
   }
-  const meEl = makeLane(me ? me.name : 'You', me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'you', me?.skin);
+  const meEl = makeLane(me ? me.name : 'You', me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'you', me?.skin, me?.marking);
 
   const fx = new ParticleField();
   fx.enabled = !p.settings.reducedMotion;
@@ -321,7 +321,7 @@ function run(root: HTMLElement, course: Course): () => void {
     if (reward.newEgg) rewards.push({ art: eggSvg(reward.newEgg, 0, 5), title: `${TRIBES[reward.newEgg].name} egg`, value: 'New egg!', tone: 'egg' });
     for (const a of fresh.slice(0, fresh.length > 3 ? 2 : 3)) rewards.push({ art: medalSvg(a.medal, a.icon), title: `New title “${a.title}”`, value: 'Achievement!', note: a.how, tone: 'gold' });
     if (fresh.length > 3) rewards.push({ art: medalSvg(fresh[2].medal, '🏅'), title: 'More achievements', value: `+${fresh.length - 2}`, note: 'See them all on the hub', tone: 'gold' });
-    if (reward.grewTo && me) rewards.push({ art: dragonSvg(me.tribe, me.palette, reward.grewTo, '', me.skin), title: `${me.name} grew!`, value: 'Grew up!', note: `Now a ${reward.grewTo} dragon`, tone: 'grow' });
+    if (reward.grewTo && me) rewards.push({ art: dragonSvg(me.tribe, me.palette, reward.grewTo, '', me.skin, me.marking), title: `${me.name} grew!`, value: 'Grew up!', note: `Now a ${reward.grewTo} dragon`, tone: 'grow' });
 
     const lines: string[] = [];
     if (reward.rivalFirstWin) lines.push(`You beat ${r.name}, the ${course.name} champion!`);
@@ -347,7 +347,7 @@ function run(root: HTMLElement, course: Course): () => void {
       newBest: !!reward.newBest,
       lines,
       rewards,
-      dragonArt: dragonSvg(me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'flap', me?.skin),
+      dragonArt: dragonSvg(me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'flap', me?.skin, me?.marking),
       trailColors: trailOf.get(meEl),
       extra: factCard,
       reducedMotion: p.settings.reducedMotion,

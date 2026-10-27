@@ -1,4 +1,6 @@
-import { GROWTH, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
+import { GROWTH, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggSvg, lookName, stageFor } from '../../game/dragons';
+import { EGG_PRICE, claimSets, foundLooks, lookKey } from '../../game/collection';
+import { codex } from './codex';
 import type { OwnedDragon } from '../../save/store';
 import { MILESTONES, activeDragon, eggProgress, hatchEgg, randomDragonName } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
@@ -35,13 +37,13 @@ export const nest = (root: HTMLElement): void => {
         h('p', {}, prog >= 1 ? 'It is ready! Listen… crack, crack!' : `${pct(prog)} warm. ${TRIBES[egg.tribe].hatchKeys - egg.warmth} more correct keys to hatch.`),
         prog >= 1 ? button('Hatch it!', () => hatchSequence(root)) : button('Race to warm it', () => go(raceMap)),
       )
-    : h('section', { class: 'nest-panel empty' }, h('h2', {}, 'Your nest is empty'), h('p', {}, 'Earn your next egg from a lesson unit or a milestone below.'));
+    : h('section', { class: 'nest-panel empty' }, h('h2', {}, 'Your nest is empty'), h('p', {}, 'Earn your next egg from a lesson unit or a milestone below.'), p.dragons.length ? button(`Get an egg for 🔥 ${EGG_PRICE} in the Codex`, () => go(codex), 'btn ghost') : null);
 
   const goals = [
     ...UNITS.map((u) => ({ tribe: u.reward, label: `Finish the ${u.title} lessons`, done: p.unitsRewarded.includes(u.id) })),
     ...MILESTONES.map((m) => ({ tribe: m.tribe, label: m.label, done: p.milestones.includes(m.id) })),
   ];
-  const scene = active ? aerieScene(p, svg(dragonSvg(active.tribe, active.palette, stageFor(active.xp), 'flap bob', active.skin), 'showcase-dragon')) : null;
+  const scene = active ? aerieScene(p, svg(dragonSvg(active.tribe, active.palette, stageFor(active.xp), 'flap bob', active.skin, active.marking), 'showcase-dragon')) : null;
 
   root.append(
     topBar(() => go(hub)),
@@ -65,7 +67,7 @@ export const nest = (root: HTMLElement): void => {
                 h(
                   'div',
                   { class: 'dragon-card' + (active?.id === d.id ? ' active' : '') },
-                  svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin), 'card-dragon'),
+                  svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking), 'card-dragon'),
                   h('strong', {}, d.name),
                   h('small', {}, `${TRIBES[d.tribe].palettes[d.palette]?.name} ${TRIBES[d.tribe].name}`),
                   h('small', {}, growthText(d)),
@@ -153,7 +155,10 @@ function hatchSequence(root: HTMLElement): void {
 
   setTimeout(() => {
     const before = earnedIds(p);
+    const looksBefore = foundLooks(p);
     const dragon = hatchEgg(p, name)!;
+    const isNewLook = !looksBefore.has(lookKey(dragon.tribe, dragon.palette, dragon.marking));
+    const sets = claimSets(p);
     const fresh = claimNewAchievements(p, before);
     persist();
     sfx.hatch();
@@ -180,10 +185,12 @@ function hatchSequence(root: HTMLElement): void {
       return s;
     };
     box.replaceChildren(
-      svg(dragonSvg(dragon.tribe, dragon.palette, 'hatchling', 'flap bob pop-in'), 'hatch-dragon'),
+      svg(dragonSvg(dragon.tribe, dragon.palette, 'hatchling', 'flap bob pop-in', undefined, dragon.marking), 'hatch-dragon'),
       nameEl,
-      h('p', {}, `A ${palette.name} ${TRIBES[dragon.tribe].name}${palette.rare ? ' — a rare color!' : '!'}`),
+      h('p', {}, `A ${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}${palette.rare ? ', a rare color!' : '!'}`),
+      h('p', { class: 'fine' }, isNewLook ? 'A new look for your Codex!' : 'You already have this look in your Codex.'),
       h('p', { class: 'fine' }, TRIBES[dragon.tribe].lore),
+      ...sets.map((x) => h('p', { class: 'reward' }, `Codex set done: ${TRIBES[x.tribe].name} ${x.label.toLowerCase()}! +${x.embers} embers`)),
       ...fresh.map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),
       h('p', {}, 'Pick a name:'),
       h('div', { class: 'name-pickers' }, sel(NAME_STARTS, start, (v) => ((start = v), setName(start + end))), sel(NAME_ENDS, end, (v) => ((end = v), setName(start + end)))),
