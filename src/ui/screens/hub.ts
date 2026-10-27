@@ -52,7 +52,7 @@ export const hub = (root: HTMLElement): void => {
   const dailyDone = daily.races >= DAILY_RACES || daily.lessons >= 1;
 
   const showcase = d
-    ? h('div', { class: 'showcase' }, aerieScene(p, svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap bob', d.skin), 'showcase-dragon')), h('p', {}, h('strong', {}, d.name), ` the ${TRIBES[d.tribe].name}`))
+    ? h('div', { class: 'showcase' }, aerieScene(p, svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap bob', d.skin, d.marking), 'showcase-dragon')), h('p', {}, h('strong', {}, d.name), ` the ${TRIBES[d.tribe].name}`))
     : p.nest
       ? h('div', { class: 'showcase' }, svg(eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), 'showcase-egg wobble'), h('p', {}, `Your ${TRIBES[p.nest.tribe].name} egg is ${pct(eggProgress(p))} warm. Every correct key helps!`))
       : null;
@@ -102,7 +102,7 @@ export const hub = (root: HTMLElement): void => {
       h(
         'div',
         { class: 'modal' },
-        d ? svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'sleepy', d.skin), 'modal-dragon') : null,
+        d ? svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'sleepy', d.skin, d.marking), 'modal-dragon') : null,
         h('h2', {}, 'Time for a stretch?'),
         h('p', {}, 'You have been flying for a while. Your dragon is taking a nap. Rest your eyes and hands, and come back anytime.'),
         button('Okay', () => modal.remove()),

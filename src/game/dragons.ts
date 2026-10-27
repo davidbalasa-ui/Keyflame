@@ -152,6 +152,21 @@ export function seededRandom(seed: number): () => number {
   };
 }
 
+/** Body patterns. Each color comes in every pattern, so each tribe has 12 looks. */
+export const MARKINGS = ['Plain', 'Spotted', 'Striped'] as const;
+
+/** Half of eggs are plain; the rest are spotted or striped. */
+export function rollMarking(rand: () => number = Math.random): number {
+  const r = rand();
+  return r < 0.5 ? 0 : r < 0.75 ? 1 : 2;
+}
+
+/** The name of a look, such as "Spotted Cinder". Plain looks use just the color. */
+export function lookName(tribe: TribeId, palette: number, marking = 0): string {
+  const color = TRIBES[tribe].palettes[palette]?.name ?? '';
+  return marking ? `${MARKINGS[marking]} ${color}` : color;
+}
+
 /** Rolls a color variant. Rare variants turn up about one egg in ten. */
 export function rollPalette(tribe: TribeId, rand: () => number = Math.random): number {
   const palettes = TRIBES[tribe].palettes;
@@ -262,6 +277,26 @@ function tribeParts(tribe: TribeId, p: Palette, stage: Stage, line: string): Tri
 const WING_SKIN = 'M0 0 C9 -20 5 -44 -6 -58 L-46 -64 Q-44 -46 -66 -40 Q-52 -28 -70 -14 Q-42 -12 -34 4Z';
 const WING_BONES = 'M-6 -58 L-46 -64 M-6 -58 L-66 -40 M-6 -58 L-70 -14';
 
+const BODY = 'M78 92 C80 74 104 64 130 66 C146 66 156 64 164 56 C170 50 174 44 178 40 L196 54 C190 60 184 70 176 82 C168 96 150 108 124 109 C100 110 80 106 78 92Z';
+
+/** Spots or stripes in a darker shade, clipped to the body so they wrap around it. */
+function markingArt(marking: number, p: Palette, clip: string): string {
+  if (!marking) return '';
+  // Dark dragons get lighter marks so the pattern always shows.
+  const n = parseInt(p.body.slice(1, 7), 16);
+  const light = (0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+  const ink = light < 0.35 ? lighten(p.body, 0.4) : darken(p.body, 0.3);
+  const shine = lighten(p.accent, 0.1);
+  if (marking === 1) {
+    const spots: Array<[number, number, number]> = [[96, 80, 5], [110, 73, 4], [124, 78, 6], [138, 71, 4.5], [150, 77, 5], [162, 64, 4], [172, 56, 3.5], [116, 88, 3], [142, 86, 3.4], [104, 90, 2.6]];
+    return `<g clip-path="url(#${clip})">${spots.map(([x, y, r]) => `<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${(r * 0.8).toFixed(1)}" fill="${ink}" opacity="0.7"/><ellipse cx="${x - r * 0.25}" cy="${y - r * 0.3}" rx="${(r * 0.35).toFixed(1)}" ry="${(r * 0.25).toFixed(1)}" fill="${shine}" opacity="0.35"/>`).join('')}</g>`;
+  }
+  const bands = [92, 106, 120, 134, 148, 160, 171]
+    .map((x, i) => `<path d="M${x - 4} ${58 - i} Q${x + 4} ${76 - i} ${x - 2} ${96 - i * 2}" stroke="${ink}" stroke-width="${5 - i * 0.35}" fill="none" stroke-linecap="round" opacity="0.65"/>`)
+    .join('');
+  return `<g clip-path="url(#${clip})">${bands}</g>`;
+}
+
 let artId = 0;
 
 /**
@@ -269,7 +304,7 @@ let artId = 0;
  * Wings, tail and head sit in their own groups, pivoting at the shoulder,
  * tail base and neck, so CSS can animate them (see .flap in styles.css).
  */
-export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starfire'): string {
+export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starfire', marking = 0): string {
   const p = skin === 'starfire' ? STARFIRE : TRIBES[tribe].palettes[paletteIndex] ?? TRIBES[tribe].palettes[0];
   const id = `kf${++artId}`;
   const line = darken(p.body, 0.55);
@@ -300,6 +335,7 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
   <defs>
     <linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${lighten(p.body, 0.22)}"/><stop offset="0.55" stop-color="${p.body}"/><stop offset="1" stop-color="${darken(p.body, 0.22)}"/></linearGradient>
     <linearGradient id="${id}w" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${p.wing}"/><stop offset="1" stop-color="${lighten(p.wing, 0.35)}"/></linearGradient>
+    ${marking ? `<clipPath id="${id}c"><path d="${BODY}"/></clipPath>` : ''}
   </defs>
   <g transform="translate(${(120 - 120 * scale).toFixed(1)} ${(78 - 78 * scale).toFixed(1)}) scale(${scale})"><g class="rig">
     ${wing('wing-back', darken(p.wing, 0.18), '', 0.86)}
@@ -310,7 +346,8 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
       <g transform="translate(-84 19)">${parts.tip}</g>
     </g></g>
     ${parts.back}
-    <path d="M78 92 C80 74 104 64 130 66 C146 66 156 64 164 56 C170 50 174 44 178 40 L196 54 C190 60 184 70 176 82 C168 96 150 108 124 109 C100 110 80 106 78 92Z" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
+    <path d="${BODY}" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
+    ${markingArt(marking, p, `${id}c`)}
     <path d="M88 101 C104 108 134 108 152 100 C164 92 172 80 180 68 L187 71 C180 84 172 98 158 105 C136 114 104 112 88 101Z" fill="${p.belly}"/>
     <path d="${plates}" stroke="${bellyLine}" stroke-width="1.3" fill="none" stroke-linecap="round"/>
     ${parts.front}

@@ -5,6 +5,7 @@
 import { LESSONS } from '../content/lessons';
 import type { Profile } from '../save/store';
 import { COURSES } from './courses';
+import { TOTAL_LOOKS, codexSets, foundLooks } from './collection';
 import { TRIBES, stageFor } from './dragons';
 
 export type Medal = 'bronze' | 'silver' | 'gold' | 'platinum' | 'legend';
@@ -20,6 +21,8 @@ interface Track {
   /** One title per goal. */
   titles: string[];
 }
+
+const ALL_SETS = Object.keys(TRIBES).length * 2;
 
 const plural = (n: number, one: string, many = one + 's'): string => `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 
@@ -95,6 +98,18 @@ const TRACKS: Track[] = [
     how: (g) => (g === 1 ? 'Hatch a rare color' : `Hatch ${plural(g, 'rare color')}`),
     value: (p) => p.dragons.filter((d) => TRIBES[d.tribe].palettes[d.palette]?.rare).length,
     titles: ['Lucky Find', 'Treasure Seeker'],
+  },
+  {
+    id: 'looks', name: 'Collector', icon: '🔍', goals: [5, 15, 30, 50, TOTAL_LOOKS],
+    how: (g) => (g === TOTAL_LOOKS ? 'Find every dragon look in the Codex' : `Find ${g} dragon looks for your Codex`),
+    value: (p) => foundLooks(p).size,
+    titles: ['Collector', 'Look Hunter', 'Codex Keeper', 'Master Collector', 'Living Codex'],
+  },
+  {
+    id: 'sets', name: 'Codex sets', icon: '🧩', goals: [1, 4, ALL_SETS],
+    how: (g) => (g === ALL_SETS ? 'Finish every Codex set' : g === 1 ? 'Finish a Codex set' : `Finish ${g} Codex sets`),
+    value: (p) => codexSets(p).filter((s) => s.done).length,
+    titles: ['Set Starter', 'Set Builder', 'Codex Champion'],
   },
   {
     id: 'grown', name: 'Grown up', icon: '🐉', goals: [1, 3],

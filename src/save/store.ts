@@ -19,6 +19,8 @@ export interface OwnedDragon {
   hatchedAt: number;
   /** Supporter-only cosmetic skin. */
   skin?: 'starfire';
+  /** Index into MARKINGS; older dragons have none and are plain. */
+  marking?: number;
 }
 
 export interface NestEgg {
@@ -99,6 +101,8 @@ export interface Profile {
   factsSeen: string[];
   /** Achievement id whose title shows under the rider's name. */
   title: string | null;
+  /** Codex sets already paid out. */
+  setsClaimed: string[];
   /** Achievements already announced. Missing on saves from before achievements. */
   achievements?: string[];
 }
@@ -149,6 +153,7 @@ export function createProfile(name: string): Profile {
     supporter: false,
     factsSeen: [],
     title: null,
+    setsClaimed: [],
     achievements: [],
   };
 }
@@ -204,6 +209,7 @@ export function normalizeProfile(raw: unknown): Profile | null {
     supporter: r.supporter ?? false,
     factsSeen: Array.isArray(r.factsSeen) ? r.factsSeen.filter((id) => typeof id === 'string') : [],
     title: typeof r.title === 'string' ? r.title : null,
+    setsClaimed: Array.isArray(r.setsClaimed) ? r.setsClaimed.filter((id) => typeof id === 'string') : [],
     achievements: Array.isArray(r.achievements) ? r.achievements.filter((id) => typeof id === 'string') : undefined,
   } as Profile;
 }

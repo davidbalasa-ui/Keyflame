@@ -3,7 +3,7 @@
 
 import { LESSONS, UNITS, lessonsInUnit, type Lesson } from '../content/lessons';
 import { mergeKeyStats, type SessionSummary } from '../engine/typing';
-import { NAME_ENDS, NAME_STARTS, TRIBES, rollPalette, stageFor, type Stage, type TribeId } from './dragons';
+import { NAME_ENDS, NAME_STARTS, TRIBES, rollMarking, rollPalette, stageFor, type Stage, type TribeId } from './dragons';
 import { today, type InputMode, type OwnedDragon, type Profile } from '../save/store';
 import { courseById } from './courses';
 
@@ -178,6 +178,7 @@ export function hatchEgg(p: Profile, name: string, rand: () => number = Math.ran
     id: Math.random().toString(36).slice(2, 10),
     tribe: p.nest.tribe,
     palette: rollPalette(p.nest.tribe, rand),
+    marking: rollMarking(rand),
     name,
     xp: 0,
     hatchedAt: Date.now(),
