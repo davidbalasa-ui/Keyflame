@@ -458,6 +458,12 @@ body.kb-pinned .type-text { --type-size: 22px; padding: 10px 14px; max-height: c
 /* Dragon animation: wings pivot at the shoulder and sweep through edge-on to below the body,
    so a flap reads as a real wingbeat instead of a squash. */
 .dragon { overflow: visible; }
+.dragon .sf-twinkle { animation: sfTwinkle 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.dragon .sf-twinkle:nth-child(2n) { animation-delay: -1.2s; }
+.dragon .sf-star { animation: sfSpin 6s linear infinite; transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 3px #ffd43b); }
+.dragon .sf-aura { animation: twinkle 3s ease-in-out infinite alternate; }
+@keyframes sfTwinkle { 0%, 100% { opacity: 0.35; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } }
+@keyframes sfSpin { to { transform: rotate(360deg); } }
 .dragon .wing, .dragon .tail, .dragon .head { transform-box: view-box; transform-origin: 0 0; }
 .dragon .lid { transform-box: fill-box; transform-origin: 50% 0; transform: scaleY(0); animation: blink 5.2s infinite; }
 .flap .wing-front { animation: flapFront var(--flap, 0.72s) ease-in-out infinite; }
@@ -579,7 +585,11 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .badge-card small { color: var(--muted); }
 .supporter { max-width: 560px; text-align: center; }
 .supporter ul { text-align: left; display: inline-block; }
-.supporter-dragon { max-width: 260px; margin: 0 auto; }
+.supporter-dragon { max-width: 320px; margin: 0 auto; }
+.pack-list li { margin-bottom: 6px; }
+.sup-code, .sup-code-show { background: var(--panel); border-radius: var(--radius); padding: 14px 16px; margin: 16px 0; }
+.sup-code-input { font: inherit; font-size: 1.1em; letter-spacing: 0.08em; text-transform: uppercase; padding: 9px 12px; border-radius: 12px; border: 2px solid var(--line); background: var(--bg-2); color: var(--text); width: min(100%, 15em); text-align: center; }
+.sup-code-value { display: block; font-size: 1.4em; letter-spacing: 0.08em; color: var(--gold); margin: 4px 0 8px; user-select: all; }
 .gate-input { font: inherit; font-size: 1.4rem; width: 140px; text-align: center; background: var(--bg-2); color: var(--text); border: 2px solid var(--line); border-radius: 12px; padding: 8px; }
 
 /* Fun facts: the after-race card, the reader picker, and the Fact Book. */
@@ -717,6 +727,7 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .chip.medal-gold { border-color: #ffc61a; }
 .chip.medal-platinum { border-color: #7fe3f0; }
 .chip.medal-legend { border-color: #c77dff; }
+.chip.medal-starfire { border-color: #ffd43b; background: linear-gradient(135deg, #3b2b8f, #7048e8); }
 .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
 .ach-card { display: flex; gap: 12px; background: var(--panel); border-radius: var(--radius); padding: 12px; border: 2px solid transparent; }
 .ach-card.earned { border-color: var(--line); }

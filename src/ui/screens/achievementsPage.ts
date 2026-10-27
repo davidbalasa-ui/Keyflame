@@ -1,4 +1,5 @@
 import { achievements, currentTitle, earnedTitles, type Achievement, type Medal } from '../../game/achievements';
+import { SUPPORTER_TITLE, SUPPORTER_TITLE_ID } from '../../game/supporter';
 import { go, persist, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
@@ -65,7 +66,7 @@ export const achievementsPage = (root: HTMLElement): void => {
   for (const a of all) tracks.set(a.track, [...(tracks.get(a.track) ?? []), a]);
   const earned = all.filter((a) => a.earned).length;
 
-  const titles = earnedTitles(p);
+  const titles: Array<{ id: string; title: string; medal: string }> = [...(p.supporter ? [{ id: SUPPORTER_TITLE_ID, title: SUPPORTER_TITLE, medal: 'starfire' }] : []), ...earnedTitles(p)];
   const wearing = currentTitle(p);
   const about = (t: string | null): string => (t ? `You fly as “${t}”. Every achievement unlocks a new title.` : 'Pick a title to show under your name. Every achievement unlocks one.');
   const note = h('p', { class: 'fine' }, about(wearing));

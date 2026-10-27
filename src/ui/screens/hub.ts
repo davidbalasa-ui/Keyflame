@@ -103,7 +103,7 @@ export const hub = (root: HTMLElement): (() => void) => {
         icon('📈', 'Progress', 'My progress', () => go(progressPage)),
         icon('💬', 'Ideas', 'Report a bug or idea', () => go(feedbackPage('hub'))),
         icon('🏆', `${earned}/${all.length}`, `Achievements: ${earned} of ${all.length} earned`, () => go(achievementsPage), 'trophy' + (unseen ? ' new' : '')),
-        p.supporter ? null : icon('💜', 'Support', 'Support Keyflame', () => go(supporter)),
+        p.supporter ? icon('🌟', 'Starfire', 'Your supporter pack', () => go(supporter)) : icon('💜', 'Support', 'Support Keyflame', () => go(supporter)),
         icon('⚙️', 'Settings', backupDue ? 'Settings and backup. Time to make a backup code.' : 'Settings and backup', () => go(settings), '', backupDue ? '!' : null),
       ),
     ),

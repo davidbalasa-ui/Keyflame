@@ -2,6 +2,7 @@
 
 import { loadSave, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
 import { setSoundEnabled } from './sound';
+import { grantSupporter } from '../game/supporter';
 
 export type Screen = (root: HTMLElement) => (() => void) | void;
 
@@ -114,7 +115,7 @@ export function applyPendingSupporter(): void {
     return;
   }
   if (!pending || !hasProfile()) return;
-  profile().supporter = true;
+  grantSupporter(profile());
   try {
     localStorage.removeItem(PENDING_KEY);
   } catch {

@@ -33,7 +33,7 @@ Keyflame has no ads. The optional $3 supporter pack stays switched off until you
 | --- | --- |
 | `SUPPORTER_CHECKOUT_URL` | A Stripe Payment Link for the $3 pack. Set its success page to `<your site>/?supporter=thanks` |
 
-The supporter unlock is an honor system for now, since there are no accounts to check a receipt against.
+The supporter unlock is an honor system, since there are no accounts to check a receipt against. After checkout the game gives the rider a supporter code (like `KF-6E1D-ZXQV-1HTZ`) that unlocks the pack for another rider or device. Codes carry a check, so the game can spot a typo offline, and they need no database. To hand out codes yourself, for example to a teacher, run `npm run codes -- 10`.
 
 ## Layout
 
