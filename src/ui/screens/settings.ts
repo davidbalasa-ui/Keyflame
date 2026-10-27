@@ -129,7 +129,7 @@ export const settings = (root: HTMLElement): void => {
         { class: 'parents' },
         h('h2', {}, 'For parents'),
         h('p', {}, 'Keyflame keeps all progress in this browser. It does not ask for names, emails, or any personal information, and it does not track players. Rider and dragon names are picked from preset word lists.'),
-        h('p', {}, 'If ads are shown, they appear only on menu screens, never while typing, and are limited to non-personalized ads suitable for children. A one-time supporter pack removes them.'),
+        h('p', {}, 'Keyflame has no ads and nothing to buy. Later, an optional one-time supporter pack may add a special dragon skin; it never makes anyone faster.'),
         h('p', {}, h('a', { href: './privacy.html', target: '_blank', rel: 'noopener' }, 'Read the privacy policy')),
       ),
       h(

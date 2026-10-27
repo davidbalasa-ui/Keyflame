@@ -49,8 +49,8 @@ export const supporter = (root: HTMLElement): void => {
       { class: 'supporter' },
       h('h1', {}, 'Support Keyflame'),
       svg(dragonSvg('emberback', 0, 'adult', 'flap bob', 'starfire'), 'supporter-dragon'),
-      h('p', {}, `Keyflame is made to be free and fun. A one-time ${CONFIG.supporterPrice} supporter pack helps pay for the website, and says thank you with:`),
-      h('ul', {}, h('li', {}, 'No ads, ever, on this device'), h('li', {}, 'The Starfire skin, which any of your dragons can wear')),
+      h('p', {}, `Keyflame is made to be free and fun. There are no ads. Later, a one-time ${CONFIG.supporterPrice} supporter pack will help pay for the website, and say thank you with:`),
+      h('ul', {}, h('li', {}, 'The Starfire skin, which any of your dragons can wear'), h('li', {}, 'A Supporter title next to your name')),
       h('p', { class: 'fine' }, 'It never makes your dragons faster. Everyone races on the same skill.'),
       p.supporter
         ? h('p', { class: 'reward' }, 'You are a supporter. Thank you!')

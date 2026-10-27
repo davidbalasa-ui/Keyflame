@@ -25,18 +25,15 @@ Turn it on once in the repo: **Settings → Pages → Source: GitHub Actions**.
 
 The game installs as an app (Chrome or Edge on a PC: the install icon in the address bar, or the "Install Keyflame" link on the title screen and in Settings; phones: "Add to Home Screen"). The first visit saves every game file and font on the device, so it plays offline from then on. The build writes the file list into `sw.js` (see `vite.config.ts`).
 
-## Ads and the supporter pack (off until set up)
+## Supporter pack (off until set up)
 
-Both stay switched off until you add these under **Settings → Secrets and variables → Actions → Variables**, then re-run the deploy:
+Keyflame has no ads. The optional $3 supporter pack stays switched off until you add this under **Settings → Secrets and variables → Actions → Variables**, then re-run the deploy:
 
 | Variable | What it is |
 | --- | --- |
-| `ADSENSE_CLIENT` | Your AdSense publisher ID, like `ca-pub-1234567890123456`. The deploy also writes `ads.txt` from it. |
-| `ADSENSE_SLOT_HUB` | Ad unit ID for the bottom of the home screen |
-| `ADSENSE_SLOT_RESULTS` | Ad unit ID for race results |
 | `SUPPORTER_CHECKOUT_URL` | A Stripe Payment Link for the $3 pack. Set its success page to `<your site>/?supporter=thanks` |
 
-In AdSense, also mark the site as child-directed. Ads only ever show on menu and results screens, request non-personalized ads, and never show to supporters. The supporter unlock is an honor system for now, since there are no accounts to check a receipt against.
+The supporter unlock is an honor system for now, since there are no accounts to check a receipt against.
 
 ## Layout
 
@@ -47,7 +44,7 @@ In AdSense, also mark the site as child-directed. Ads only ever show on menu and
 | `src/game/` | Dragon tribes and art, reward rules (warmth, embers, growth, eggs) |
 | `src/save/store.ts` | Device saves (IndexedDB with localStorage fallback), backup codes |
 | `src/game/raceRules.ts` | Race scoring and tribe perks |
-| `src/config.ts`, `src/ui/ads.ts` | Ad and checkout settings from the build environment |
+| `src/config.ts` | Checkout settings from the build environment |
 | `src/ui/` | Screens, typing panel, sounds |
 | `public/` | Privacy policy, app manifest, offline worker, icons |
 

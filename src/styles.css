@@ -469,8 +469,6 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .toggle.small { font-size: 0.9em; padding: 4px 0; }
 
 /* Ads */
-.ad-slot { margin: 20px auto 0; max-width: 728px; min-height: 90px; text-align: center; border-top: 1px solid var(--line); padding-top: 6px; }
-.ad-label { display: block; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
 .placement-cta { background: var(--panel); border-radius: var(--radius); padding: 12px 16px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
 
 /* Progress */
@@ -506,3 +504,106 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .fact-book details { margin: 6px 0; }
 .fact-book summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
 .fact-book li { margin: 6px 0; line-height: 1.4; }
+
+/* Race celebration */
+.celebrate {
+  position: fixed; inset: 0; z-index: 40; overflow-y: auto; overscroll-behavior: contain;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding: max(16px, env(safe-area-inset-top)) 12px max(20px, env(safe-area-inset-bottom));
+  background: radial-gradient(ellipse at 50% 22%, #4b2a8a 0%, #24164d 45%, #0f0a24 100%);
+  animation: celFade 0.3s ease-out;
+}
+.celebrate.tier-gold { background: radial-gradient(ellipse at 50% 22%, #7a3b1d 0%, #3b1f4f 45%, #120a26 100%); }
+.cel-rays {
+  position: fixed; inset: -40%; pointer-events: none; opacity: 0.35;
+  background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255, 220, 120, 0.22) 0deg 8deg, transparent 8deg 22deg);
+  mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 60%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, transparent 60%);
+  animation: spin 40s linear infinite;
+}
+.tier-silver .cel-rays, .tier-bronze .cel-rays { opacity: 0.22; }
+.tier-star .cel-rays { opacity: 0.12; }
+.celebrate .fx-layer { position: fixed; z-index: 3; }
+.cel-panel { position: relative; z-index: 2; width: 100%; max-width: 560px; text-align: center; margin: auto 0; }
+.cel-banner {
+  font-family: var(--font); font-weight: 700; font-style: italic; line-height: 1; letter-spacing: 0.01em;
+  font-size: clamp(46px, 13vw, 88px); margin: 8px 0 0; transform: skewX(-6deg);
+  background: linear-gradient(180deg, #fff9db 0%, #ffd43b 45%, #ff922b 75%, #e8590c 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  -webkit-text-stroke: 2px rgba(80, 30, 0, 0.55);
+  filter: drop-shadow(0 4px 0 #7a2e00) drop-shadow(0 0 22px rgba(255, 180, 60, 0.55));
+  animation: bannerSlam 0.7s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+.cel-banner sup { font-size: 0.45em; vertical-align: 0.9em; margin: 0 0.12em 0 0.04em; }
+.cel-banner.tier-silver { background-image: linear-gradient(180deg, #ffffff 0%, #e9ecef 45%, #adb5bd 80%, #6c7a89 100%); -webkit-text-stroke-color: rgba(40, 50, 70, 0.6); filter: drop-shadow(0 4px 0 #3d4a5c) drop-shadow(0 0 18px rgba(220, 230, 255, 0.45)); }
+.cel-banner.tier-bronze { background-image: linear-gradient(180deg, #fff4e6 0%, #ffc078 45%, #d9822b 80%, #8a4b1c 100%); -webkit-text-stroke-color: rgba(70, 30, 0, 0.6); filter: drop-shadow(0 4px 0 #5c2e0c) drop-shadow(0 0 18px rgba(255, 170, 90, 0.4)); }
+.cel-banner.tier-star { font-size: clamp(38px, 10vw, 64px); background-image: linear-gradient(180deg, #ffffff 0%, #d0bfff 50%, #9775fa 100%); -webkit-text-stroke-color: rgba(40, 20, 90, 0.6); filter: drop-shadow(0 4px 0 #3b1f8a) drop-shadow(0 0 16px rgba(180, 150, 255, 0.45)); }
+.cel-sub { color: var(--muted); margin: 10px 0 4px; font-size: 1.05rem; animation: celUp 0.4s 0.3s both; }
+.cel-hero { display: flex; justify-content: center; align-items: center; gap: clamp(12px, 5vw, 40px); margin: 6px 0; }
+.cel-trophy { width: clamp(96px, 28vw, 150px); filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.45)); animation: trophyIn 0.8s 0.35s cubic-bezier(0.2, 1.5, 0.4, 1) both, trophyFloat 3s 1.2s ease-in-out infinite; }
+.cel-trophy svg { width: 100%; display: block; }
+.cel-dial-wrap { position: relative; width: clamp(140px, 38vw, 190px); animation: celUp 0.5s 0.5s both; }
+.cel-dial { position: relative; }
+.cel-dial svg { width: 100%; display: block; }
+.cel-dial .best-mark { stroke: #fff; stroke-width: 3; stroke-dasharray: 3 3; }
+.dial-num { position: absolute; left: 0; right: 0; top: 60%; display: flex; flex-direction: column; align-items: center; line-height: 1; pointer-events: none; }
+.dial-num strong { font-size: clamp(30px, 9vw, 44px); font-weight: 700; color: #fff; text-shadow: 0 3px 0 rgba(0, 0, 0, 0.35); font-variant-numeric: tabular-nums; }
+.dial-num span { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; color: var(--muted); }
+.cel-acc { color: var(--muted); font-size: 0.95rem; margin-top: 2px; }
+.cel-best { display: inline-block; margin-top: 6px; padding: 3px 12px; border-radius: 999px; background: var(--gold); color: #1b1536; font-weight: 700; animation: popIn 0.4s 1.9s both, pulse 1.4s 2.4s ease-in-out infinite; }
+.calm .cel-best { animation: none; }
+.cel-line { color: var(--gold); font-weight: 600; font-size: 1.1rem; margin: 8px 0; animation: celUp 0.4s 0.8s both; }
+.cel-rewards { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 10px; margin: 12px 0; }
+.cel-reward {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 8px 10px; border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  border: 2px solid rgba(255, 212, 59, 0.45); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  opacity: 0; transform: translateY(24px) scale(0.85);
+}
+.cel-reward.in, .celebrate.done .cel-reward { opacity: 1; transform: none; transition: opacity 0.35s, transform 0.45s cubic-bezier(0.2, 1.6, 0.4, 1); }
+.cel-reward-art { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; }
+.cel-reward-art svg { width: 100%; height: 100%; }
+.cel-value { font-size: 1.7rem; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35); }
+.cel-reward-title { font-weight: 600; }
+.cel-reward-note { color: var(--muted); font-size: 0.8rem; }
+.tone-warm { border-color: rgba(255, 146, 43, 0.6); }
+.tone-gold { border-color: var(--gold); background: linear-gradient(180deg, rgba(255, 212, 59, 0.25), rgba(255, 212, 59, 0.05)); }
+.tone-egg { border-color: rgba(105, 219, 124, 0.6); }
+.tone-grow { border-color: rgba(177, 151, 252, 0.7); }
+.cel-value.text { font-size: 1.2rem; }
+.cel-actions {
+  position: sticky; bottom: 0; z-index: 2; padding: 14px 0 6px; margin-top: 4px;
+  background: linear-gradient(180deg, transparent, rgba(15, 10, 36, 0.92) 35%);
+  opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity 0.4s, transform 0.4s;
+}
+.celebrate.done .cel-actions { opacity: 1; transform: none; pointer-events: auto; }
+.cel-actions .row { justify-content: center; }
+.cel-actions .btn { font-size: 1.1rem; }
+.cel-skip { transition: opacity 0.3s; }
+.celebrate.done .cel-skip { opacity: 0; }
+.celebrate .fact-card { text-align: left; }
+.cel-swoop { position: fixed; z-index: 4; top: 12%; left: 0; width: clamp(140px, 36vw, 240px); pointer-events: none; animation: swoop 2s 0.1s cubic-bezier(0.45, 0, 0.3, 1) both; }
+.cel-swoop svg { width: 100%; display: block; }
+.celebrate.calm, .celebrate.calm * { animation: none !important; transition: none !important; }
+
+@media (max-width: 600px) {
+  .cel-rewards { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .cel-reward { padding: 8px 6px; border-radius: 14px; }
+  .cel-reward-art { width: 44px; height: 44px; }
+  .cel-value { font-size: 1.35rem; }
+  .cel-value.text { font-size: 1.05rem; }
+  .cel-reward-title { font-size: 0.9rem; }
+  .cel-line { font-size: 1rem; }
+  .cel-sub { margin: 6px 0 0; }
+}
+@keyframes celFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes celUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes bannerSlam { 0% { opacity: 0; transform: skewX(-6deg) scale(2.4); } 60% { opacity: 1; } 100% { opacity: 1; transform: skewX(-6deg) scale(1); } }
+@keyframes trophyIn { 0% { opacity: 0; transform: translateY(40px) scale(0.3) rotate(-20deg); } 100% { opacity: 1; transform: none; } }
+@keyframes trophyFloat { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-6px) rotate(2deg); } }
+@keyframes swoop {
+  0% { transform: translate(-120%, 30vh) rotate(-14deg); }
+  55% { transform: translate(40vw, 2vh) rotate(-4deg); }
+  100% { transform: translate(110vw, -12vh) rotate(-12deg); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
