@@ -140,7 +140,7 @@
    "name": "NPS: Species Spotlight Dragonflies",
    "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "dr14",
@@ -459,7 +459,7 @@
    "name": "Britannica: How is honey made",
    "url": "https://www.britannica.com/science/How-Is-Honey-Made"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "an18",
@@ -866,7 +866,7 @@
    "name": "EarthDate: Carbon opposites",
    "url": "https://www.earthdate.org/episodes/carbon-opposites"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea05",
@@ -1031,7 +1031,7 @@
    "name": "HowStuffWorks: Geodes",
    "url": "https://science.howstuffworks.com/environmental/earth/geology/geodes.htm"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea20",
@@ -1042,7 +1042,7 @@
    "name": "Live Science: Largest desert on Earth",
    "url": "https://www.livescience.com/largest-desert-on-earth"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "ea21",
@@ -1229,7 +1229,7 @@
    "name": "Penn State: Watching the wind",
    "url": "https://learningweather.psu.edu/node/40"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "we13",
@@ -1730,7 +1730,7 @@
   "id": "dr111",
   "topic": "dragons",
   "level": "older",
-  "text": "Alligators prefer freshwater places such as swamps, marshes, rivers, and lakes. Crocodiles are usually found in salty water along coasts.",
+  "text": "Alligators mostly live in fresh water, such as swamps, marshes, rivers, and lakes. Many crocodiles can also live in salty water along coasts.",
   "source": {
    "name": "Britannica: Alligators vs crocodiles",
    "url": "https://www.britannica.com/story/whats-the-difference-between-alligators-and-crocodiles"
@@ -1988,7 +1988,7 @@
    "name": "Britannica: Bat",
    "url": "https://www.britannica.com/animal/bat-mammal"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an119",
@@ -2065,7 +2065,7 @@
    "name": "Nat Geo Kids: Indian Peafowl",
    "url": "https://kids.nationalgeographic.com/animals/birds/facts/indian-peafowl"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an126",
@@ -2076,7 +2076,7 @@
    "name": "Nat Geo Kids: Indian Peafowl",
    "url": "https://kids.nationalgeographic.com/animals/birds/facts/indian-peafowl"
   },
-  "check": "weak source"
+  "check": "ok"
  },
  {
   "id": "an127",
@@ -2940,7 +2940,7 @@
   "id": "we116",
   "topic": "weather",
   "level": "older",
-  "text": "Yearly rainfall can be less than a tenth of an inch in some deserts. In the rainiest parts of the tropics, it can be more than nine hundred inches.",
+  "text": "Yearly rainfall can be less than a tenth of an inch in some deserts. In the rainiest parts of the tropics, it can be more than four hundred inches.",
   "source": {
    "name": "USGS Water Science School: Rain and precipitation",
    "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
@@ -3215,7 +3215,7 @@
   "id": "we143",
   "topic": "weather",
   "level": "younger",
-  "text": "In the main bow of a rainbow, red is on the outside edge and blue is along the inside edge.",
+  "text": "In the main bow of a rainbow, red is on the outside edge and violet is along the inside edge.",
   "source": {
    "name": "NWS Flagstaff: Rainbows",
    "url": "https://www.weather.gov/fgz/Rainbow"
@@ -3281,7 +3281,7 @@
   "id": "oc103",
   "topic": "oceans",
   "level": "older",
-  "text": "Squid, cuttlefish, and octopuses use a molecule with copper in it to carry oxygen around the body. This molecule gives their insides a blue color.",
+  "text": "Squid, cuttlefish, and octopuses use a molecule with copper in it to carry oxygen around the body. This molecule makes their blood blue.",
   "source": {
    "name": "Smithsonian Ocean: Cephalopods",
    "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
@@ -4073,7 +4073,7 @@
   "id": "ea120",
   "topic": "earth",
   "level": "younger",
-  "text": "The Grand Canyon is about a mile deep in places. The Colorado River carved it.",
+  "text": "The Grand Canyon is about a mile deep in places. Its rock walls show many colorful layers.",
   "source": {
    "name": "NPS Grand Canyon FAQ",
    "url": "https://nps.gov/grca/faqs.htm"
@@ -4122,7 +4122,7 @@
    "name": "Britannica Kids Niagara Falls",
    "url": "https://kids.britannica.com/students/article/276083"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea125",
@@ -4375,7 +4375,7 @@
    "name": "Wikipedia Cave of the Crystals",
    "url": "https://en.wikipedia.org/wiki/Cave_of_the_Crystals"
   },
-  "check": "recheck"
+  "check": "ok"
  },
  {
   "id": "ea153",
@@ -4678,7 +4678,7 @@
   "id": "sp173",
   "topic": "space",
   "level": "older",
-  "text": "The Apollo eleven astronauts spent more than twenty one hours on the Moon. Only about two hours of that time was spent walking on the surface.",
+  "text": "The Apollo eleven astronauts spent more than twenty one hours on the Moon. Only about two and a half hours of that time was spent walking on the surface.",
   "source": {
    "name": "Britannica Kids: Apollo 11",
    "url": "https://kids.britannica.com/students/article/Apollo-11/631767"
@@ -5162,7 +5162,7 @@
   "id": "oc156",
   "topic": "oceans",
   "level": "older",
-  "text": "Arctic terns spend summer in the far north and then fly south to enjoy another summer near Antarctica. The round trip is about twenty five thousand miles each year.",
+  "text": "Arctic terns spend summer in the far north and then fly south to enjoy another summer near Antarctica. The round trip is more than twenty five thousand miles each year.",
   "source": {
    "name": "Cornell Lab All About Birds: Arctic Tern",
    "url": "https://www.allaboutbirds.org/guide/arctic_Tern"

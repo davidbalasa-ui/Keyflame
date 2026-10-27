@@ -97,6 +97,8 @@ export interface Profile {
   /** Aerie decorations owned. */
   decor: string[];
   supporter: boolean;
+  /** The code that unlocks the supporter pack on another device, if this rider has it. */
+  supporterCode?: string;
   /** Facts typed in races, oldest first. This is the player's Fact Book. */
   factsSeen: string[];
   /** Achievement id whose title shows under the rider's name. */
@@ -225,6 +227,7 @@ export function normalizeProfile(raw: unknown): Profile | null {
     rivalsBeaten: r.rivalsBeaten ?? [],
     decor: r.decor ?? [],
     supporter: r.supporter ?? false,
+    supporterCode: typeof r.supporterCode === 'string' ? r.supporterCode : undefined,
     factsSeen: Array.isArray(r.factsSeen) ? r.factsSeen.filter((id) => typeof id === 'string') : [],
     title: typeof r.title === 'string' ? r.title : null,
     setsClaimed: Array.isArray(r.setsClaimed) ? r.setsClaimed.filter((id) => typeof id === 'string') : [],

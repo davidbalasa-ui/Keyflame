@@ -46,7 +46,7 @@ export function refreshEmbers(): void {
 const DAILY_RACES = 3;
 const BACKUP_REMIND_DAYS = 21;
 
-export const hub = (root: HTMLElement): void => {
+export const hub = (root: HTMLElement): (() => void) => {
   const p = profile();
   const d = activeDragon(p);
   const daily = p.daily.date === today() ? p.daily : { races: 0, lessons: 0 };
@@ -61,9 +61,22 @@ export const hub = (root: HTMLElement): void => {
   const tile = (label: string, sub: string, cls: string, to: () => void): HTMLElement =>
     button(h('span', {}, h('strong', {}, label), h('small', {}, sub)), () => (sfx.click(), to()), `tile ${cls}`);
 
+  /** A round icon button with a short caption, like a game menu. */
+  const icon = (glyph: string, caption: string, label: string, to: () => void, cls = '', badge: string | null = null): HTMLElement =>
+    button(
+      h('span', { class: 'icon-in' }, h('span', { class: 'icon-glyph', 'aria-hidden': 'true' }, glyph), badge ? h('span', { class: 'icon-badge' }, badge) : null, h('small', { 'aria-hidden': 'true' }, caption)),
+      () => (sfx.click(), to()),
+      `icon-btn ${cls}`,
+      { 'aria-label': label, title: label },
+    );
+
   const eggReady = p.nest && eggProgress(p) >= 1;
   const backupDue = p.dragons.length > 0 && Date.now() - p.lastBackupAt > BACKUP_REMIND_DAYS * 864e5;
+  const all = achievements(p);
+  const earned = all.filter((a) => a.earned).length;
+  const unseen = p.achievements ? all.filter((a) => a.earned && !p.achievements!.includes(a.id)).length : 0;
 
+  document.body.classList.add('hub-fit');
   root.append(
     topBar(),
     h(
@@ -73,27 +86,26 @@ export const hub = (root: HTMLElement): void => {
       h(
         'div',
         { class: 'daily' + (dailyDone ? ' done' : '') },
-        h('strong', {}, 'Daily flight: '),
-        dailyDone ? 'Done for today. Nice flying!' : `Race ${DAILY_RACES} times or finish a lesson (${daily.races}/${DAILY_RACES} races).`,
+        h('strong', {}, dailyDone ? '✓ Daily flight done!' : 'Daily flight: '),
+        dailyDone ? '' : `${daily.races}/${DAILY_RACES} races or 1 lesson`,
       ),
       h(
         'div',
         { class: 'tiles' },
-        tile('Race', 'Fly against rival dragons', 'tile-race', () => go(raceMap)),
+        tile('Race', 'Beat rival dragons', 'tile-race', () => go(raceMap)),
         tile('Lessons', 'Learn new keys', 'tile-lessons', () => go(lessons)),
-        tile(eggReady ? 'Nest: egg ready!' : 'Nest', eggReady ? 'Something is hatching…' : 'Eggs, dragons, and your aerie', 'tile-nest' + (eggReady ? ' pulse' : ''), () => go(nest)),
-        tile('Codex', 'Every tribe and color', 'tile-codex', () => go(codex)),
+        tile(eggReady ? 'Nest: egg ready!' : 'Nest', eggReady ? 'Something is hatching…' : 'Eggs and dragons', 'tile-nest' + (eggReady ? ' pulse' : ''), () => go(nest)),
+        tile('Codex', 'Every dragon look', 'tile-codex', () => go(codex)),
       ),
       h(
-        'div',
-        { class: 'row center' },
-        button(`🏅 Achievements ${achievements(p).filter((a) => a.earned).length}/${achievements(p).length}`, () => go(achievementsPage), 'btn ghost small'),
-        button('My progress', () => go(progressPage), 'btn ghost small'),
-        button('Settings and backup', () => go(settings), 'btn ghost small'),
-        button('Report a bug or idea', () => go(feedbackPage('hub')), 'btn ghost small'),
-        p.supporter ? null : button('Support Keyflame', () => go(supporter), 'btn ghost small'),
+        'nav',
+        { class: 'icon-dock', 'aria-label': 'More' },
+        icon('📈', 'Progress', 'My progress', () => go(progressPage)),
+        icon('💬', 'Ideas', 'Report a bug or idea', () => go(feedbackPage('hub'))),
+        icon('🏆', `${earned}/${all.length}`, `Achievements: ${earned} of ${all.length} earned`, () => go(achievementsPage), 'trophy' + (unseen ? ' new' : '')),
+        p.supporter ? icon('🌟', 'Starfire', 'Your supporter pack', () => go(supporter)) : icon('💜', 'Support', 'Support Keyflame', () => go(supporter)),
+        icon('⚙️', 'Settings', backupDue ? 'Settings and backup. Time to make a backup code.' : 'Settings and backup', () => go(settings), '', backupDue ? '!' : null),
       ),
-      backupDue ? h('p', { class: 'fine' }, 'It has been a while since your last backup. ', button('Make a backup code', () => go(settings), 'link')) : null,
     ),
   );
 
@@ -112,4 +124,5 @@ export const hub = (root: HTMLElement): void => {
     );
     root.append(modal);
   }
+  return () => document.body.classList.remove('hub-fit');
 };
