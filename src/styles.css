@@ -691,3 +691,9 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .ach-line { display: flex; align-items: center; gap: 8px; justify-content: center; }
 .ach-mini { width: 30px; flex: none; }
 .ach-mini svg { width: 100%; height: auto; display: block; }
+
+/* Feedback */
+.feedback { max-width: 640px; }
+.feedback-form { display: flex; flex-direction: column; gap: 10px; }
+.feedback-box { width: 100%; font: inherit; font-size: 1.05rem; padding: 12px; border-radius: 12px; resize: vertical; }
+.feedback-warn { background: rgba(255, 212, 59, 0.12); border-left: 4px solid var(--gold); padding: 8px 12px; border-radius: 8px; margin: 0; }

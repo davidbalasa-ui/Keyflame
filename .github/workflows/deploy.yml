@@ -28,6 +28,8 @@ jobs:
       - run: npm run build
         env:
           VITE_SUPPORTER_CHECKOUT_URL: ${{ vars.SUPPORTER_CHECKOUT_URL }}
+          VITE_FEEDBACK_URL: ${{ vars.FEEDBACK_URL }}
+          VITE_FEEDBACK_KEY: ${{ vars.FEEDBACK_KEY }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

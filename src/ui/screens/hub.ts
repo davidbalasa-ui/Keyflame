@@ -7,6 +7,7 @@ import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { achievementsPage } from './achievementsPage';
 import { aerieScene } from './aerie';
+import { feedbackPage } from './feedbackPage';
 import { codex } from './codex';
 import { lessons } from './lessons';
 import { nest } from './nest';
@@ -89,6 +90,7 @@ export const hub = (root: HTMLElement): void => {
         button(`🏅 Achievements ${achievements(p).filter((a) => a.earned).length}/${achievements(p).length}`, () => go(achievementsPage), 'btn ghost small'),
         button('My progress', () => go(progressPage), 'btn ghost small'),
         button('Settings and backup', () => go(settings), 'btn ghost small'),
+        button('Report a bug or idea', () => go(feedbackPage('hub')), 'btn ghost small'),
         p.supporter ? null : button('Support Keyflame', () => go(supporter), 'btn ghost small'),
       ),
       backupDue ? h('p', { class: 'fine' }, 'It has been a while since your last backup. ', button('Make a backup code', () => go(settings), 'link')) : null,
