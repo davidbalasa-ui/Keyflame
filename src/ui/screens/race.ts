@@ -137,8 +137,8 @@ function run(root: HTMLElement, course: Course): () => void {
   const words = best < (touch ? 14 : 20) ? 14 : 22;
   const known = knownLetters(p);
   // Once every letter is learned, races are real facts instead of practice sentences.
-  const fact = factsUnlocked(p) ? pickFact(p.settings.readingLevel ?? 'younger', p.factsSeen, weakKeys(p.keyStats, [...known])) : null;
-  const text = fact ? (capitalsKnown(p) ? fact.text : fact.text.toLowerCase()) : buildRaceText(known, words);
+  const fact = factsUnlocked(p) ? pickFact(p.settings.readingLevel ?? 'younger', p.factsSeen, weakKeys(p.keyStats, [...known]), Math.random, touch) : null;
+  const text = fact ? (capitalsKnown(p) ? fact.text : fact.text.toLowerCase()) : buildRaceText(known, words, Math.random, weakKeys(p.keyStats, [...known]));
   const len = text.length;
 
   const lanes = h('div', { class: 'lanes' });
