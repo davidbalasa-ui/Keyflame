@@ -7,6 +7,8 @@ import { DECOR, aerieScene, buyDecor } from './aerie';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { CONFETTI, TRAIL_COLORS, attachField } from '../particles';
+import { claimNewAchievements, earnedIds } from '../../game/achievements';
+import { medalSvg } from './achievementsPage';
 import { hub, topBar } from './hub';
 import { raceMap } from './race';
 
@@ -150,7 +152,9 @@ function hatchSequence(root: HTMLElement): void {
   setTimeout(() => sfx.crack(), 1000);
 
   setTimeout(() => {
+    const before = earnedIds(p);
     const dragon = hatchEgg(p, name)!;
+    const fresh = claimNewAchievements(p, before);
     persist();
     sfx.hatch();
     {
@@ -180,6 +184,7 @@ function hatchSequence(root: HTMLElement): void {
       nameEl,
       h('p', {}, `A ${palette.name} ${TRIBES[dragon.tribe].name}${palette.rare ? ' — a rare color!' : '!'}`),
       h('p', { class: 'fine' }, TRIBES[dragon.tribe].lore),
+      ...fresh.map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),
       h('p', {}, 'Pick a name:'),
       h('div', { class: 'name-pickers' }, sel(NAME_STARTS, start, (v) => ((start = v), setName(start + end))), sel(NAME_ENDS, end, (v) => ((end = v), setName(start + end)))),
       h('div', { class: 'row' }, button('Done', () => go(nest))),

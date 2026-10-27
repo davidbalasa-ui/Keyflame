@@ -1,7 +1,8 @@
 import { ROWS } from '../../content/keyboard';
-import { badges } from '../../game/badges';
+import { achievements } from '../../game/achievements';
 import { go, profile } from '../app';
-import { h, pct } from '../dom';
+import { button, h, pct } from '../dom';
+import { achievementsPage } from './achievementsPage';
 import { hub, topBar } from './hub';
 
 /** Line chart of recent race speeds, oldest on the left. */
@@ -31,7 +32,7 @@ function wpmChart(points: number[]): HTMLElement {
 export const progressPage = (root: HTMLElement): void => {
   const p = profile();
   const recent = p.races.slice(0, 20).reverse();
-  const all = badges(p);
+  const all = achievements(p);
   const errRate = (k: string): number | null => {
     const s = p.keyStats[k];
     if (!s || s.hits + s.misses < 8) return null;
@@ -77,8 +78,8 @@ export const progressPage = (root: HTMLElement): void => {
       h(
         'section',
         {},
-        h('h2', {}, `Badges (${all.filter((b) => b.earned).length} of ${all.length})`),
-        h('div', { class: 'badge-grid' }, ...all.map((b) => h('div', { class: 'badge-card' + (b.earned ? ' earned' : '') }, h('span', { class: 'badge-icon' }, b.earned ? '★' : '☆'), h('strong', {}, b.name), h('small', {}, b.how)))),
+        h('h2', {}, 'Achievements'),
+        h('p', {}, `${all.filter((a) => a.earned).length} of ${all.length} earned. `, button('See them all', () => go(achievementsPage), 'link')),
       ),
     ),
   );

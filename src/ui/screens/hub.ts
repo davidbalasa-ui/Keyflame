@@ -1,9 +1,11 @@
 import { TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
+import { achievements, currentTitle } from '../../game/achievements';
 import { activeDragon, eggProgress } from '../../game/progress';
 import { today } from '../../save/store';
 import { breakDue, go, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
+import { achievementsPage } from './achievementsPage';
 import { aerieScene } from './aerie';
 import { codex } from './codex';
 import { lessons } from './lessons';
@@ -29,7 +31,7 @@ export function topBar(back?: () => void): HTMLElement {
     'header',
     { class: 'top-bar' },
     back ? button('← Back', back, 'btn ghost small') : button('Switch rider', () => go(title), 'btn ghost small'),
-    h('div', { class: 'who' }, h('strong', {}, p.name), h('span', { class: 'rank' }, `Rider rank ${rank.level}`), h('span', { class: 'bar' }, h('span', { style: `width:${pct(rank.progress)}` }))),
+    h('div', { class: 'who' }, h('strong', {}, p.name), h('span', { class: 'rider-title' }, currentTitle(p) ?? ''), h('span', { class: 'rank' }, `Rider rank ${rank.level}`), h('span', { class: 'bar' }, h('span', { style: `width:${pct(rank.progress)}` }))),
     h('div', { class: 'embers', title: 'Embers' }, h('span', { class: 'ember-icon' }, '🔥'), h('span', { class: 'ember-count' }, String(p.embers))),
   );
 }
@@ -84,6 +86,7 @@ export const hub = (root: HTMLElement): void => {
       h(
         'div',
         { class: 'row center' },
+        button(`🏅 Achievements ${achievements(p).filter((a) => a.earned).length}/${achievements(p).length}`, () => go(achievementsPage), 'btn ghost small'),
         button('My progress', () => go(progressPage), 'btn ghost small'),
         button('Settings and backup', () => go(settings), 'btn ghost small'),
         p.supporter ? null : button('Support Keyflame', () => go(supporter), 'btn ghost small'),

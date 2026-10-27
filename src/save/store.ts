@@ -68,7 +68,17 @@ export interface Profile {
   lessons: Record<string, LessonResult>;
   keyStats: KeyStats;
   /** bestWpm is for physical keyboards; touch typing keeps its own record. */
-  totals: { correctKeys: number; races: number; lessons: number; bestWpm: number; bestTouchWpm: number; minutes: number };
+  totals: {
+    correctKeys: number; races: number; lessons: number; bestWpm: number; bestTouchWpm: number; minutes: number;
+    wins: number;
+    /** Races at 98% accuracy or better, and races with no mistakes. */
+    cleanRaces: number;
+    perfectRaces: number;
+    /** Every ember ever earned, even ones spent since. */
+    embersEarned: number;
+    /** Different days with a race or lesson. */
+    playDays: number;
+  };
   nest: NestEgg | null;
   basket: TribeId[];
   dragons: OwnedDragon[];
@@ -87,6 +97,10 @@ export interface Profile {
   supporter: boolean;
   /** Facts typed in races, oldest first. This is the player's Fact Book. */
   factsSeen: string[];
+  /** Achievement id whose title shows under the rider's name. */
+  title: string | null;
+  /** Achievements already announced. Missing on saves from before achievements. */
+  achievements?: string[];
 }
 
 export interface SaveData {
@@ -119,7 +133,7 @@ export function createProfile(name: string): Profile {
     embers: 0,
     lessons: {},
     keyStats: {},
-    totals: { correctKeys: 0, races: 0, lessons: 0, bestWpm: 0, bestTouchWpm: 0, minutes: 0 },
+    totals: { correctKeys: 0, races: 0, lessons: 0, bestWpm: 0, bestTouchWpm: 0, minutes: 0, wins: 0, cleanRaces: 0, perfectRaces: 0, embersEarned: 0, playDays: 0 },
     nest: { tribe: 'emberback', warmth: 0, seed: Math.floor(Math.random() * 1e9) },
     basket: [],
     dragons: [],
@@ -134,6 +148,8 @@ export function createProfile(name: string): Profile {
     decor: [],
     supporter: false,
     factsSeen: [],
+    title: null,
+    achievements: [],
   };
 }
 
@@ -157,10 +173,22 @@ export function normalizeProfile(raw: unknown): Profile | null {
   const r = raw as Partial<Profile>;
   if (typeof r.id !== 'string' || typeof r.name !== 'string') return null;
   const base = createProfile(r.name);
+  const races = Array.isArray(r.races) ? r.races : [];
+  // Counters added later start from what the save still remembers.
+  const old = r.totals ?? ({} as Partial<Profile['totals']>);
+  const totals = {
+    ...base.totals,
+    wins: races.filter((x) => x.place === 1).length,
+    cleanRaces: races.filter((x) => x.accuracy >= 0.98).length,
+    perfectRaces: races.filter((x) => x.accuracy >= 1).length,
+    embersEarned: typeof r.embers === 'number' ? r.embers : 0,
+    playDays: old.races || old.lessons ? 1 : 0,
+    ...old,
+  };
   return {
     ...base,
     ...r,
-    totals: { ...base.totals, ...(r.totals ?? {}) },
+    totals,
     daily: { ...base.daily, ...(r.daily ?? {}) },
     settings: { ...base.settings, ...(r.settings ?? {}) },
     nest: r.nest === undefined ? base.nest : r.nest,
@@ -175,6 +203,8 @@ export function normalizeProfile(raw: unknown): Profile | null {
     decor: r.decor ?? [],
     supporter: r.supporter ?? false,
     factsSeen: Array.isArray(r.factsSeen) ? r.factsSeen.filter((id) => typeof id === 'string') : [],
+    title: typeof r.title === 'string' ? r.title : null,
+    achievements: Array.isArray(r.achievements) ? r.achievements.filter((id) => typeof id === 'string') : undefined,
   } as Profile;
 }
 

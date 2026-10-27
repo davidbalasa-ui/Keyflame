@@ -12,6 +12,8 @@ import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
 import { CONFETTI, ParticleField, TRAIL_COLORS } from '../particles';
 import { celebration, crownSvg, flameSvg, type RewardCard } from '../celebrate';
+import { claimNewAchievements, earnedIds } from '../../game/achievements';
+import { medalSvg } from './achievementsPage';
 import { hub, refreshEmbers, topBar } from './hub';
 import { codex } from './codex';
 import { nest } from './nest';
@@ -296,8 +298,10 @@ function run(root: HTMLElement, course: Course): () => void {
     const placeNum = ahead.length + 1;
     const beatRival = !ahead.some((g) => g.rival);
     const prevBest = touch ? p.totals.bestTouchWpm : p.totals.bestWpm;
+    const before = earnedIds(p);
     const reward = recordRace(p, sum, placeNum, { input, courseId: course.id, beatRival });
     const newFact = fact ? recordFact(p, fact.id) : false;
+    const fresh = claimNewAchievements(p, before);
     persist();
     refreshEmbers();
     if (placeNum === 1) sfx.win();
@@ -315,6 +319,8 @@ function run(root: HTMLElement, course: Course): () => void {
       rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Visit your nest' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
     }
     if (reward.newEgg) rewards.push({ art: eggSvg(reward.newEgg, 0, 5), title: `${TRIBES[reward.newEgg].name} egg`, value: 'New egg!', tone: 'egg' });
+    for (const a of fresh.slice(0, fresh.length > 3 ? 2 : 3)) rewards.push({ art: medalSvg(a.medal, a.icon), title: `New title “${a.title}”`, value: 'Achievement!', note: a.how, tone: 'gold' });
+    if (fresh.length > 3) rewards.push({ art: medalSvg(fresh[2].medal, '🏅'), title: 'More achievements', value: `+${fresh.length - 2}`, note: 'See them all on the hub', tone: 'gold' });
     if (reward.grewTo && me) rewards.push({ art: dragonSvg(me.tribe, me.palette, reward.grewTo, '', me.skin), title: `${me.name} grew!`, value: 'Grew up!', note: `Now a ${reward.grewTo} dragon`, tone: 'grow' });
 
     const lines: string[] = [];

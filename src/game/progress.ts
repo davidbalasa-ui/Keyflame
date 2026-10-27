@@ -48,6 +48,11 @@ export function checkMilestones(p: Profile): TribeId | null {
   return got;
 }
 
+/** Counts a new play day the first time a race or lesson finishes that day. */
+function countPlayDay(p: Profile): void {
+  if (p.daily.races + p.daily.lessons === 0) p.totals.playDays++;
+}
+
 function rollDaily(p: Profile): void {
   const d = today();
   if (p.daily.date !== d) p.daily = { date: d, races: 0, lessons: 0 };
@@ -108,6 +113,7 @@ export function recordRace(p: Profile, s: SessionSummary, place: number, info: R
   const base = applySession(p, s);
   let embers = raceEmbers(s.correct, s.accuracy, place);
   p.totals.races++;
+  countPlayDay(p);
   p.daily.races++;
   const touch = isTouch(info.input);
   const prevBest = touch ? p.totals.bestTouchWpm : p.totals.bestWpm;
@@ -121,7 +127,11 @@ export function recordRace(p: Profile, s: SessionSummary, place: number, info: R
     rivalFirstWin = true;
     embers += 25;
   }
+  if (place === 1) p.totals.wins++;
+  if (s.accuracy >= 0.98) p.totals.cleanRaces++;
+  if (s.accuracy >= 1) p.totals.perfectRaces++;
   p.embers += embers;
+  p.totals.embersEarned += embers;
   const newEgg = checkMilestones(p);
   return { ...base, embers, newEgg, rivalFirstWin, newBest: prevBest > 0 && s.wpm > prevBest, eggReady: eggProgress(p) >= 1 };
 }
@@ -136,7 +146,9 @@ export function recordLesson(p: Profile, lesson: Lesson, s: SessionSummary, star
   };
   const embers = stars > 0 ? 5 + stars * 5 : 2;
   p.embers += embers;
+  p.totals.embersEarned += embers;
   p.totals.lessons++;
+  countPlayDay(p);
   p.daily.lessons++;
   const newEgg = checkUnitReward(p, lesson.unit) ?? checkMilestones(p);
   return { ...base, embers, newEgg, eggReady: eggProgress(p) >= 1 };

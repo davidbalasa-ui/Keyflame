@@ -117,6 +117,8 @@ select, textarea {
 .who { display: flex; flex-direction: column; align-items: center; min-width: 0; }
 .who strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40vw; }
 .rank { font-size: 0.8em; color: var(--muted); }
+.rider-title { font-size: 0.78em; color: var(--gold); font-weight: 600; line-height: 1.1; }
+.rider-title:empty { display: none; }
 .bar { width: 120px; height: 6px; background: var(--bg-2); border-radius: 3px; overflow: hidden; }
 .bar span { display: block; height: 100%; background: var(--gold); }
 .embers { font-weight: 600; font-size: 1.1em; white-space: nowrap; }
@@ -239,7 +241,7 @@ body.kb-pinned #app > main { flex: 1 1 auto; min-height: 0; width: 100%; box-siz
 body.kb-pinned .finger-hint { margin: 4px; font-size: 0.9em; }
 /* Compact layout while the pinned keyboard is up, so the text stays visible above it */
 body.kb-pinned .top-bar { padding: 4px 12px; }
-body.kb-pinned .top-bar .rank, body.kb-pinned .top-bar .bar { display: none; }
+body.kb-pinned .top-bar .rank, body.kb-pinned .top-bar .bar, body.kb-pinned .top-bar .rider-title { display: none; }
 body.kb-pinned main { padding-top: 8px; }
 body.kb-pinned main > h1, body.kb-pinned .race-head h1 { font-size: 1.15rem; margin: 0; }
 body.kb-pinned .race-head { gap: 4px 12px; }
@@ -595,6 +597,10 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
   .cel-reward-title { font-size: 0.9rem; }
   .cel-line { font-size: 1rem; }
   .cel-sub { margin: 6px 0 0; }
+  /* One slim row of buttons so the bar covers as little as possible. */
+  .cel-actions { padding: 10px 0 4px; }
+  .cel-actions .row { flex-wrap: nowrap; gap: 6px; }
+  .cel-actions .btn { font-size: 0.92rem; padding: 10px 12px; min-height: 44px; white-space: nowrap; flex: 1 1 auto; }
 }
 @keyframes celFade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes celUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
@@ -607,3 +613,46 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
   100% { transform: translate(110vw, -12vh) rotate(-12deg); }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Achievements */
+.achievements { max-width: 980px; margin: 0 auto; padding: 16px; }
+.ach-total { color: var(--muted); margin-top: -6px; }
+.ach-total strong { color: var(--gold); font-size: 1.3em; }
+.title-pick { background: var(--panel); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 18px; }
+.title-pick h2 { margin: 0 0 4px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.chip {
+  font: inherit; font-size: 0.95rem; color: var(--text); background: var(--bg-2); border: 2px solid var(--line);
+  border-radius: 999px; padding: 6px 14px; cursor: pointer; min-height: 40px;
+}
+.chip.on { background: var(--gold); color: #1b1536; border-color: var(--gold); font-weight: 600; }
+.chip.medal-bronze { border-color: #b8652f; }
+.chip.medal-silver { border-color: #adb5bd; }
+.chip.medal-gold { border-color: #ffc61a; }
+.chip.medal-platinum { border-color: #7fe3f0; }
+.chip.medal-legend { border-color: #c77dff; }
+.ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.ach-card { display: flex; gap: 12px; background: var(--panel); border-radius: var(--radius); padding: 12px; border: 2px solid transparent; }
+.ach-card.earned { border-color: var(--line); }
+.ach-card.medal-gold, .ach-card.medal-platinum, .ach-card.medal-legend { border-color: rgba(255, 212, 59, 0.55); background: linear-gradient(160deg, rgba(255, 212, 59, 0.12), var(--panel) 60%); }
+.ach-medal { width: 58px; flex: none; }
+.ach-medal svg { width: 100%; height: auto; display: block; }
+.ach-card.earned .ach-medal { filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4)); }
+.ach-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ach-body strong { font-size: 1.1rem; }
+.ach-pips { display: flex; gap: 5px; }
+.pip { width: 14px; height: 14px; border-radius: 50%; background: var(--bg-2); border: 2px solid var(--line); }
+.pip.on.bronze { background: #d9895b; border-color: #7a3e17; }
+.pip.on.silver { background: #ced4da; border-color: #5c636a; }
+.pip.on.gold { background: #ffd43b; border-color: #b07800; }
+.pip.on.platinum { background: #99e9f2; border-color: #1f8a99; }
+.pip.on.legend { background: #c77dff; border-color: #5a189a; }
+.ach-next { display: flex; flex-direction: column; gap: 3px; }
+.ach-next .bar { width: 100%; height: 8px; border-radius: 4px; }
+.ach-body details { font-size: 0.9rem; color: var(--muted); }
+.ach-body summary { cursor: pointer; min-height: 28px; }
+.ach-body ul { list-style: none; padding: 0; margin: 4px 0 0; }
+.ach-body li.on { color: var(--text); }
+.ach-line { display: flex; align-items: center; gap: 8px; justify-content: center; }
+.ach-mini { width: 30px; flex: none; }
+.ach-mini svg { width: 100%; height: auto; display: block; }

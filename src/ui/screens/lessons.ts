@@ -1,6 +1,8 @@
 import { LESSONS, UNITS, buildLessonText, lessonsInUnit, starsFor, type Lesson } from '../../content/lessons';
 import { weakKeys } from '../../engine/typing';
 import { TRIBES, eggSvg } from '../../game/dragons';
+import { claimNewAchievements, earnedIds, type Achievement } from '../../game/achievements';
+import { medalSvg } from './achievementsPage';
 import { applyPlacement, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
 import { PASSAGES } from '../../content/words';
 import { go, inputMode, persist, profile } from '../app';
@@ -76,11 +78,13 @@ export function playLesson(lesson: Lesson) {
         const sum = s.summary();
         // Relaxed mode has no clock, so it can earn up to two stars.
         const stars = starsFor(lesson, relaxed ? 0 : sum.wpm, sum.accuracy);
+        const before = earnedIds(p);
         const reward = recordLesson(p, lesson, sum, stars);
+        const fresh = claimNewAchievements(p, before);
         persist();
         refreshEmbers();
         if (stars > 0) sfx.win();
-        showResult(root, lesson, relaxed ? null : sum.wpm, sum.accuracy, stars, reward.embers, reward.newEgg ? TRIBES[reward.newEgg].name : null, reward.eggReady);
+        showResult(root, lesson, relaxed ? null : sum.wpm, sum.accuracy, stars, reward.embers, reward.newEgg ? TRIBES[reward.newEgg].name : null, reward.eggReady, fresh);
       },
     });
     const tick = (): void => {
@@ -110,7 +114,7 @@ export function playLesson(lesson: Lesson) {
   };
 }
 
-function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean): void {
+function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = []): void {
   const idx = LESSONS.indexOf(lesson);
   const next = LESSONS[idx + 1];
   const modal = h(
@@ -126,6 +130,8 @@ function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accur
       stars > 0 && stars < 3 ? h('p', { class: 'fine' }, stars === 1 ? 'Get 95% accuracy for the second star.' : wpm === null ? 'Turn off relaxed mode in Settings to go for the third star.' : `Reach ${lesson.starWpm} WPM at 95% accuracy for the third star.`) : null,
       newEgg ? h('p', { class: 'reward' }, `You earned a ${newEgg} egg! It is waiting in your nest.`) : null,
       eggReady ? h('p', { class: 'reward' }, 'Your egg is ready to hatch!') : null,
+      ...fresh.slice(0, 3).map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),
+      fresh.length > 3 ? h('p', { class: 'reward' }, `And ${fresh.length - 3} more achievements!`) : null,
       h(
         'div',
         { class: 'row' },

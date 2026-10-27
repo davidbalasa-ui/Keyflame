@@ -144,7 +144,7 @@ describe('relaxed mode', () => {
 
 import { applyRaceKey, finishTime, newRaceState, perkTuning } from '../src/game/raceRules';
 import { applyPlacement, courseUnlocked, ghostSpeeds, rivalSpeed } from '../src/game/progress';
-import { badges } from '../src/game/badges';
+import { achievements } from '../src/game/achievements';
 import { buyDecor } from '../src/ui/screens/aerie';
 
 describe('race rules', () => {
@@ -233,7 +233,7 @@ describe('campaign and milestones', () => {
 
   it('badges and decor follow the profile', () => {
     const p = createProfile('Gentle Glider');
-    expect(badges(p).every((b) => !b.earned)).toBe(true);
+    expect(achievements(p).every((a) => !a.earned)).toBe(true);
     p.embers = 50;
     expect(buyDecor(p, 'moss')).toBe(true);
     expect(buyDecor(p, 'moss')).toBe(false);
