@@ -109,6 +109,7 @@ select, textarea {
 .plus { font-size: 3rem; line-height: 110px; height: 110px; color: var(--ember-2); }
 
 /* Top bar */
+.top-bar > .btn { white-space: nowrap; }
 .top-bar {
   display: flex; align-items: center; gap: 12px; justify-content: space-between;
   padding: 10px 16px; background: rgba(15, 10, 35, 0.6); border-bottom: 1px solid var(--line);
@@ -128,9 +129,54 @@ select, textarea {
 .hub { text-align: center; }
 .showcase { max-width: 360px; margin: 0 auto; }
 .showcase-egg { max-width: 160px; margin: 0 auto; }
-.daily { background: var(--panel); border-radius: 999px; padding: 10px 18px; display: inline-block; margin: 8px 0 20px; }
+.daily { background: var(--panel); border-radius: 999px; padding: 8px 16px; display: inline-block; margin: 6px 0 14px; font-size: 0.95em; }
 .daily.done { background: #1e5c47; }
 .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+/* The hub fills one screen and never scrolls: the dragon scene gives up space first. */
+body.hub-fit #app { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+body.hub-fit #app > .top-bar { position: static; flex: none; }
+body.hub-fit .hub {
+  flex: 1 1 auto; min-height: 0; width: 100%; display: flex; flex-direction: column; align-items: center;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+}
+body.hub-fit .showcase { flex: 1 1 0; min-height: 90px; width: 100%; max-width: 760px; container-type: size; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+body.hub-fit .showcase > p { flex: none; margin: 2px 0 0; }
+/* Keep the scene's shape: as wide as the box allows, or as tall as the space left under it. */
+body.hub-fit .showcase .aerie { flex: none; max-width: none; width: min(100cqw, calc((100cqh - 30px) * 400 / 240)); }
+body.hub-fit .showcase-egg { flex: 1 1 0; min-height: 0; width: auto; height: 100%; max-height: 220px; }
+body.hub-fit .daily { flex: none; }
+body.hub-fit .tiles { flex: none; width: 100%; max-width: 760px; }
+
+/* Round icon buttons under the tiles; the trophy is the big glowing one. */
+.icon-dock { flex: none; display: flex; justify-content: center; align-items: flex-end; gap: 14px; margin-top: 14px; }
+.icon-btn {
+  font: inherit; color: var(--text); border: none; cursor: pointer; background: none; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.icon-in { display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; }
+.icon-glyph {
+  width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-size: 1.6rem;
+  background: var(--panel-2); box-shadow: 0 4px 0 #1f1745, inset 0 2px 0 rgba(255, 255, 255, 0.12);
+}
+.icon-btn small { font-size: 0.72em; color: var(--muted); font-weight: 600; line-height: 1; }
+.icon-btn:active .icon-glyph { transform: translateY(3px); box-shadow: 0 1px 0 #1f1745; }
+.icon-btn:focus-visible { outline: none; }
+.icon-btn:focus-visible .icon-glyph { outline: 3px solid var(--gold); outline-offset: 2px; }
+.icon-badge {
+  position: absolute; top: -2px; right: -2px; min-width: 20px; height: 20px; border-radius: 10px; padding: 0 5px;
+  background: var(--bad); color: #fff; font-size: 0.75em; font-weight: 700; line-height: 20px;
+}
+.icon-btn.trophy .icon-glyph {
+  width: 76px; height: 76px; font-size: 2.3rem;
+  background: radial-gradient(circle at 50% 35%, #ffe066, #f59f00 70%, #c77700);
+  box-shadow: 0 5px 0 #8a5300, 0 0 18px 4px rgba(255, 212, 59, 0.55);
+  animation: trophyGlow 2.6s ease-in-out infinite;
+}
+.icon-btn.trophy.new .icon-glyph { animation: trophyGlow 1.2s ease-in-out infinite, pulse 1.2s ease-in-out infinite; }
+.icon-btn.trophy small { color: var(--gold); font-size: 0.8em; }
+@keyframes trophyGlow { 0%, 100% { box-shadow: 0 5px 0 #8a5300, 0 0 14px 2px rgba(255, 212, 59, 0.45); } 50% { box-shadow: 0 5px 0 #8a5300, 0 0 26px 8px rgba(255, 212, 59, 0.75); } }
+
 .tile {
   border-radius: 20px; padding: 26px 16px; text-align: center; min-height: 120px;
   display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
@@ -455,6 +501,11 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
   .tiles { gap: 10px; }
   .tile { padding: 18px 10px; min-height: 100px; }
   .tile strong { font-size: 1.3rem; }
+  body.hub-fit .tile { min-height: 0; padding: 14px 8px; }
+  body.hub-fit .tile small { font-size: 0.8em; }
+  .icon-dock { gap: 10px; }
+  .icon-glyph { width: 50px; height: 50px; font-size: 1.4rem; }
+  .icon-btn.trophy .icon-glyph { width: 66px; height: 66px; font-size: 2rem; }
   .bar { width: 80px; }
   .lane { height: 56px; }
   .racer { --rw: 96px; top: -8px; }
@@ -697,3 +748,19 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .feedback-form { display: flex; flex-direction: column; gap: 10px; }
 .feedback-box { width: 100%; font: inherit; font-size: 1.05rem; padding: 12px; border-radius: 12px; resize: vertical; }
 .feedback-warn { background: rgba(255, 212, 59, 0.12); border-left: 4px solid var(--gold); padding: 8px 12px; border-radius: 8px; margin: 0; }
+
+/* Short screens, such as a phone on its side: smaller tiles, no sub-lines. */
+@media (max-height: 560px) {
+  body.hub-fit .hub { padding-top: 6px; }
+  body.hub-fit .daily { margin: 4px 0 8px; padding: 5px 12px; }
+  body.hub-fit .tiles { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  body.hub-fit .tile { min-height: 0; padding: 10px 6px; }
+  body.hub-fit .tile strong { font-size: 1.1rem; }
+  body.hub-fit .tile small { display: none; }
+  body.hub-fit .icon-dock { margin-top: 8px; }
+  body.hub-fit .showcase { min-height: 0; }
+  body.hub-fit .showcase > p { display: none; }
+  body.hub-fit .icon-btn:not(.trophy) small { display: none; }
+  body.hub-fit .icon-glyph { width: 44px; height: 44px; font-size: 1.25rem; }
+  body.hub-fit .icon-btn.trophy .icon-glyph { width: 56px; height: 56px; font-size: 1.7rem; }
+}
