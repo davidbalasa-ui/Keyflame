@@ -17,6 +17,8 @@ import { medalSvg } from './achievementsPage';
 import { hub, refreshEmbers, topBar } from './hub';
 import { codex } from './codex';
 import { nest } from './nest';
+import { seasonAt } from '../../content/seasons';
+import { CHALLENGE_EMBERS, seasonChallenges, seasonPalette } from '../../game/seasons';
 
 interface Racer {
   name: string;
@@ -95,6 +97,7 @@ export const raceMap = (root: HTMLElement): void => {
       h('h1', {}, 'Choose a course'),
       h('p', { class: 'fine' }, 'Beat each course’s champion to earn a big ember bonus. Finish lesson units to open new courses.'),
       factsUnlocked(p) && !p.settings.readingLevel ? readerPicker(() => go(raceMap)) : null,
+      seasonBanner(),
       h(
         'div',
         { class: 'course-grid' },
@@ -120,6 +123,34 @@ export const raceMap = (root: HTMLElement): void => {
     ),
   );
 };
+
+/** This month's season: its idea, its color, and the three challenges. No timers. */
+function seasonBanner(): HTMLElement | null {
+  const p = profile();
+  const s = seasonAt();
+  if (!s) return null;
+  const challenges = seasonChallenges(p);
+  const done = challenges.filter((c) => c.done).length;
+  return h(
+    'section',
+    { class: 'season-banner', style: `--s1:${s.sky[0]};--s2:${s.sky[1]};--s3:${s.sky[2]}` },
+    svg(dragonSvg('emberback', seasonPalette(s), 'adult', 'flap bob'), 'season-dragon'),
+    h(
+      'div',
+      { class: 'season-body' },
+      h('small', { class: 'season-kicker' }, 'This month’s season'),
+      h('h2', {}, s.name),
+      h('p', {}, s.idea),
+      h('p', { class: 'fine' }, `Eggs that hatch this month may come out ${s.color.name}. Every race flies under the ${s.name} sky.`),
+      h(
+        'ul',
+        { class: 'season-challenges' },
+        ...challenges.map((c) => h('li', { class: c.done ? 'done' : '' }, h('span', {}, `${c.done ? '✓' : '○'} ${c.text}`), h('span', { class: 'bar' }, h('span', { style: `width:${pct(c.value / c.goal)}` })), h('small', { class: 'fine' }, c.done ? `Done · +${CHALLENGE_EMBERS} embers` : `${c.value.toLocaleString('en-US')} / ${c.goal.toLocaleString('en-US')}`))),
+      ),
+      h('small', { class: 'fine' }, done === challenges.length ? `All done! You earned the title “${s.title}”.` : `Finish all ${challenges.length} for the title “${s.title}”.`),
+    ),
+  );
+}
 
 export function race(courseId: string) {
   return (root: HTMLElement): (() => void) => run(root, courseById(courseId));
@@ -165,7 +196,9 @@ function run(root: HTMLElement, course: Course): () => void {
   const fx = new ParticleField();
   fx.enabled = !p.settings.reducedMotion;
   const sky = h('div', { class: `sky sky-${course.id}` }, h('div', { class: 'layer sun' }), h('div', { class: 'layer clouds' }), h('div', { class: 'layer clouds-near' }), fx.canvas, h('div', { class: 'layer mountains' }), h('div', { class: 'layer hills' }), h('div', { class: 'layer speed-lines' }), h('div', { class: 'finish-line' }), lanes);
-  sky.style.background = `linear-gradient(180deg, ${course.sky[0]} 0%, ${course.sky[1]} 45%, ${course.sky[2]} 100%)`;
+  // The month's season paints the sky; the course keeps its own hills and peaks.
+  const skyColors = seasonAt()?.sky ?? course.sky;
+  sky.style.background = `linear-gradient(180deg, ${skyColors[0]} 0%, ${skyColors[1]} 45%, ${skyColors[2]} 100%)`;
   (sky.querySelector('.mountains') as HTMLElement).style.backgroundImage = mountainsUri(course.ground, course.peak);
   (sky.querySelector('.hills') as HTMLElement).style.backgroundImage = hillsUri(course.ground);
   const countdown = h('div', { class: 'countdown' }, h('div', {}, h('small', { class: 'taunt' }, `${r.name}: “${r.taunt}”`), h('div', { class: 'count' }, '3')));
@@ -318,6 +351,7 @@ function run(root: HTMLElement, course: Course): () => void {
       const ready = eggProgress(p) >= 1;
       rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Visit your nest' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
     }
+    for (const c of reward.seasonDone ?? []) rewards.push({ art: medalSvg('gold', '🌟'), title: 'Season challenge', value: `+${CHALLENGE_EMBERS}`, note: c.text, tone: 'gold' });
     if (reward.newEgg) rewards.push({ art: eggSvg(reward.newEgg, 0, 5), title: `${TRIBES[reward.newEgg].name} egg`, value: 'New egg!', tone: 'egg' });
     for (const a of fresh.slice(0, fresh.length > 3 ? 2 : 3)) rewards.push({ art: medalSvg(a.medal, a.icon), title: `New title “${a.title}”`, value: 'Achievement!', note: a.how, tone: 'gold' });
     if (fresh.length > 3) rewards.push({ art: medalSvg(fresh[2].medal, '🏅'), title: 'More achievements', value: `+${fresh.length - 2}`, note: 'See them all on the hub', tone: 'gold' });

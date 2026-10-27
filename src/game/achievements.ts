@@ -7,6 +7,8 @@ import type { Profile } from '../save/store';
 import { COURSES } from './courses';
 import { TOTAL_LOOKS, codexSets, foundLooks } from './collection';
 import { TRIBES, stageFor } from './dragons';
+import { SEASONS, seasonAt } from '../content/seasons';
+import { seasonChallenges, seasonsFinished } from './seasons';
 
 export type Medal = 'bronze' | 'silver' | 'gold' | 'platinum' | 'legend';
 const MEDALS: Medal[] = ['bronze', 'silver', 'gold', 'platinum', 'legend'];
@@ -157,7 +159,11 @@ export interface Achievement {
   earned: boolean;
 }
 
-export function achievements(p: Profile): Achievement[] {
+export function achievements(p: Profile, now: Date = new Date()): Achievement[] {
+  return [...trackAchievements(p), ...seasonAchievements(p, now)];
+}
+
+function trackAchievements(p: Profile): Achievement[] {
   return TRACKS.flatMap((t) => {
     const v = t.value(p);
     return t.goals.map((goal, i) => ({
@@ -172,6 +178,32 @@ export function achievements(p: Profile): Achievement[] {
       value: Math.min(v, goal),
       earned: v >= goal,
     }));
+  });
+}
+
+/**
+ * One achievement per season, earned by finishing its three challenges. Only this
+ * month's season and seasons already finished are listed, so nothing looks missed.
+ */
+function seasonAchievements(p: Profile, now: Date): Achievement[] {
+  const finished = seasonsFinished(p);
+  const current = seasonAt(now);
+  const progress = seasonChallenges(p, now).filter((c) => c.done).length;
+  return SEASONS.filter((s) => finished.has(s.id) || s === current).map((s) => {
+    const earned = finished.has(s.id);
+    const goal = s.challenges.length;
+    return {
+      id: `season-${s.id}`,
+      track: 'season',
+      name: 'Seasons',
+      icon: '🌟',
+      how: `Finish all ${goal} ${s.name} season challenges`,
+      title: s.title,
+      medal: 'gold' as Medal,
+      goal,
+      value: earned ? goal : progress,
+      earned,
+    };
   });
 }
 

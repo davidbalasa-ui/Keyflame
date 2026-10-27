@@ -1,5 +1,7 @@
 // Original dragon tribes and the procedural art for dragons and eggs.
 
+import { SEASONS } from '../content/seasons';
+
 export type TribeId = 'emberback' | 'tidefin' | 'stormcrest' | 'mossclaw' | 'frostspine' | 'duneskimmer' | 'shadeglide';
 
 export interface Palette {
@@ -126,6 +128,23 @@ export const TRIBES: Record<TribeId, Tribe> = {
 /** Supporter skin: works on any tribe. */
 export const STARFIRE: Palette = { name: 'Starfire', body: '#7048e8', belly: '#ffd43b', wing: '#f76707', accent: '#fff3bf' };
 
+/**
+ * Season colors work on any tribe. A dragon's palette number at or above this
+ * points into SEASONS instead of the tribe's own colors.
+ */
+export const SEASON_PALETTE = 100;
+
+export const isSeasonPalette = (palette: number): boolean => palette >= SEASON_PALETTE;
+
+/** The colors a palette number stands for, falling back to the tribe's first color. */
+export function paletteFor(tribe: TribeId, palette: number): Palette {
+  if (isSeasonPalette(palette)) {
+    const s = SEASONS[palette - SEASON_PALETTE];
+    if (s) return { ...s.color };
+  }
+  return TRIBES[tribe].palettes[palette] ?? TRIBES[tribe].palettes[0];
+}
+
 export type Stage = 'hatchling' | 'young' | 'adult';
 
 /** Correct keystrokes raced with a dragon before it grows. */
@@ -163,7 +182,7 @@ export function rollMarking(rand: () => number = Math.random): number {
 
 /** The name of a look, such as "Spotted Cinder". Plain looks use just the color. */
 export function lookName(tribe: TribeId, palette: number, marking = 0): string {
-  const color = TRIBES[tribe].palettes[palette]?.name ?? '';
+  const color = isSeasonPalette(palette) ? paletteFor(tribe, palette).name : TRIBES[tribe].palettes[palette]?.name ?? '';
   return marking ? `${MARKINGS[marking]} ${color}` : color;
 }
 
@@ -305,7 +324,7 @@ let artId = 0;
  * tail base and neck, so CSS can animate them (see .flap in styles.css).
  */
 export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starfire', marking = 0): string {
-  const p = skin === 'starfire' ? STARFIRE : TRIBES[tribe].palettes[paletteIndex] ?? TRIBES[tribe].palettes[0];
+  const p = skin === 'starfire' ? STARFIRE : paletteFor(tribe, paletteIndex);
   const id = `kf${++artId}`;
   const line = darken(p.body, 0.55);
   const wingDark = darken(p.wing, 0.28);

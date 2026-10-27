@@ -28,6 +28,8 @@ export const REVIEWED_WORDS = new Set<string>([
   'echoes', 'indies', 'horseshoe', 'horseshoes',
   // butt
   'butter', 'buttercup', 'buttons', 'button',
+  // poo, pee (season names)
+  'pool', 'pools', 'peek',
 ]);
 
 // Hand-reviewed words from our own lists. These are allowed even when a root

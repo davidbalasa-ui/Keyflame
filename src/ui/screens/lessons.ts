@@ -11,6 +11,7 @@ import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
 import { hub, refreshEmbers, topBar } from './hub';
 import { nest } from './nest';
+import { CHALLENGE_EMBERS } from '../../game/seasons';
 
 const starText = (n: number): string => '★'.repeat(n) + '☆'.repeat(3 - n);
 
@@ -84,7 +85,7 @@ export function playLesson(lesson: Lesson) {
         persist();
         refreshEmbers();
         if (stars > 0) sfx.win();
-        showResult(root, lesson, relaxed ? null : sum.wpm, sum.accuracy, stars, reward.embers, reward.newEgg ? TRIBES[reward.newEgg].name : null, reward.eggReady, fresh);
+        showResult(root, lesson, relaxed ? null : sum.wpm, sum.accuracy, stars, reward.embers, reward.newEgg ? TRIBES[reward.newEgg].name : null, reward.eggReady, fresh, reward.seasonDone?.map((c) => c.text));
       },
     });
     const tick = (): void => {
@@ -114,7 +115,7 @@ export function playLesson(lesson: Lesson) {
   };
 }
 
-function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = []): void {
+function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = [], seasonDone: string[] = []): void {
   const idx = LESSONS.indexOf(lesson);
   const next = LESSONS[idx + 1];
   const modal = h(
@@ -130,6 +131,7 @@ function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accur
       stars > 0 && stars < 3 ? h('p', { class: 'fine' }, stars === 1 ? 'Get 95% accuracy for the second star.' : wpm === null ? 'Turn off relaxed mode in Settings to go for the third star.' : `Reach ${lesson.starWpm} WPM at 95% accuracy for the third star.`) : null,
       newEgg ? h('p', { class: 'reward' }, `You earned a ${newEgg} egg! It is waiting in your nest.`) : null,
       eggReady ? h('p', { class: 'reward' }, 'Your egg is ready to hatch!') : null,
+      ...seasonDone.map((t) => h('p', { class: 'reward' }, `🌟 Season challenge done: ${t}! +${CHALLENGE_EMBERS} embers`)),
       ...fresh.slice(0, 3).map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),
       fresh.length > 3 ? h('p', { class: 'reward' }, `And ${fresh.length - 3} more achievements!`) : null,
       h(
