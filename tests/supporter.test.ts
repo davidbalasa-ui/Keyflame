@@ -23,7 +23,8 @@ describe('supporter codes', () => {
   it('forgives case, spaces and look-alike letters', () => {
     const c = makeSupporterCode(() => 0.5);
     expect(isSupporterCode(c.toLowerCase().replace(/-/g, ' '))).toBe(true);
-    expect(normalizeCode('kf-o1l0')).toBe('0110');
+    expect(normalizeCode('o1l0')).toBe('0110');
+    expect(normalizeCode('kf-0000-0000-0000')).toBe('000000000000');
     expect(formatCode(normalizeCode(c))).toBe(c);
   });
 

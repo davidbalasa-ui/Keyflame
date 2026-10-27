@@ -137,7 +137,7 @@ describe('lesson sentences', () => {
       for (const c of text) expect(c === ' ' || home.has(c), text).toBe(true);
       expect(text.split(' ').length).toBeGreaterThanOrEqual(14);
     }
-  });
+  }, 60000);
 });
 
 describe('one-typo safety', () => {

@@ -39,12 +39,13 @@ function check(body: string): string {
 
 /** Cleans what a person typed: case, spaces, dashes, the KF prefix, and look-alike letters. */
 export function normalizeCode(text: string): string {
-  return text
+  const c = text
     .toUpperCase()
     .replace(/[^0-9A-Z]/g, '')
-    .replace(/^KF/, '')
     .replace(/O/g, '0')
     .replace(/[IL]/g, '1');
+  // Only a full-length code carries the KF prefix; a code body can itself start with KF.
+  return c.length === BODY_LEN + CHECK_LEN + 2 && c.startsWith('KF') ? c.slice(2) : c;
 }
 
 export function isSupporterCode(text: string): boolean {

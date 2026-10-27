@@ -1,6 +1,6 @@
 import { MARKINGS, TRIBES, dragonSvg, eggSvg, lookName, stageFor, type TribeId } from '../../game/dragons';
 import { EGG_PRICE, MAX_BASKET, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, foundLooks, lookKey } from '../../game/collection';
-import { MILESTONES } from '../../game/progress';
+import { MAX_STARS, MILESTONES, lookHolder } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { FACTS, TOPIC_LABEL, factById, type FactTopic } from '../../content/facts';
 import { go, persist, profile } from '../app';
@@ -45,10 +45,10 @@ export const codex = (root: HTMLElement): void => {
           h(
             'span',
             { class: 'codex-card-in' },
-            svg(dragonSvg(tribe, i, 'adult', '', undefined, m), 'codex-art'),
+            svg(dragonSvg(tribe, i, 'adult', '', undefined, m, n ? lookHolder(p, tribe, i, m)?.stars ?? 0 : 0), 'codex-art'),
             h('small', {}, n ? lookName(tribe, i, m) : '???'),
             pal.rare ? h('small', { class: 'rare' }, 'Rare') : null,
-            n > 1 ? h('span', { class: 'codex-count' }, `×${n}`) : null,
+            n && lookHolder(p, tribe, i, m)?.stars ? h('span', { class: 'codex-count stars' }, '★'.repeat(lookHolder(p, tribe, i, m)!.stars!)) : null,
           ),
           () => (sfx.click(), root.append(lookPage(tribe, i, m))),
           'codex-card' + (n ? '' : ' unknown') + (pal.rare ? ' is-rare' : ''),
@@ -75,6 +75,8 @@ export const codex = (root: HTMLElement): void => {
       h('div', { class: 'codex-row' }, ...cards),
       buy === 'unknown'
         ? h('p', { class: 'fine' }, eggHint(tribe))
+        : buy === 'maxed'
+          ? h('p', { class: 'reward' }, `Every ${t.name} look is at full stars. Amazing! ${t.name} eggs are all done.`)
         : h(
             'div',
             { class: 'codex-buy' },
@@ -122,6 +124,7 @@ function lookPage(tribe: TribeId, palette: number, marking: number): HTMLElement
   const t = TRIBES[tribe];
   const pal = t.palettes[palette];
   const mine = p.dragons.filter((d) => d.tribe === tribe && d.palette === palette && (d.marking ?? 0) === marking);
+  const holder = lookHolder(p, tribe, palette, marking);
   const close = (): void => modal.remove();
   const modal = h(
     'div',
@@ -129,7 +132,8 @@ function lookPage(tribe: TribeId, palette: number, marking: number): HTMLElement
     h(
       'div',
       { class: 'modal look-page' + (mine.length ? '' : ' unknown') },
-      svg(dragonSvg(tribe, palette, mine.length ? stageFor(Math.max(...mine.map((d) => d.xp))) : 'adult', mine.length ? 'flap bob' : '', undefined, marking), 'look-art'),
+      svg(dragonSvg(tribe, palette, mine.length ? stageFor(Math.max(...mine.map((d) => d.xp))) : 'adult', mine.length ? 'flap bob' : '', undefined, marking, holder?.stars ?? 0), 'look-art'),
+      holder?.stars ? h('p', { class: 'evo-stars small', 'aria-label': `${holder.stars} of ${MAX_STARS} stars` }, '★'.repeat(holder.stars) + '☆'.repeat(MAX_STARS - holder.stars)) : null,
       h('h2', {}, mine.length ? `${lookName(tribe, palette, marking)} ${t.name}` : `A ${t.name} still to find`),
       h('p', { class: 'look-tags' }, h('span', { class: 'tag' }, t.home), pal.rare ? h('span', { class: 'tag rare' }, 'Rare color') : null, h('span', { class: 'tag' }, `${MARKINGS[marking]} pattern`)),
       h('p', { class: 'fine' }, `Racing perk: ${t.perk}`),

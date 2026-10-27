@@ -349,6 +349,22 @@ function starfireArt(id: string): { defs: string; aura: string; body: string; wi
   };
 }
 
+/**
+ * Evolved dragons glow in their own colors. Each star adds a little more: an aura,
+ * then sparkles, gold wing glints, and at full stars a small gold circlet.
+ */
+function evolvedArt(id: string, p: Palette, stars: number): { aura: string; head: string; sparkles: string } {
+  const spots: Array<[number, number, number]> = [[40, 20, 4.5], [222, 8, 4], [12, 96, 3.5], [236, 98, 3.5]];
+  return {
+    aura: `<defs><radialGradient id="${id}v" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${p.accent}" stop-opacity="${(0.16 + stars * 0.08).toFixed(2)}"/><stop offset="1" stop-color="${p.accent}" stop-opacity="0"/></radialGradient></defs>
+    <ellipse class="evo-aura" cx="130" cy="74" rx="${120 + stars * 6}" ry="${66 + stars * 4}" fill="url(#${id}v)"/>`,
+    head: stars >= MAX_EVOLVE ? '<path d="M184 30 l3 -7 l4 5 l4 -7 l4 7 l4 -5 l2 8 q-10 -3 -21 -1z" fill="#ffd43b" stroke="#b07800" stroke-width="1"/>' : '',
+    sparkles: `<g class="evo-sparkles">${spots.slice(0, stars).map(([x, y, r]) => sparkle(x, y, r, stars >= 3 ? '#ffd43b' : p.accent, 'sf-twinkle')).join('')}</g>`,
+  };
+}
+
+const MAX_EVOLVE = 4;
+
 let artId = 0;
 
 /**
@@ -356,7 +372,7 @@ let artId = 0;
  * Wings, tail and head sit in their own groups, pivoting at the shoulder,
  * tail base and neck, so CSS can animate them (see .flap in styles.css).
  */
-export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starfire', marking = 0): string {
+export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starfire', marking = 0, stars = 0): string {
   const p = skin === 'starfire' ? STARFIRE : paletteFor(tribe, paletteIndex);
   const id = `kf${++artId}`;
   const line = darken(p.body, 0.55);
@@ -364,6 +380,7 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
   const bellyLine = darken(p.belly, 0.22);
   const parts = tribeParts(tribe, p, stage, line);
   const sf = skin === 'starfire' ? starfireArt(id) : null;
+  const evo = stars > 0 ? evolvedArt(id, p, stars) : null;
   const scale = stage === 'hatchling' ? 0.8 : stage === 'young' ? 0.9 : 1;
   const headScale = stage === 'hatchling' ? 1.36 : stage === 'young' ? 1.2 : 1.1;
   const wingScale = stage === 'hatchling' ? 0.76 : stage === 'young' ? 1.02 : 1.22;
@@ -399,6 +416,7 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
     ${sf?.defs ?? ''}
   </defs>
   ${sf?.aura ?? ''}
+  ${evo?.aura ?? ''}
   <g transform="translate(${(120 - 120 * scale).toFixed(1)} ${(78 - 78 * scale).toFixed(1)}) scale(${scale})"><g class="rig">
     ${wing('wing-back', darken(p.wing, 0.18), '', 0.86)}
     <path d="M100 100 C96 110 90 116 80 118 L72 121 L76 116 L70 115 L78 112 C86 108 90 102 92 96Z" fill="${darken(p.body, 0.25)}" stroke="${line}" stroke-width="1.6" stroke-linejoin="round"/>
@@ -424,6 +442,7 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
       ${horns}
       ${parts.head}
       ${sf?.head ?? ''}
+      ${evo?.head ?? ''}
       <path d="M176 52 l-10 3 l8 2 l-9 6 l13 -3z" fill="${p.wing}" stroke="${line}" stroke-width="1.2" stroke-linejoin="round"/>
       <path d="M174 44 C176 30 192 24 205 29 C213 32 219 36 225 40 C231 43 233 47 231 51 C229 55 223 57 216 57 C207 59 199 61 190 61 C180 61 172 54 174 44Z" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
       <path d="M200 57 C209 57 218 56 225 54 C221 58 212 60 204 60Z" fill="${p.belly}"/>
@@ -443,6 +462,7 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
     </g></g></g>
     ${wing('wing-front', `url(#${id}w)`, parts.wing + (sf?.wing ?? ''), 1)}
   </g></g>
+  ${evo?.sparkles ?? ''}
 </svg>`;
 }
 

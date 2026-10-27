@@ -21,6 +21,8 @@ export interface OwnedDragon {
   skin?: 'starfire';
   /** Index into MARKINGS; older dragons have none and are plain. */
   marking?: number;
+  /** Evolution stars, one per extra copy of this look hatched (0 to 4). */
+  stars?: number;
 }
 
 export interface NestEgg {
@@ -107,6 +109,8 @@ export interface Profile {
   setsClaimed: string[];
   /** Achievements already announced. Missing on saves from before achievements. */
   achievements?: string[];
+  /** True once copies hatched before evolution existed have been turned into stars. */
+  starsBackfilled?: boolean;
   /** Season challenge progress by month (YYYY-MM). Missing on saves from before seasons. */
   seasonLog?: Record<string, SeasonLog>;
 }
@@ -155,6 +159,7 @@ export function createProfile(name: string): Profile {
     name,
     createdAt: Date.now(),
     embers: 0,
+    starsBackfilled: true,
     lessons: {},
     keyStats: {},
     totals: { correctKeys: 0, races: 0, lessons: 0, bestWpm: 0, bestTouchWpm: 0, minutes: 0, wins: 0, cleanRaces: 0, perfectRaces: 0, embersEarned: 0, playDays: 0 },
@@ -220,7 +225,8 @@ export function normalizeProfile(raw: unknown): Profile | null {
     lessons: r.lessons ?? {},
     keyStats: r.keyStats ?? {},
     basket: r.basket ?? [],
-    dragons: r.dragons ?? [],
+    dragons: backfillStars(r.dragons ?? [], r.starsBackfilled === true),
+    starsBackfilled: true,
     unitsRewarded: r.unitsRewarded ?? [],
     races: r.races ?? [],
     milestones: r.milestones ?? [],
@@ -233,6 +239,26 @@ export function normalizeProfile(raw: unknown): Profile | null {
     setsClaimed: Array.isArray(r.setsClaimed) ? r.setsClaimed.filter((id) => typeof id === 'string') : [],
     achievements: Array.isArray(r.achievements) ? r.achievements.filter((id) => typeof id === 'string') : undefined,
   } as Profile;
+}
+
+/**
+ * Before evolution, a repeated look hatched as a separate dragon. Those riders get
+ * the stars they would have earned: the most grown dragon of each look gains one
+ * star per extra copy. The copies stay, so no named dragon ever disappears.
+ */
+function backfillStars(dragons: OwnedDragon[], done: boolean): OwnedDragon[] {
+  if (done) return dragons;
+  const byLook = new Map<string, OwnedDragon[]>();
+  for (const d of dragons) {
+    const k = `${d.tribe}:${d.palette}:${d.marking ?? 0}`;
+    byLook.set(k, [...(byLook.get(k) ?? []), d]);
+  }
+  for (const group of byLook.values()) {
+    if (group.length < 2) continue;
+    const holder = group.reduce((a, b) => (b.xp > a.xp ? b : a));
+    holder.stars = Math.min(4, Math.max(holder.stars ?? 0, group.length - 1));
+  }
+  return dragons;
 }
 
 const DB_NAME = 'keyflame';
