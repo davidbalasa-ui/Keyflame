@@ -12,18 +12,19 @@ describe('supporter codes', () => {
     }
   });
 
-  it('keeps codes whose letters start with KF', () => {
-    // Picks K then F (indexes 19 and 15 of 32) for the first two letters.
-    const c = makeSupporterCode((() => { const xs = [19.5 / 32, 15.5 / 32]; let i = 0; return () => xs[i++] ?? 0.3; })());
-    expect(c.startsWith('KF-KF')).toBe(true);
+  it('never starts a code with KF, which reads as the prefix', () => {
+    const picks = [19, 15, 0, 0, 0, 0, 0, 0]; // K, F, ... in the code alphabet
+    const c = makeSupporterCode(() => (picks.length ? picks.shift()! : 1) / 32);
+    expect(c).toMatch(/^KF-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/);
+    expect(c.startsWith('KF-KF')).toBe(false);
     expect(isSupporterCode(c)).toBe(true);
-    expect(isSupporterCode(c.slice(3))).toBe(true);
   });
 
   it('forgives case, spaces and look-alike letters', () => {
     const c = makeSupporterCode(() => 0.5);
     expect(isSupporterCode(c.toLowerCase().replace(/-/g, ' '))).toBe(true);
     expect(normalizeCode('o1l0')).toBe('0110');
+    expect(normalizeCode('kf-0000-0000-0000')).toBe('000000000000');
     expect(formatCode(normalizeCode(c))).toBe(c);
   });
 

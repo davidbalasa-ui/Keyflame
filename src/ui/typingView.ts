@@ -1,9 +1,10 @@
 // The typing panel used by lessons and races: text, finger hint, and keyboard.
 
-import { FINGER_LABEL, ROWS, SHIFT_SYMBOL, TOUCH_ROWS, baseKey, fingerFor, keyLabel, touchThumb } from '../content/keyboard';
+import { FINGER_LABEL, ROWS, SHIFT_SYMBOL, TOUCH_ROWS, baseKey, fingerFor, keyLabel, plainText, touchThumb } from '../content/keyboard';
 import { TypingSession, type KeystrokeResult } from '../engine/typing';
 import type { InputMode } from '../save/store';
 import { safeText } from '../content/safety';
+import { inputMode, isHardwareKey, noteHardwareKey } from './app';
 import { h } from './dom';
 import { sfx } from './sound';
 
@@ -23,6 +24,8 @@ export interface TypingView {
   session: TypingSession;
   destroy: () => void;
   focus: () => void;
+  /** How the player is typing now; a tap keyboard view switches to 'keyboard' when real keys are used. */
+  readonly input: InputMode;
 }
 
 /** Thumb typing: keys on the left half of the phone keyboard go to the left thumb. */
@@ -37,7 +40,8 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   // Last safety net: nothing rude reaches the screen, whatever made the text.
   const text = safeText(opts.text) || 'fly high';
   const session = new TypingSession(text, { advanceOnError: opts.relaxed });
-  const touch = opts.input !== 'keyboard';
+  let input = opts.input;
+  let touch = input !== 'keyboard';
   const chars = [...text].map((c) => h('span', { class: c === ' ' ? 'ch space' : 'ch' }, c));
   const textEl = h('div', { class: 'type-text', 'aria-live': 'off' }, ...chars);
   const hint = h('div', { class: 'finger-hint' });
@@ -104,7 +108,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
 
   // On touch screens the keyboard is pinned to the bottom and laid out like a phone keyboard.
   // Elsewhere it mirrors a real keyboard, with shift left of Z.
-  const pinned = opts.input === 'touch';
+  let pinned = opts.input === 'touch';
   const keyboard = h(
     'div',
     { class: `keyboard${pinned ? ' pinned' : ''}`, 'aria-hidden': 'true' },
@@ -239,7 +243,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     while (same < seen.length && same < value.length && seen[same] === value[same]) same++;
     const added = value.slice(same);
     seen = value;
-    for (const ch of added) press(ch === '\n' ? ' ' : ch);
+    for (const ch of plainText(added)) press(ch === '\n' ? ' ' : ch);
     if (!(e as InputEvent).isComposing) clearDevice();
   });
   deviceInput.addEventListener('compositionend', () => setTimeout(() => {
@@ -274,8 +278,28 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   const onShift = (e: KeyboardEvent): void => {
     if (e.key === 'Shift' && !shiftOn) showShifted(e.type === 'keydown');
   };
+  // An iPad in a keyboard case still counts as a touch screen. Once real keys are used,
+  // put the tap keyboard away (when the player left the choice to the game).
+  const unpin = (): void => {
+    pinned = false;
+    input = 'keyboard';
+    touch = false;
+    cancelAnimationFrame(mountTimer);
+    keyboard.remove();
+    document.body.classList.remove('kb-pinned');
+    window.visualViewport?.removeEventListener('resize', fitViewport);
+    window.removeEventListener('resize', fitViewport);
+    window.removeEventListener('orientationchange', fitViewport);
+    el.classList.replace('input-touch', 'input-keyboard');
+    lastTop = -1;
+    render();
+  };
   const onKeyDown = (e: KeyboardEvent): void => {
     if (e.target === deviceInput) return;
+    if (pinned && isHardwareKey(e)) {
+      noteHardwareKey();
+      if (inputMode() === 'keyboard') unpin();
+    }
     onShift(e);
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const caps = e.getModifierState?.('CapsLock') ?? false;
@@ -300,6 +324,9 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     el,
     session,
     focus,
+    get input() {
+      return input;
+    },
     destroy: () => {
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('keyup', onShift);
