@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { REVIEWED_WORDS, hasBlockedRoot, isSafeText, isSafeToken, safeText } from '../src/content/safety';
+import { REVIEWED_WORDS, hasBlockedPair, hasBlockedRoot, isSafeText, isSafeToken, safeText } from '../src/content/safety';
+import { FACTS } from '../src/content/facts';
+import { SENTENCES } from '../src/content/sentences';
+import { SEASONS } from '../src/content/seasons';
 import { LESSONS, buildLessonText, buildRaceText } from '../src/content/lessons';
 import { PASSAGES, WORDS } from '../src/content/words';
 import { NAME_ENDS, NAME_STARTS, seededRandom } from '../src/game/dragons';
@@ -49,8 +52,9 @@ describe('word safety', () => {
       for (const k of 'asdfghjkl') known.add(k);
       const rand = seededRandom(letters.length);
       for (let i = 0; i < 1500; i++) {
-        const text = buildRaceText(known, 25, rand);
+        const text = buildRaceText(known, 25, rand, i % 2 ? [] : [...known].slice(0, 2));
         for (const tok of words(text)) if (!REVIEWED.has(tok)) expect(hasBlockedRoot(tok), `${letters}: ${tok}`).toBe(false);
+        expect(hasBlockedPair(text), text).toBe(false);
       }
     }
   }, 60000);
@@ -64,6 +68,14 @@ describe('word safety', () => {
     }
     expect(blocked).toBeGreaterThan(0); // e.g. "fags", "kkk", "ass" really are possible
     expect(isSafeToken('fags')).toBe(false);
+  });
+
+  it('no two neighbouring words form a rude phrase, in any written text', () => {
+    expect(hasBlockedPair('the dragons shut up the cave')).toBe(true);
+    expect(hasBlockedPair('Shut, up!')).toBe(true);
+    expect(hasBlockedPair('the dragon shut the door')).toBe(false);
+    const all = [...FACTS.map((f) => f.text), ...SENTENCES, ...PASSAGES, ...SEASONS.flatMap((x) => [x.name, x.idea, x.title])];
+    for (const t of all) expect(hasBlockedPair(t), t).toBe(false);
   });
 
   it('dragon and rider names are clean', () => {

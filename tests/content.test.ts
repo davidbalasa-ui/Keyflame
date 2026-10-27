@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FACTS, FACT_CHARS, pickFact, wordCount } from '../src/content/facts';
+import { FACTS, FACT_CHARS, TOUCH_MAX_WORDS, pickFact, wordCount } from '../src/content/facts';
 import { DRILLS, SENTENCES } from '../src/content/sentences';
 import { LESSONS, buildLessonText, buildRaceText, sentencesFor } from '../src/content/lessons';
 import { REVIEWED_WORDS, hasBlockedRoot, isSafeText } from '../src/content/safety';
@@ -82,6 +82,14 @@ describe('fun facts', () => {
       seen.push(f.id);
     }
     expect(seen.includes(pickFact('younger', seen, [], rand).id)).toBe(true);
+  });
+
+  it('gives touch typists the shorter facts', () => {
+    const rand = seededRandom(9);
+    for (const level of ['younger', 'older'] as const) {
+      for (let i = 0; i < 300; i++) expect(wordCount(pickFact(level, [], [], rand, true).text)).toBeLessThanOrEqual(TOUCH_MAX_WORDS[level]);
+      expect(FACTS.filter((f) => f.level === level && wordCount(f.text) <= TOUCH_MAX_WORDS[level]).length).toBeGreaterThanOrEqual(100);
+    }
   });
 });
 

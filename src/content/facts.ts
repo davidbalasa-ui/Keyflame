@@ -42,6 +42,9 @@ export function factById(id: string): Fact | undefined {
   return FACTS.find((f) => f.id === id);
 }
 
+/** Longest fact, in words, served to someone typing on a touch screen. */
+export const TOUCH_MAX_WORDS: Record<ReadingLevel, number> = { younger: 20, older: 35 };
+
 export function wordCount(text: string): number {
   return text.split(/\s+/).filter(Boolean).length;
 }
@@ -51,8 +54,11 @@ export function wordCount(text: string): number {
  * otherwise the one they saw longest ago. Among equals, facts that use the
  * player's weak keys more often win, so racing still practises what they miss.
  */
-export function pickFact(level: ReadingLevel, seen: string[], weak: string[] = [], rand: () => number = Math.random): Fact {
-  const pool = FACTS.filter((f) => f.level === level);
+export function pickFact(level: ReadingLevel, seen: string[], weak: string[] = [], rand: () => number = Math.random, touch = false): Fact {
+  const all = FACTS.filter((f) => f.level === level);
+  // Thumb typing is about half as fast, so phones and tablets get the shorter facts.
+  const short = touch ? all.filter((f) => wordCount(f.text) <= TOUCH_MAX_WORDS[level]) : all;
+  const pool = short.length >= 20 ? short : all;
   const order = new Map(seen.map((id, i) => [id, i]));
   const unseen = pool.filter((f) => !order.has(f.id));
   let choices: Fact[];

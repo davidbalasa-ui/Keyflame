@@ -58,10 +58,25 @@ export function isSafeToken(token: string): boolean {
   return !hasBlockedRoot(t);
 }
 
-/** True if every word in the text is safe. */
+// Innocent words that read as rude or mean when they sit next to each other.
+// Checked on every passage and generated text, so two safe words can't form a bad phrase.
+const BLOCKED_PAIRS: string[] = [
+  'blow job', 'hand job', 'make out', 'make love', 'nut sack', 'bite me', 'eat me', 'kiss me',
+  'shut up', 'you suck', 'you stink', 'hate you', 'you idiot', 'you stupid', 'you dumb', 'you ugly',
+  'you fat', 'fat pig', 'beat up', 'punch you', 'hit you', 'get lost', 'nobody likes', 'drop dead',
+];
+
+/** True if two neighbouring words form one of the blocked phrases. */
+export function hasBlockedPair(text: string): boolean {
+  const words = text.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+  for (let i = 0; i + 1 < words.length; i++) if (BLOCKED_PAIRS.includes(`${words[i]} ${words[i + 1]}`)) return true;
+  return false;
+}
+
+/** True if every word in the text is safe and no two neighbours form a blocked phrase. */
 export function isSafeText(text: string): boolean {
   const tokens = text.split(/\s+/).filter(Boolean);
-  return tokens.every(isSafeToken);
+  return tokens.every(isSafeToken) && !hasBlockedPair(text);
 }
 
 /**

@@ -128,9 +128,12 @@ export function buildLessonText(lesson: Lesson, weak: string[] = [], rand: () =>
   return joinLines(chooseLines(sentencesFor(keys), focus, lesson.kind === 'words' ? 18 : 14, rand), keys);
 }
 
-/** Race text from hand-written sentences that only use letters the player has learned. */
-export function buildRaceText(knownLetters: Set<string>, wordCount: number, rand: () => number = Math.random): string {
-  return joinLines(chooseLines(sentencesFor(knownLetters), [], wordCount, rand), knownLetters);
+/**
+ * Race text from hand-written sentences that only use letters the player has learned.
+ * Lines with the player's weak keys come up more often, as they do in lessons.
+ */
+export function buildRaceText(knownLetters: Set<string>, wordCount: number, rand: () => number = Math.random, weak: string[] = []): string {
+  return joinLines(chooseLines(sentencesFor(knownLetters), weak.filter((k) => knownLetters.has(k)), wordCount, rand), knownLetters);
 }
 
 /** Stars earned: 1 for passing, 2 for 95% accuracy, 3 for 95% accuracy and the WPM goal. */

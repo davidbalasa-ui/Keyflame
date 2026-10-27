@@ -1246,7 +1246,7 @@
   "id": "we14",
   "topic": "weather",
   "level": "older",
-  "text": "A cloud one cubic kilometer big holds water that weighs as much as about one hundred elephants. It floats because the moist air in it is lighter than the dry air around it.",
+  "text": "A cloud one cubic kilometer big holds water that weighs as much as about one hundred elephants. It floats because its drops are so tiny that rising air holds them up.",
   "source": {
    "name": "USGS Water Science School: How much does a cloud weigh",
    "url": "https://www.usgs.gov/water-science-school/science/how-much-does-a-cloud-weigh"
@@ -1697,7 +1697,7 @@
   "id": "dr107",
   "topic": "dragons",
   "level": "older",
-  "text": "A flying snake leaps from a branch and moves its body in a wavy S shape as it glides. It can even turn in midair, and the best glider in one study sailed about seventy feet.",
+  "text": "A flying snake leaps from a branch and moves its body in a wavy S shape as it glides. It can even turn in midair to steer toward another tree.",
   "source": {
    "name": "Science News: Flying snakes glide through the treetops",
    "url": "https://www.sciencenews.org/article/slithering-air-flying-snakes-glide-through-treetops"
@@ -2951,7 +2951,7 @@
   "id": "we118",
   "topic": "weather",
   "level": "older",
-  "text": "Mount Waialeale, in Hawaii, gets about three hundred seventy inches of rain in an average year. It is one of the rainiest places in the United States.",
+  "text": "Mount Waialeale, in Hawaii, gets hundreds of inches of rain in an average year. It is one of the rainiest places in the United States.",
   "source": {
    "name": "USGS Water Science School: Rain and precipitation",
    "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
@@ -3501,7 +3501,7 @@
   "id": "oc124",
   "topic": "oceans",
   "level": "older",
-  "text": "The Moon pulls on the ocean with about twice as much force as the Sun does, because the Moon is so much closer to the Earth.",
+  "text": "The Moon has about twice as much effect on our ocean tides as the Sun does, because the Moon is so much closer to the Earth.",
   "source": {
    "name": "NOAA Ocean Service: Tides tutorial",
    "url": "https://oceanservice.noaa.gov/education/tutorial_tides/lessons/ups_downs.html"
@@ -4964,7 +4964,7 @@
   "id": "dr141",
   "topic": "dragons",
   "level": "older",
-  "text": "Weedy seadragons are red and yellow with tiny purple and blue marks. Small leafy flaps on their bodies look like bits of seaweed, which helps them hide on the reef.",
+  "text": "Weedy seadragons are red and yellow with tiny purple and blue marks. Small leafy flaps on their bodies look like bits of seaweed, which helps them hide among the real seaweed.",
   "source": {
    "name": "Australian Museum: Weedy seadragon",
    "url": "https://australian.museum/learn/animals/fishes/weedy-seadragon-phyllopteryx-taeniolatus/"
@@ -5019,7 +5019,7 @@
   "id": "oc142",
   "topic": "oceans",
   "level": "older",
-  "text": "People have looked closely at only a tiny part of the deep sea floor, an area about the size of Rhode Island. Most of the deep ocean is still waiting to be seen.",
+  "text": "People have looked closely at only a tiny part of the deep sea floor. Most of the deep ocean is still waiting to be explored, and scientists still find new animals there.",
   "source": {
    "name": "NOAA Ocean Exploration: How much of the ocean has been explored?",
    "url": "https://oceanexplorer.noaa.gov/facts/explored.html"
@@ -5228,7 +5228,7 @@
   "id": "oc162",
   "topic": "oceans",
   "level": "older",
-  "text": "A tide station in San Francisco has been measuring the height of the sea for more than a hundred and fifty years. Tides are caused by the pull of gravity from the Sun, Moon, and Earth.",
+  "text": "A tide station in San Francisco has been measuring the height of the sea for more than a hundred and fifty years. Tides are caused by the pull of the Moon and the Sun.",
   "source": {
    "name": "NOAA Ocean Service: Tides and tidal waves",
    "url": "https://oceanservice.noaa.gov/facts/tidalwave.html"
