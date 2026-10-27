@@ -53,7 +53,7 @@ const steps: Array<[UnitId, string, string[], Lesson['kind'], number]> = [
   ['bottom', 'Z and /', ['z', '/'], 'drill', 14],
   ['bottom', 'All Letters', [], 'words', 16],
   ['sentences', 'Capital Letters', [], 'passage', 15],
-  ['sentences', 'Dragon Tales', [], 'passage', 16],
+  ['sentences', 'Dragon Stories', [], 'passage', 16],
 ];
 
 export const LESSONS: Lesson[] = (() => {
