@@ -107,6 +107,24 @@ export interface Profile {
   setsClaimed: string[];
   /** Achievements already announced. Missing on saves from before achievements. */
   achievements?: string[];
+  /** Season challenge progress by month (YYYY-MM). Missing on saves from before seasons. */
+  seasonLog?: Record<string, SeasonLog>;
+}
+
+/** One month of a season: counts toward its three challenges. */
+export interface SeasonLog {
+  /** Which season ran that month. */
+  season: string;
+  races: number;
+  wins: number;
+  clean: number;
+  perfect: number;
+  keys: number;
+  lessons: number;
+  days: number;
+  lastDay: string;
+  /** Challenge numbers (0 to 2) already paid out. */
+  paid: number[];
 }
 
 export interface SaveData {

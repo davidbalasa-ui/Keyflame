@@ -8,6 +8,8 @@ import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { hub, refreshEmbers, topBar } from './hub';
 import { nest } from './nest';
+import { SEASONS, pastSeasons, seasonAt } from '../../content/seasons';
+import { SEASON_COLOR_CHANCE, VAULT_COLOR_CHANCE, seasonPalette } from '../../game/seasons';
 
 type Filter = 'all' | 'found' | 'missing' | 'rare';
 let filter: Filter = 'all';
@@ -108,6 +110,7 @@ export const codex = (root: HTMLElement): void => {
       factBook(p.factsSeen),
       h('div', { class: 'chips codex-filters' }, chip('all', 'All'), chip('found', 'Found'), chip('missing', 'Still to find'), chip('rare', 'Rare')),
       ...(sections.length ? sections : [h('p', { class: 'fine' }, filter === 'found' ? 'Hatch your first egg to start your Codex.' : 'Nothing here yet.')]),
+      seasonVault(),
       starfireSpot(p.supporter),
     ),
   );
@@ -156,6 +159,43 @@ function eggBought(tribe: TribeId): HTMLElement {
     ),
   );
   return modal;
+}
+
+/**
+ * Season colors found so far. This month's color hatches often; colors from
+ * earlier seasons can still turn up now and then, so none is ever missed for good.
+ */
+function seasonVault(): HTMLElement | null {
+  const p = profile();
+  const now = seasonAt();
+  const shown = [...(now ? [now] : []), ...pastSeasons().filter((s) => s !== now)];
+  if (!shown.length) return null;
+  const mine = (i: number) => p.dragons.filter((d) => d.palette === seasonPalette(SEASONS[i]));
+  const found = shown.filter((s) => mine(SEASONS.indexOf(s)).length).length;
+  return h(
+    'section',
+    { class: 'codex-tribe season-vault' },
+    h('div', { class: 'codex-head' }, h('h2', {}, 'Starfall Vault'), h('span', { class: 'codex-found' }, `${found} / ${shown.length}`)),
+    h('p', { class: 'fine' }, `Season colors work on any tribe. This month’s color hatches about one egg in ${Math.round(1 / SEASON_COLOR_CHANCE)}, and colors from earlier seasons still turn up about one egg in ${Math.round(1 / VAULT_COLOR_CHANCE)}.`),
+    h(
+      'div',
+      { class: 'codex-row' },
+      ...shown.map((s) => {
+        const d = mine(SEASONS.indexOf(s))[0];
+        return h(
+          'div',
+          { class: 'codex-card' + (d ? '' : ' unknown') },
+          h(
+            'span',
+            { class: 'codex-card-in' },
+            svg(dragonSvg(d?.tribe ?? 'emberback', seasonPalette(s), 'adult', '', undefined, d?.marking ?? 0), 'codex-art' + (d ? '' : ' dim')),
+            h('small', {}, d ? s.color.name : '???'),
+            h('small', { class: 'fine' }, s === now ? 'This month' : s.name),
+          ),
+        );
+      }),
+    ),
+  );
 }
 
 /** Where the supporter skin will live once the pack is on sale. */

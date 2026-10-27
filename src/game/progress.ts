@@ -6,6 +6,7 @@ import { mergeKeyStats, type SessionSummary } from '../engine/typing';
 import { NAME_ENDS, NAME_STARTS, TRIBES, rollMarking, rollPalette, stageFor, type Stage, type TribeId } from './dragons';
 import { today, type InputMode, type OwnedDragon, type Profile } from '../save/store';
 import { courseById } from './courses';
+import { noteSeasonLesson, noteSeasonRace, rollSeasonPalette, type ChallengeState } from './seasons';
 
 export interface TypingRewards {
   embers: number;
@@ -16,6 +17,8 @@ export interface TypingRewards {
   /** True the first time this course's story rival is beaten. */
   rivalFirstWin?: boolean;
   newBest?: boolean;
+  /** Season challenges finished by this session. */
+  seasonDone?: ChallengeState[];
 }
 
 /** Touch typing is slower than ten-finger typing, so rivals ease off for touch players. */
@@ -132,8 +135,9 @@ export function recordRace(p: Profile, s: SessionSummary, place: number, info: R
   if (s.accuracy >= 1) p.totals.perfectRaces++;
   p.embers += embers;
   p.totals.embersEarned += embers;
+  const seasonDone = noteSeasonRace(p, s, place);
   const newEgg = checkMilestones(p);
-  return { ...base, embers, newEgg, rivalFirstWin, newBest: prevBest > 0 && s.wpm > prevBest, eggReady: eggProgress(p) >= 1 };
+  return { ...base, embers, newEgg, seasonDone, rivalFirstWin, newBest: prevBest > 0 && s.wpm > prevBest, eggReady: eggProgress(p) >= 1 };
 }
 
 export function recordLesson(p: Profile, lesson: Lesson, s: SessionSummary, stars: number): TypingRewards {
@@ -150,8 +154,9 @@ export function recordLesson(p: Profile, lesson: Lesson, s: SessionSummary, star
   p.totals.lessons++;
   countPlayDay(p);
   p.daily.lessons++;
+  const seasonDone = noteSeasonLesson(p, s);
   const newEgg = checkUnitReward(p, lesson.unit) ?? checkMilestones(p);
-  return { ...base, embers, newEgg, eggReady: eggProgress(p) >= 1 };
+  return { ...base, embers, newEgg, seasonDone, eggReady: eggProgress(p) >= 1 };
 }
 
 /** Awards a unit's egg the first time every lesson in it is passed. */
@@ -172,13 +177,15 @@ export function randomDragonName(rand: () => number = Math.random): string {
 }
 
 /** Hatches the egg in the nest and moves the next waiting egg in. */
-export function hatchEgg(p: Profile, name: string, rand: () => number = Math.random): OwnedDragon | null {
+export function hatchEgg(p: Profile, name: string, rand: () => number = Math.random, now: Date = new Date()): OwnedDragon | null {
   if (!p.nest || eggProgress(p) < 1) return null;
+  const palette = rollPalette(p.nest.tribe, rand);
+  const marking = rollMarking(rand);
   const dragon: OwnedDragon = {
     id: Math.random().toString(36).slice(2, 10),
     tribe: p.nest.tribe,
-    palette: rollPalette(p.nest.tribe, rand),
-    marking: rollMarking(rand),
+    palette: rollSeasonPalette(now, rand) ?? palette,
+    marking,
     name,
     xp: 0,
     hatchedAt: Date.now(),

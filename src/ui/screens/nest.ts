@@ -1,4 +1,4 @@
-import { GROWTH, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggSvg, lookName, stageFor } from '../../game/dragons';
+import { GROWTH, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggSvg, isSeasonPalette, lookName, paletteFor, stageFor } from '../../game/dragons';
 import { EGG_PRICE, claimSets, foundLooks, lookKey } from '../../game/collection';
 import { codex } from './codex';
 import type { OwnedDragon } from '../../save/store';
@@ -69,7 +69,7 @@ export const nest = (root: HTMLElement): void => {
                   { class: 'dragon-card' + (active?.id === d.id ? ' active' : '') },
                   svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking), 'card-dragon'),
                   h('strong', {}, d.name),
-                  h('small', {}, `${TRIBES[d.tribe].palettes[d.palette]?.name} ${TRIBES[d.tribe].name}`),
+                  h('small', {}, `${paletteFor(d.tribe, d.palette).name} ${TRIBES[d.tribe].name}`),
                   h('small', {}, growthText(d)),
                   h('small', { class: 'perk' }, TRIBES[d.tribe].perk),
                   p.supporter
@@ -170,7 +170,8 @@ function hatchSequence(root: HTMLElement): void {
       fx.emit(x, y, { count: 70, colors, kind: 'spark', spread: 520, size: 7, life: 1.2 });
       fx.emit(x, y, { count: 50, colors: CONFETTI, kind: 'confetti', vy: -220, spread: 420, size: 5, life: 2.2 });
     }
-    const palette = TRIBES[dragon.tribe].palettes[dragon.palette];
+    const palette = paletteFor(dragon.tribe, dragon.palette);
+    const season = isSeasonPalette(dragon.palette);
     const nameEl = h('h2', {}, `Meet ${name}!`);
     const setName = (n: string): void => {
       name = n;
@@ -187,8 +188,8 @@ function hatchSequence(root: HTMLElement): void {
     box.replaceChildren(
       svg(dragonSvg(dragon.tribe, dragon.palette, 'hatchling', 'flap bob pop-in', undefined, dragon.marking), 'hatch-dragon'),
       nameEl,
-      h('p', {}, `A ${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}${palette.rare ? ', a rare color!' : '!'}`),
-      h('p', { class: 'fine' }, isNewLook ? 'A new look for your Codex!' : 'You already have this look in your Codex.'),
+      h('p', {}, `A ${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}${season ? ', a season color!' : palette.rare ? ', a rare color!' : '!'}`),
+      h('p', { class: 'fine' }, season ? 'It joins the season looks in your Codex.' : isNewLook ? 'A new look for your Codex!' : 'You already have this look in your Codex.'),
       h('p', { class: 'fine' }, TRIBES[dragon.tribe].lore),
       ...sets.map((x) => h('p', { class: 'reward' }, `Codex set done: ${TRIBES[x.tribe].name} ${x.label.toLowerCase()}! +${x.embers} embers`)),
       ...fresh.map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),

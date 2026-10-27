@@ -4,7 +4,7 @@
 
 import type { Profile } from '../save/store';
 import { giveEgg } from './progress';
-import { MARKINGS, TRIBES, type TribeId } from './dragons';
+import { MARKINGS, TRIBES, isSeasonPalette, type TribeId } from './dragons';
 
 export const LOOKS_PER_TRIBE = 4 * MARKINGS.length;
 export const TOTAL_LOOKS = Object.keys(TRIBES).length * LOOKS_PER_TRIBE;
@@ -18,6 +18,8 @@ export const lookKey = (tribe: TribeId, palette: number, marking = 0): string =>
 export function foundLooks(p: Profile): Map<string, number> {
   const found = new Map<string, number>();
   for (const d of p.dragons) {
+    // Season colors have their own page in the Codex and do not count toward tribe sets.
+    if (isSeasonPalette(d.palette)) continue;
     const k = lookKey(d.tribe, d.palette, d.marking ?? 0);
     found.set(k, (found.get(k) ?? 0) + 1);
   }
@@ -39,7 +41,7 @@ export function codexSets(p: Profile): CodexSet[] {
   const found = foundLooks(p);
   const claimed = new Set(p.setsClaimed);
   return (Object.keys(TRIBES) as TribeId[]).flatMap((tribe) => {
-    const colors = new Set(p.dragons.filter((d) => d.tribe === tribe).map((d) => d.palette)).size;
+    const colors = new Set(p.dragons.filter((d) => d.tribe === tribe && !isSeasonPalette(d.palette)).map((d) => d.palette)).size;
     const looks = [...found.keys()].filter((k) => k.startsWith(tribe + ':')).length;
     const make = (kind: string, label: string, have: number, need: number, embers: number): CodexSet => {
       const id = `${tribe}-${kind}`;
