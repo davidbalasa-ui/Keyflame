@@ -143,8 +143,8 @@ function run(root: HTMLElement, course: Course): () => void {
 
   const lanes = h('div', { class: 'lanes' });
   const trailOf = new Map<HTMLElement, string[]>();
-  const makeLane = (name: string, tribe: TribeId, palette: number, stage: Stage, cls = '', skin?: 'starfire', marking = 0): HTMLElement => {
-    const racer = h('div', { class: `racer ${cls}` }, svg(dragonSvg(tribe, palette, stage, 'flap', skin, marking), 'racer-art'), h('span', { class: 'racer-name' }, name));
+  const makeLane = (name: string, tribe: TribeId, palette: number, stage: Stage, cls = '', skin?: 'starfire', marking = 0, stars = 0): HTMLElement => {
+    const racer = h('div', { class: `racer ${cls}` }, svg(dragonSvg(tribe, palette, stage, 'flap', skin, marking, stars), 'racer-art'), h('span', { class: 'racer-name' }, name));
     lanes.append(h('div', { class: 'lane' }, racer));
     trailOf.set(racer, skin === 'starfire' ? ['#ffd43b', '#b197fc', '#fff3bf', '#ff922b'] : TRAIL_COLORS[tribe]);
     return racer;
@@ -162,7 +162,7 @@ function run(root: HTMLElement, course: Course): () => void {
   if (best > 0) {
     ghosts.push({ name: 'Your best', wpm: best, phase: 4.2, el: makeLane('Your best', me?.tribe ?? 'emberback', me?.palette ?? 0, 'adult', 'ghost-best', me?.skin, me?.marking) });
   }
-  const meEl = makeLane(me ? me.name : 'You', me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'you', me?.skin, me?.marking);
+  const meEl = makeLane(me ? me.name : 'You', me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'you', me?.skin, me?.marking, me?.stars);
 
   const fx = new ParticleField();
   fx.enabled = !p.settings.reducedMotion;

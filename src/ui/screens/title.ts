@@ -9,7 +9,7 @@ import { hub } from './hub';
 
 function avatar(p: Profile): HTMLElement {
   const d = activeDragon(p);
-  if (d) return svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking), 'avatar');
+  if (d) return svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking, d.stars), 'avatar');
   return svg(eggSvg(p.nest?.tribe ?? 'emberback', 0, p.nest?.seed ?? 1), 'avatar');
 }
 

@@ -3,7 +3,7 @@
 
 import { LESSONS, UNITS, lessonsInUnit, type Lesson } from '../content/lessons';
 import { mergeKeyStats, type SessionSummary } from '../engine/typing';
-import { NAME_ENDS, NAME_STARTS, TRIBES, rollMarking, rollPalette, stageFor, type Stage, type TribeId } from './dragons';
+import { MARKINGS, NAME_ENDS, NAME_STARTS, TRIBES, rollMarking, rollPalette, stageFor, type Stage, type TribeId } from './dragons';
 import { today, type InputMode, type OwnedDragon, type Profile } from '../save/store';
 import { courseById } from './courses';
 import { noteSeasonLesson, noteSeasonRace, rollSeasonPalette, type ChallengeState } from './seasons';
@@ -176,25 +176,98 @@ export function randomDragonName(rand: () => number = Math.random): string {
   return s + e;
 }
 
-/** Hatches the egg in the nest and moves the next waiting egg in. */
-export function hatchEgg(p: Profile, name: string, rand: () => number = Math.random, now: Date = new Date()): OwnedDragon | null {
+/** A look can evolve this many times: one star per extra copy, so five copies max it out. */
+export const MAX_STARS = 4;
+export const STAR_NAMES = ['', 'Evolved', 'Radiant', 'Mythic', 'Elder'];
+/** Growth a dragon gets each time it evolves. */
+export const EVOLVE_XP = 1500;
+/** Embers a hatch turns into if every look it could be is already at full stars. */
+export const MAXED_EMBERS = 300;
+
+const sameLook = (d: OwnedDragon, tribe: TribeId, palette: number, marking: number): boolean => d.tribe === tribe && d.palette === palette && (d.marking ?? 0) === marking;
+
+/** The dragon that wears a look and collects its stars: the most evolved, then the most grown. */
+export function lookHolder(p: Profile, tribe: TribeId, palette: number, marking: number): OwnedDragon | null {
+  const mine = p.dragons.filter((d) => sameLook(d, tribe, palette, marking));
+  return mine.sort((a, b) => (b.stars ?? 0) - (a.stars ?? 0) || b.xp - a.xp)[0] ?? null;
+}
+
+export function lookMaxed(p: Profile, tribe: TribeId, palette: number, marking: number): boolean {
+  return (lookHolder(p, tribe, palette, marking)?.stars ?? 0) >= MAX_STARS;
+}
+
+/** True when every regular look of a tribe is at full stars, so its eggs are no longer offered. */
+export function tribeMaxed(p: Profile, tribe: TribeId): boolean {
+  return TRIBES[tribe].palettes.every((_, palette) => MARKINGS.every((_, m) => lookMaxed(p, tribe, palette, m)));
+}
+
+export interface HatchResult {
+  /** The new dragon, or the one that evolved. Null when the hatch turned into embers. */
+  dragon: OwnedDragon | null;
+  evolved: boolean;
+  /** Embers given instead of a dragon, when every possible look was already maxed. */
+  embers: number;
+}
+
+/**
+ * Hatches the egg in the nest and moves the next waiting egg in. A look the rider
+ * already has evolves that dragon instead of adding a copy. A look at full stars is
+ * never rolled, so no hatch is wasted.
+ */
+export function hatchNest(p: Profile, name: string, rand: () => number = Math.random, now: Date = new Date()): HatchResult | null {
   if (!p.nest || eggProgress(p) < 1) return null;
-  const palette = rollPalette(p.nest.tribe, rand);
-  const marking = rollMarking(rand);
-  const dragon: OwnedDragon = {
-    id: Math.random().toString(36).slice(2, 10),
-    tribe: p.nest.tribe,
-    palette: rollSeasonPalette(now, rand) ?? palette,
-    marking,
-    name,
-    xp: 0,
-    hatchedAt: Date.now(),
-  };
-  p.dragons.push(dragon);
-  if (!p.activeDragonId) p.activeDragonId = dragon.id;
+  const tribe = p.nest.tribe;
+  let palette = rollPalette(tribe, rand);
+  let marking = rollMarking(rand);
+  palette = rollSeasonPalette(now, rand) ?? palette;
+  for (let i = 0; i < 40 && lookMaxed(p, tribe, palette, marking); i++) {
+    palette = rollSeasonPalette(now, rand) ?? rollPalette(tribe, rand);
+    marking = rollMarking(rand);
+  }
+  let open = !lookMaxed(p, tribe, palette, marking);
+  if (!open) {
+    const left = TRIBES[tribe].palettes.flatMap((_, pi) => MARKINGS.map((_, m) => [pi, m] as const)).find(([pi, m]) => !lookMaxed(p, tribe, pi, m));
+    if (left) [palette, marking, open] = [left[0], left[1], true];
+  }
   const next = p.basket.shift();
   p.nest = next ? { tribe: next, warmth: 0, seed: Math.floor(rand() * 1e9) } : null;
-  return dragon;
+  if (!open) {
+    p.embers += MAXED_EMBERS;
+    p.totals.embersEarned += MAXED_EMBERS;
+    return { dragon: null, evolved: false, embers: MAXED_EMBERS };
+  }
+  const holder = lookHolder(p, tribe, palette, marking);
+  if (holder) {
+    holder.stars = (holder.stars ?? 0) + 1;
+    holder.xp += EVOLVE_XP;
+    return { dragon: holder, evolved: true, embers: 0 };
+  }
+  const dragon: OwnedDragon = { id: Math.random().toString(36).slice(2, 10), tribe, palette, marking, name, xp: 0, hatchedAt: Date.now() };
+  p.dragons.push(dragon);
+  if (!p.activeDragonId) p.activeDragonId = dragon.id;
+  return { dragon, evolved: false, embers: 0 };
+}
+
+/** Hatches and returns the dragon, new or evolved. */
+export function hatchEgg(p: Profile, name: string, rand: () => number = Math.random, now: Date = new Date()): OwnedDragon | null {
+  return hatchNest(p, name, rand, now)?.dragon ?? null;
+}
+
+/** Embers can warm the egg in the nest, so they always have a use. */
+export const WARM_PRICE = 100;
+/** Share of a whole egg that one ember warming adds. */
+export const WARM_SHARE = 0.25;
+
+export function canWarmWithEmbers(p: Profile): boolean {
+  return !!p.nest && eggProgress(p) < 1 && p.embers >= WARM_PRICE;
+}
+
+export function warmWithEmbers(p: Profile): boolean {
+  if (!canWarmWithEmbers(p) || !p.nest) return false;
+  const need = TRIBES[p.nest.tribe].hatchKeys;
+  p.embers -= WARM_PRICE;
+  p.nest.warmth = Math.min(need, p.nest.warmth + Math.ceil(need * WARM_SHARE));
+  return true;
 }
 
 export function lessonUnlocked(p: Profile, index: number): boolean {
