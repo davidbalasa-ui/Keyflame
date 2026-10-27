@@ -61,7 +61,11 @@ export function formatCode(text: string): string {
 
 export function makeSupporterCode(rand: () => number = Math.random): string {
   let body = '';
-  for (let i = 0; i < BODY_LEN; i++) body += ALPHABET[Math.floor(rand() * 32) % 32];
+  // A code that starts with KF would lose those letters as the prefix when typed in, so skip it.
+  while (!body || body.startsWith('KF')) {
+    body = '';
+    for (let i = 0; i < BODY_LEN; i++) body += ALPHABET[Math.floor(rand() * 32) % 32];
+  }
   return formatCode(body + check(body));
 }
 

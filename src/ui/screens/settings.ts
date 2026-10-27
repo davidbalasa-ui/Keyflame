@@ -60,7 +60,7 @@ export const settings = (root: HTMLElement): void => {
             },
             ...(
               [
-                ['auto', 'Pick for me'],
+                ['auto', 'Pick for me (a real keyboard as soon as you press one)'],
                 ['keyboard', 'A real keyboard'],
                 ['touch', 'Tap the game’s keyboard (phones and tablets)'],
                 ['device', 'My phone or tablet’s own keyboard'],

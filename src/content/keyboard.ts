@@ -119,3 +119,19 @@ export function touchThumb(ch: string): 'left' | 'right' | 'either' {
   if (x === null) return fingerFor(ch).startsWith('left') ? 'left' : 'right';
   return x < 5 ? 'left' : 'right';
 }
+
+/**
+ * Phone and tablet keyboards swap in curly quotes and long dashes ("smart punctuation"),
+ * and no web page setting turns that off on an iPad. Typing stops on a wrong key, so
+ * read them as the plain characters the lesson text uses.
+ */
+const PLAIN: Record<string, string> = {
+  '\u2018': "'", '\u2019': "'", '\u201A': "'", '\u2032': "'",
+  '\u201C': '"', '\u201D': '"', '\u201E': '"', '\u2033': '"',
+  '\u2013': '-', '\u2014': '-', '\u2212': '-',
+  '\u00A0': ' ',
+};
+
+export function plainText(typed: string): string {
+  return [...typed].map((c) => (c === '\u2026' ? '...' : (PLAIN[c] ?? c))).join('');
+}

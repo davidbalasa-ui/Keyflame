@@ -1,6 +1,10 @@
-// Fails if any screen scrolls sideways on a phone. Every screen should fit the width;
-// only vertical scrolling is allowed.
+// Fails if any screen scrolls sideways on a phone or tablet. Every screen should fit the
+// width; only vertical scrolling is allowed. On tablets it also checks that pressing a real
+// key (an iPad in a keyboard case) puts the tap keyboard away.
 // Run: npm run build && npm run check:overflow   (needs Playwright with Chromium installed)
+// BROWSER=webkit uses Safari's engine instead (npx playwright install webkit).
+// SHOTS=some/folder saves a screenshot of every screen at every size.
+// No emulator shows the iPad's own on-screen keyboard; that still needs a real iPad.
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 
@@ -15,14 +19,34 @@ try {
 
 const PORT = 4179;
 const URL = `http://localhost:${PORT}/`;
-const WIDTHS = [320, 360, 412];
+// Phones, then iPads (mini, 10.2", Air 11", Pro 12.9") held upright and sideways.
+const SIZES = [
+  { name: 'phone 320', width: 320, height: 740 },
+  { name: 'phone 360', width: 360, height: 740 },
+  { name: 'phone 412', width: 412, height: 740 },
+  ...[
+    ['iPad mini', 744, 1133],
+    ['iPad 10.2', 810, 1080],
+    ['iPad Air', 820, 1180],
+    ['iPad Pro 12.9', 1024, 1366],
+  ].flatMap(([name, w, h]) => [
+    { name: `${name} upright`, width: w, height: h, tablet: true },
+    { name: `${name} sideways`, width: h, height: w, tablet: true },
+  ]),
+];
+const ENGINE = process.env.BROWSER === 'webkit' ? 'webkit' : 'chromium';
+const SHOTS = process.env.SHOTS;
+if (SHOTS) (await import('node:fs')).mkdirSync(SHOTS, { recursive: true });
 
 // Each step opens one screen from the hub by clicking what a player would click.
 const SCREENS = [
   ['hub', []],
-  ['settings', ['text=Settings and backup']],
-  ['progress', ['text=My progress']],
-  ['supporter', ['text=Support Keyflame']],
+  ['settings', ['[aria-label^="Settings and backup"]']],
+  ['progress', ['[aria-label="My progress"]']],
+  ['supporter', ['[aria-label="Support Keyflame"]']],
+  ['achievements', ['.icon-btn.trophy']],
+  ['ideas', ['[aria-label="Report a bug or idea"]']],
+  ['season', ['.season-btn']],
   ['lessons', ['.tile-lessons']],
   ['lesson', ['.tile-lessons', '.lesson-tile >> nth=0']],
   ['race map', ['.tile-race']],
@@ -54,15 +78,18 @@ const overflow = (page) =>
     return { scrollW: document.documentElement.scrollWidth, vw, wide };
   });
 
-const browser = await playwright.chromium.launch();
+const browser = await playwright[ENGINE].launch();
 const failures = [];
-for (const width of WIDTHS) {
-  const ctx = await browser.newContext({ viewport: { width, height: 740 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2 });
+for (const size of SIZES) {
+  const { width, height } = size;
+  const label = `${size.name} (${width}x${height})`;
+  const ctx = await browser.newContext({ viewport: { width, height }, hasTouch: true, isMobile: ENGINE !== 'firefox', deviceScaleFactor: 2 });
   const page = await ctx.newPage();
   await page.goto(URL);
   const check = async (name) => {
     const o = await overflow(page);
-    if (o.scrollW > o.vw) failures.push(`${width}px ${name}: page is ${o.scrollW}px wide (${o.wide.join(', ') || 'unknown element'})`);
+    if (o.scrollW > o.vw) failures.push(`${label} ${name}: page is ${o.scrollW}px wide (${o.wide.join(', ') || 'unknown element'})`);
+    if (SHOTS) await page.screenshot({ path: `${SHOTS}/${size.name.replace(/\W+/g, '-')}-${name.replace(/\W+/g, '-')}.png` });
   };
   await check('title');
   await page.click('.profile-card.new');
@@ -75,11 +102,23 @@ for (const width of WIDTHS) {
     try {
       for (const sel of clicks) await page.click(sel, { timeout: 3000 });
     } catch {
-      failures.push(`${width}px ${name}: could not open the screen`);
+      failures.push(`${label} ${name}: could not open the screen`);
       continue;
     }
     await page.waitForTimeout(150);
     await check(name);
+  }
+  if (size.tablet) {
+    // A touch screen starts with the tap keyboard; one real key press should put it away.
+    await page.goto(URL);
+    await page.click('.profile-card:not(.new)');
+    await page.click('.tile-lessons');
+    await page.click('.lesson-tile >> nth=0');
+    const tap = await page.waitForSelector('.keyboard.pinned', { timeout: 3000 }).catch(() => null);
+    if (!tap) failures.push(`${label}: the tap keyboard did not show on a touch screen`);
+    await page.keyboard.press('j');
+    await page.waitForTimeout(100);
+    if (await page.locator('.keyboard.pinned').count()) failures.push(`${label}: the tap keyboard stayed after a real key press`);
   }
   await ctx.close();
 }
@@ -90,4 +129,4 @@ if (failures.length) {
   console.error('Sideways scrolling found:\n  ' + failures.join('\n  '));
   process.exit(1);
 }
-console.log(`No sideways scrolling on ${SCREENS.length + 2} screens at ${WIDTHS.join(', ')}px.`);
+console.log(`${ENGINE}: no sideways scrolling on ${SCREENS.length + 2} screens at ${SIZES.length} sizes, and a real key press puts the tap keyboard away on tablets.`);

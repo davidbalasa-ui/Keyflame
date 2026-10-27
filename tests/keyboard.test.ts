@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { LESSONS, buildLessonText, buildRaceText } from '../src/content/lessons';
 import { PASSAGES } from '../src/content/words';
-import { ROWS, TOUCH_ROWS, TOUCH_ROW_INSET, baseKey, fingerFor, keyLabel, touchKeyCenter, touchThumb, typableOnTouch } from '../src/content/keyboard';
+import { ROWS, TOUCH_ROWS, TOUCH_ROW_INSET, baseKey, fingerFor, keyLabel, plainText, touchKeyCenter, touchThumb, typableOnTouch } from '../src/content/keyboard';
 import { seededRandom } from '../src/game/dragons';
 
 const untypable = (text: string): string[] => [...new Set([...text].filter((c) => !typableOnTouch(c)))];
@@ -83,5 +83,19 @@ describe('phone-style tap keyboard', () => {
     expect(touchThumb('c')).toBe('left');
     expect(touchThumb('n')).toBe('right');
     expect(touchThumb(' ')).toBe('either');
+  });
+});
+
+describe('smart punctuation from phone and tablet keyboards', () => {
+  it('reads curly quotes, long dashes and ellipses as plain characters', () => {
+    expect(plainText('\u2018it\u2019s\u2019')).toBe("'it's'");
+    expect(plainText('\u201Chi\u201D')).toBe('"hi"');
+    expect(plainText('a\u2013b\u2014c')).toBe('a-b-c');
+    expect(plainText('so\u2026')).toBe('so...');
+  });
+
+  it('leaves everything the tap keyboard types alone', () => {
+    const all = ' abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ;:,<.>/?';
+    expect(plainText(all)).toBe(all);
   });
 });

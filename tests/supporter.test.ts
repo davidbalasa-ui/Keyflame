@@ -12,6 +12,14 @@ describe('supporter codes', () => {
     }
   });
 
+  it('never starts a code with KF, which reads as the prefix', () => {
+    const picks = [19, 15, 0, 0, 0, 0, 0, 0]; // K, F, ... in the code alphabet
+    const c = makeSupporterCode(() => (picks.length ? picks.shift()! : 1) / 32);
+    expect(c).toMatch(/^KF-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}$/);
+    expect(c.startsWith('KF-KF')).toBe(false);
+    expect(isSupporterCode(c)).toBe(true);
+  });
+
   it('forgives case, spaces and look-alike letters', () => {
     const c = makeSupporterCode(() => 0.5);
     expect(isSupporterCode(c.toLowerCase().replace(/-/g, ' '))).toBe(true);

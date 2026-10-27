@@ -23,6 +23,7 @@ export async function startApp(root: HTMLElement, first: Screen): Promise<void> 
   state = { save: await loadSave(), root, cleanup: null, sessionStart: Date.now(), breakShown: false };
   claimSupporterReturn();
   applySettings();
+  watchHardwareKeyboard();
   go(first);
 }
 
@@ -79,11 +80,50 @@ export function breakDue(): boolean {
 
 window.addEventListener('pagehide', () => void persistNow());
 
-/** Picks how the player types: 'auto' means the tap keyboard on phones and tablets. */
+/**
+ * Picks how the player types: 'auto' means the tap keyboard on phones and tablets,
+ * unless a real keyboard has been used (an iPad in a keyboard case, say).
+ */
 export function inputMode(): InputMode {
   const pick = hasProfile() ? profile().settings.input : 'auto';
   if (pick !== 'auto') return pick;
+  if (hardwareKeys) return 'keyboard';
   return matchMedia('(pointer: coarse) and (hover: none)').matches ? 'touch' : 'keyboard';
+}
+
+const HARDWARE_KEY = 'keyflame-hardware-keyboard';
+let hardwareKeys = false;
+try {
+  hardwareKeys = sessionStorage.getItem(HARDWARE_KEY) === '1';
+} catch {
+  // Private browsing can block storage; the next key press finds the keyboard again.
+}
+
+/** Remembers, for this visit, that a real keyboard is attached. */
+export function noteHardwareKey(): void {
+  if (hardwareKeys) return;
+  hardwareKeys = true;
+  try {
+    sessionStorage.setItem(HARDWARE_KEY, '1');
+  } catch {
+    // Remembered in memory only.
+  }
+}
+
+/**
+ * A key press outside a text field can only come from a real keyboard: the on-screen
+ * keyboard of a phone or tablet only opens inside one.
+ */
+export function isHardwareKey(e: KeyboardEvent): boolean {
+  const t = e.target as HTMLElement | null;
+  if (t && (t.isContentEditable || t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) return false;
+  return e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey;
+}
+
+function watchHardwareKeyboard(): void {
+  document.addEventListener('keydown', (e) => {
+    if (isHardwareKey(e)) noteHardwareKey();
+  }, true);
 }
 
 const PENDING_KEY = 'keyflame-supporter-pending';
