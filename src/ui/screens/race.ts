@@ -301,9 +301,11 @@ function run(root: HTMLElement, course: Course): () => void {
     const ahead = ghosts.filter((g) => finishTime(g.wpm, len) < myMs);
     const placeNum = ahead.length + 1;
     const beatRival = !ahead.some((g) => g.rival);
-    const prevBest = touch ? p.totals.bestTouchWpm : p.totals.bestWpm;
+    // A tap keyboard race switches to 'keyboard' if real keys were used, so records stay fair.
+    const typedWith = view.input;
+    const prevBest = isTouch(typedWith) ? p.totals.bestTouchWpm : p.totals.bestWpm;
     const before = earnedIds(p);
-    const reward = recordRace(p, sum, placeNum, { input, courseId: course.id, beatRival });
+    const reward = recordRace(p, sum, placeNum, { input: typedWith, courseId: course.id, beatRival });
     const newFact = fact ? recordFact(p, fact.id) : false;
     const fresh = claimNewAchievements(p, before);
     persist();
