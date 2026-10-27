@@ -26,5 +26,5 @@ create policy "game can send feedback" on public.feedback
   with check (status = 'new' and notes = '');
 
 -- Inserts only: no select, update or delete for the public key.
-revoke all on public.feedback from anon;
+revoke all on public.feedback from anon, authenticated;
 grant insert (kind, message, screen, version, device, browser, os, input) on public.feedback to anon;

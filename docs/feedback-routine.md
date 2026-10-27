@@ -4,11 +4,9 @@ Players send bug reports and ideas from **Report a bug or idea** on the hub. A g
 
 ## Setup
 
-1. Create the table with `supabase/feedback.sql`.
-2. Add two GitHub repository variables (Settings → Secrets and variables → Actions → Variables):
-   - `FEEDBACK_URL` = `https://<project-ref>.supabase.co/rest/v1/feedback`
-   - `FEEDBACK_KEY` = the project's publishable (anon) key. It can only insert.
-3. Push to `main` (or re-run the deploy) so the build picks them up. Until both are set, the form says it is not switched on yet.
+- Reports go to the `feedback` table in the **KeyFlame** Supabase project (ref `lmnsdqieycefnrjajknx`).
+- The table comes from `supabase/migrations/`. Supabase's GitHub integration applies it to production on every push to `main`.
+- The project URL and public anon key are defaults in `src/config.ts`. The `FEEDBACK_URL` and `FEEDBACK_KEY` repository variables can override them, for example for a test project.
 
 ## The routine (once a day)
 
