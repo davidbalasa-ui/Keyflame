@@ -248,6 +248,20 @@ export function hatchNest(p: Profile, name: string, rand: () => number = Math.ra
   return { dragon, evolved: false, embers: 0 };
 }
 
+/**
+ * Moves a waiting egg into the nest, and the nest egg back into its basket spot.
+ * The nest keeps its warmth, so the new egg is just as close to hatching and no
+ * typing is lost by switching.
+ */
+export function swapNestEgg(p: Profile, index: number, rand: () => number = Math.random): boolean {
+  const next = p.basket[index];
+  if (!p.nest || !next) return false;
+  const share = eggProgress(p);
+  p.basket[index] = p.nest.tribe;
+  p.nest = { tribe: next, warmth: Math.ceil(share * TRIBES[next].hatchKeys), seed: Math.floor(rand() * 1e9) };
+  return true;
+}
+
 /** Hatches and returns the dragon, new or evolved. */
 export function hatchEgg(p: Profile, name: string, rand: () => number = Math.random, now: Date = new Date()): OwnedDragon | null {
   return hatchNest(p, name, rand, now)?.dragon ?? null;

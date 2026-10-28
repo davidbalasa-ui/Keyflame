@@ -1,8 +1,8 @@
-import { GROWTH, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggSvg, isSeasonPalette, lookName, paletteFor, stageFor } from '../../game/dragons';
+import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggCracksSvg, eggSvg, isSeasonPalette, lookName, paletteFor, stageFor, type TribeId } from '../../game/dragons';
 import { EGG_PRICE, claimSets, foundLooks, lookKey } from '../../game/collection';
 import { codex, codexLook } from './codex';
 import type { OwnedDragon } from '../../save/store';
-import { EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, warmWithEmbers } from '../../game/progress';
+import { EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor } from './aerie';
@@ -33,12 +33,16 @@ export const nest = (root: HTMLElement): void => {
     ? h(
         'section',
         { class: 'nest-panel' },
-        svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg' + (prog >= 1 ? ' ready' : ' wobble')),
+        prog >= 1
+          ? h('button', { class: 'nest-egg-tap', type: 'button', 'aria-label': `Tap to open the ${TRIBES[egg.tribe].name} egg`, onclick: () => hatchSequence(root) }, svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg ready'))
+          : svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg wobble'),
         h('h2', {}, `${TRIBES[egg.tribe].name} egg`),
         h('div', { class: 'warmth' }, h('span', { style: `width:${pct(prog)}` })),
-        h('p', {}, prog >= 1 ? 'It is ready! Listen… crack, crack!' : `${pct(prog)} warm. ${TRIBES[egg.tribe].hatchKeys - egg.warmth} more correct keys to hatch.`),
         prog >= 1
-          ? button('Hatch it!', () => hatchSequence(root))
+          ? h('p', { class: 'tap-hint' }, 'It is ready! Tap to open')
+          : h('p', {}, `${pct(prog)} warm. ${TRIBES[egg.tribe].hatchKeys - egg.warmth} more correct keys to hatch.`),
+        prog >= 1
+          ? null
           : h(
               'div',
               { class: 'row center' },
@@ -67,7 +71,35 @@ export const nest = (root: HTMLElement): void => {
       h('h1', {}, 'Nest'),
       nestPanel,
       p.basket.length
-        ? h('section', {}, h('h2', {}, 'Eggs waiting'), h('div', { class: 'basket' }, ...p.basket.map((t, i) => h('div', { class: 'basket-egg' }, svg(eggSvg(t, 0, i + 11), 'mini-egg'), h('small', {}, TRIBES[t].name)))), h('p', { class: 'fine' }, 'The next egg moves into the nest when this one hatches.'))
+        ? h(
+            'section',
+            {},
+            h('h2', {}, 'Eggs waiting'),
+            h(
+              'div',
+              { class: 'basket' },
+              ...p.basket.map((t, i) =>
+                h(
+                  'button',
+                  {
+                    class: 'basket-egg',
+                    type: 'button',
+                    'aria-label': `Put the ${TRIBES[t].name} egg in the nest`,
+                    onclick: () => {
+                      if (!swapNestEgg(p, i)) return;
+                      sfx.click();
+                      persist();
+                      go(nest);
+                    },
+                  },
+                  svg(eggSvg(t, 0, i + 11), 'mini-egg'),
+                  h('strong', {}, TRIBES[t].name),
+                  h('small', {}, 'Put in nest'),
+                ),
+              ),
+            ),
+            h('p', { class: 'fine' }, 'Pick which egg to hatch next. The nest stays warm, so switching eggs keeps all the warmth.'),
+          )
         : null,
       h(
         'section',
@@ -145,44 +177,91 @@ export const nest = (root: HTMLElement): void => {
   );
 };
 
+/** A clip-path that keeps one side of the seam the shell splits along. */
+function shellClip(top: boolean): string {
+  const pts = EGG_SEAM.map(([x, y]) => `${x}% ${((y / 120) * 100).toFixed(1)}%`);
+  const [, y0] = EGG_SEAM[0];
+  const [, y1] = EGG_SEAM[EGG_SEAM.length - 1];
+  const left = `0% ${((y0 / 120) * 100).toFixed(1)}%`;
+  const right = `100% ${((y1 / 120) * 100).toFixed(1)}%`;
+  return top ? `polygon(0% 0%, 100% 0%, ${right}, ${[...pts].reverse().join(', ')}, ${left})` : `polygon(${left}, ${pts.join(', ')}, ${right}, 100% 100%, 0% 100%)`;
+}
+
+/**
+ * Opening an egg: a full-screen stage where every tap cracks the shell a little more.
+ * The last tap splits it, the dragon fills the screen for a moment, then it settles
+ * into a card with its details. The first tap was the one on the nest egg.
+ */
 function hatchSequence(root: HTMLElement): void {
   const p = profile();
   const egg = p.nest!;
-  let name = randomDragonName();
-  const stageEl = svg(eggSvg(egg.tribe, 1, egg.seed), 'hatch-egg shaking');
-  const box = h('div', { class: 'modal hatch' }, stageEl, h('h2', {}, 'Hatching…'));
-  const modal = h('div', { class: 'modal-backdrop' }, box);
-  root.append(modal);
+  const calm = document.body.classList.contains('reduced-motion');
   const colors = TRAIL_COLORS[egg.tribe];
-  let shake = 0;
-  const fx = attachField(box, (f, dt) => {
-    shake += dt;
-    if (shake < 1600 && Math.random() < dt / 120) {
-      const r = stageEl.getBoundingClientRect();
-      const b = box.getBoundingClientRect();
-      f.emit(r.left - b.left + r.width / 2, r.top - b.top + r.height * 0.5, { colors, kind: 'spark', spread: 160, size: 4, life: 0.6 });
-    }
-  });
-  sfx.crack();
-  setTimeout(() => sfx.crack(), 500);
-  setTimeout(() => sfx.crack(), 1000);
+  const glow = TRIBES[egg.tribe].palettes[0].accent;
+  let taps = 0;
 
-  setTimeout(() => {
+  const cracks = h('div', { class: 'art egg-crack-layer' });
+  const shell = (): HTMLElement => h('div', { class: 'hatch-shell' }, svg(eggSvg(egg.tribe, 1, egg.seed, false)), cracks);
+  const eggArt = shell();
+  const eggBtn = h('button', { class: 'hatch-tap', type: 'button', 'aria-label': 'Tap to open the egg' }, eggArt);
+  const hint = h('p', { class: 'tap-hint big', 'aria-live': 'polite' }, 'Tap to open');
+  const pips = h('div', { class: 'tap-pips', 'aria-hidden': 'true' }, ...Array.from({ length: HATCH_TAPS }, () => h('span')));
+  const center = h('div', { class: 'hatch-center' }, eggBtn, hint, pips);
+  const screen = h('div', { class: 'hatch-screen', style: `--glow:${glow}`, role: 'dialog', 'aria-modal': 'true', 'aria-label': `${TRIBES[egg.tribe].name} egg` }, h('div', { class: 'hatch-rays' }), center);
+  root.append(screen);
+  const fx = attachField(screen);
+  const middle = (el: Element): [number, number] => {
+    const r = el.getBoundingClientRect();
+    const b = screen.getBoundingClientRect();
+    return [r.left - b.left + r.width / 2, r.top - b.top + r.height / 2];
+  };
+
+  const crack = (): void => {
+    if (taps >= HATCH_TAPS) return;
+    taps++;
+    cracks.innerHTML = eggCracksSvg(egg.tribe, taps);
+    pips.children[taps - 1]?.classList.add('on');
+    screen.style.setProperty('--heat', (taps / HATCH_TAPS).toFixed(2));
+    eggArt.classList.remove('knock');
+    void eggArt.offsetWidth;
+    eggArt.classList.add('knock');
+    fx.emit(...middle(eggArt), { count: 6 + taps * 4, colors, kind: 'spark', spread: 140 + taps * 30, size: 3 + taps * 0.5, life: 0.6 });
+    sfx.tap(taps);
+    hint.textContent = taps === HATCH_TAPS - 1 ? 'One more tap' : taps < HATCH_TAPS ? 'Tap again' : '';
+    if (taps >= HATCH_TAPS) setTimeout(open, calm ? 0 : 180);
+  };
+  screen.addEventListener('click', crack);
+  crack();
+  eggBtn.focus();
+
+  function open(): void {
+    screen.removeEventListener('click', crack);
     const before = earnedIds(p);
     const looksBefore = foundLooks(p);
+    const name = randomDragonName();
     const result = hatchNest(p, name)!;
     const sets = claimSets(p);
     const fresh = claimNewAchievements(p, before);
     persist();
+    refreshEmbers();
+
+    // The shell splits along the seam and the halves fly apart.
+    const [x, y] = middle(eggArt);
+    const top = shell();
+    const bottom = shell();
+    top.style.clipPath = shellClip(true);
+    bottom.style.clipPath = shellClip(false);
+    top.classList.add('fly-top');
+    bottom.classList.add('fly-bottom');
+    const halves = h('div', { class: 'hatch-halves' }, top, bottom);
+    eggBtn.replaceWith(halves);
+    hint.remove();
+    pips.remove();
+    screen.classList.add('opened');
+    fx.emit(x, y, { count: 120, colors: [...colors, glow, '#ffffff'], kind: 'spark', spread: 760, size: 8, life: 1.5 });
+    fx.emit(x, y, { count: 60, colors: CONFETTI, kind: 'confetti', vy: -260, spread: 520, size: 6, life: 2.4 });
     sfx.hatch();
-    const burst = (count = 70): void => {
-      const r = stageEl.getBoundingClientRect();
-      const b = box.getBoundingClientRect();
-      const x = r.left - b.left + r.width / 2;
-      const y = r.top - b.top + r.height / 2;
-      fx.emit(x, y, { count, colors, kind: 'spark', spread: 520, size: 7, life: 1.2 });
-      fx.emit(x, y, { count: 50, colors: CONFETTI, kind: 'confetti', vy: -220, spread: 420, size: 5, life: 2.2 });
-    };
+
     // Rewards are short pills; the Codex and the trophy room hold the longer story.
     const extras = (): HTMLElement[] => {
       const pills = [
@@ -191,63 +270,85 @@ function hatchSequence(root: HTMLElement): void {
       ];
       return pills.length ? [h('div', { class: 'reward-pills' }, ...pills)] : [];
     };
-    if (!result.dragon) {
-      burst();
-      refreshEmbers();
-      box.replaceChildren(
-        h('h2', {}, `+${MAXED_EMBERS} embers!`),
-        h('p', {}, `Every ${TRIBES[egg.tribe].name} look you could get is already at full stars, so this egg turned into ${MAXED_EMBERS} embers.`),
-        ...extras(),
-        h('div', { class: 'row' }, button('Done', () => go(nest))),
-        fx.canvas,
-      );
-      return;
-    }
-    if (result.evolved) {
-      evolveSequence(box, fx, result.dragon, extras());
-      return;
-    }
-    const dragon = result.dragon;
-    const isNewLook = !looksBefore.has(lookKey(dragon.tribe, dragon.palette, dragon.marking));
-    burst();
-    const palette = paletteFor(dragon.tribe, dragon.palette);
-    const season = isSeasonPalette(dragon.palette);
-    const nameEl = h('h2', { class: 'hatch-name' }, `Meet ${name}!`);
-    const setName = (n: string): void => {
-      name = n;
-      dragon.name = n;
-      nameEl.textContent = `Meet ${n}!`;
-      persist();
-    };
-    let start = NAME_STARTS.find((s) => name.startsWith(s)) ?? NAME_STARTS[0];
-    let end = name.slice(start.length);
-    const first = wordPicker({ words: NAME_STARTS, value: start, label: 'Name start', onChange: (v) => ((start = v), setName(start + end)), preview: (v) => v + end });
-    const second = wordPicker({ words: NAME_ENDS, value: end, label: 'Name ending', onChange: (v) => ((end = v), setName(start + end)), preview: (v) => start + v });
-    const dice = diceButton(() => {
-      first.set(randomOf(NAME_STARTS.filter((w) => w !== start)));
-      second.set(randomOf(NAME_ENDS.filter((w) => w !== end)));
-    });
-    const tag = season ? 'Season color' : palette.rare ? 'Rare color' : isNewLook ? 'New look' : null;
-    box.replaceChildren(
-      svg(dragonSvg(dragon.tribe, dragon.palette, 'hatchling', 'flap bob pop-in', undefined, dragon.marking), 'hatch-dragon'),
-      nameEl,
-      h(
-        'div',
-        { class: 'hatch-tags' },
-        h('span', { class: 'hatch-tag' }, `${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}`),
-        tag ? h('span', { class: 'hatch-tag shiny' }, `✨ ${tag}`) : null,
-      ),
-      h('div', { class: 'name-pickers' }, first.el, second.el, dice),
-      ...extras(),
-      h(
-        'div',
-        { class: 'row' },
-        button('See it in Codex', () => go(season ? codex : codexLook(dragon.tribe, dragon.palette, dragon.marking ?? 0)), 'btn ghost'),
-        button('Done', () => go(nest)),
-      ),
-    );
-    box.append(fx.canvas);
-  }, 1600);
+    const d = result.dragon;
+    const stars = result.evolved && d ? (d.stars ?? 1) - 1 : 0;
+    const art = d
+      ? svg(dragonSvg(d.tribe, d.palette, result.evolved ? stageFor(d.xp) : 'hatchling', 'flap bob', result.evolved ? d.skin : undefined, d.marking, stars), 'hatch-dragon reveal-art')
+      : h('div', { class: 'reveal-art reveal-embers' }, '🔥');
+    const palette = d ? paletteFor(d.tribe, d.palette) : null;
+    const season = d ? isSeasonPalette(d.palette) : false;
+    const headline = !d
+      ? `+${MAXED_EMBERS} embers!`
+      : result.evolved
+        ? `${d.name} again!`
+        : `A ${TRIBES[d.tribe].name}!`;
+    const sub = !d ? 'A warm handful of embers' : `${lookName(d.tribe, d.palette, d.marking)}${season ? ' · a season color' : palette?.rare ? ' · a rare color' : ''}`;
+    const reveal = h('div', { class: 'hatch-reveal' }, art, h('h2', { class: 'reveal-title' }, headline), h('p', { class: 'reveal-sub' }, sub));
+    setTimeout(() => {
+      halves.remove();
+      center.append(reveal);
+    }, calm ? 0 : 220);
+
+    // After a moment in the spotlight, the dragon shrinks into its details card.
+    setTimeout(() => {
+      screen.classList.add('settled');
+      const panel = h('div', { class: 'modal hatch hatch-details' });
+      if (d && result.evolved) {
+        reveal.replaceWith(panel);
+        evolveSequence(panel, attachField(panel), d, extras());
+        return;
+      }
+      const first = art.getBoundingClientRect();
+      art.classList.remove('reveal-art');
+      const codexBtn = d && button('See it in Codex', () => go(isSeasonPalette(d.palette) ? codex : codexLook(d.tribe, d.palette, d.marking ?? 0)), 'btn ghost');
+      panel.append(art, ...(d ? dragonDetails(d, looksBefore) : embersDetails(egg.tribe)), ...extras(), h('div', { class: 'row' }, codexBtn, button('Done', () => go(nest))));
+      reveal.replaceWith(panel);
+      const last = art.getBoundingClientRect();
+      if (!calm && last.width) {
+        const dx = first.left + first.width / 2 - (last.left + last.width / 2);
+        const dy = first.top + first.height / 2 - (last.top + last.height / 2);
+        art.animate([{ transform: `translate(${dx}px, ${dy}px) scale(${first.width / last.width})` }, { transform: 'none' }], { duration: 650, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
+      }
+    }, calm ? 1200 : 2900);
+  }
+}
+
+function embersDetails(tribe: TribeId): HTMLElement[] {
+  return [h('h2', {}, `+${MAXED_EMBERS} embers!`), h('p', {}, `Every ${TRIBES[tribe].name} look you could get is already at full stars, so this egg turned into ${MAXED_EMBERS} embers.`)];
+}
+
+/** The new dragon's card: its name, a look tag, and the name pickers. */
+function dragonDetails(dragon: OwnedDragon, looksBefore: Map<string, number>): HTMLElement[] {
+  const isNewLook = !looksBefore.has(lookKey(dragon.tribe, dragon.palette, dragon.marking));
+  const palette = paletteFor(dragon.tribe, dragon.palette);
+  const season = isSeasonPalette(dragon.palette);
+  let name = dragon.name;
+  const nameEl = h('h2', { class: 'hatch-name' }, `Meet ${name}!`);
+  const setName = (n: string): void => {
+    name = n;
+    dragon.name = n;
+    nameEl.textContent = `Meet ${n}!`;
+    persist();
+  };
+  let start = NAME_STARTS.find((s) => name.startsWith(s)) ?? NAME_STARTS[0];
+  let end = name.slice(start.length);
+  const first = wordPicker({ words: NAME_STARTS, value: start, label: 'Name start', onChange: (v) => ((start = v), setName(start + end)), preview: (v) => v + end });
+  const second = wordPicker({ words: NAME_ENDS, value: end, label: 'Name ending', onChange: (v) => ((end = v), setName(start + end)), preview: (v) => start + v });
+  const dice = diceButton(() => {
+    first.set(randomOf(NAME_STARTS.filter((w) => w !== start)));
+    second.set(randomOf(NAME_ENDS.filter((w) => w !== end)));
+  });
+  const tag = season ? 'Season color' : palette.rare ? 'Rare color' : isNewLook ? 'New look' : null;
+  return [
+    nameEl,
+    h(
+      'div',
+      { class: 'hatch-tags' },
+      h('span', { class: 'hatch-tag' }, `${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}`),
+      tag ? h('span', { class: 'hatch-tag shiny' }, `✨ ${tag}`) : null,
+    ),
+    h('div', { class: 'name-pickers' }, first.el, second.el, dice),
+  ];
 }
 
 /**

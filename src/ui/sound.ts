@@ -33,6 +33,11 @@ export const sfx = {
   dash: () => tone(300, 350, 'sawtooth', 0.04, 900),
   win: () => [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => tone(f, 180, 'triangle', 0.05), i * 110)),
   crack: () => tone(900, 60, 'square', 0.03, 400),
+  /** One knock on a ready egg; each tap sounds a little higher than the last. */
+  tap: (n: number) => {
+    tone(700 + n * 110, 70, 'square', 0.03, 380 + n * 60);
+    tone(180 + n * 30, 90, 'triangle', 0.05);
+  },
   hatch: () => [392, 523, 659, 784, 988].forEach((f, i) => setTimeout(() => tone(f, 220, 'sine', 0.06), i * 120)),
   click: () => tone(520, 50, 'sine', 0.03),
   /** A short victory fanfare for first place. */
