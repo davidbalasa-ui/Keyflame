@@ -126,7 +126,7 @@ export const TRIBES: Record<TribeId, Tribe> = {
 };
 
 /** Supporter skin: works on any tribe. */
-export const STARFIRE: Palette = { name: 'Starfire', body: '#7048e8', belly: '#ffd43b', wing: '#2b3a9c', accent: '#ffe066' };
+export const STARGLINT: Palette = { name: 'Starglint', body: '#7048e8', belly: '#ffd43b', wing: '#2b3a9c', accent: '#ffe066' };
 
 /**
  * Season colors work on any tribe. A dragon's palette number at or above this
@@ -325,7 +325,7 @@ const sparkle = (x: number, y: number, r: number, fill: string, cls = ''): strin
  * on the wing, gold trim along the back, and a star on the tail. Colors only, so it
  * never changes how a dragon races.
  */
-function starfireArt(id: string): { defs: string; aura: string; body: string; wing: string; tail: string; head: string } {
+function starglintArt(id: string): { defs: string; aura: string; body: string; wing: string; tail: string; head: string } {
   const stars: Array<[number, number, number]> = [[92, 86, 1.1], [104, 78, 0.8], [112, 94, 1.3], [124, 76, 0.9], [134, 88, 1.1], [146, 80, 0.7], [152, 92, 1.2], [160, 72, 0.9], [168, 64, 1], [172, 80, 0.7], [100, 98, 0.7], [140, 98, 0.8], [118, 84, 0.6], [130, 100, 0.6]];
   return {
     defs: `<clipPath id="${id}s"><path d="${BODY}"/></clipPath>
@@ -372,14 +372,14 @@ let artId = 0;
  * Wings, tail and head sit in their own groups, pivoting at the shoulder,
  * tail base and neck, so CSS can animate them (see .flap in styles.css).
  */
-export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starfire', marking = 0, stars = 0): string {
-  const p = skin === 'starfire' ? STARFIRE : paletteFor(tribe, paletteIndex);
+export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starglint', marking = 0, stars = 0): string {
+  const p = skin === 'starglint' ? STARGLINT : paletteFor(tribe, paletteIndex);
   const id = `kf${++artId}`;
   const line = darken(p.body, 0.55);
   const wingDark = darken(p.wing, 0.28);
   const bellyLine = darken(p.belly, 0.22);
   const parts = tribeParts(tribe, p, stage, line);
-  const sf = skin === 'starfire' ? starfireArt(id) : null;
+  const sf = skin === 'starglint' ? starglintArt(id) : null;
   const evo = stars > 0 ? evolvedArt(id, p, stars) : null;
   const scale = stage === 'hatchling' ? 0.8 : stage === 'young' ? 0.9 : 1;
   const headScale = stage === 'hatchling' ? 1.36 : stage === 'young' ? 1.2 : 1.1;

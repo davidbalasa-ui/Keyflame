@@ -113,7 +113,7 @@ export const codex = (root: HTMLElement): void => {
       h('div', { class: 'chips codex-filters' }, chip('all', 'All'), chip('found', 'Found'), chip('missing', 'Still to find'), chip('rare', 'Rare')),
       ...(sections.length ? sections : [h('p', { class: 'fine' }, filter === 'found' ? 'Hatch your first egg to start your Codex.' : 'Nothing here yet.')]),
       seasonVault(),
-      starfireSpot(p.supporter),
+      starglintSpot(p.supporter),
     ),
   );
 };
@@ -211,16 +211,16 @@ function seasonVault(): HTMLElement | null {
 }
 
 /** Where the supporter skin will live once the pack is on sale. */
-function starfireSpot(owned: boolean): HTMLElement {
+function starglintSpot(owned: boolean): HTMLElement {
   return h(
     'section',
-    { class: 'codex-tribe starfire-spot' },
-    h('div', { class: 'codex-head' }, h('h2', {}, 'Starfire skin'), h('span', { class: 'codex-found' }, owned ? 'Yours' : 'Supporter pack')),
+    { class: 'codex-tribe starglint-spot' },
+    h('div', { class: 'codex-head' }, h('h2', {}, 'Starglint skin'), h('span', { class: 'codex-found' }, owned ? 'Yours' : 'Supporter pack')),
     h(
       'div',
-      { class: 'starfire-row' },
-      svg(dragonSvg('emberback', 0, 'adult', owned ? 'flap bob' : '', 'starfire'), 'codex-art' + (owned ? '' : ' dim')),
-      h('p', {}, owned ? 'Thank you for supporting Keyflame! Starfire works on any of your dragons.' : 'A special skin that works on any dragon. It will come with the optional supporter pack later. It only changes how a dragon looks, never how fast it flies.'),
+      { class: 'starglint-row' },
+      svg(dragonSvg('emberback', 0, 'adult', owned ? 'flap bob' : '', 'starglint'), 'codex-art' + (owned ? '' : ' dim')),
+      h('p', {}, owned ? 'Thank you for supporting Keyflame! Starglint works on any of your dragons.' : 'A special skin that works on any dragon. It will come with the optional supporter pack later. It only changes how a dragon looks, never how fast it flies.'),
     ),
   );
 }

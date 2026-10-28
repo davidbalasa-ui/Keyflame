@@ -7,6 +7,7 @@ import type { Profile } from '../save/store';
 
 /** Crockford base 32: no I, L, O or U, so codes are easy to read aloud and copy. */
 const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+// Kept from the skin's first name (Starfire): changing it would break codes already handed out.
 const SALT = 'keyflame-starfire-1';
 const BODY_LEN = 8;
 const CHECK_LEN = 4;

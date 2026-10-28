@@ -71,7 +71,7 @@ export const supporter = (root: HTMLElement): void => {
       p.supporterCode
         ? h('div', { class: 'sup-code-show' }, h('p', {}, 'Your supporter code'), h('strong', { class: 'sup-code-value' }, p.supporterCode), h('p', { class: 'fine' }, 'Write it down. It unlocks the pack for another rider or on another device. Each code is for your family only.'))
         : null,
-      h('div', { class: 'row center' }, button('Dress a dragon in Starfire', () => go(nest)), button('Pick the Supporter title', () => go(achievementsPage), 'btn ghost')),
+      h('div', { class: 'row center' }, button('Dress a dragon in Starglint', () => go(nest)), button('Pick the Supporter title', () => go(achievementsPage), 'btn ghost')),
     );
 
   root.append(
@@ -80,12 +80,12 @@ export const supporter = (root: HTMLElement): void => {
       'main',
       { class: 'supporter' },
       h('h1', {}, p.supporter ? 'Your supporter pack' : 'Support Keyflame'),
-      svg(dragonSvg('emberback', 0, 'adult', 'flap bob', 'starfire'), 'supporter-dragon'),
+      svg(dragonSvg('emberback', 0, 'adult', 'flap bob', 'starglint'), 'supporter-dragon'),
       p.supporter ? null : h('p', {}, `Keyflame is made to be free and fun. There are no ads. A one-time ${CONFIG.supporterPrice} supporter pack helps pay for the website, and says thank you with:`),
       h(
         'ul',
         { class: 'pack-list' },
-        h('li', {}, h('strong', {}, 'The Starfire skin: '), 'a night sky full of twinkling stars, a constellation on the wings, gold trim, and a spinning star on the tail. Any of your dragons can wear it.'),
+        h('li', {}, h('strong', {}, 'The Starglint skin: '), 'a night sky full of twinkling stars, a constellation on the wings, gold trim, and a spinning star on the tail. Any of your dragons can wear it.'),
         h('li', {}, h('strong', {}, 'The Keyflame Supporter title '), 'to show under your name.'),
         h('li', {}, h('strong', {}, 'A supporter code '), 'that unlocks the pack on other devices. No account needed.'),
       ),
