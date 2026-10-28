@@ -1,12 +1,13 @@
 import { GROWTH, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggSvg, isSeasonPalette, lookName, paletteFor, stageFor } from '../../game/dragons';
 import { EGG_PRICE, claimSets, foundLooks, lookKey } from '../../game/collection';
-import { codex } from './codex';
+import { codex, codexLook } from './codex';
 import type { OwnedDragon } from '../../save/store';
 import { EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, warmWithEmbers } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor } from './aerie';
 import { button, h, pct, svg } from '../dom';
+import { diceButton, randomOf, wordPicker } from '../picker';
 import { sfx } from '../sound';
 import { CONFETTI, TRAIL_COLORS, attachField } from '../particles';
 import { claimNewAchievements, earnedIds } from '../../game/achievements';
@@ -182,10 +183,14 @@ function hatchSequence(root: HTMLElement): void {
       fx.emit(x, y, { count, colors, kind: 'spark', spread: 520, size: 7, life: 1.2 });
       fx.emit(x, y, { count: 50, colors: CONFETTI, kind: 'confetti', vy: -220, spread: 420, size: 5, life: 2.2 });
     };
-    const extras = (): HTMLElement[] => [
-      ...sets.map((x) => h('p', { class: 'reward' }, `Codex set done: ${TRIBES[x.tribe].name} ${x.label.toLowerCase()}! +${x.embers} embers`)),
-      ...fresh.map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),
-    ];
+    // Rewards are short pills; the Codex and the trophy room hold the longer story.
+    const extras = (): HTMLElement[] => {
+      const pills = [
+        ...sets.map((x) => h('span', { class: 'reward-pill', title: `${TRIBES[x.tribe].name} ${x.label.toLowerCase()}` }, `Set done +${x.embers} 🔥`)),
+        ...fresh.map((a) => h('span', { class: 'reward-pill', title: a.how }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `New title: ${a.title}`)),
+      ];
+      return pills.length ? [h('div', { class: 'reward-pills' }, ...pills)] : [];
+    };
     if (!result.dragon) {
       burst();
       refreshEmbers();
@@ -207,7 +212,7 @@ function hatchSequence(root: HTMLElement): void {
     burst();
     const palette = paletteFor(dragon.tribe, dragon.palette);
     const season = isSeasonPalette(dragon.palette);
-    const nameEl = h('h2', {}, `Meet ${name}!`);
+    const nameEl = h('h2', { class: 'hatch-name' }, `Meet ${name}!`);
     const setName = (n: string): void => {
       name = n;
       dragon.name = n;
@@ -216,20 +221,30 @@ function hatchSequence(root: HTMLElement): void {
     };
     let start = NAME_STARTS.find((s) => name.startsWith(s)) ?? NAME_STARTS[0];
     let end = name.slice(start.length);
-    const sel = (opts: string[], value: string, on: (v: string) => void): HTMLSelectElement => {
-      const s = h('select', { onchange: () => on(s.value) }, ...opts.map((o) => h('option', { value: o, selected: o === value }, o)));
-      return s;
-    };
+    const first = wordPicker({ words: NAME_STARTS, value: start, label: 'Name start', onChange: (v) => ((start = v), setName(start + end)), preview: (v) => v + end });
+    const second = wordPicker({ words: NAME_ENDS, value: end, label: 'Name ending', onChange: (v) => ((end = v), setName(start + end)), preview: (v) => start + v });
+    const dice = diceButton(() => {
+      first.set(randomOf(NAME_STARTS.filter((w) => w !== start)));
+      second.set(randomOf(NAME_ENDS.filter((w) => w !== end)));
+    });
+    const tag = season ? 'Season color' : palette.rare ? 'Rare color' : isNewLook ? 'New look' : null;
     box.replaceChildren(
       svg(dragonSvg(dragon.tribe, dragon.palette, 'hatchling', 'flap bob pop-in', undefined, dragon.marking), 'hatch-dragon'),
       nameEl,
-      h('p', {}, `A ${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}${season ? ', a season color!' : palette.rare ? ', a rare color!' : '!'}`),
-      h('p', { class: 'fine' }, season ? 'It joins the season looks in your Codex.' : isNewLook ? 'A new look for your Codex!' : 'You already have this look in your Codex.'),
-      h('p', { class: 'fine' }, TRIBES[dragon.tribe].lore),
+      h(
+        'div',
+        { class: 'hatch-tags' },
+        h('span', { class: 'hatch-tag' }, `${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}`),
+        tag ? h('span', { class: 'hatch-tag shiny' }, `✨ ${tag}`) : null,
+      ),
+      h('div', { class: 'name-pickers' }, first.el, second.el, dice),
       ...extras(),
-      h('p', {}, 'Pick a name:'),
-      h('div', { class: 'name-pickers' }, sel(NAME_STARTS, start, (v) => ((start = v), setName(start + end))), sel(NAME_ENDS, end, (v) => ((end = v), setName(start + end)))),
-      h('div', { class: 'row' }, button('Done', () => go(nest))),
+      h(
+        'div',
+        { class: 'row' },
+        button('See it in Codex', () => go(season ? codex : codexLook(dragon.tribe, dragon.palette, dragon.marking ?? 0)), 'btn ghost'),
+        button('Done', () => go(nest)),
+      ),
     );
     box.append(fx.canvas);
   }, 1600);
