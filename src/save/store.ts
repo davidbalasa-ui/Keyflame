@@ -23,6 +23,8 @@ export interface OwnedDragon {
   marking?: number;
   /** Evolution stars, one per extra copy of this look hatched (0 to 4). */
   stars?: number;
+  /** Starglint only: race without key hints, the rider's choice. */
+  noHints?: boolean;
 }
 
 /** The supporter pack's own dragon. It sits outside every tribe, set and perk. */

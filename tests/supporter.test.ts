@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { formatCode, grantSupporter, isSupporterCode, makeSupporterCode, normalizeCode, redeemSupporterCode } from '../src/game/supporter';
 import { achievements, currentTitle } from '../src/game/achievements';
 import { STARGLINT_ID, createProfile, isStarglint, normalizeProfile, type Profile } from '../src/save/store';
-import { lookHolder, perkTribe } from '../src/game/progress';
+import { hidesHints, lookHolder, perkTribe } from '../src/game/progress';
 import { perkTuning } from '../src/game/raceRules';
 import { canBuyEgg, foundLooks } from '../src/game/collection';
 
@@ -113,5 +113,19 @@ describe('Starglint dragon', () => {
     expect(lookHolder(p, d.tribe, d.palette, d.marking ?? 0)).toBeNull();
     expect(canBuyEgg(p, d.tribe)).toBe('unknown');
     expect(achievements(p).filter((a) => ['hatch', 'tribes', 'grown'].includes(a.track)).every((a) => a.value === 0)).toBe(true);
+  });
+});
+
+describe('Starglint special', () => {
+  it('hides key hints only on Starglint, only when switched on, and never speeds it up', () => {
+    const p = createProfile('Ria');
+    grantSupporter(p);
+    const d = p.dragons[0];
+    expect(hidesHints(d)).toBe(false);
+    d.noHints = true;
+    expect(hidesHints(d)).toBe(true);
+    expect(perkTribe(d)).toBeNull();
+    expect(hidesHints({ id: 'd1', tribe: 'emberback', palette: 0, name: 'Ash', xp: 0, hatchedAt: 0, noHints: true })).toBe(false);
+    expect(normalizeProfile(JSON.parse(JSON.stringify(p)))!.dragons.find(isStarglint)!.noHints).toBe(true);
   });
 });

@@ -221,7 +221,7 @@ function starglintSpot(owned: boolean): HTMLElement {
       'div',
       { class: 'starglint-row' },
       svg(dragonSvg('emberback', 0, 'adult', owned ? 'flap bob' : '', 'starglint'), 'codex-art' + (owned ? '' : ' dim')),
-      h('p', {}, owned ? 'Thank you for supporting Keyflame! Starglint lives in your nest.' : 'A special storm dragon that comes with the optional supporter pack. It has no perk, so it never flies faster.'),
+      h('p', {}, owned ? 'Thank you for supporting Keyflame! Starglint lives in your nest.' : 'A special storm dragon that comes with the optional supporter pack. Its special is a challenge, not a boost: race with no key hints.'),
     ),
   );
 }

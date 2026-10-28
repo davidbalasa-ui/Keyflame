@@ -95,7 +95,7 @@ export const supporter = (root: HTMLElement): void => {
         h('li', {}, h('strong', {}, 'The Keyflame Supporter title '), 'to show under your name.'),
         h('li', {}, h('strong', {}, 'A supporter code '), 'that unlocks the pack on other devices. No account needed.'),
       ),
-      h('p', { class: 'fine' }, 'Starglint has no perk, so it never flies faster. Everyone races on the same skill.'),
+      h('p', { class: 'fine' }, 'Starglint never flies faster. Its special is a challenge: switch off the key hints and type from memory. Everyone races on the same skill.'),
       p.supporter
         ? owned()
         : ready
