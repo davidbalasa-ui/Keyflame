@@ -885,6 +885,13 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .ach-body summary { cursor: pointer; min-height: 28px; }
 .ach-body ul { list-style: none; padding: 0; margin: 4px 0 0; }
 .ach-body li.on { color: var(--text); }
+.hatch-name { margin: 4px 0 8px; }
+.hatch-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 14px; }
+.hatch-tag { padding: 4px 12px; border-radius: 999px; background: var(--bg-2); border: 2px solid var(--line); font-size: 0.95em; }
+.hatch-tag.shiny { border-color: var(--gold); color: var(--gold); font-weight: 600; box-shadow: 0 0 12px rgba(255, 212, 59, 0.3); }
+.reward-pills { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 14px 0 4px; }
+.reward-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 6px; border-radius: 999px; background: rgba(255, 212, 59, 0.14); border: 2px solid rgba(255, 212, 59, 0.55); color: var(--gold); font-weight: 600; font-size: 0.95em; }
+.reward-pill .ach-mini { width: 24px; }
 .ach-line { display: flex; align-items: center; gap: 8px; justify-content: center; }
 .ach-mini { width: 30px; flex: none; }
 .ach-mini svg { width: 100%; height: auto; display: block; }
