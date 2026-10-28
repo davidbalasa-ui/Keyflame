@@ -553,8 +553,17 @@ body.kb-pinned .type-text { --type-size: 22px; padding: 10px 14px; max-height: c
 .dragon { overflow: visible; }
 .dragon .sf-twinkle { animation: sfTwinkle 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
 .dragon .sf-twinkle:nth-child(2n) { animation-delay: -1.2s; }
-.dragon .sf-star { animation: sfSpin 6s linear infinite; transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 3px #ffd43b); }
-.dragon .sf-aura { animation: twinkle 3s ease-in-out infinite alternate; }
+/* Starglint: only whole layers move (glow, crackle, one shimmer sweep), never single sparkles, so iPads stay smooth. */
+.dragon .sf-glow { animation: twinkle 2.4s ease-in-out infinite alternate; }
+.dragon .sf-crackle { animation: sfCrackle 1.1s steps(1) infinite; }
+.dragon .sf-shimmer { animation: sfSweep 3.2s ease-in-out infinite; }
+.dragon .sf-spin { animation: sfSpin 4s linear infinite; transform-origin: -12px 0; }
+.dragon .sf-rev { animation-direction: reverse; animation-duration: 3s; }
+.dragon .sf-orbit { animation: sfSpin 14s linear infinite; transform-origin: 128px 74px; }
+/* In a race only the wings, tail and head move (the race also draws a lighter version). */
+.racer .dragon .sf-glow, .racer .dragon .sf-crackle, .racer .dragon .sf-shimmer, .racer .dragon .sf-spin, .racer .dragon .sf-orbit { animation: none; }
+@keyframes sfCrackle { 0% { opacity: 1; } 12% { opacity: 0.25; } 18% { opacity: 1; } 55% { opacity: 0.6; } 60% { opacity: 1; } }
+@keyframes sfSweep { 0% { transform: skewX(-20deg) translateX(-60px); } 60%, 100% { transform: skewX(-20deg) translateX(220px); } }
 @keyframes sfTwinkle { 0%, 100% { opacity: 0.35; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } }
 @keyframes sfSpin { to { transform: rotate(360deg); } }
 .dragon .wing, .dragon .tail, .dragon .head { transform-box: view-box; transform-origin: 0 0; }
