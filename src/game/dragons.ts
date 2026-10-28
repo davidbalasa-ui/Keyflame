@@ -467,7 +467,7 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
 }
 
 /** An egg in the tribe's colors, cracking as warmth fills. */
-export function eggSvg(tribe: TribeId, warmth: number, seed = 1): string {
+export function eggSvg(tribe: TribeId, warmth: number, seed = 1, warmCracks = true): string {
   const p = TRIBES[tribe].palettes[0];
   const rand = seededRandom(seed);
   const spots = Array.from({ length: 7 }, () => {
@@ -475,7 +475,7 @@ export function eggSvg(tribe: TribeId, warmth: number, seed = 1): string {
     const y = 30 + rand() * 60;
     return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${(3 + rand() * 5).toFixed(1)}" ry="${(2 + rand() * 4).toFixed(1)}" fill="${p.accent}" opacity="0.75"/>`;
   }).join('');
-  const cracks = [
+  const cracks = !warmCracks ? '' : [
     warmth >= 0.25 ? '<path d="M50 22 l-4 10 l6 4 l-3 8" />' : '',
     warmth >= 0.5 ? '<path d="M30 60 l8 2 l4 -6 l7 5 l5 -4" />' : '',
     warmth >= 0.75 ? '<path d="M62 74 l6 -6 l4 6 l6 -3 M40 88 l6 -4 l5 4" />' : '',
@@ -496,4 +496,29 @@ export function eggSvg(tribe: TribeId, warmth: number, seed = 1): string {
   <circle cx="40" cy="22" r="2.4" fill="#fff" opacity="0.6"/>
   <g fill="none" stroke="${line}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${cracks}</g>
 </svg>`;
+}
+
+/** Taps it takes to open a ready egg. */
+export const HATCH_TAPS = 6;
+
+// Each tap adds one crack. The cracks join up into one zigzag around the middle,
+// which is where the shell splits when the egg opens.
+const TAP_CRACKS = [
+  'M50 6 l-3 9 l5 5 l-4 8',
+  'M48 28 l6 5 l-2 8 M52 20 l7 3',
+  'M50 41 l-8 6 l-6 -3 l-6 7 M50 41 l9 5',
+  'M30 51 l-9 4 l-8 -2 M59 46 l8 -4 l7 5 l9 -2',
+  'M21 55 l-4 -6 M74 47 l2 -7 M44 44 l-2 -7',
+  'M13 53 l-3 2 M83 46 l4 3',
+];
+
+/** The seam the shell splits along: left edge to right edge, through the cracks. */
+export const EGG_SEAM = [[8, 54], [13, 53], [21, 55], [30, 51], [36, 54], [42, 47], [50, 41], [59, 46], [67, 42], [74, 47], [83, 46], [92, 49]];
+
+/** Cracks drawn over an egg after `taps` taps, with light shining through the deeper ones. */
+export function eggCracksSvg(tribe: TribeId, taps: number): string {
+  const line = darken(TRIBES[tribe].palettes[0].body, 0.55);
+  const shown = TAP_CRACKS.slice(0, Math.max(0, Math.min(taps, TAP_CRACKS.length)));
+  const glow = taps >= 3 ? `<g fill="none" stroke="#fff6c8" stroke-width="${2 + taps}" stroke-linecap="round" stroke-linejoin="round" opacity="${(0.15 + taps * 0.1).toFixed(2)}">${shown.map((d) => `<path d="${d}"/>`).join('')}</g>` : '';
+  return `<svg class="egg-cracks" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${glow}<g fill="none" stroke="${line}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">${shown.map((d) => `<path d="${d}"/>`).join('')}</g></svg>`;
 }

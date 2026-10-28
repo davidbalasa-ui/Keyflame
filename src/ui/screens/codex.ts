@@ -158,7 +158,7 @@ function eggBought(tribe: TribeId): HTMLElement {
       { class: 'modal' },
       svg(eggSvg(tribe, 0, 3), 'modal-egg wobble'),
       h('h2', {}, `A new ${TRIBES[tribe].name} egg!`),
-      h('p', {}, inNest ? 'It is in your nest. Every correct key you type warms it up.' : 'It is waiting in your basket. It moves into the nest when the egg there hatches.'),
+      h('p', {}, inNest ? 'It is in your nest. Every correct key you type warms it up.' : 'It is waiting in your basket. Tap it in the Nest any time to warm it next.'),
       h('div', { class: 'row' }, button('Keep browsing', () => go(codex), 'btn ghost'), button('Go to nest', () => go(nest))),
     ),
   );
