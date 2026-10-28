@@ -58,7 +58,7 @@ export const progressPage = (root: HTMLElement): void => {
         'section',
         {},
         h('h2', {}, 'Key accuracy'),
-        h('p', { class: 'fine' }, 'Green keys are solid. Orange and red keys need a little more practice. Grey keys need more typing before we can tell.'),
+        h('p', { class: 'fine' }, 'Green keys are solid. Orange and red keys need a little more practice. Gray keys need more typing before we can tell.'),
         h(
           'div',
           { class: 'heat-keys' },

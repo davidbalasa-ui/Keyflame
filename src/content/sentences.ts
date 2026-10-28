@@ -113,7 +113,7 @@ export const SENTENCES: string[] = [
   'my pet has a very soft tail',
   'we move up the hill',
   'every day we play',
-  'the sky is very grey',
+  'the sky is very gray',
   'we have seven eggs',
   'my dream is to soar over the sea',
   // c and comma

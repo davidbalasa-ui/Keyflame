@@ -11,6 +11,9 @@ import { watchInstall } from './ui/install';
 import { title } from './ui/screens/title';
 
 watchInstall();
+// Ask the browser to keep saves through storage clean-ups. Safari can otherwise
+// clear a site's storage after days without a visit, which would wipe a class's progress.
+void navigator.storage?.persist?.().catch(() => false);
 void startApp(document.getElementById('app')!, title);
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

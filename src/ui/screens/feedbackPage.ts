@@ -106,7 +106,7 @@ export function feedbackPage(from: string) {
               box,
               count,
               h('p', { class: 'feedback-warn' }, 'Please don’t write your name, school, address, email, or phone number. We never need them. Emails, phone numbers and links are removed before sending.'),
-              h('p', { class: 'fine' }, 'We also send the game version and what kind of device this is (like “Android phone, Chrome”), so we can find the bug. Nothing else.'),
+              h('p', { class: 'fine' }, 'We also send the game version, the screen you came from, and what kind of device this is (like “Android phone, Chrome, tap keyboard”), so we can find the bug. Nothing else.'),
               msg,
               h('div', { class: 'row' }, button('Cancel', () => go(hub), 'btn ghost'), button('Ask a grown-up to send', submit)),
             )
