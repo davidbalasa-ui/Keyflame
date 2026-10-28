@@ -9,13 +9,17 @@
     "preview": "vite preview",
     "test": "vitest run",
     "check:overflow": "node scripts/check-overflow.mjs",
+    "check:classroom": "node scripts/check-classroom.mjs",
     "codes": "vite-node scripts/supporter-codes.ts"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.12",
     "@fontsource/atkinson-hyperlegible": "^5.3.0",
     "@fontsource/fredoka": "^5.3.0",
+    "@supabase/realtime-js": "^2.118.0",
     "typescript": "~5.8.3",
     "vite": "^6.3.5",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "ws": "^8.22.0"
   }
 }

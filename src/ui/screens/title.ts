@@ -7,6 +7,7 @@ import { canInstall, installApp, onInstallChange } from '../install';
 import { diceButton, randomOf, wordPicker } from '../picker';
 import { sfx } from '../sound';
 import { hub } from './hub';
+import { openTeacher } from './classroom';
 
 function avatar(p: Profile): HTMLElement {
   const d = activeDragon(p);
@@ -46,6 +47,7 @@ export const title = (root: HTMLElement): void => {
       h('h2', {}, save.profiles.length ? 'Who is riding today?' : 'Start your first ride'),
       cards,
       h('p', { class: 'fine' }, button('Restore from a backup code', () => restore(root), 'link')),
+      h('p', { class: 'fine' }, button('🏫 Teachers: make a class', () => openTeacher(root), 'link')),
       installLink(),
     ),
   );

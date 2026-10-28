@@ -1010,3 +1010,73 @@ body.reduced-motion .evo-flash.boom { animation: none !important; opacity: 0; }
 @keyframes panelIn { from { background-color: transparent; border-color: transparent; } }
 @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } }
 body.reduced-motion .hatch-screen.opened::after { display: none; }
+
+/* Classroom */
+.center { text-align: center; }
+.class-card {
+  display: block; width: 100%; margin: 0 0 14px; border: none; font: inherit; color: #fff; cursor: pointer;
+  border-radius: 20px; padding: 14px 16px; box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3);
+  background: linear-gradient(135deg, #7048e8, #d6336c);
+}
+.class-card:active { transform: translateY(3px); }
+.class-card-inner { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.class-card-icon { font-size: 2rem; }
+.class-card strong { font-size: 1.4rem; }
+.class-card small { opacity: 0.9; }
+.class-join { text-align: center; max-width: 520px; }
+.class-code-input {
+  font: inherit; font-size: max(16px, 2.2rem); font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; text-align: center;
+  width: min(100%, 320px); padding: 10px 6px 10px 18px; margin: 6px 0 4px;
+  background: var(--bg-2); color: var(--gold); border: 3px solid var(--line); border-radius: 16px;
+}
+.class-code-input::placeholder { color: var(--line); }
+.class-lobby, .teacher { max-width: 760px; }
+.lobby-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.lobby-head h1 { margin: 0; }
+.class-code-chip { background: var(--panel); border: 2px solid var(--line); border-radius: 999px; padding: 4px 14px; font-weight: 700; letter-spacing: 0.15em; color: var(--gold); white-space: nowrap; }
+.lobby-race { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 16px 0 8px; }
+.race-classmates { font-size: 1.5rem; padding: 16px 44px; min-width: 220px; }
+.lobby-hint { min-height: 1.4em; margin: 0; }
+.link-banner { background: #5c1f33; border: 1px solid var(--bad); border-radius: 12px; padding: 8px 12px; text-align: center; }
+.roster { list-style: none; padding: 0; margin: 0 0 8px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+.roster-chip { background: var(--panel); border: 2px solid var(--line); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+.roster-chip.me { border-color: var(--gold); }
+.roster-chip.status-waiting { border-color: var(--good); box-shadow: 0 0 12px rgba(94, 230, 168, 0.4); }
+.roster-chip.status-racing { opacity: 0.7; }
+.roster-art { width: 84px; }
+.roster-name { font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.roster-status { color: var(--muted); }
+.status-waiting .roster-status { color: var(--good); font-weight: 600; }
+.board-panel { background: var(--panel); border-radius: var(--radius); padding: 14px 16px; }
+.board-head { display: flex; align-items: center; gap: 10px; }
+.board-head h2 { margin: 0; flex: 1; }
+.class-board { list-style: none; padding: 0; margin: 10px 0 0; }
+.class-board li { display: flex; align-items: center; gap: 10px; padding: 8px 4px; border-bottom: 1px solid var(--line); }
+.class-board li:last-child { border-bottom: none; }
+.class-board li.me { background: rgba(255, 212, 59, 0.12); border-radius: 10px; }
+.cb-place { width: 2em; text-align: center; font-weight: 700; }
+.cb-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cb-wpm strong { font-size: 1.2em; color: var(--gold); }
+.cb-meta { color: var(--muted); font-size: 0.85em; white-space: nowrap; }
+.board-empty { margin: 10px 0 0; }
+.racer.classmate .racer-name { background: #7048e8; }
+.live-results-card { background: var(--panel-2); border-radius: 14px; padding: 10px 14px; margin: 0 0 12px; text-align: left; }
+.live-results { list-style: none; padding: 0; margin: 6px 0 0; }
+.live-results li { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; }
+.live-results li.me { color: var(--gold); font-weight: 600; }
+.live-results li.flying { color: var(--muted); }
+.teacher-steps { text-align: left; display: inline-block; margin: 0 0 8px; }
+.teacher { text-align: center; }
+.teacher .roster, .teacher .board-panel, .teacher .watch { text-align: left; }
+.teacher-code { background: var(--panel); border: 3px solid var(--gold); border-radius: 22px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 2px; margin-top: 8px; }
+.teacher-code strong { font-size: clamp(2.6rem, 11vw, 5rem); letter-spacing: 0.15em; line-height: 1.1; color: var(--gold); }
+.teacher-code small { color: var(--muted); }
+.watch { background: var(--panel); border-radius: var(--radius); padding: 12px 16px; }
+.watch h2 { margin: 0 0 6px; }
+.watch-bars { list-style: none; padding: 0; margin: 0; }
+.watch-bars li { display: grid; grid-template-columns: 44px minmax(70px, 9em) 1fr auto; align-items: center; gap: 8px; padding: 4px 0; }
+.wb-art { width: 44px; }
+.wb-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wb-track { height: 14px; background: var(--bg-2); border-radius: 7px; overflow: hidden; }
+.wb-fill { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--ember), var(--gold)); border-radius: 7px; }
+.wb-tag { white-space: nowrap; min-width: 3em; }

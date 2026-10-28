@@ -25,6 +25,12 @@ Turn it on once in the repo: **Settings → Pages → Source: GitHub Actions**.
 
 The game installs as an app (Chrome or Edge on a PC: the install icon in the address bar, or the "Install Keyflame" link on the title screen and in Settings; phones: "Add to Home Screen"). The first visit saves every game file and font on the device, so it plays offline from then on. The build writes the file list into `sw.js` (see `vite.config.ts`).
 
+## Classroom mode
+
+A teacher taps **Teachers: make a class** on the title screen (behind a grown-up check) and gets a six-letter code. Riders open **Race → Class race** and type it. Riders who tap **Race!** in the class lobby race each other live (up to 6 at a time), or the teacher taps **Race everyone**. Results go on a class board. A shared device remembers the class code, so the next rider goes straight in.
+
+It runs on the KeyFlame Supabase project: `supabase/migrations/20261028100000_classroom.sql` (class codes and the board, reachable only through functions) and Realtime presence and broadcast for live races. `npm run check:classroom` races an iPad-sized and a phone-sized browser against a local stand-in (`scripts/fake-supabase.mjs`); the `Classroom live check` workflow checks the real project from GitHub.
+
 ## Supporter pack (off until set up)
 
 Keyflame has no ads. The optional $3 supporter pack stays switched off until you add this under **Settings → Secrets and variables → Actions → Variables**, then re-run the deploy:

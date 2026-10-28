@@ -2,7 +2,7 @@ import { buildRaceText } from '../../content/lessons';
 import { COURSES, courseById, type Course } from '../../game/courses';
 import { TRIBES, dragonSvg, eggSvg, stageFor, type Stage, type TribeId } from '../../game/dragons';
 import { activeDragon, capitalsKnown, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
-import { FACTS, READING_LEVEL_LABEL, TOPIC_LABEL, pickFact, type ReadingLevel } from '../../content/facts';
+import { FACTS, READING_LEVEL_LABEL, TOPIC_LABEL, factById, pickFact, type ReadingLevel } from '../../content/facts';
 import { weakKeys } from '../../engine/typing';
 import { applyRaceKey, finishTime, newRaceState, perkTuning } from '../../game/raceRules';
 import { UNITS } from '../../content/lessons';
@@ -20,6 +20,30 @@ import { nest } from './nest';
 import { seasonAt } from '../../content/seasons';
 import { CHALLENGE_EMBERS } from '../../game/seasons';
 import { STARGLINT_LOOK, STARGLINT_LOOKS } from '../../game/starglintArt';
+import type { Look } from '../../game/classroom';
+import type { SessionSummary } from '../../engine/typing';
+import type { InputMode } from '../../save/store';
+import { classRaceEntry } from './classroom';
+
+/** A race against classmates on other devices, run by the classroom screens. */
+export interface LiveRace {
+  text: string;
+  factId: string | null;
+  rivals: Array<{ id: string; name: string; look: Look | null }>;
+  /** Where to draw a classmate right now, 0 to 1. */
+  progress(id: string, now: number): number;
+  /** Riders in the race, this one included; more than get a lane. */
+  racers: number;
+  /** This rider's place for a finish time, counting classmates without a lane too. */
+  place(ms: number): number;
+  /** Called every frame while racing; the classroom side decides when to send. */
+  report(progress: number, ms: number): void;
+  finish(ms: number, sum: SessionSummary, place: number, input: InputMode): void;
+  /** A list of finishers that keeps filling in as classmates cross the line. */
+  results(): HTMLElement;
+  back(): void;
+  leave(): void;
+}
 
 interface Racer {
   name: string;
@@ -98,6 +122,7 @@ export const raceMap = (root: HTMLElement): void => {
       h('h1', {}, 'Choose a course'),
       h('p', { class: 'fine' }, 'Beat each course’s champion to earn a big ember bonus. Finish lesson units to open new courses.'),
       factsUnlocked(p) && !p.settings.readingLevel ? readerPicker(() => go(raceMap)) : null,
+      button(h('span', { class: 'class-card-inner' }, h('span', { class: 'class-card-icon', 'aria-hidden': 'true' }, '🏫'), h('strong', {}, 'Class race'), h('small', {}, 'Race your classmates')), () => (sfx.click(), go(classRaceEntry())), 'class-card'),
       h(
         'div',
         { class: 'course-grid' },
@@ -128,7 +153,12 @@ export function race(courseId: string) {
   return (root: HTMLElement): (() => void) => run(root, courseById(courseId));
 }
 
-function run(root: HTMLElement, course: Course): () => void {
+/** A live class race on the given course. */
+export function liveRace(courseId: string, live: LiveRace) {
+  return (root: HTMLElement): (() => void) => run(root, courseById(courseId), live);
+}
+
+function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   const p = profile();
   const me = activeDragon(p);
   const input = inputMode();
@@ -138,8 +168,8 @@ function run(root: HTMLElement, course: Course): () => void {
   const words = best < (touch ? 14 : 20) ? 14 : 22;
   const known = knownLetters(p);
   // Once every letter is learned, races are real facts instead of practice sentences.
-  const fact = factsUnlocked(p) ? pickFact(p.settings.readingLevel ?? 'younger', p.factsSeen, weakKeys(p.keyStats, [...known]), Math.random, touch) : null;
-  const text = fact ? (capitalsKnown(p) ? fact.text : fact.text.toLowerCase()) : buildRaceText(known, words, Math.random, weakKeys(p.keyStats, [...known]));
+  const fact = live ? (live.factId ? factById(live.factId) ?? null : null) : factsUnlocked(p) ? pickFact(p.settings.readingLevel ?? 'younger', p.factsSeen, weakKeys(p.keyStats, [...known]), Math.random, touch) : null;
+  const text = live ? live.text : fact ? (capitalsKnown(p) ? fact.text : fact.text.toLowerCase()) : buildRaceText(known, words, Math.random, weakKeys(p.keyStats, [...known]));
   const len = text.length;
 
   const lanes = h('div', { class: 'lanes' });
@@ -151,16 +181,20 @@ function run(root: HTMLElement, course: Course): () => void {
     return racer;
   };
 
-  const speeds = ghostSpeeds(p, input);
+  const speeds = live ? [] : ghostSpeeds(p, input);
   const r = course.rival;
-  const ghosts: Racer[] = [
+  const ghosts: Racer[] = live ? [] : [
     { name: r.name, wpm: rivalSpeed(course.id, input), phase: 0.4, rival: true, el: makeLane(r.name, r.tribe, r.palette, 'adult', 'rival') },
     ...speeds.map((wpm, i) => {
       const g = GHOST_NAMES[(i + COURSES.indexOf(course)) % GHOST_NAMES.length];
       return { name: g.name, wpm, phase: 1.7 + i * 1.9, el: makeLane(g.name, g.tribe, g.palette, 'adult') };
     }),
   ];
-  if (best > 0) {
+  const classmates = (live?.rivals ?? []).map((c) => ({
+    id: c.id,
+    el: makeLane(c.name, c.look?.tribe ?? 'emberback', c.look?.palette ?? 0, c.look?.stage ?? 'young', 'classmate', c.look?.skin, c.look?.marking ?? 0, c.look?.stars ?? 0),
+  }));
+  if (best > 0 && !live) {
     ghosts.push({ name: 'Your best', wpm: best, phase: 4.2, el: makeLane('Your best', me?.tribe ?? 'emberback', me?.palette ?? 0, 'adult', 'ghost-best', me?.skin, me?.marking) });
   }
   const meEl = makeLane(me ? me.name : 'You', me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'you', me?.skin, me?.marking, me?.stars);
@@ -173,7 +207,7 @@ function run(root: HTMLElement, course: Course): () => void {
   sky.style.background = `linear-gradient(180deg, ${skyColors[0]} 0%, ${skyColors[1]} 45%, ${skyColors[2]} 100%)`;
   (sky.querySelector('.mountains') as HTMLElement).style.backgroundImage = mountainsUri(course.ground, course.peak);
   (sky.querySelector('.hills') as HTMLElement).style.backgroundImage = hillsUri(course.ground);
-  const countdown = h('div', { class: 'countdown' }, h('div', {}, h('small', { class: 'taunt' }, `${r.name}: “${r.taunt}”`), h('div', { class: 'count' }, '3')));
+  const countdown = h('div', { class: 'countdown' }, h('div', {}, h('small', { class: 'taunt' }, live ? 'Class race!' : `${r.name}: “${r.taunt}”`), h('div', { class: 'count' }, '3')));
   const countEl = countdown.querySelector('.count') as HTMLElement;
   const meter = h('div', { class: 'flame-meter' }, h('span', {}));
   const stats = h('div', { class: 'live-stats' });
@@ -255,7 +289,9 @@ function run(root: HTMLElement, course: Course): () => void {
     if (started && !finished) {
       const t = now - raceStart;
       for (const g of ghosts) place(g.el, Math.min(1, ghostProgress(g.wpm, t, len) + 0.004 * Math.sin(t / 900 + g.phase)), dt);
+      for (const c of classmates) place(c.el, live!.progress(c.id, now), dt);
       place(meEl, myProgress(), dt);
+      live?.report(myProgress(), t);
       // Wings beat faster the faster you type.
       meEl.style.setProperty('--flap', `${Math.max(0.36, 0.75 - view.session.rollingWpm(now) / 90).toFixed(2)}s`);
       stats.textContent = `${Math.round(view.session.wpm())} WPM · ${pct(view.session.accuracy())} accuracy`;
@@ -265,8 +301,10 @@ function run(root: HTMLElement, course: Course): () => void {
       sky.style.setProperty('--speed', Math.min(1, wpmNow / 40).toFixed(2));
       trail(meEl, 12 + Math.min(40, wpmNow) * 0.9, dt, 4 + Math.min(3, wpmNow / 15), 80 + Math.min(60, wpmNow) * 3);
       for (const g of ghosts) trail(g.el, 7, dt, 3.5, 60);
+      for (const c of classmates) trail(c.el, 7, dt, 3.5, 60);
     } else if (finished) {
       place(meEl, 1, dt);
+      for (const c of classmates) place(c.el, live!.progress(c.id, now), dt);
     }
     fx.step(dt);
     raf = requestAnimationFrame(frame);
@@ -300,13 +338,14 @@ function run(root: HTMLElement, course: Course): () => void {
     const sum = view.session.summary();
     // A ghost beats you only if it would have crossed the line first.
     const ahead = ghosts.filter((g) => finishTime(g.wpm, len) < myMs);
-    const placeNum = ahead.length + 1;
-    const beatRival = !ahead.some((g) => g.rival);
+    const placeNum = live ? live.place(myMs) : ahead.length + 1;
+    const beatRival = !live && !ahead.some((g) => g.rival);
     // A tap keyboard race switches to 'keyboard' if real keys were used, so records stay fair.
     const typedWith = view.input;
     const prevBest = isTouch(typedWith) ? p.totals.bestTouchWpm : p.totals.bestWpm;
     const before = earnedIds(p);
-    const reward = recordRace(p, sum, placeNum, { input: typedWith, courseId: course.id, beatRival });
+    const reward = recordRace(p, sum, placeNum, { input: typedWith, courseId: live ? 'class' : course.id, beatRival });
+    live?.finish(myMs, sum, placeNum, typedWith);
     const newFact = fact ? recordFact(p, fact.id) : false;
     const fresh = claimNewAchievements(p, before);
     persist();
@@ -333,7 +372,7 @@ function run(root: HTMLElement, course: Course): () => void {
 
     const lines: string[] = [];
     if (reward.rivalFirstWin) lines.push(`You beat ${r.name}, the ${course.name} champion!`);
-    else if (!beatRival) lines.push(`${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`);
+    else if (!beatRival && !live) lines.push(`${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`);
 
     const factCard = fact
       ? h(
@@ -348,7 +387,7 @@ function run(root: HTMLElement, course: Course): () => void {
 
     const celebrate = celebration({
       place: placeNum,
-      racers: ghosts.length + 1,
+      racers: live ? live.racers : ghosts.length + 1,
       wpm: sum.wpm,
       accuracy: sum.accuracy,
       prevBest,
@@ -357,9 +396,11 @@ function run(root: HTMLElement, course: Course): () => void {
       rewards,
       dragonArt: dragonSvg(me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'flap', me?.skin, me?.marking),
       trailColors: trailOf.get(meEl),
-      extra: factCard,
+      extra: live ? h('div', {}, live.results(), factCard) : factCard,
       reducedMotion: p.settings.reducedMotion,
-      actions: h(
+      actions: live
+        ? h('div', { class: 'row' }, reward.eggReady || reward.newEgg ? button('Go to nest', () => go(nest), 'btn ghost') : null, button('Back to class', () => live.back()))
+        : h(
         'div',
         { class: 'row' },
         button('Map', () => go(raceMap), 'btn ghost'),
@@ -375,7 +416,7 @@ function run(root: HTMLElement, course: Course): () => void {
   }
 
   root.append(
-    topBar(() => go(raceMap)),
+    topBar(() => (live ? live.back() : go(raceMap))),
     h(
       'main',
       { class: 'race' },
@@ -390,5 +431,6 @@ function run(root: HTMLElement, course: Course): () => void {
     cancelAnimationFrame(raf);
     clearInterval(cd);
     view.destroy();
+    live?.leave();
   };
 }

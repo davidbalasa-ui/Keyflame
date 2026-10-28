@@ -1,0 +1,32 @@
+name: Classroom live check
+
+# Cloud sandboxes can't reach Supabase, so this checks the live classroom link from GitHub:
+# Realtime presence and broadcast on branches, and the classroom database functions on main.
+on:
+  push:
+    paths:
+      - 'src/net/**'
+      - 'supabase/migrations/**'
+      - 'scripts/realtime-smoke.mjs'
+      - '.github/workflows/classroom-live-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # The Supabase GitHub integration applies migrations after the push, so give it a minute on main.
+      - if: github.ref == 'refs/heads/main'
+        run: sleep 90
+      - run: node scripts/realtime-smoke.mjs
+        env:
+          REQUIRE_DB: ${{ github.ref == 'refs/heads/main' && '1' || '' }}
