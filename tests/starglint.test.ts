@@ -6,7 +6,7 @@ const shapes = (svg: string): number => (svg.match(/<(path|ellipse|circle|rect)\
 const ids = (svg: string): string[] => [...svg.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);
 
 describe('Starglint art', () => {
-  it('replaces the tribe art for the supporter skin, on any tribe', () => {
+  it('draws its own body, whatever tribe field it carries', () => {
     const a = dragonSvg('mossclaw', 0, 'adult', 'flap', 'starglint');
     const b = dragonSvg('tidefin', 2, 'adult', 'flap', 'starglint');
     expect(a).toContain('class="dragon starglint flap"');

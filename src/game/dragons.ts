@@ -126,7 +126,7 @@ export const TRIBES: Record<TribeId, Tribe> = {
   },
 };
 
-/** Supporter skin: works on any tribe. */
+/** The supporter's own Starglint dragon. */
 export const STARGLINT: Palette = { name: 'Starglint', body: '#1d2a6b', belly: '#9ad7ff', wing: '#0f1a4a', accent: '#ffe95c' };
 
 /**
@@ -346,7 +346,7 @@ let artId = 0;
  */
 export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starglint', marking = 0, stars = 0, raceSize = false): string {
   if (skin === 'starglint') {
-    // The supporter skin has its own body and art, whatever the tribe.
+    // The supporter's Starglint dragon has its own body and art.
     const evo = stars > 0 ? evolvedArt(`kf${++artId}`, STARGLINT, stars) : null;
     return starglintSvg(stage, extraClass, STARGLINT_LOOK, { behind: evo?.aura, front: evo?.sparkles, head: evo?.head, lite: raceSize });
   }

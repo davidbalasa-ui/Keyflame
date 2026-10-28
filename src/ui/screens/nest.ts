@@ -1,8 +1,8 @@
 import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggCracksSvg, eggSvg, isSeasonPalette, lookName, paletteFor, stageFor, type TribeId } from '../../game/dragons';
 import { EGG_PRICE, claimSets, foundLooks, lookKey } from '../../game/collection';
 import { codex, codexLook } from './codex';
-import type { OwnedDragon } from '../../save/store';
-import { EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
+import { isStarglint, type OwnedDragon } from '../../save/store';
+import { kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor } from './aerie';
@@ -115,12 +115,9 @@ export const nest = (root: HTMLElement): void => {
                   { class: 'dragon-card' + (active?.id === d.id ? ' active' : '') },
                   svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking, d.stars), 'card-dragon'),
                   h('strong', {}, d.name, d.stars ? h('span', { class: 'stars', 'aria-label': `${d.stars} evolution stars` }, ' ' + '★'.repeat(d.stars)) : null),
-                  h('small', {}, `${paletteFor(d.tribe, d.palette).name} ${TRIBES[d.tribe].name}`),
+                  h('small', {}, isStarglint(d) ? 'Supporter dragon' : `${paletteFor(d.tribe, d.palette).name} ${kindName(d)}`),
                   h('small', {}, growthText(d)),
-                  h('small', { class: 'perk' }, TRIBES[d.tribe].perk),
-                  p.supporter
-                    ? h('label', { class: 'toggle small' }, h('input', { type: 'checkbox', checked: d.skin === 'starglint', onchange: () => ((d.skin = d.skin ? undefined : 'starglint'), persist(), go(nest)) }), 'Starglint skin')
-                    : null,
+                  h('small', { class: 'perk' }, perkText(d)),
                   active?.id === d.id
                     ? h('span', { class: 'badge' }, 'Racing')
                     : button('Race with me', () => {

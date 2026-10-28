@@ -1,7 +1,7 @@
 import { buildRaceText } from '../../content/lessons';
 import { COURSES, courseById, type Course } from '../../game/courses';
 import { TRIBES, dragonSvg, eggSvg, stageFor, type Stage, type TribeId } from '../../game/dragons';
-import { activeDragon, capitalsKnown, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
+import { activeDragon, capitalsKnown, perkText, perkTribe, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
 import { FACTS, READING_LEVEL_LABEL, TOPIC_LABEL, factById, pickFact, type ReadingLevel } from '../../content/facts';
 import { weakKeys } from '../../engine/typing';
 import { applyRaceKey, finishTime, newRaceState, perkTuning } from '../../game/raceRules';
@@ -163,7 +163,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   const me = activeDragon(p);
   const input = inputMode();
   const touch = isTouch(input);
-  const tune = perkTuning(me?.tribe ?? null);
+  const tune = perkTuning(perkTribe(me));
   const best = touch ? p.totals.bestTouchWpm : p.totals.bestWpm;
   const words = best < (touch ? 14 : 20) ? 14 : 22;
   const known = knownLetters(p);
@@ -422,7 +422,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       { class: 'race' },
       h('div', { class: 'race-head' }, h('h1', {}, course.name), stats, h('div', { class: 'meter-wrap' }, h('small', {}, 'Flame dash'), meter)),
       track,
-      me ? h('p', { class: 'fine perk-line' }, `${me.name}’s perk: ${TRIBES[me.tribe].perk}`) : null,
+      me ? h('p', { class: 'fine perk-line' }, `${me.name}’s perk: ${perkText(me)}`) : null,
       view.el,
     ),
   );

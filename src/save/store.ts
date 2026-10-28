@@ -17,12 +17,30 @@ export interface OwnedDragon {
   /** Correct keystrokes typed while this dragon was active. */
   xp: number;
   hatchedAt: number;
-  /** Supporter-only cosmetic skin. */
+  /** Set only on the supporter's own Starglint dragon (id STARGLINT_ID). */
   skin?: 'starglint';
   /** Index into MARKINGS; older dragons have none and are plain. */
   marking?: number;
   /** Evolution stars, one per extra copy of this look hatched (0 to 4). */
   stars?: number;
+}
+
+/** The supporter pack's own dragon. It sits outside every tribe, set and perk. */
+export const STARGLINT_ID = 'starglint';
+export const isStarglint = (d: { id: string }): boolean => d.id === STARGLINT_ID;
+
+/** Gives a supporter their Starglint dragon once. Returns it, or null when not a supporter. */
+export function ensureStarglint(p: Profile): OwnedDragon | null {
+  if (!p.supporter) return null;
+  let d = p.dragons.find(isStarglint);
+  if (!d) {
+    // Stormcrest only fills the required field; the art, name and perk all come from Starglint.
+    d = { id: STARGLINT_ID, tribe: 'stormcrest', palette: 0, name: 'Starglint', xp: 0, hatchedAt: Date.now(), skin: 'starglint' };
+    p.dragons.push(d);
+  }
+  d.skin = 'starglint';
+  d.stars = 0;
+  return d;
 }
 
 export interface NestEgg {
@@ -215,7 +233,7 @@ export function normalizeProfile(raw: unknown): Profile | null {
     playDays: old.races || old.lessons ? 1 : 0,
     ...old,
   };
-  return {
+  const p = {
     ...base,
     ...r,
     totals,
@@ -225,7 +243,7 @@ export function normalizeProfile(raw: unknown): Profile | null {
     lessons: r.lessons ?? {},
     keyStats: r.keyStats ?? {},
     basket: r.basket ?? [],
-    dragons: backfillStars(renameSkins(r.dragons ?? []), r.starsBackfilled === true),
+    dragons: backfillStars(r.dragons ?? [], r.starsBackfilled === true),
     starsBackfilled: true,
     unitsRewarded: r.unitsRewarded ?? [],
     races: r.races ?? [],
@@ -239,12 +257,25 @@ export function normalizeProfile(raw: unknown): Profile | null {
     setsClaimed: Array.isArray(r.setsClaimed) ? r.setsClaimed.filter((id) => typeof id === 'string') : [],
     achievements: Array.isArray(r.achievements) ? r.achievements.filter((id) => typeof id === 'string') : undefined,
   } as Profile;
+  return starglintDragon(p);
 }
 
-/** The supporter skin was first called Starfire; dragons saved wearing it keep it. */
-function renameSkins(dragons: OwnedDragon[]): OwnedDragon[] {
-  for (const d of dragons) if ((d.skin as string) === 'starfire') d.skin = 'starglint';
-  return dragons;
+/**
+ * Starglint used to be a skin any dragon could wear (first called Starfire). Now it is
+ * one dragon of its own: other dragons go back to their tribe look, and a rider who was
+ * flying in the skin flies the Starglint dragon instead.
+ */
+function starglintDragon(p: Profile): Profile {
+  const active = p.dragons.find((d) => d.id === p.activeDragonId);
+  const wasWearing = !!active && !!active.skin && !isStarglint(active);
+  for (const d of p.dragons) if (!isStarglint(d)) delete d.skin;
+  const own = ensureStarglint(p);
+  if (own && active && wasWearing) {
+    // Keep the size the rider was used to seeing.
+    own.xp = Math.max(own.xp, active.xp);
+    p.activeDragonId = own.id;
+  }
+  return p;
 }
 
 /**
@@ -256,6 +287,7 @@ function backfillStars(dragons: OwnedDragon[], done: boolean): OwnedDragon[] {
   if (done) return dragons;
   const byLook = new Map<string, OwnedDragon[]>();
   for (const d of dragons) {
+    if (isStarglint(d)) continue;
     const k = `${d.tribe}:${d.palette}:${d.marking ?? 0}`;
     byLook.set(k, [...(byLook.get(k) ?? []), d]);
   }

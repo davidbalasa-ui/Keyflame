@@ -3,7 +3,7 @@
 // typo on any device, offline. It is an honor system that only unlocks a look, so a
 // soft check is enough; a payment server can hand out the same codes later.
 
-import type { Profile } from '../save/store';
+import { ensureStarglint, type Profile } from '../save/store';
 
 /** Crockford base 32: no I, L, O or U, so codes are easy to read aloud and copy. */
 const ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
@@ -76,6 +76,7 @@ export function redeemSupporterCode(p: Profile, text: string): boolean {
   if (!isSupporterCode(text)) return false;
   p.supporter = true;
   p.supporterCode = formatCode(text);
+  ensureStarglint(p);
   return true;
 }
 
@@ -83,5 +84,6 @@ export function redeemSupporterCode(p: Profile, text: string): boolean {
 export function grantSupporter(p: Profile): string {
   if (!p.supporterCode) p.supporterCode = makeSupporterCode();
   p.supporter = true;
+  ensureStarglint(p);
   return p.supporterCode;
 }
