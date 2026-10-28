@@ -51,6 +51,7 @@ const SCREENS = [
   ['lesson', ['.tile-lessons', '.lesson-tile >> nth=0']],
   ['race map', ['.tile-race']],
   ['race', ['.tile-race', '.course-card >> nth=0']],
+  ['class join', ['.tile-race', '.class-card']],
   ['nest', ['.tile-nest']],
   ['codex', ['.tile-codex']],
 ];

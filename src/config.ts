@@ -3,12 +3,16 @@
 
 const env = import.meta.env;
 
+const SUPABASE_URL = 'https://lmnsdqieycefnrjajknx.supabase.co';
+
 export const CONFIG = {
+  /** The KeyFlame Supabase project: feedback, and classroom codes and races. */
+  supabaseUrl: (env.VITE_SUPABASE_URL as string | undefined) || SUPABASE_URL,
   /** Stripe Payment Link for the supporter pack. Its success URL should be <site>/?supporter=thanks */
   supporterCheckoutUrl: (env.VITE_SUPPORTER_CHECKOUT_URL as string | undefined) ?? '',
   supporterPrice: '$3',
   /** Where the feedback form posts: the KeyFlame Supabase project's feedback table. */
-  feedbackUrl: (env.VITE_FEEDBACK_URL as string | undefined) || 'https://lmnsdqieycefnrjajknx.supabase.co/rest/v1/feedback',
+  feedbackUrl: (env.VITE_FEEDBACK_URL as string | undefined) || `${SUPABASE_URL}/rest/v1/feedback`,
   /**
    * The project's public anon key. It is meant to ship in web pages: the table only
    * accepts inserts from it, so nobody can read reports with it.
