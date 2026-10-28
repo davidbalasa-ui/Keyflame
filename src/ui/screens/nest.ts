@@ -7,6 +7,7 @@ import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor } from './aerie';
 import { button, h, pct, svg } from '../dom';
+import { diceButton, randomOf, wordPicker } from '../picker';
 import { sfx } from '../sound';
 import { CONFETTI, TRAIL_COLORS, attachField } from '../particles';
 import { claimNewAchievements, earnedIds } from '../../game/achievements';
@@ -216,10 +217,12 @@ function hatchSequence(root: HTMLElement): void {
     };
     let start = NAME_STARTS.find((s) => name.startsWith(s)) ?? NAME_STARTS[0];
     let end = name.slice(start.length);
-    const sel = (opts: string[], value: string, on: (v: string) => void): HTMLSelectElement => {
-      const s = h('select', { onchange: () => on(s.value) }, ...opts.map((o) => h('option', { value: o, selected: o === value }, o)));
-      return s;
-    };
+    const first = wordPicker({ words: NAME_STARTS, value: start, label: 'Name start', onChange: (v) => ((start = v), setName(start + end)), preview: (v) => v + end });
+    const second = wordPicker({ words: NAME_ENDS, value: end, label: 'Name ending', onChange: (v) => ((end = v), setName(start + end)), preview: (v) => start + v });
+    const dice = diceButton(() => {
+      first.set(randomOf(NAME_STARTS.filter((w) => w !== start)));
+      second.set(randomOf(NAME_ENDS.filter((w) => w !== end)));
+    });
     box.replaceChildren(
       svg(dragonSvg(dragon.tribe, dragon.palette, 'hatchling', 'flap bob pop-in', undefined, dragon.marking), 'hatch-dragon'),
       nameEl,
@@ -228,7 +231,8 @@ function hatchSequence(root: HTMLElement): void {
       h('p', { class: 'fine' }, TRIBES[dragon.tribe].lore),
       ...extras(),
       h('p', {}, 'Pick a name:'),
-      h('div', { class: 'name-pickers' }, sel(NAME_STARTS, start, (v) => ((start = v), setName(start + end))), sel(NAME_ENDS, end, (v) => ((end = v), setName(start + end)))),
+      h('div', { class: 'name-pickers' }, first.el, second.el),
+      h('div', { class: 'name-dice' }, dice, h('span', { class: 'fine' }, 'Surprise me')),
       h('div', { class: 'row' }, button('Done', () => go(nest))),
     );
     box.append(fx.canvas);

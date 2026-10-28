@@ -4,6 +4,7 @@ import { MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, importBackupC
 import { applyPendingSupporter, applySettings, go, persist, saveData } from '../app';
 import { button, h, svg } from '../dom';
 import { canInstall, installApp, onInstallChange } from '../install';
+import { diceButton, randomOf, wordPicker } from '../picker';
 import { sfx } from '../sound';
 import { hub } from './hub';
 
@@ -66,16 +67,18 @@ function installLink(): HTMLElement {
 
 function newRider(root: HTMLElement): void {
   // Names come from preset parts so kids never type personal information.
-  let adj = NAME_ADJECTIVES[Math.floor(Math.random() * NAME_ADJECTIVES.length)];
-  let noun = NAME_NOUNS[Math.floor(Math.random() * NAME_NOUNS.length)];
-  const preview = h('div', { class: 'name-preview' });
+  let adj = randomOf(NAME_ADJECTIVES);
+  let noun = randomOf(NAME_NOUNS);
+  const preview = h('div', { class: 'name-preview', 'aria-live': 'polite' });
   const update = (): void => {
     preview.textContent = `${adj} ${noun}`;
   };
-  const select = (opts: string[], value: string, set: (v: string) => void): HTMLSelectElement => {
-    const s = h('select', { onchange: () => (set(s.value), update()) }, ...opts.map((o) => h('option', { value: o, selected: o === value }, o)));
-    return s;
-  };
+  const first = wordPicker({ words: NAME_ADJECTIVES, value: adj, label: 'First word', onChange: (v) => ((adj = v), update()), preview: (v) => `${v} ${noun}` });
+  const second = wordPicker({ words: NAME_NOUNS, value: noun, label: 'Second word', onChange: (v) => ((noun = v), update()), preview: (v) => `${adj} ${v}` });
+  const dice = diceButton(() => {
+    first.set(randomOf(NAME_ADJECTIVES.filter((w) => w !== adj)));
+    second.set(randomOf(NAME_NOUNS.filter((w) => w !== noun)));
+  });
   update();
   const modal = h(
     'div',
@@ -85,8 +88,9 @@ function newRider(root: HTMLElement): void {
       { class: 'modal' },
       svg(eggSvg('emberback', 0, 7), 'modal-egg'),
       h('h2', {}, 'Pick your rider name'),
-      h('div', { class: 'name-pickers' }, select(NAME_ADJECTIVES, adj, (v) => (adj = v)), select(NAME_NOUNS, noun, (v) => (noun = v))),
       preview,
+      h('div', { class: 'name-pickers' }, first.el, second.el),
+      h('div', { class: 'name-dice' }, dice, h('span', { class: 'fine' }, 'Surprise me')),
       h('p', { class: 'fine' }, `Your first egg is an ${TRIBES.emberback.name}. Type to keep it warm!`),
       h(
         'div',
