@@ -13,6 +13,8 @@ export interface TypingViewOptions {
   showKeyboard: boolean;
   input: InputMode;
   relaxed?: boolean;
+  /** Starglint's special: no glowing next key and no finger hint, only the text. */
+  hideHints?: boolean;
   /** When false, keys are ignored (for example during a countdown). */
   enabled?: () => boolean;
   onKey?: (r: KeystrokeResult, s: TypingSession) => void;
@@ -202,7 +204,10 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     }
     keyEls.forEach((el) => el.classList.remove('next'));
     const next = session.expected;
-    if (next) {
+    if (next && opts.hideHints) {
+      shiftKey.classList.remove('next');
+      hint.textContent = capsLock ? 'Caps Lock is on. Press Caps Lock to turn it off.' : '';
+    } else if (next) {
       keyEls.get(baseKey(next))?.classList.add('next');
       const upper = next !== next.toLowerCase() || SHIFT_MAP[baseKey(next)] === next;
       shiftKey.classList.toggle('next', upper);

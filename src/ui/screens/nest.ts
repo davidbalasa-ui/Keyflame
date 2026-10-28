@@ -118,6 +118,9 @@ export const nest = (root: HTMLElement): void => {
                   h('small', {}, isStarglint(d) ? 'Supporter dragon' : `${paletteFor(d.tribe, d.palette).name} ${kindName(d)}`),
                   h('small', {}, growthText(d)),
                   h('small', { class: 'perk' }, perkText(d)),
+                  isStarglint(d)
+                    ? h('label', { class: 'toggle small' }, h('input', { type: 'checkbox', checked: d.noHints === true, onchange: () => ((d.noHints = !d.noHints), persist(), go(nest)) }), 'No key hints')
+                    : null,
                   active?.id === d.id
                     ? h('span', { class: 'badge' }, 'Racing')
                     : button('Race with me', () => {

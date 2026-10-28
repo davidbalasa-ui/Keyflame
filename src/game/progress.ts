@@ -188,7 +188,10 @@ export const MAXED_EMBERS = 300;
 export const kindName = (d: OwnedDragon): string => (isStarglint(d) ? 'supporter dragon' : TRIBES[d.tribe].name);
 
 /** The supporter pack never makes anyone faster, so Starglint races with no perk. */
-export const perkText = (d: OwnedDragon): string => (isStarglint(d) ? 'No perk. It flies on your typing alone.' : TRIBES[d.tribe].perk);
+export const perkText = (d: OwnedDragon): string => (isStarglint(d) ? 'Special: type from memory' : TRIBES[d.tribe].perk);
+
+/** Starglint's special is a challenge, not a boost: the keyboard stops showing where to press. */
+export const hidesHints = (d: OwnedDragon | null): boolean => !!d && isStarglint(d) && d.noHints === true;
 export const perkTribe = (d: OwnedDragon | null): TribeId | null => (d && !isStarglint(d) ? d.tribe : null);
 
 const sameLook = (d: OwnedDragon, tribe: TribeId, palette: number, marking: number): boolean => !isStarglint(d) && d.tribe === tribe && d.palette === palette && (d.marking ?? 0) === marking;
