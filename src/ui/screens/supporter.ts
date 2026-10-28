@@ -85,7 +85,7 @@ export const supporter = (root: HTMLElement): void => {
       h(
         'ul',
         { class: 'pack-list' },
-        h('li', {}, h('strong', {}, 'The Starglint skin: '), 'a night sky full of twinkling stars, a constellation on the wings, gold trim, and a spinning star on the tail. Any of your dragons can wear it.'),
+        h('li', {}, h('strong', {}, 'The Starglint skin: '), 'an extra-detailed storm dragon with glowing lightning across its body and wings, crackling sparks, and a lightning bolt on its tail. Any of your dragons can wear it.'),
         h('li', {}, h('strong', {}, 'The Keyflame Supporter title '), 'to show under your name.'),
         h('li', {}, h('strong', {}, 'A supporter code '), 'that unlocks the pack on other devices. No account needed.'),
       ),

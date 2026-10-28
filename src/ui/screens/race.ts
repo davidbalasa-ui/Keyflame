@@ -19,6 +19,7 @@ import { codex } from './codex';
 import { nest } from './nest';
 import { seasonAt } from '../../content/seasons';
 import { CHALLENGE_EMBERS } from '../../game/seasons';
+import { STARGLINT_LOOK, STARGLINT_LOOKS } from '../../game/starglintArt';
 
 interface Racer {
   name: string;
@@ -144,9 +145,9 @@ function run(root: HTMLElement, course: Course): () => void {
   const lanes = h('div', { class: 'lanes' });
   const trailOf = new Map<HTMLElement, string[]>();
   const makeLane = (name: string, tribe: TribeId, palette: number, stage: Stage, cls = '', skin?: 'starglint', marking = 0, stars = 0): HTMLElement => {
-    const racer = h('div', { class: `racer ${cls}` }, svg(dragonSvg(tribe, palette, stage, 'flap', skin, marking, stars), 'racer-art'), h('span', { class: 'racer-name' }, name));
+    const racer = h('div', { class: `racer ${cls}` }, svg(dragonSvg(tribe, palette, stage, 'flap', skin, marking, stars, true), 'racer-art'), h('span', { class: 'racer-name' }, name));
     lanes.append(h('div', { class: 'lane' }, racer));
-    trailOf.set(racer, skin === 'starglint' ? ['#ffd43b', '#b197fc', '#fff3bf', '#ff922b'] : TRAIL_COLORS[tribe]);
+    trailOf.set(racer, skin === 'starglint' ? STARGLINT_LOOKS[STARGLINT_LOOK].trail : TRAIL_COLORS[tribe]);
     return racer;
   };
 

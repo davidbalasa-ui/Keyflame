@@ -1,6 +1,7 @@
 // Original dragon tribes and the procedural art for dragons and eggs.
 
 import { SEASONS } from '../content/seasons';
+import { STARGLINT_LOOK, starglintSvg } from './starglintArt';
 
 export type TribeId = 'emberback' | 'tidefin' | 'stormcrest' | 'mossclaw' | 'frostspine' | 'duneskimmer' | 'shadeglide';
 
@@ -126,7 +127,7 @@ export const TRIBES: Record<TribeId, Tribe> = {
 };
 
 /** Supporter skin: works on any tribe. */
-export const STARGLINT: Palette = { name: 'Starglint', body: '#7048e8', belly: '#ffd43b', wing: '#2b3a9c', accent: '#ffe066' };
+export const STARGLINT: Palette = { name: 'Starglint', body: '#1d2a6b', belly: '#9ad7ff', wing: '#0f1a4a', accent: '#ffe95c' };
 
 /**
  * Season colors work on any tribe. A dragon's palette number at or above this
@@ -321,35 +322,6 @@ const sparkle = (x: number, y: number, r: number, fill: string, cls = ''): strin
   `<path class="${cls}" d="M${x} ${y - r} Q${x + r * 0.18} ${y - r * 0.18} ${x + r} ${y} Q${x + r * 0.18} ${y + r * 0.18} ${x} ${y + r} Q${x - r * 0.18} ${y + r * 0.18} ${x - r} ${y} Q${x - r * 0.18} ${y - r * 0.18} ${x} ${y - r}Z" fill="${fill}"/>`;
 
 /**
- * Extra detail for the supporter skin: a night sky inside the body, a constellation
- * on the wing, gold trim along the back, and a star on the tail. Colors only, so it
- * never changes how a dragon races.
- */
-function starglintArt(id: string): { defs: string; aura: string; body: string; wing: string; tail: string; head: string } {
-  const stars: Array<[number, number, number]> = [[92, 86, 1.1], [104, 78, 0.8], [112, 94, 1.3], [124, 76, 0.9], [134, 88, 1.1], [146, 80, 0.7], [152, 92, 1.2], [160, 72, 0.9], [168, 64, 1], [172, 80, 0.7], [100, 98, 0.7], [140, 98, 0.8], [118, 84, 0.6], [130, 100, 0.6]];
-  return {
-    defs: `<clipPath id="${id}s"><path d="${BODY}"/></clipPath>
-    <radialGradient id="${id}n" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#f783ac" stop-opacity="0.55"/><stop offset="1" stop-color="#f783ac" stop-opacity="0"/></radialGradient>
-    <radialGradient id="${id}a" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffd43b" stop-opacity="0.35"/><stop offset="0.6" stop-color="#b197fc" stop-opacity="0.18"/><stop offset="1" stop-color="#b197fc" stop-opacity="0"/></radialGradient>`,
-    aura: `<ellipse class="sf-aura" cx="130" cy="74" rx="128" ry="74" fill="url(#${id}a)"/>`,
-    body: `<g clip-path="url(#${id}s)">
-      <ellipse cx="118" cy="90" rx="26" ry="14" fill="url(#${id}n)"/>
-      <ellipse cx="160" cy="74" rx="16" ry="10" fill="url(#${id}n)" opacity="0.8"/>
-      <g fill="#fff">${stars.map(([x, y, r], i) => `<circle class="${i % 3 ? '' : 'sf-twinkle'}" cx="${x}" cy="${y}" r="${r}" opacity="${(0.55 + (i % 4) * 0.12).toFixed(2)}"/>`).join('')}</g>
-      ${sparkle(126, 82, 3.2, '#fff3bf', 'sf-twinkle')}
-    </g>
-    <path d="M84 84 C92 74 106 70 130 70 C146 70 158 66 166 58" stroke="#ffd43b" stroke-width="1.4" fill="none" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.9"/>`,
-    wing: `<g opacity="0.95">
-      <path d="M-14 -40 L-34 -46 L-48 -30 L-30 -18 L-14 -24" stroke="#fff3bf" stroke-width="0.9" fill="none" opacity="0.75"/>
-      ${[[-14, -40, 2.6], [-34, -46, 3.2], [-48, -30, 2.4], [-30, -18, 2.8], [-14, -24, 2]].map(([x, y, r], i) => sparkle(x, y, r, i % 2 ? '#ffd43b' : '#fff', i === 1 ? 'sf-twinkle' : '')).join('')}
-      <path d="M-46 -64 Q-44 -46 -66 -40 Q-52 -28 -70 -14 Q-42 -12 -34 4" stroke="#ffd43b" stroke-width="1.2" fill="none" opacity="0.7" stroke-linecap="round"/>
-    </g>`,
-    tail: `${sparkle(-6, 0, 9, '#ffd43b', 'sf-star')}${sparkle(-6, 0, 4.5, '#fff')}`,
-    head: `${sparkle(160, 10, 3, '#fff3bf', 'sf-twinkle')}${sparkle(186, 22, 2, '#ffd43b')}`,
-  };
-}
-
-/**
  * Evolved dragons glow in their own colors. Each star adds a little more: an aura,
  * then sparkles, gold wing glints, and at full stars a small gold circlet.
  */
@@ -372,14 +344,18 @@ let artId = 0;
  * Wings, tail and head sit in their own groups, pivoting at the shoulder,
  * tail base and neck, so CSS can animate them (see .flap in styles.css).
  */
-export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starglint', marking = 0, stars = 0): string {
-  const p = skin === 'starglint' ? STARGLINT : paletteFor(tribe, paletteIndex);
+export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starglint', marking = 0, stars = 0, raceSize = false): string {
+  if (skin === 'starglint') {
+    // The supporter skin has its own body and art, whatever the tribe.
+    const evo = stars > 0 ? evolvedArt(`kf${++artId}`, STARGLINT, stars) : null;
+    return starglintSvg(stage, extraClass, STARGLINT_LOOK, { behind: evo?.aura, front: evo?.sparkles, head: evo?.head, lite: raceSize });
+  }
+  const p = paletteFor(tribe, paletteIndex);
   const id = `kf${++artId}`;
   const line = darken(p.body, 0.55);
   const wingDark = darken(p.wing, 0.28);
   const bellyLine = darken(p.belly, 0.22);
   const parts = tribeParts(tribe, p, stage, line);
-  const sf = skin === 'starglint' ? starglintArt(id) : null;
   const evo = stars > 0 ? evolvedArt(id, p, stars) : null;
   const scale = stage === 'hatchling' ? 0.8 : stage === 'young' ? 0.9 : 1;
   const headScale = stage === 'hatchling' ? 1.36 : stage === 'young' ? 1.2 : 1.1;
@@ -413,9 +389,7 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
     <radialGradient id="${id}i" cx="0.4" cy="0.35" r="0.7"><stop offset="0" stop-color="${lighten(iris, 0.45)}"/><stop offset="0.6" stop-color="${iris}"/><stop offset="1" stop-color="${darken(iris, 0.5)}"/></radialGradient>
     <radialGradient id="${id}h" cx="0.55" cy="0.3" r="0.6"><stop offset="0" stop-color="#fff" stop-opacity="0.32"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
     ${marking ? `<clipPath id="${id}c"><path d="${BODY}"/></clipPath>` : ''}
-    ${sf?.defs ?? ''}
   </defs>
-  ${sf?.aura ?? ''}
   ${evo?.aura ?? ''}
   <g transform="translate(${(120 - 120 * scale).toFixed(1)} ${(78 - 78 * scale).toFixed(1)}) scale(${scale})"><g class="rig">
     ${wing('wing-back', darken(p.wing, 0.18), '', 0.86)}
@@ -423,12 +397,11 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
     <g transform="translate(84 92)"><g class="tail">
       <path d="M4 -13 C-18 -17 -38 -9 -50 5 C-60 16 -72 22 -84 18 C-74 29 -58 29 -46 19 C-34 9 -18 6 4 10Z" fill="url(#${id}b)" stroke="${line}" stroke-width="1.8" stroke-linejoin="round"/>
       <path d="M2 8 C-18 5 -32 9 -44 18" stroke="${p.belly}" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.9"/>
-      <g transform="translate(-84 19)">${parts.tip}${sf?.tail ?? ''}</g>
+      <g transform="translate(-84 19)">${parts.tip}</g>
     </g></g>
     ${parts.back}
     <path d="${BODY}" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
     ${markingArt(marking, p, `${id}c`)}
-    ${sf?.body ?? ''}
     <ellipse cx="140" cy="76" rx="22" ry="10" fill="url(#${id}h)"/>
     <path d="M84 84 C90 74 106 69 130 69 C146 69 157 66 165 58 C169 54 172 50 175 46" stroke="${shine}" stroke-width="2.4" fill="none" opacity="0.45" stroke-linecap="round"/>
     <path d="M88 101 C104 108 134 108 152 100 C164 92 172 80 180 68 L187 71 C180 84 172 98 158 105 C136 114 104 112 88 101Z" fill="${p.belly}"/>
@@ -441,7 +414,6 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
     <g transform="translate(184 52) scale(${headScale})"><g class="head"><g transform="translate(-184 -52)">
       ${horns}
       ${parts.head}
-      ${sf?.head ?? ''}
       ${evo?.head ?? ''}
       <path d="M176 52 l-10 3 l8 2 l-9 6 l13 -3z" fill="${p.wing}" stroke="${line}" stroke-width="1.2" stroke-linejoin="round"/>
       <path d="M174 44 C176 30 192 24 205 29 C213 32 219 36 225 40 C231 43 233 47 231 51 C229 55 223 57 216 57 C207 59 199 61 190 61 C180 61 172 54 174 44Z" fill="url(#${id}b)" stroke="${line}" stroke-width="2" stroke-linejoin="round"/>
@@ -460,7 +432,7 @@ export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = '
       <ellipse class="lid" cx="197" cy="42" rx="${eyeR + 1}" ry="${eyeR + 1.5}" fill="${p.body}" stroke="${line}" stroke-width="1.2"/>
       <path d="M189 ${36 - eyeR + 6} C195 ${32 - eyeR + 6} 201 ${32 - eyeR + 6} 206 ${35 - eyeR + 6}" stroke="${line}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
     </g></g></g>
-    ${wing('wing-front', `url(#${id}w)`, parts.wing + (sf?.wing ?? ''), 1)}
+    ${wing('wing-front', `url(#${id}w)`, parts.wing, 1)}
   </g></g>
   ${evo?.sparkles ?? ''}
 </svg>`;
