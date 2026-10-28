@@ -14,7 +14,7 @@
   "id": "dr02",
   "topic": "dragons",
   "level": "younger",
-  "text": "A bearded dragon can puff out the spiky skin under its chin. It looks like a beard, and that is how it got its name.",
+  "text": "A bearded dragon can puff out the spiky skin under its chin. It looks like a beard. That is how it got its name.",
   "source": {
    "name": "Australian Museum: Central bearded dragon",
    "url": "https://australian.museum/central-bearded-dragon"
@@ -36,7 +36,7 @@
   "id": "dr04",
   "topic": "dragons",
   "level": "younger",
-  "text": "A dragonfly can fly forward and backward. It can even stay still in one spot, like a tiny helicopter.",
+  "text": "A dragonfly can fly forward and backward. It can even stay still in one spot.",
   "source": {
    "name": "NPS: Species Spotlight Dragonflies",
    "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
@@ -58,7 +58,7 @@
   "id": "dr06",
   "topic": "dragons",
   "level": "younger",
-  "text": "In a sea dragon family, the dad carries the eggs on the underside of his tail until they hatch.",
+  "text": "In a sea dragon family, the dad carries the eggs. He keeps them on the bottom of his tail. They stay there until they hatch.",
   "source": {
    "name": "Australian Geographic: Leafy seadragon",
    "url": "https://www.australiangeographic.com.au/fact-file/leafy-seadragon-phycodurus-eques/"
@@ -102,7 +102,7 @@
   "id": "dr10",
   "topic": "dragons",
   "level": "younger",
-  "text": "Many lizards shed their old skin as they grow. A fresh new skin is waiting underneath.",
+  "text": "Many lizards shed their old skin as they grow. A fresh new skin is waiting under it.",
   "source": {
    "name": "San Diego Zoo: Lizard",
    "url": "https://animals.sandiegozoo.org/animals/lizard"
@@ -113,7 +113,7 @@
   "id": "dr11",
   "topic": "dragons",
   "level": "younger",
-  "text": "Komodo dragons live on hot, rugged islands. They like to rest in the shade when the Sun gets too warm.",
+  "text": "Komodo dragons live on hot rugged islands. They like to rest in the shade. They rest when the Sun gets too warm.",
   "source": {
    "name": "San Diego Zoo: Komodo dragon",
    "url": "https://animals.sandiegozoo.org/animals/komodo-dragon"
@@ -124,7 +124,7 @@
   "id": "dr12",
   "topic": "dragons",
   "level": "younger",
-  "text": "A bearded dragon can make its beard turn dark. A dark beard can mean it is alarmed or wants to look tough.",
+  "text": "A bearded dragon can make its beard turn dark. A dark beard can mean it is alarmed. It can also mean it wants to look tough.",
   "source": {
    "name": "Australian Museum: Central bearded dragon",
    "url": "https://australian.museum/central-bearded-dragon"
@@ -135,7 +135,7 @@
   "id": "dr13",
   "topic": "dragons",
   "level": "younger",
-  "text": "Dragonflies have four long wings. When they rest, most dragonflies hold their wings out flat, like an airplane.",
+  "text": "Dragonflies have four long wings. When they rest, most hold their wings out flat, like a plane.",
   "source": {
    "name": "NPS: Species Spotlight Dragonflies",
    "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
@@ -223,7 +223,7 @@
   "id": "dr21",
   "topic": "dragons",
   "level": "older",
-  "text": "Chameleons change color to show how they feel and to warm up or cool down.",
+  "text": "Chameleons change color to show how they feel. They also change color to warm up or cool down. Their skin has special cells that do this.",
   "source": {
    "name": "San Diego Zoo: Chameleon",
    "url": "https://animals.sandiegozoo.org/animals/chameleon"
@@ -289,7 +289,7 @@
   "id": "an02",
   "topic": "animals",
   "level": "younger",
-  "text": "Elephants use their trunks to drink, to smell, to pick things up, and to greet their friends.",
+  "text": "Elephants use their trunks to drink. They use them to smell. They use them to pick things up. They also use them to greet their friends.",
   "source": {
    "name": "National Geographic Kids: African elephant",
    "url": "https://kids.nationalgeographic.com/animals/mammals/facts/african-elephant"
@@ -300,7 +300,7 @@
   "id": "an03",
   "topic": "animals",
   "level": "younger",
-  "text": "A hummingbird flaps its wings so fast that they make a humming sound. That is how it got its name.",
+  "text": "A hummingbird flaps its wings very fast. The wings make a humming sound. That is how it got its name.",
   "source": {
    "name": "San Diego Zoo: Hummingbird",
    "url": "https://animals.sandiegozoo.org/animals/hummingbird"
@@ -311,7 +311,7 @@
   "id": "an04",
   "topic": "animals",
   "level": "younger",
-  "text": "Honeybees do a little dance to tell other bees where to find flowers full of food.",
+  "text": "Honeybees do a little dance. The dance tells other bees where to find flowers full of food.",
   "source": {
    "name": "National Geographic: Bee waggle dance",
    "url": "https://www.nationalgeographic.com/science/article/how-headbutts-and-dances-give-bees-a-hive-mind"
@@ -333,7 +333,7 @@
   "id": "an06",
   "topic": "animals",
   "level": "younger",
-  "text": "An owl can turn its head about three quarters of the way around to look behind it.",
+  "text": "An owl can turn its head to look behind it. It turns about three quarters of the way around.",
   "source": {
    "name": "San Diego Zoo: Owl",
    "url": "https://animals.sandiegozoo.org/animals/owl"
@@ -366,7 +366,7 @@
   "id": "an09",
   "topic": "animals",
   "level": "younger",
-  "text": "Butterflies can taste with their feet. A mother butterfly stands on a leaf to find out if it is a good plant for her eggs.",
+  "text": "Butterflies can taste with their feet. A mother butterfly stands on a leaf. She finds out if the plant is good for her eggs.",
   "source": {
    "name": "AMNH: Butterfly FAQ",
    "url": "https://www.amnh.org/exhibitions/butterflies/butterfly-faq"
@@ -377,7 +377,7 @@
   "id": "an10",
   "topic": "animals",
   "level": "younger",
-  "text": "Sloths move so slowly that tiny green plants called algae can grow on their fur.",
+  "text": "Sloths move very slowly. This lets tiny green plants called algae grow on their fur.",
   "source": {
    "name": "Smithsonian National Zoo: Why are sloths so slow",
    "url": "https://nationalzoo.si.edu/animals/news/why-are-sloths-so-slow-and-other-sloth-facts"
@@ -399,7 +399,7 @@
   "id": "an12",
   "topic": "animals",
   "level": "younger",
-  "text": "Polar bears have black skin under their white fur. Thick fur and a layer of fat keep them warm in the snow.",
+  "text": "Polar bears have black skin under their white fur. Thick fur and a layer of fat keep them warm in snow.",
   "source": {
    "name": "Britannica: Why are polar bears white",
    "url": "https://www.britannica.com/science/Why-Are-Polar-Bears-White"
@@ -531,7 +531,7 @@
   "id": "an24",
   "topic": "animals",
   "level": "older",
-  "text": "Crows are very clever birds. They can remember the faces of people they have met.",
+  "text": "Crows are very clever birds. They can remember the faces of people they have met, and they can tell one person from another.",
   "source": {
    "name": "Cornell Lab All About Birds: Remember me? Crows do",
    "url": "https://www.allaboutbirds.org/news/remember-me-crows-do/"
@@ -553,7 +553,7 @@
   "id": "sp01",
   "topic": "space",
   "level": "younger",
-  "text": "The Sun is a star. It looks so big because it is much closer to us than any other star.",
+  "text": "The Sun is a star. It looks so big because it is much nearer than other stars.",
   "source": {
    "name": "NASA Space Place: All About the Sun",
    "url": "https://spaceplace.nasa.gov/all-about-the-sun/en/"
@@ -564,7 +564,7 @@
   "id": "sp02",
   "topic": "space",
   "level": "younger",
-  "text": "The Moon has no air and no wind. Footprints left by astronauts can stay there for a very long time.",
+  "text": "The Moon has no air and no wind. Astronaut boot prints can stay there for a very long time.",
   "source": {
    "name": "NASA Space Place: All About the Moon",
    "url": "https://spaceplace.nasa.gov/all-about-the-moon/en/"
@@ -608,7 +608,7 @@
   "id": "sp06",
   "topic": "space",
   "level": "younger",
-  "text": "Astronauts on the space station see the Sun rise and set many times every day.",
+  "text": "People on the space station see the Sun rise and set. They see it many times every day.",
   "source": {
    "name": "NASA: Year in Space crew sunrises and sunsets",
    "url": "https://www.nasa.gov/image-article/year-space-crew-will-see-10944-sunrises-sunsets/"
@@ -641,7 +641,7 @@
   "id": "sp09",
   "topic": "space",
   "level": "younger",
-  "text": "Venus is the hottest planet, even though Mercury is closer to the Sun. Its thick air holds in the heat like a blanket.",
+  "text": "Venus is the hottest planet, but Mercury is closer to the Sun. Thick air on Venus holds in heat like a blanket.",
   "source": {
    "name": "NASA Space Place: All About Venus",
    "url": "https://spaceplace.nasa.gov/all-about-venus/en/"
@@ -652,7 +652,7 @@
   "id": "sp10",
   "topic": "space",
   "level": "older",
-  "text": "A day on Venus is longer than a year on Venus, because the planet spins very slowly as it goes around the Sun.",
+  "text": "A day on Venus is longer than a year on Venus. The planet spins very slowly as it goes around the Sun.",
   "source": {
    "name": "NASA Space Place: All About Venus",
    "url": "https://spaceplace.nasa.gov/all-about-venus/en/"
@@ -663,7 +663,7 @@
   "id": "sp11",
   "topic": "space",
   "level": "younger",
-  "text": "Scientists think there are more stars in space than grains of sand on all the beaches on Earth.",
+  "text": "Think of every grain of sand on every beach on Earth. Scientists think space has even more stars than that.",
   "source": {
    "name": "ESA: More stars than grains of sand on Earth",
    "url": "https://www.esa.int/ESA_Multimedia/Images/2016/06/More_stars_in_the_Universe_than_grains_of_sand_on_Earth"
@@ -674,7 +674,7 @@
   "id": "sp12",
   "topic": "space",
   "level": "younger",
-  "text": "Shooting stars are not really stars. They are tiny bits of space rock glowing as they zip through the air.",
+  "text": "Shooting stars are not really stars. They are tiny bits of space rock. They glow as they zip through the air.",
   "source": {
    "name": "NASA Science: Meteors and meteorites facts",
    "url": "https://science.nasa.gov/solar-system/meteors-meteorites/facts/"
@@ -696,7 +696,7 @@
   "id": "sp14",
   "topic": "space",
   "level": "older",
-  "text": "Olympus Mons on Mars is the tallest volcano in the solar system. It is much taller than Mount Everest.",
+  "text": "Olympus Mons on Mars is the tallest volcano in the solar system. It is much, much taller than Mount Everest.",
   "source": {
    "name": "NASA APOD: Olympus Mons",
    "url": "https://science.nasa.gov/image-article/apod-2023-april-4-olympus-mons-largest-volcano-in-the-solar-system/"
@@ -718,7 +718,7 @@
   "id": "sp16",
   "topic": "space",
   "level": "older",
-  "text": "Neptune has the fastest winds in the solar system. They blow faster than the speed of sound on Earth.",
+  "text": "The winds on Neptune are the fastest in the solar system. They blow faster than the speed of sound on Earth.",
   "source": {
    "name": "NASA Science: Neptune facts",
    "url": "https://science.nasa.gov/neptune/neptune-facts/"
@@ -740,7 +740,7 @@
   "id": "sp18",
   "topic": "space",
   "level": "older",
-  "text": "Saturn is so light for its size that it would float in water, if there were a bathtub big enough to hold it.",
+  "text": "Saturn is very light for its size. It would float in water. You would need a huge bathtub to hold it.",
   "source": {
    "name": "NASA Science: Saturn facts",
    "url": "https://science.nasa.gov/saturn/facts/"
@@ -751,7 +751,7 @@
   "id": "sp19",
   "topic": "space",
   "level": "older",
-  "text": "Neptune is so far from the Sun that one trip around it takes about a hundred and sixty five Earth years.",
+  "text": "Neptune is very far from the Sun. One trip around the Sun takes about one hundred sixty five Earth years.",
   "source": {
    "name": "NASA Science: Neptune facts",
    "url": "https://science.nasa.gov/neptune/neptune-facts/"
@@ -762,7 +762,7 @@
   "id": "sp20",
   "topic": "space",
   "level": "older",
-  "text": "A neutron star is so tightly packed that a single spoonful of it would weigh about as much as a mountain.",
+  "text": "A neutron star is very tightly packed. A single spoonful of it would weigh about as much as a mountain.",
   "source": {
    "name": "NASA Imagine the Universe: Neutron stars",
    "url": "https://imagine.gsfc.nasa.gov/science/objects/neutron_stars1.html"
@@ -817,7 +817,7 @@
   "id": "sp25",
   "topic": "space",
   "level": "older",
-  "text": "Mars has giant dust storms. Some grow so large that they wrap all the way around the planet.",
+  "text": "Mars has giant dust storms. Some of these storms grow very large. They can wrap all the way around the planet.",
   "source": {
    "name": "NASA Science: Tour of storms across the solar system",
    "url": "https://science.nasa.gov/solar-system/10-things-tour-of-storms-across-the-solar-system/"
@@ -850,7 +850,7 @@
   "id": "ea03",
   "topic": "earth",
   "level": "younger",
-  "text": "Mount Everest is the tallest mountain above the sea. It is so high that the air up there is thin and cold.",
+  "text": "Mount Everest is the tallest mountain above the sea. It is very high. The air up there is thin and cold.",
   "source": {
    "name": "Britannica Kids: Mount Everest",
    "url": "https://kids.britannica.com/students/article/Mount-Everest/274233"
@@ -894,7 +894,7 @@
   "id": "ea07",
   "topic": "earth",
   "level": "younger",
-  "text": "A rock called pumice is so full of tiny air holes that it can float on water.",
+  "text": "Pumice is a rock. It has many tiny air holes. It can float on water.",
   "source": {
    "name": "NPS: Pyroclasts and Pyroclastic Rocks",
    "url": "https://www.nps.gov/subjects/volcanoes/pyroclasts.htm"
@@ -905,7 +905,7 @@
   "id": "ea08",
   "topic": "earth",
   "level": "younger",
-  "text": "A geyser is a hot spring that shoots water and steam high into the air.",
+  "text": "A geyser is a hot spring. It shoots water and steam high into the air.",
   "source": {
    "name": "USGS: Geysers",
    "url": "https://pubs.usgs.gov/gip/volc/geysers.html"
@@ -916,7 +916,7 @@
   "id": "ea09",
   "topic": "earth",
   "level": "younger",
-  "text": "Sand on many beaches is made of tiny bits of rock and shell, worn down by the waves.",
+  "text": "Sand on many beaches is made of tiny bits. The bits are rock and shell. The waves wear them down.",
   "source": {
    "name": "NOAA Ocean Podcast: Sand",
    "url": "https://oceanservice.noaa.gov/podcast/july23/nop67-sand.html"
@@ -938,7 +938,7 @@
   "id": "ea11",
   "topic": "earth",
   "level": "younger",
-  "text": "Salt is a crystal. If you look very closely, each grain of salt is a tiny cube.",
+  "text": "Salt is a crystal. Up close, each grain of salt is a tiny cube.",
   "source": {
    "name": "Britannica Kids: Salt",
    "url": "https://kids.britannica.com/students/article/salt/276870"
@@ -949,7 +949,7 @@
   "id": "ea12",
   "topic": "earth",
   "level": "younger",
-  "text": "Some lakes are so salty that people can float on top of the water with no effort.",
+  "text": "Some lakes are very salty. People can float on top of the water with no effort.",
   "source": {
    "name": "NOAA JetStream: The Dead Sea",
    "url": "https://www.noaa.gov/jetstream/dead-max"
@@ -971,7 +971,7 @@
   "id": "ea14",
   "topic": "earth",
   "level": "older",
-  "text": "Volcanic ash makes soil very rich. That is why farmers often grow crops on the slopes of old volcanoes.",
+  "text": "Volcanic ash makes the soil very rich. That is why farmers often grow crops on the slopes of old volcanoes.",
   "source": {
    "name": "British Geological Survey: Living with volcanoes",
    "url": "https://www.bgs.ac.uk/discovering-geology/earth-hazards/volcanoes/living-with-volcanoes/"
@@ -1070,7 +1070,7 @@
   "id": "ea23",
   "topic": "earth",
   "level": "older",
-  "text": "The Earth acts like a giant magnet. That is why the needle of a compass points north.",
+  "text": "The Earth acts like a giant magnet. That is why the needle of a compass always swings around to point north.",
   "source": {
    "name": "Britannica Kids: Magnetic compass",
    "url": "https://kids.britannica.com/students/article/magnetic-compass/273759"
@@ -1092,7 +1092,7 @@
   "id": "ea25",
   "topic": "earth",
   "level": "older",
-  "text": "Rubies and sapphires are the same mineral, called corundum. Tiny amounts of other metals make rubies red and sapphires blue.",
+  "text": "Rubies and sapphires are made of the same mineral. This mineral is called corundum. Tiny amounts of other metals make rubies red. They make sapphires blue.",
   "source": {
    "name": "Geoscience Australia: Sapphire and ruby",
    "url": "https://www.ga.gov.au/education/minerals-energy/australian-mineral-facts/sapphire"
@@ -1103,7 +1103,7 @@
   "id": "we01",
   "topic": "weather",
   "level": "younger",
-  "text": "A rainbow appears when sunlight shines through raindrops. The light splits into many colors.",
+  "text": "You see a rainbow when sunlight shines through rain drops. The light splits into many colors.",
   "source": {
    "name": "Met Office: How are rainbows formed?",
    "url": "https://metoffice.gov.uk/learning/optics/rainbows/how-are-rainbows-formed"
@@ -1114,7 +1114,7 @@
   "id": "we02",
   "topic": "weather",
   "level": "younger",
-  "text": "Most snowflakes have six sides or six arms. Each one is made of tiny ice crystals.",
+  "text": "Most flakes of snow have six sides or six arms. Each one is made of tiny ice crystals.",
   "source": {
    "name": "NOAA SciJinks: Snow crystals",
    "url": "https://scijinks.gov/snow-crystals"
@@ -1125,7 +1125,7 @@
   "id": "we03",
   "topic": "weather",
   "level": "younger",
-  "text": "Clouds are made of tiny drops of water or bits of ice floating in the air.",
+  "text": "Clouds are made of tiny water drops or ice bits. They float in the air.",
   "source": {
    "name": "NASA GPM: What are clouds made of?",
    "url": "https://gpm.nasa.gov/resources/faq/what-are-clouds-made-are-they-more-likely-form-polluted-air-or-pristine-air"
@@ -1169,7 +1169,7 @@
   "id": "we07",
   "topic": "weather",
   "level": "younger",
-  "text": "Hail is made of balls of ice that fall from big storm clouds.",
+  "text": "Hail is made of ice balls that fall from big storm clouds.",
   "source": {
    "name": "NOAA NSSL: Severe Weather 101, Hail",
    "url": "https://nssl.noaa.gov/education/svrwx101/hail"
@@ -1180,7 +1180,7 @@
   "id": "we08",
   "topic": "weather",
   "level": "younger",
-  "text": "Wind is moving air. The Sun warms some places more than others, and that makes the air move.",
+  "text": "Wind is moving air. The Sun warms some places more than others. That makes the air move.",
   "source": {
    "name": "Britannica Kids: Wind",
    "url": "https://kids.britannica.com/students/article/wind/277759"
@@ -1191,7 +1191,7 @@
   "id": "we09",
   "topic": "weather",
   "level": "younger",
-  "text": "On cold nights, water in the air can freeze onto grass and windows. This sparkly ice is called frost.",
+  "text": "On cold nights, water in the air can freeze. It freezes on grass and windows. This sparkly ice is called frost.",
   "source": {
    "name": "Britannica: Frost",
    "url": "https://www.britannica.com/science/frost-meteorology"
@@ -1202,7 +1202,7 @@
   "id": "we10",
   "topic": "weather",
   "level": "younger",
-  "text": "On cool mornings, little drops of water called dew can appear on grass and spider webs.",
+  "text": "On cool mornings, little drops of water form on grass. They also form on spider webs. These drops are called dew.",
   "source": {
    "name": "Met Office: Dew",
    "url": "https://www.metoffice.gov.uk/learning/temperature/dew"
@@ -1213,7 +1213,7 @@
   "id": "we11",
   "topic": "weather",
   "level": "younger",
-  "text": "Snow looks white because light bounces around in the ice and scatters back to your eyes.",
+  "text": "Snow looks white because light bounces around in the ice. The light scatters back to your eyes.",
   "source": {
    "name": "USGS: Why is snow white",
    "url": "https://www.usgs.gov/media/audio/why-snow-white"
@@ -1356,7 +1356,7 @@
   "id": "we24",
   "topic": "weather",
   "level": "older",
-  "text": "Antarctica is the coldest place on Earth. Even in summer, much of it stays far below freezing.",
+  "text": "Antarctica is the coldest place on Earth. Even in summer, much of it stays far below the freezing point of water.",
   "source": {
    "name": "NASA SVS: Coldest place on Earth",
    "url": "https://svs.gsfc.nasa.gov/4126/"
@@ -1389,7 +1389,7 @@
   "id": "oc02",
   "topic": "oceans",
   "level": "younger",
-  "text": "Sea otters sometimes hold paws while they sleep, so they do not drift away from their group.",
+  "text": "Sea otters sometimes hold paws while they sleep. This keeps them from drifting away from their group.",
   "source": {
    "name": "Seattle Aquarium: Sea otter",
    "url": "https://www.seattleaquarium.org/animal/sea-otter/"
@@ -1400,7 +1400,7 @@
   "id": "oc03",
   "topic": "oceans",
   "level": "younger",
-  "text": "The blue whale is the biggest animal on Earth. It can be about as long as a basketball court.",
+  "text": "The blue whale is the biggest animal on Earth. It can grow to about one hundred feet long.",
   "source": {
    "name": "NOAA Fisheries: Blue whale",
    "url": "https://www.fisheries.noaa.gov/species/blue-whale"
@@ -1433,7 +1433,7 @@
   "id": "oc06",
   "topic": "oceans",
   "level": "younger",
-  "text": "Clownfish live among the stinging arms of sea anemones. A special coat on their skin keeps them from getting stung.",
+  "text": "Clownfish live in the arms of sea anemones. Those arms can sting. A special coat on their skin keeps them safe.",
   "source": {
    "name": "National Geographic Kids: Clown anemonefish",
    "url": "https://kids.nationalgeographic.com/animals/fish/clown-anemonefish"
@@ -1466,7 +1466,7 @@
   "id": "oc09",
   "topic": "oceans",
   "level": "younger",
-  "text": "The ocean is salty because rivers carry tiny bits of salt from rocks into the sea.",
+  "text": "Rivers carry tiny bits of salt from rocks into the sea. That is why the ocean is salty.",
   "source": {
    "name": "WHOI: What makes the ocean salty?",
    "url": "https://www.whoi.edu/know-your-ocean/what-makes-the-ocean-salty/"
@@ -1477,7 +1477,7 @@
   "id": "oc10",
   "topic": "oceans",
   "level": "younger",
-  "text": "Sea turtles can swim thousands of miles. Many females return to the beach where they were born to lay eggs.",
+  "text": "Sea turtles can swim thousands of miles. Many females return to the beach where they were born. They go there to lay eggs.",
   "source": {
    "name": "Smithsonian Ocean: Sea turtles",
    "url": "https://ocean.si.edu/ocean-life/reptiles/sea-turtles"
@@ -1510,7 +1510,7 @@
   "id": "oc13",
   "topic": "oceans",
   "level": "younger",
-  "text": "Sea stars have a tiny eye spot at the tip of each arm. The eye spots can tell light from dark.",
+  "text": "Sea stars have a tiny eye spot on each arm tip. The eye spots can tell light from dark.",
   "source": {
    "name": "NPS: Creature Feature Sea Stars",
    "url": "https://www.nps.gov/articles/000/creaturefeatureacadiaseastar.htm"
@@ -1576,7 +1576,7 @@
   "id": "oc19",
   "topic": "oceans",
   "level": "older",
-  "text": "About half of the oxygen we breathe is made in the ocean, by tiny floating living things called plankton.",
+  "text": "About half of the oxygen we breathe is made in the ocean. Tiny floating living things called plankton make the oxygen.",
   "source": {
    "name": "NOAA Ocean Service: How much oxygen comes from the ocean?",
    "url": "https://oceanservice.noaa.gov/facts/ocean-oxygen.html"
@@ -1587,7 +1587,7 @@
   "id": "oc20",
   "topic": "oceans",
   "level": "older",
-  "text": "Coral may look like rock or plants, but each coral is made of many tiny animals called polyps.",
+  "text": "Coral may look like rock or plants. But each coral is made up of many tiny animals. These animals are called polyps.",
   "source": {
    "name": "NOAA Ocean Exploration: Corals are animals",
    "url": "https://oceanexplorer.noaa.gov/facts/coral-animal.html"
@@ -1653,7 +1653,7 @@
   "id": "dr103",
   "topic": "dragons",
   "level": "younger",
-  "text": "Green sea turtles eat seaweed and sea grass. Scientists think this plant meal turns their body fat green, which gave them their name.",
+  "text": "Green sea turtles eat seaweed and sea grass. Scientists think this plant meal turns their body fat green. That gave them their name.",
   "source": {
    "name": "National Geographic Kids: Green sea turtle",
    "url": "https://www.natgeokids.com/nz/?p=8338"
@@ -1675,7 +1675,7 @@
   "id": "dr105",
   "topic": "dragons",
   "level": "younger",
-  "text": "A green sea turtle can rest underwater for several hours. When it is busy swimming, it comes up to breathe every few minutes.",
+  "text": "A green sea turtle can rest under the sea for hours. When it swims hard, it comes up for air every few minutes.",
   "source": {
    "name": "National Geographic Kids: Green sea turtle",
    "url": "https://www.natgeokids.com/nz/?p=8338"
@@ -1686,7 +1686,7 @@
   "id": "dr106",
   "topic": "dragons",
   "level": "younger",
-  "text": "Flying snakes of Southeast Asia can glide through the air from tree to tree. They flatten their bodies to about twice their normal width.",
+  "text": "Flying snakes of Southeast Asia can glide through the air. They glide from tree to tree. They flatten their bodies to about twice their normal width.",
   "source": {
    "name": "National Geographic: Flying snakes",
    "url": "https://www.nationalgeographic.com/animals/reptiles/facts/flying-snakes"
@@ -1741,7 +1741,7 @@
   "id": "dr112",
   "topic": "dragons",
   "level": "older",
-  "text": "A dragonfly has five eyes. Its two large eyes are made of thousands of tiny lenses, and some kinds can even see ultraviolet light that people cannot see.",
+  "text": "A dragonfly has five eyes. Its two large eyes are made of thousands of tiny lenses. Some kinds can even see ultraviolet light that people cannot see.",
   "source": {
    "name": "NPS: Species Spotlight Dragonflies",
    "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
@@ -1763,7 +1763,7 @@
   "id": "dr114",
   "topic": "dragons",
   "level": "older",
-  "text": "A young dragonfly lives underwater and sheds its skin six to fifteen times as it grows. After it climbs out as an adult, it takes several hours for its wings to fill and its body to harden.",
+  "text": "A young dragonfly lives underwater and sheds its skin six to fifteen times as it grows. After it climbs out as an adult, its wings take several hours to fill and its body to harden.",
   "source": {
    "name": "NPS: Species Spotlight Dragonflies",
    "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
@@ -1774,7 +1774,7 @@
   "id": "dr115",
   "topic": "dragons",
   "level": "younger",
-  "text": "Most of the life of a dragonfly is spent as a young insect in the water. It grows wings only at the very end.",
+  "text": "Most of the life of a dragonfly is spent in the water. It is a young insect then. It grows wings only at the very end.",
   "source": {
    "name": "NPS: Species Spotlight Dragonflies",
    "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
@@ -1785,7 +1785,7 @@
   "id": "dr116",
   "topic": "dragons",
   "level": "younger",
-  "text": "Dragonflies can fly sideways as easily as forward. They can make sharp turns in the air faster than most other insects.",
+  "text": "Dragonflies can fly to the side as well as forward. They can make sharp turns in the air. They turn faster than most other insects.",
   "source": {
    "name": "NPS: Species Spotlight Dragonflies",
    "url": "https://www.nps.gov/articles/species-spotlight-dragonflies.htm"
@@ -1796,7 +1796,7 @@
   "id": "an101",
   "topic": "animals",
   "level": "younger",
-  "text": "A red panda can munch about twenty thousand bamboo leaves in one day.",
+  "text": "A red panda eats bamboo leaves. It can eat about twenty thousand a day.",
   "source": {
    "name": "Nat Geo Kids: Red Panda",
    "url": "https://kids.nationalgeographic.com/animals/mammals/facts/red-panda"
@@ -1818,7 +1818,7 @@
   "id": "an103",
   "topic": "animals",
   "level": "younger",
-  "text": "A wombat digs long tunnels with its strong claws. The tunnels make a cozy home underground.",
+  "text": "A wombat digs long tunnels with its strong claws. The tunnels make a cozy home under the ground.",
   "source": {
    "name": "San Diego Zoo: Wombat",
    "url": "https://animals.sandiegozoo.org/animals/wombat"
@@ -1840,7 +1840,7 @@
   "id": "an105",
   "topic": "animals",
   "level": "younger",
-  "text": "A beaver slaps its flat tail on the water to make a loud splash. It also uses the tail to help it swim.",
+  "text": "A beaver slaps its flat tail on the water. This makes a loud splash. It also uses the tail to help it swim.",
   "source": {
    "name": "Smithsonian National Zoo: Beaver",
    "url": "https://nationalzoo.si.edu/animals/beaver"
@@ -1928,7 +1928,7 @@
   "id": "an113",
   "topic": "animals",
   "level": "younger",
-  "text": "Gorillas build a new nest of leaves and branches to sleep in each night.",
+  "text": "Gorillas build a new nest of leaves and branches. They sleep in it each night.",
   "source": {
    "name": "San Diego Zoo: Gorilla",
    "url": "https://animals.sandiegozoo.org/animals/gorilla"
@@ -1950,7 +1950,7 @@
   "id": "an115",
   "topic": "animals",
   "level": "younger",
-  "text": "When a hedgehog feels unsafe, it curls into a tight ball. Its spiky coat then points in every direction.",
+  "text": "When a hedgehog feels in danger, it curls into a tight ball. Its spiky coat then points every way.",
   "source": {
    "name": "San Diego Zoo: Hedgehog",
    "url": "https://animals.sandiegozoo.org/animals/hedgehog"
@@ -2038,7 +2038,7 @@
   "id": "an123",
   "topic": "animals",
   "level": "younger",
-  "text": "An ostrich is the biggest bird in the world. It cannot fly, but it can run very fast on its long legs.",
+  "text": "An ostrich is the biggest bird in the world. It cannot fly. But it can run very fast on its long legs.",
   "source": {
    "name": "Smithsonian National Zoo: Ostrich",
    "url": "https://nationalzoo.si.edu/animals/ostrich"
@@ -2093,7 +2093,7 @@
   "id": "an128",
   "topic": "animals",
   "level": "older",
-  "text": "Squirrels use their bushy tails for balance when they leap from branch to branch, a bit like a tightrope walker uses a long pole.",
+  "text": "Squirrels use their bushy tails for balance when they leap from branch to branch. This is a bit like a tightrope walker using a long pole.",
   "source": {
    "name": "University of Notre Dame: Springing Squirrels",
    "url": "https://sites.nd.edu/biomechanics-in-the-wild/2024/11/06/springing-squirrels-the-mechanics-of-squirrel-leaping-and-landing/"
@@ -2104,7 +2104,7 @@
   "id": "sp101",
   "topic": "space",
   "level": "younger",
-  "text": "Mercury is the smallest planet in our solar system. It is only a little more than one third as wide as the Earth.",
+  "text": "Mercury is the smallest planet in our solar system. It is a little more than one third as wide as Earth.",
   "source": {
    "name": "NASA Science: Mercury facts",
    "url": "https://science.nasa.gov/mercury/facts/"
@@ -2126,7 +2126,7 @@
   "id": "sp103",
   "topic": "space",
   "level": "older",
-  "text": "One full day and night on Mercury, from one sunrise to the next, lasts about a hundred and seventy six Earth days. That is twice as long as a year on Mercury.",
+  "text": "One full day and night on Mercury is from one sunrise to the next. It lasts about a hundred and seventy six Earth days. That is twice as long as a year on Mercury.",
   "source": {
    "name": "NASA Science: Mercury facts",
    "url": "https://science.nasa.gov/mercury/facts/"
@@ -2148,7 +2148,7 @@
   "id": "sp105",
   "topic": "space",
   "level": "younger",
-  "text": "Only the Sun and the Moon look brighter in our sky than Venus. Many people mistake it for a very bright star.",
+  "text": "Only the Sun and the Moon look brighter than Venus. Many people mistake it for a very bright star.",
   "source": {
    "name": "NASA Science: Venus facts",
    "url": "https://science.nasa.gov/venus/venus-facts/"
@@ -2170,7 +2170,7 @@
   "id": "sp107",
   "topic": "space",
   "level": "younger",
-  "text": "Almost all of the water on our planet is salty ocean water. Only a small part is fresh water that we can drink.",
+  "text": "Almost all water on Earth is salty ocean water. Only a small part is fresh water, the kind we drink.",
   "source": {
    "name": "NASA Science: Earth facts",
    "url": "https://science.nasa.gov/earth/facts/"
@@ -2236,7 +2236,7 @@
   "id": "sp114",
   "topic": "space",
   "level": "older",
-  "text": "Sunlight takes about thirteen minutes to reach Mars, because Mars is much farther from the Sun than the Earth is.",
+  "text": "Sunlight takes about thirteen minutes to reach Mars. This is because Mars is much farther from the Sun than Earth is.",
   "source": {
    "name": "NASA Science: Mars facts",
    "url": "https://science.nasa.gov/mars/facts/"
@@ -2269,7 +2269,7 @@
   "id": "sp117",
   "topic": "space",
   "level": "older",
-  "text": "In sixteen ten, Galileo Galilei spotted four moons circling Jupiter. They are named Io, Europa, Ganymede and Callisto.",
+  "text": "In sixteen ten, Galileo Galilei spotted four moons circling Jupiter. They are named Io, Europa, Ganymede and Callisto. Today they are called the Galilean moons.",
   "source": {
    "name": "NASA Science: Jupiter facts",
    "url": "https://science.nasa.gov/jupiter/facts/"
@@ -2280,7 +2280,7 @@
   "id": "sp118",
   "topic": "space",
   "level": "younger",
-  "text": "Ganymede is a moon of Jupiter, and it is the biggest moon in the solar system. It is even bigger than the planet Mercury.",
+  "text": "Ganymede is a moon of Jupiter. It is the biggest moon in the solar system. It is even bigger than the planet Mercury.",
   "source": {
    "name": "NASA Science: Jupiter facts",
    "url": "https://science.nasa.gov/jupiter/facts/"
@@ -2324,7 +2324,7 @@
   "id": "sp122",
   "topic": "space",
   "level": "older",
-  "text": "Neptune was found with math. An astronomer used odd wobbles in the path of another planet to predict where to look, and the planet was spotted in eighteen forty six.",
+  "text": "Neptune was found with math. An astronomer used odd wobbles in the path of another planet to predict where to look. The planet was spotted in eighteen forty six.",
   "source": {
    "name": "NASA Science: Neptune facts",
    "url": "https://science.nasa.gov/neptune/facts/"
@@ -2335,7 +2335,7 @@
   "id": "sp123",
   "topic": "space",
   "level": "younger",
-  "text": "Neptune looks blue. A gas called methane in its air soaks up other colors, so more blue light bounces back to us.",
+  "text": "Neptune looks blue. A gas called methane is in its air. It soaks up other colors. So more blue light bounces back to us.",
   "source": {
    "name": "NASA Science: Neptune facts",
    "url": "https://science.nasa.gov/neptune/facts/"
@@ -2379,7 +2379,7 @@
   "id": "sp127",
   "topic": "space",
   "level": "younger",
-  "text": "Almost all of the stuff in our solar system is in the Sun. All the planets together are only a tiny part.",
+  "text": "Almost all the stuff in our solar system is in the Sun. All the planets add up to just a tiny part.",
   "source": {
    "name": "NASA Science: Sun facts",
    "url": "https://science.nasa.gov/sun/facts/"
@@ -2401,7 +2401,7 @@
   "id": "sp129",
   "topic": "space",
   "level": "older",
-  "text": "Sunspots are dark patches on the surface of the Sun. Some are far wider than the whole Earth.",
+  "text": "Sunspots are dark patches on the surface of the Sun. Some of them are far wider than the whole Earth.",
   "source": {
    "name": "NASA Science: Sun facts",
    "url": "https://science.nasa.gov/sun/facts/"
@@ -2445,7 +2445,7 @@
   "id": "sp133",
   "topic": "space",
   "level": "younger",
-  "text": "Gravity on the Moon is only one sixth as strong as on the Earth. That is why astronauts seemed to bounce when they walked.",
+  "text": "Gravity on the Moon is one sixth as strong as on Earth. That is why astronauts seemed to bounce when they walked.",
   "source": {
    "name": "NASA Science: Moon facts",
    "url": "https://science.nasa.gov/moon/facts/"
@@ -2456,7 +2456,7 @@
   "id": "sp134",
   "topic": "space",
   "level": "younger",
-  "text": "Apollo astronauts brought back more than eight hundred pounds of Moon rock and dust for scientists to study.",
+  "text": "The Apollo crews brought home over eight hundred pounds of Moon rock. Scientists study it to learn about the Moon.",
   "source": {
    "name": "NASA Science: Moon facts",
    "url": "https://science.nasa.gov/moon/facts/"
@@ -2489,7 +2489,7 @@
   "id": "sp137",
   "topic": "space",
   "level": "older",
-  "text": "The first people landed on the Moon in July of nineteen sixty nine, during a mission called Apollo eleven.",
+  "text": "The first people landed on the Moon. This was in July of nineteen sixty nine. The mission was called Apollo eleven.",
   "source": {
    "name": "NASA Space Place: All About the Moon",
    "url": "https://spaceplace.nasa.gov/all-about-the-moon/en/"
@@ -2511,7 +2511,7 @@
   "id": "sp139",
   "topic": "space",
   "level": "older",
-  "text": "The Hubble telescope has helped scientists learn what the air is made of on planets that circle other stars.",
+  "text": "The Hubble telescope has helped scientists learn what the air is made of on planets. These planets circle other stars.",
   "source": {
    "name": "NASA Science: Hubble",
    "url": "https://science.nasa.gov/mission/hubble/"
@@ -2522,7 +2522,7 @@
   "id": "sp140",
   "topic": "space",
   "level": "younger",
-  "text": "The Webb telescope has a giant mirror covered with a thin layer of gold. It was built to look at the sky in infrared light.",
+  "text": "The Webb telescope has a giant mirror. The mirror has a thin layer of gold. It was built to look at the sky in infrared light.",
   "source": {
    "name": "NASA Science: Webb",
    "url": "https://science.nasa.gov/mission/webb/"
@@ -2555,7 +2555,7 @@
   "id": "sp143",
   "topic": "space",
   "level": "older",
-  "text": "Voyager one turned its camera back and took a picture of the Earth from about three point seven billion miles away. The Earth looked like a tiny speck of dust in a sunbeam.",
+  "text": "Voyager one turned its camera back. It took a picture of the Earth from about three point seven billion miles away. The Earth looked like a tiny speck of dust in a sunbeam.",
   "source": {
    "name": "NASA Science: Voyager",
    "url": "https://science.nasa.gov/mission/voyager/"
@@ -2566,7 +2566,7 @@
   "id": "sp144",
   "topic": "space",
   "level": "older",
-  "text": "Voyager one and Voyager two both flew out past the bubble of particles and magnetic fields around the Sun, into the space between the stars.",
+  "text": "Voyager one and Voyager two flew out past the bubble around the Sun. This bubble is made of particles and magnetic fields. They went into the space between the stars.",
   "source": {
    "name": "NASA Science: Voyager",
    "url": "https://science.nasa.gov/mission/voyager/"
@@ -2654,7 +2654,7 @@
   "id": "ea108",
   "topic": "earth",
   "level": "younger",
-  "text": "Sand dunes cover only about one quarter of the Sahara. Most of this big desert is not sandy at all.",
+  "text": "Sand dunes cover only about one fourth of the Sahara. Most of this big desert is not sandy at all.",
   "source": {
    "name": "Britannica Kids: Sahara",
    "url": "https://kids.britannica.com/students/article/Sahara/108296"
@@ -2665,7 +2665,7 @@
   "id": "ea109",
   "topic": "earth",
   "level": "younger",
-  "text": "People in the Sahara grow date palms at oases. An oasis is a spot where water can be found in the desert.",
+  "text": "People in the Sahara grow date palms at oases. An oasis is a spot with water in the desert.",
   "source": {
    "name": "Britannica Kids: Sahara",
    "url": "https://kids.britannica.com/students/article/Sahara/108296"
@@ -2676,7 +2676,7 @@
   "id": "ea110",
   "topic": "earth",
   "level": "older",
-  "text": "Mount Kilimanjaro in Tanzania is the tallest mountain in Africa. It is about nineteen thousand feet high.",
+  "text": "Mount Kilimanjaro is a mountain in Tanzania. It is the tallest mountain in Africa. It is about nineteen thousand feet high.",
   "source": {
    "name": "National Geographic Education: Kilimanjaro",
    "url": "https://education.nationalgeographic.org/resource/kilimanjaro"
@@ -2808,7 +2808,7 @@
   "id": "we104",
   "topic": "weather",
   "level": "younger",
-  "text": "Some clouds look like rows of little puffs. They are made of tiny drops of liquid water and hardly ever bring rain.",
+  "text": "Some clouds look like rows of little puffs. They are made of tiny drops of liquid water. They hardly ever bring rain.",
   "source": {
    "name": "NOAA SciJinks: Types of clouds",
    "url": "https://scijinks.gov/about/k-12-education/atmosphere/types-of-clouds"
@@ -2907,7 +2907,7 @@
   "id": "we113",
   "topic": "weather",
   "level": "older",
-  "text": "When the air is cold enough, clouds can make snow, sleet or freezing rain instead of plain rain.",
+  "text": "When the air is cold enough, clouds can make snow, sleet or freezing rain. They make these instead of plain rain.",
   "source": {
    "name": "NASA: What are clouds? (grades K-4)",
    "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
@@ -2929,7 +2929,7 @@
   "id": "we115",
   "topic": "weather",
   "level": "older",
-  "text": "Scientists use satellites to study clouds from space. The pictures help them learn about the weather on Earth.",
+  "text": "Scientists use satellites to study clouds from space. The pictures from space help them learn about the weather on Earth.",
   "source": {
    "name": "NASA: What are clouds? (grades K-4)",
    "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-are-clouds-grades-k-4"
@@ -2962,7 +2962,7 @@
   "id": "we119",
   "topic": "weather",
   "level": "older",
-  "text": "In the year eighteen sixty one, the town of Cherrapunji in India measured about nine hundred inches of rain in a single year.",
+  "text": "In eighteen sixty one, the town of Cherrapunji in India measured about nine hundred inches of rain. This rain fell in a single year.",
   "source": {
    "name": "USGS Water Science School: Rain and precipitation",
    "url": "https://www.usgs.gov/special-topics/water-science-school/science/rain-and-precipitation"
@@ -3039,7 +3039,7 @@
   "id": "we127",
   "topic": "weather",
   "level": "younger",
-  "text": "Space looks black because it has almost no air. With no air molecules, there is nothing to scatter the sunlight.",
+  "text": "Space looks black because it has almost no air. With so little air, there is almost nothing to scatter the sunlight.",
   "source": {
    "name": "NWS Flagstaff: Why is the sky blue",
    "url": "https://www.weather.gov/fgz/SkyBlue"
@@ -3072,7 +3072,7 @@
   "id": "we130",
   "topic": "weather",
   "level": "older",
-  "text": "Extra bits in the air, such as dust, can make a sunrise or a sunset look more colorful.",
+  "text": "There are extra bits in the air, such as dust. They can make a sunrise or a sunset look more colorful.",
   "source": {
    "name": "NWS Flagstaff: Why is the sky blue",
    "url": "https://www.weather.gov/fgz/SkyBlue"
@@ -3094,7 +3094,7 @@
   "id": "we132",
   "topic": "weather",
   "level": "older",
-  "text": "The axis of the Earth leans about twenty three degrees. It points the same way all year long while the Earth travels around the Sun, and that tilt makes the seasons.",
+  "text": "The axis of the Earth leans about twenty three degrees. It points the same way all year long while the Earth travels around the Sun. That tilt makes the seasons.",
   "source": {
    "name": "NOAA NESDIS: Why does Earth have seasons",
    "url": "https://www.nesdis.noaa.gov/about/k-12-education/understanding-our-planet/why-does-earth-have-seasons"
@@ -3116,7 +3116,7 @@
   "id": "we134",
   "topic": "weather",
   "level": "younger",
-  "text": "When it is summer in the north half of the world, it is winter in the south half. The seasons are opposite.",
+  "text": "When the north has summer, the south has winter. The seasons are opposite in each half of the world.",
   "source": {
    "name": "NOAA NESDIS: Why does Earth have seasons",
    "url": "https://www.nesdis.noaa.gov/about/k-12-education/understanding-our-planet/why-does-earth-have-seasons"
@@ -3160,7 +3160,7 @@
   "id": "we138",
   "topic": "weather",
   "level": "younger",
-  "text": "When the Sun is high, you see only a small rainbow arc near the ground. A lower Sun gives a taller arc.",
+  "text": "When the Sun is high, you see only a small rainbow arc. A lower Sun gives a taller arc.",
   "source": {
    "name": "Met Office: Rainbows",
    "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/rainbows"
@@ -3182,7 +3182,7 @@
   "id": "we140",
   "topic": "weather",
   "level": "younger",
-  "text": "Moonlight can make a rainbow too, called a moonbow. It usually looks white to our eyes and needs a bright, nearly full Moon.",
+  "text": "Moonlight can make a rainbow too, called a moonbow. It usually looks white to our eyes. It needs a bright, nearly full Moon.",
   "source": {
    "name": "Met Office: Rainbows",
    "url": "https://weather.metoffice.gov.uk/learn-about/weather/optical-effects/rainbows"
@@ -3215,7 +3215,7 @@
   "id": "we143",
   "topic": "weather",
   "level": "younger",
-  "text": "In the main bow of a rainbow, red is on the outside edge and violet is along the inside edge.",
+  "text": "The main bow of a rainbow has red on the outside edge. Violet is along the inside edge.",
   "source": {
    "name": "NWS Flagstaff: Rainbows",
    "url": "https://www.weather.gov/fgz/Rainbow"
@@ -3248,7 +3248,7 @@
   "id": "we146",
   "topic": "weather",
   "level": "older",
-  "text": "People see auroras most often in far northern places like Canada, Greenland and Alaska.",
+  "text": "People see auroras most often in far northern places. Canada, Greenland and Alaska are some of the best places to see them.",
   "source": {
    "name": "NOAA SciJinks: Aurora art",
    "url": "https://scijinks.gov/about/k-12-education/optical-phenomena/aurora-art"
@@ -3259,7 +3259,7 @@
   "id": "we147",
   "topic": "weather",
   "level": "older",
-  "text": "Auroras can be photographed from space. Astronauts on the International Space Station and satellites have both taken pictures of them.",
+  "text": "Auroras can be photographed from space. Astronauts on the space station took pictures of them. Satellites took pictures of them too.",
   "source": {
    "name": "NOAA SciJinks: Aurora art",
    "url": "https://scijinks.gov/about/k-12-education/optical-phenomena/aurora-art"
@@ -3336,7 +3336,7 @@
   "id": "oc108",
   "topic": "oceans",
   "level": "younger",
-  "text": "A pygmy squid is so small that it could sit on the tip of your finger.",
+  "text": "A pygmy squid is very small. It could sit on the tip of your finger.",
   "source": {
    "name": "Smithsonian Ocean: Cephalopods",
    "url": "https://ocean.si.edu/ocean-life/invertebrates/octopuses-squids-and-relatives"
@@ -3347,7 +3347,7 @@
   "id": "oc109",
   "topic": "oceans",
   "level": "younger",
-  "text": "A big California sea lion can grow as long as eight feet and weigh up to one thousand pounds.",
+  "text": "A big California sea lion can grow to eight feet long. It can weigh up to one thousand pounds.",
   "source": {
    "name": "National Geographic Kids: California sea lion",
    "url": "https://kids.nationalgeographic.com/animals/mammals/facts/california-sea-lion"
@@ -3391,7 +3391,7 @@
   "id": "oc113",
   "topic": "oceans",
   "level": "younger",
-  "text": "The ocean is very deep. On average, it is a little more than two miles from the top to the bottom.",
+  "text": "The ocean is very deep. On average, it is a little more than two miles deep.",
   "source": {
    "name": "National Geographic Kids: Ocean habitat",
    "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
@@ -3402,7 +3402,7 @@
   "id": "oc114",
   "topic": "oceans",
   "level": "older",
-  "text": "Scientists think there may be as many as seven hundred thousand kinds of sea life, and most of them have not been named yet.",
+  "text": "Scientists think there may be as many as seven hundred thousand kinds of sea life. Most of them have not been named yet.",
   "source": {
    "name": "National Geographic Kids: Ocean habitat",
    "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
@@ -3413,7 +3413,7 @@
   "id": "oc115",
   "topic": "oceans",
   "level": "older",
-  "text": "About ninety five percent of sea animals are invertebrates, which means they have no backbone. Crabs, jellyfish, and octopuses are all invertebrates.",
+  "text": "About ninety five percent of sea animals have no backbone. Crabs, jellyfish, and octopuses are all animals with no backbone.",
   "source": {
    "name": "National Geographic Kids: Ocean habitat",
    "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
@@ -3424,7 +3424,7 @@
   "id": "oc116",
   "topic": "oceans",
   "level": "younger",
-  "text": "Some giant manta rays have wings that stretch twenty feet from tip to tip. That is wider than most cars are long.",
+  "text": "Some giant manta rays have wings. The wings stretch twenty feet from tip to tip. That is wider than most cars are long.",
   "source": {
    "name": "National Geographic Kids: Ocean habitat",
    "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
@@ -3446,7 +3446,7 @@
   "id": "oc118",
   "topic": "oceans",
   "level": "older",
-  "text": "Temperature, depth, and distance from shore all decide which plants and animals can live in a part of the ocean.",
+  "text": "Temperature, depth, and distance from shore all matter in the ocean. Together they decide which plants and animals can live in each part.",
   "source": {
    "name": "National Geographic Kids: Ocean habitat",
    "url": "https://kids.nationalgeographic.com/nature/habitats/article/ocean"
@@ -3457,7 +3457,7 @@
   "id": "oc119",
   "topic": "oceans",
   "level": "older",
-  "text": "One study by ocean scientists found that about three quarters of the animals in the deep sea make their own light.",
+  "text": "Ocean scientists did a study of animals in the deep sea. They found that about three quarters of them make their own light.",
   "source": {
    "name": "Monterey Bay Aquarium: Bioluminescence",
    "url": "https://www.montereybayaquarium.org/about-us/stories/bioluminescence"
@@ -3468,7 +3468,7 @@
   "id": "oc121",
   "topic": "oceans",
   "level": "older",
-  "text": "Most light made by ocean animals is blue green, probably because those colors travel the farthest through sea water.",
+  "text": "Most light made by ocean animals is blue green. This is probably because those colors travel the farthest through sea water.",
   "source": {
    "name": "Monterey Bay Aquarium: Bioluminescence",
    "url": "https://www.montereybayaquarium.org/about-us/stories/bioluminescence"
@@ -3490,7 +3490,7 @@
   "id": "oc123",
   "topic": "oceans",
   "level": "younger",
-  "text": "A lanternfish has tiny lights along its belly. Some also have a light by the nose that works like a headlight.",
+  "text": "A lanternfish has tiny lights along its belly. Some also have a light by the nose. It works like a headlight.",
   "source": {
    "name": "Smithsonian Ocean: Lanternfish",
    "url": "https://ocean.si.edu/ocean-life/fish/lanternfish"
@@ -3501,7 +3501,7 @@
   "id": "oc124",
   "topic": "oceans",
   "level": "older",
-  "text": "The Moon has about twice as much effect on our ocean tides as the Sun does, because the Moon is so much closer to the Earth.",
+  "text": "The Moon has about twice as much effect on our ocean tides as the Sun does. This is because the Moon is so much closer to the Earth.",
   "source": {
    "name": "NOAA Ocean Service: Tides tutorial",
    "url": "https://oceanservice.noaa.gov/education/tutorial_tides/lessons/ups_downs.html"
@@ -3556,7 +3556,7 @@
   "id": "oc129",
   "topic": "oceans",
   "level": "younger",
-  "text": "Coral can grow on old ships that were sunk on purpose to make new homes for fish. Over time, the ships turn into reefs.",
+  "text": "Coral can grow on old ships. The ships were sunk on purpose to make new homes for fish. Over time, the ships turn into reefs.",
   "source": {
    "name": "Smithsonian Ocean: Coral reefs",
    "url": "https://ocean.si.edu/ecosystems/coral-reefs"
@@ -3589,7 +3589,7 @@
   "id": "oc132",
   "topic": "oceans",
   "level": "older",
-  "text": "Tiny algae live inside coral polyps. The algae and the polyps share a partnership that helps them both.",
+  "text": "Tiny algae live inside coral polyps. The algae and the polyps share a partnership. This partnership helps both of them.",
   "source": {
    "name": "Smithsonian Ocean: Coral reefs",
    "url": "https://ocean.si.edu/ecosystems/coral-reefs"
@@ -3655,7 +3655,7 @@
   "id": "oc138",
   "topic": "oceans",
   "level": "younger",
-  "text": "Elephant seals are the biggest seals. They can be longer than twenty feet and weigh more than eight thousand pounds.",
+  "text": "Elephant seals are the biggest seals. They can be longer than twenty feet. They can weigh more than eight thousand pounds.",
   "source": {
    "name": "Britannica Kids: Seal",
    "url": "https://kids.britannica.com/kids/article/seal/353754"
@@ -3666,7 +3666,7 @@
   "id": "an129",
   "topic": "animals",
   "level": "younger",
-  "text": "Seven spotted ladybugs are red or orange. They have three spots on each side and one spot in the middle.",
+  "text": "Seven spotted ladybugs are red or orange. They have three spots on each side. They have one spot in the middle.",
   "source": {
    "name": "National Geographic Kids: Ladybug",
    "url": "https://kids.nationalgeographic.com/animals/invertebrates/facts/ladybug"
@@ -3688,7 +3688,7 @@
   "id": "an131",
   "topic": "animals",
   "level": "younger",
-  "text": "Fireflies are not flies at all. They are a kind of beetle that can light up in the dark.",
+  "text": "Fireflies are not flies at all. They are beetles that can light up in the dark.",
   "source": {
    "name": "Smithsonian Magazine: 14 fun facts about fireflies",
    "url": "https://www.smithsonianmag.com/science-nature/14-fun-facts-about-fireflies-142999290/"
@@ -3699,7 +3699,7 @@
   "id": "an132",
   "topic": "animals",
   "level": "older",
-  "text": "Many kinds of fireflies have their own special pattern of flashes. Their light can be yellow, green, or orange.",
+  "text": "Many kinds of fireflies have their own special pattern of flashes. Their light can be yellow, green, or orange in color.",
   "source": {
    "name": "Smithsonian Magazine: 14 fun facts about fireflies",
    "url": "https://www.smithsonianmag.com/science-nature/14-fun-facts-about-fireflies-142999290/"
@@ -3710,7 +3710,7 @@
   "id": "an133",
   "topic": "animals",
   "level": "younger",
-  "text": "Monarch butterflies have orange wings with black lines and white dots along the edges. Their wings are about as wide as your hand.",
+  "text": "Monarch butterflies have orange wings. The wings have black lines and white dots on the edges. Their wings are about as wide as your hand.",
   "source": {
    "name": "National Geographic: Monarch butterfly",
    "url": "https://www.nationalgeographic.com/animals/invertebrates/facts/monarch-butterfly"
@@ -3776,7 +3776,7 @@
   "id": "an141",
   "topic": "animals",
   "level": "younger",
-  "text": "Crickets chirp by rubbing their front wings together. Warmer weather makes them chirp faster.",
+  "text": "Crickets rub their front wings together to chirp. When it gets warmer, they chirp faster.",
   "source": {
    "name": "Britannica Kids: Cricket",
    "url": "https://kids.britannica.com/kids/article/cricket/353014"
@@ -3787,7 +3787,7 @@
   "id": "an143",
   "topic": "animals",
   "level": "younger",
-  "text": "A frog starts as an egg. The egg hatches into a tadpole with a long tail and gills, just like a fish.",
+  "text": "A frog starts as an egg. The egg hatches into a tadpole. The tadpole has a long tail and gills, just like a fish.",
   "source": {
    "name": "Britannica Kids: Frog",
    "url": "https://kids.britannica.com/students/article/frog/585335"
@@ -3820,7 +3820,7 @@
   "id": "an146",
   "topic": "animals",
   "level": "younger",
-  "text": "An axolotl is a salamander with feathery gills that stick out behind its head. It lives in the water its whole life.",
+  "text": "An axolotl is a salamander with feathery gills. The gills stick out behind its head. It lives in water its whole life.",
   "source": {
    "name": "Britannica Kids: Axolotl",
    "url": "https://kids.britannica.com/students/article/axolotl/631212"
@@ -3974,7 +3974,7 @@
   "id": "an160",
   "topic": "animals",
   "level": "younger",
-  "text": "Some kinds of cows, such as Jersey and Holstein cows, are raised mainly for their milk. Milk can be made into cheese and butter.",
+  "text": "Some cows are raised mainly for their milk. Jersey and Holstein cows are two kinds. Milk can be made into cheese and butter.",
   "source": {
    "name": "Britannica Kids: Cattle",
    "url": "https://kids.britannica.com/kids/article/cattle/352928"
@@ -4051,7 +4051,7 @@
   "id": "an167",
   "topic": "animals",
   "level": "younger",
-  "text": "Both hens and roosters have a comb. It is a bit of skin that sticks up from the top of the head.",
+  "text": "Both hens and roosters have a comb. A comb is a bit of skin. It sticks up from the top of the head.",
   "source": {
    "name": "Britannica Kids: Chicken",
    "url": "https://kids.britannica.com/kids/article/chicken/352949"
@@ -4095,7 +4095,7 @@
   "id": "ea122",
   "topic": "earth",
   "level": "older",
-  "text": "The North Rim of the Grand Canyon is about a thousand feet higher than the South Rim. The rims are only about ten miles apart in a straight line, but hiking between them takes about twenty one miles.",
+  "text": "The North Rim of the Grand Canyon is about a thousand feet higher than the South Rim. The rims are only about ten miles apart in a straight line. Hiking between them takes about twenty one miles.",
   "source": {
    "name": "NPS Grand Canyon FAQ",
    "url": "https://nps.gov/grca/faqs.htm"
@@ -4128,7 +4128,7 @@
   "id": "ea125",
   "topic": "earth",
   "level": "younger",
-  "text": "Niagara Falls is very loud and misty. Visitors can ride boats close to the bottom of the falls and feel the cool spray on their faces.",
+  "text": "Niagara Falls is very loud and misty. People can ride boats close to the bottom of the falls. They can feel the cool spray on their faces.",
   "source": {
    "name": "Britannica Kids Niagara Falls",
    "url": "https://kids.britannica.com/students/article/276083"
@@ -4139,7 +4139,7 @@
   "id": "ea126",
   "topic": "earth",
   "level": "older",
-  "text": "The Niagara River flows from Lake Erie to Lake Ontario, and the falls sit between New York and Ontario. Big power plants nearby use the moving water to make electricity.",
+  "text": "The Niagara River flows from Lake Erie to Lake Ontario. The falls sit between New York and Ontario. Big power plants nearby use the moving water to make electricity.",
   "source": {
    "name": "Britannica Kids: Niagara Falls",
    "url": "https://kids.britannica.com/students/article/276083"
@@ -4172,7 +4172,7 @@
   "id": "ea132",
   "topic": "earth",
   "level": "younger",
-  "text": "Deep inside Mammoth Cave, the air stays cool all year, at about fifty four degrees Fahrenheit.",
+  "text": "Deep inside Mammoth Cave, the air stays cool all year. It stays at about fifty four degrees Fahrenheit.",
   "source": {
    "name": "Britannica Mammoth Cave National Park",
    "url": "https://www.britannica.com:443/print/article/360973"
@@ -4194,7 +4194,7 @@
   "id": "ea134",
   "topic": "earth",
   "level": "younger",
-  "text": "Some stone shapes in Mammoth Cave have fun names, such as Frozen Niagara.",
+  "text": "Some stone shapes in Mammoth Cave have fun names. One name is Frozen Niagara.",
   "source": {
    "name": "Britannica Mammoth Cave National Park",
    "url": "https://www.britannica.com:443/print/article/360973"
@@ -4205,7 +4205,7 @@
   "id": "ea135",
   "topic": "earth",
   "level": "younger",
-  "text": "Talc is the softest mineral. It is so soft that a fingernail can scratch it. Diamond is the hardest.",
+  "text": "Talc is the softest mineral. It is so soft that your nail can scratch it. Diamond is the hardest.",
   "source": {
    "name": "Minerals4Kids: Hardness",
    "url": "https://min4kids.org/?p=380"
@@ -4227,7 +4227,7 @@
   "id": "ea138",
   "topic": "earth",
   "level": "younger",
-  "text": "A copper coin can scratch some very soft minerals, such as talc and gypsum.",
+  "text": "A copper coin can scratch some very soft minerals. Talc and gypsum are two of them.",
   "source": {
    "name": "Minerals4Kids: Hardness",
    "url": "https://min4kids.org/?p=380"
@@ -4238,7 +4238,7 @@
   "id": "ea139",
   "topic": "earth",
   "level": "older",
-  "text": "Rocks come in three main kinds. Igneous rocks form when melted rock cools, sedimentary rocks form from pressed layers, and metamorphic rocks are changed by heat and pressure.",
+  "text": "Rocks come in three main kinds. Igneous rocks form when melted rock cools. Sedimentary rocks form from pressed layers. Metamorphic rocks are changed by heat and pressure.",
   "source": {
    "name": "NPS Teachers rock types lesson",
    "url": "https://www.nps.gov/teachers/classrooms/roca-roca-roca.htm"
@@ -4249,7 +4249,7 @@
   "id": "ea140",
   "topic": "earth",
   "level": "younger",
-  "text": "Granite forms when melted rock cools slowly underground. Basalt forms when lava cools at the surface.",
+  "text": "Granite forms when melted rock cools slowly deep in the ground. Basalt forms when lava cools on the surface.",
   "source": {
    "name": "NPS Teachers rock types lesson",
    "url": "https://www.nps.gov/teachers/classrooms/roca-roca-roca.htm"
@@ -4260,7 +4260,7 @@
   "id": "ea141",
   "topic": "earth",
   "level": "younger",
-  "text": "Sandstone and shale are rocks made of tiny bits pressed together in layers.",
+  "text": "Sandstone and shale are rocks made of tiny bits. These bits are pressed together in layers.",
   "source": {
    "name": "NPS Teachers rock types lesson",
    "url": "https://www.nps.gov/teachers/classrooms/roca-roca-roca.htm"
@@ -4271,7 +4271,7 @@
   "id": "ea142",
   "topic": "earth",
   "level": "younger",
-  "text": "Slate and gneiss are rocks that were changed by heat and pressure underground. Gneiss is said like the word nice.",
+  "text": "Slate and gneiss are rocks changed by deep heat and pressure. Gneiss is said like the word nice.",
   "source": {
    "name": "NPS Teachers rock types lesson",
    "url": "https://www.nps.gov/teachers/classrooms/roca-roca-roca.htm"
@@ -4293,7 +4293,7 @@
   "id": "ea144",
   "topic": "earth",
   "level": "younger",
-  "text": "Five small lakes sit at the northern base of Mount Fuji. On calm days, Lake Kawaguchi shows the mountain in its water like a mirror.",
+  "text": "Five small lakes sit at the northern base of Mount Fuji. On calm days, Lake Kawaguchi is like a mirror. It shows the mountain in its water.",
   "source": {
    "name": "Britannica Kids Mount Fuji",
    "url": "https://kids.britannica.com/students/article/Mount-Fuji-or-Fujiyama/274455"
@@ -4381,7 +4381,7 @@
   "id": "ea153",
   "topic": "earth",
   "level": "younger",
-  "text": "A gold nugget is a lump of gold that water has worn smooth. Many are as small as a pea or a nut.",
+  "text": "A gold nugget is a lump of gold. Water has worn it smooth. Many are as small as a pea or a nut.",
   "source": {
    "name": "Britannica nugget",
    "url": "https://www.britannica.com:443/science/nugget"
@@ -4414,7 +4414,7 @@
   "id": "sp146",
   "topic": "space",
   "level": "younger",
-  "text": "Astronauts sleep in sleeping bags that are strapped to a wall. They also use a sleep mask and earplugs to block out light and noise.",
+  "text": "Astronauts sleep in sleeping bags strapped to a wall. They also use a sleep mask and earplugs. These block out light and noise.",
   "source": {
    "name": "NASA Living and Working in Space fact sheet",
    "url": "https://www.nasa.gov/centers/johnson/pdf/167746main_FS_LivingandWorkinginSpace508c.pdf"
@@ -4436,7 +4436,7 @@
   "id": "sp148",
   "topic": "space",
   "level": "younger",
-  "text": "Astronauts on the space station exercise for about two hours every day. It keeps their muscles and bones strong.",
+  "text": "Astronauts on the space station work out for two hours a day. It keeps their muscles and bones strong.",
   "source": {
    "name": "NASA Living and Working in Space fact sheet",
    "url": "https://www.nasa.gov/centers/johnson/pdf/167746main_FS_LivingandWorkinginSpace508c.pdf"
@@ -4480,7 +4480,7 @@
   "id": "sp155",
   "topic": "space",
   "level": "older",
-  "text": "The backpack of a spacesuit stores oxygen, removes the carbon dioxide that an astronaut breathes out, and supplies electricity. A fan and a water tank are inside it too.",
+  "text": "The backpack of a spacesuit stores oxygen and gives power. It also takes away the carbon dioxide that astronauts breathe out. A fan and a water tank are inside it too.",
   "source": {
    "name": "NASA: What Is a Spacesuit? (grades K to 4)",
    "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-a-spacesuit-grades-k-4/"
@@ -4491,7 +4491,7 @@
   "id": "sp156",
   "topic": "space",
   "level": "younger",
-  "text": "A spacesuit is made of many layers. Each layer does a different job, like keeping the air inside the suit.",
+  "text": "A spacesuit is made of many layers. Each layer does a different job. One job is keeping the air inside the suit.",
   "source": {
    "name": "NASA: What Is a Spacesuit? (grades K to 4)",
    "url": "https://www.nasa.gov/learning-resources/for-kids-and-students/what-is-a-spacesuit-grades-k-4/"
@@ -4502,7 +4502,7 @@
   "id": "sp157",
   "topic": "space",
   "level": "younger",
-  "text": "A comet is a ball of ice, rock and dust. When it gets close to the Sun, it warms up and grows a long tail.",
+  "text": "A comet is a ball of ice, rock and dust. When it gets close to the Sun, it warms up. Then it grows a long tail.",
   "source": {
    "name": "NASA Space Place: Comet Fun Sheet",
    "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
@@ -4535,7 +4535,7 @@
   "id": "sp160",
   "topic": "space",
   "level": "younger",
-  "text": "The solid center of a comet is usually less than about six miles across. Its glowing cloud can be much bigger.",
+  "text": "The hard middle of a comet is small. It is usually less than about six miles across. Its glowing cloud can be much bigger.",
   "source": {
    "name": "NASA Space Place: Comet Fun Sheet",
    "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
@@ -4546,7 +4546,7 @@
   "id": "sp161",
   "topic": "space",
   "level": "younger",
-  "text": "Comet Halley comes back to our part of the sky about every seventy six years. It is next expected in the year twenty sixty one.",
+  "text": "Comet Halley comes back about every seventy six years. It should be back in twenty sixty one.",
   "source": {
    "name": "NASA Science: 1P Halley",
    "url": "https://science.nasa.gov/solar-system/comets/1p-halley"
@@ -4568,7 +4568,7 @@
   "id": "sp163",
   "topic": "space",
   "level": "older",
-  "text": "About once a year, a comet comes close enough and grows bright enough to be seen without a telescope.",
+  "text": "About once a year, a comet comes close enough and grows bright enough to see with just your eyes. No telescope is needed.",
   "source": {
    "name": "NASA Space Place: Comet Fun Sheet",
    "url": "https://spaceplace.nasa.gov/review/posters/stardust/comet_fun_sheet.pdf"
@@ -4579,7 +4579,7 @@
   "id": "sp164",
   "topic": "space",
   "level": "younger",
-  "text": "The Big Dipper is a group of stars that looks like a big ladle for dipping soup.",
+  "text": "The Big Dipper is a group of stars. It looks like a big ladle for dipping soup.",
   "source": {
    "name": "NASA Space Place: Star Finder",
    "url": "https://spaceplace.nasa.gov/starfinder2/en/"
@@ -4612,7 +4612,7 @@
   "id": "sp167",
   "topic": "space",
   "level": "older",
-  "text": "Which star patterns you can see depends on where you live and on the time of year, because the Earth travels around the Sun.",
+  "text": "The star patterns you can see depend on where you live. They also depend on the time of year. This is because the Earth travels around the Sun.",
   "source": {
    "name": "NASA Space Place: Star Finder",
    "url": "https://spaceplace.nasa.gov/starfinder2/en/"
@@ -4645,7 +4645,7 @@
   "id": "sp170",
   "topic": "space",
   "level": "younger",
-  "text": "Blue stars are hotter than red stars. The color of a star is a clue to how hot it is.",
+  "text": "Blue stars are hotter than red stars. The color of a star tells how hot it is.",
   "source": {
    "name": "NASA Imagine the Universe: star colors activity",
    "url": "https://imagine.gsfc.nasa.gov/science/activities/try_l1/stars_solution.html"
@@ -4656,7 +4656,7 @@
   "id": "sp171",
   "topic": "space",
   "level": "younger",
-  "text": "Apollo eleven had three astronauts. Neil Armstrong and Buzz Aldrin walked on the Moon, while Michael Collins circled above them.",
+  "text": "Apollo eleven had a crew of three. Neil Armstrong and Buzz Aldrin walked on the Moon. Michael Collins flew around it above them.",
   "source": {
    "name": "Britannica Kids: Apollo 11",
    "url": "https://kids.britannica.com/students/article/Apollo-11/631767"
@@ -4700,7 +4700,7 @@
   "id": "sp176",
   "topic": "space",
   "level": "older",
-  "text": "Apollo eleven astronauts left a seismometer on the Moon to measure moonquakes. They also set up a reflector that bounces laser beams back to the Earth.",
+  "text": "Apollo eleven astronauts left a tool on the Moon to measure moonquakes. They also set up a mirror. It sends laser light back to Earth.",
   "source": {
    "name": "NASA Apollo 11 Press Kit",
    "url": "https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/Apollo11_Press-Kit_restored.pdf"
@@ -4711,7 +4711,7 @@
   "id": "sp179",
   "topic": "space",
   "level": "younger",
-  "text": "The whole Apollo eleven trip to the Moon and back took about eight days.",
+  "text": "The whole Apollo eleven trip went to the Moon and back. It took about eight days.",
   "source": {
    "name": "NASA Apollo 11 Press Kit",
    "url": "https://www.nasa.gov/wp-content/uploads/static/history/alsj/a11/Apollo11_Press-Kit_restored.pdf"
@@ -4744,7 +4744,7 @@
   "id": "dr119",
   "topic": "dragons",
   "level": "younger",
-  "text": "Basilisk lizards can run across the top of the water on their back legs. After about fifteen feet, they sink down and swim.",
+  "text": "Basilisk lizards can run on water. They use their back legs. After about fifteen feet, they sink and swim.",
   "source": {
    "name": "National Geographic: basilisks walk on water",
    "url": "https://www.nationalgeographic.com/animals/2004/06/news-jesus-lizards-basilisks-walk-water"
@@ -4788,7 +4788,7 @@
   "id": "dr123",
   "topic": "dragons",
   "level": "younger",
-  "text": "The leatherback is the biggest sea turtle. It has no hard shell, and its back is covered with firm, rubbery skin.",
+  "text": "The leatherback is the biggest sea turtle. It has no hard shell. Its back is covered with firm, rubbery skin.",
   "source": {
    "name": "NOAA Ocean Service: Leatherback turtle",
    "url": "https://oceanservice.noaa.gov/facts/leatherback.html"
@@ -4799,7 +4799,7 @@
   "id": "dr124",
   "topic": "dragons",
   "level": "older",
-  "text": "Leatherback sea turtles nest in warm places such as Florida and Puerto Rico, yet they swim as far north as the waters off Canada.",
+  "text": "Leatherback sea turtles nest in warm places like Florida and Puerto Rico. Yet they swim as far north as the waters off Canada.",
   "source": {
    "name": "NOAA Ocean Service: Leatherback turtle",
    "url": "https://oceanservice.noaa.gov/facts/leatherback.html"
@@ -4810,7 +4810,7 @@
   "id": "dr125",
   "topic": "dragons",
   "level": "younger",
-  "text": "A green anole has a pink or red flap of skin under its chin called a dewlap. It shows the flap off to others.",
+  "text": "A green anole has a flap of skin under its chin. The flap can be pink or red. It is called a dewlap. It shows the flap off to others.",
   "source": {
    "name": "NPS Big Thicket: Anoles",
    "url": "https://www.nps.gov/bith/learn/nature/anoles.htm"
@@ -4821,7 +4821,7 @@
   "id": "dr126",
   "topic": "dragons",
   "level": "younger",
-  "text": "A green anole is not always green. It can change its color from bright green to brown, and back again.",
+  "text": "A green anole is not always green. It can change its color from bright green to brown. Then it can change back again.",
   "source": {
    "name": "Kennesaw State University: Green anole color change",
    "url": "https://digitalcommons.kennesaw.edu/undergradsymposiumksu/spring2025/spring2025/35/"
@@ -4832,7 +4832,7 @@
   "id": "dr127",
   "topic": "dragons",
   "level": "older",
-  "text": "Galapagos giant tortoises are among the largest tortoises alive today. A big one can be about five feet long.",
+  "text": "Galapagos giant tortoises are some of the largest tortoises alive today. A big one can be about five feet long.",
   "source": {
    "name": "San Diego Zoo library: Galapagos tortoises fact sheet",
    "url": "https://ielc.libguides.com/sdzg/factsheets/galapagostortoises"
@@ -4865,7 +4865,7 @@
   "id": "dr130",
   "topic": "dragons",
   "level": "younger",
-  "text": "A box turtle has a hinge on the bottom of its shell. It can pull in its head and legs and shut its shell almost completely.",
+  "text": "A box turtle has a hinge on the bottom of its shell. It can pull in its head and legs. It can shut its shell almost all the way.",
   "source": {
    "name": "Smithsonian National Zoo: Eastern box turtle",
    "url": "https://nationalzoo.si.edu/node/10462"
@@ -4887,7 +4887,7 @@
   "id": "dr132",
   "topic": "dragons",
   "level": "younger",
-  "text": "The eastern blue tongue lizard has a bright blue tongue. It sticks the tongue out to show it off against its pink mouth.",
+  "text": "The eastern blue tongue lizard has a bright blue tongue. It sticks its tongue out. It shows it off against its pink mouth.",
   "source": {
    "name": "Australian Museum: Eastern blue tongue lizard",
    "url": "https://australian.museum/learn/animals/reptiles/eastern-blue-tongue-lizard/"
@@ -4898,7 +4898,7 @@
   "id": "dr134",
   "topic": "dragons",
   "level": "younger",
-  "text": "A ball python curls up in a tight ball when it feels nervous. That is how it got its name.",
+  "text": "A ball python curls up in a tight ball. It does this when it feels nervous. That is how it got its name.",
   "source": {
    "name": "Buffalo Zoo: Royal ball python",
    "url": "https://buffalozoo.org/animal/royalball-python/"
@@ -4953,7 +4953,7 @@
   "id": "dr140",
   "topic": "dragons",
   "level": "younger",
-  "text": "A weedy seadragon has a long, pipe shaped snout with a tiny mouth at the end. It is a cousin of the seahorse.",
+  "text": "A weedy seadragon has a long snout. It is shaped like a pipe. It has a tiny mouth at the end. It is a cousin of the seahorse.",
   "source": {
    "name": "Australian Museum: Weedy seadragon",
    "url": "https://australian.museum/learn/animals/fishes/weedy-seadragon-phyllopteryx-taeniolatus/"
@@ -4975,7 +4975,7 @@
   "id": "dr143",
   "topic": "dragons",
   "level": "younger",
-  "text": "There are about twenty five hundred kinds of dragonflies. They live near ponds, lakes, and streams in most parts of the world.",
+  "text": "There are about twenty five hundred kinds of dragonflies. They live near ponds, lakes, and streams. They live in most parts of the world.",
   "source": {
    "name": "Britannica Kids: Dragonfly",
    "url": "https://kids.britannica.com/kids/article/dragonfly/390734"
@@ -5008,7 +5008,7 @@
   "id": "oc141",
   "topic": "oceans",
   "level": "younger",
-  "text": "A fish called the cabezon lives on the rocky bottom of kelp forests. It guards its brightly colored eggs.",
+  "text": "A fish called the cabezon lives in kelp forests. It lives on rocks at the bottom. It guards its bright colored eggs.",
   "source": {
    "name": "NOAA Sanctuaries: Monterey Bay living gallery",
    "url": "https://sanctuaries.noaa.gov/pgallery/mbliving.html"
@@ -5041,7 +5041,7 @@
   "id": "oc144",
   "topic": "oceans",
   "level": "younger",
-  "text": "An ROV is a robot that explores under the sea. Some are as small as a laptop, and some are as big as a small truck.",
+  "text": "An ROV is a robot that explores under the sea. Some are as small as a laptop. Some are as big as a small truck.",
   "source": {
    "name": "NOAA Ocean Exploration: ROV fact sheet",
    "url": "https://oceanexplorer.noaa.gov/fact-sheet/rov-fact-sheet"
@@ -5085,7 +5085,7 @@
   "id": "oc148",
   "topic": "oceans",
   "level": "older",
-  "text": "Many seashells are made of calcium carbonate, the same mineral found in eggshells. The animal makes its shell bigger by adding new material along the edge.",
+  "text": "Many seashells are made of a mineral called calcium carbonate. This mineral is also in eggshells. The animal adds new material to the edge. This makes the shell bigger.",
   "source": {
    "name": "Smithsonian Magazine: The story behind the seashells by the seashore",
    "url": "https://www.smithsonianmag.com/blogs/national-museum-of-natural-history/2022/06/22/the-story-behind-the-seashells-by-the-seashore/"
@@ -5118,7 +5118,7 @@
   "id": "oc152",
   "topic": "oceans",
   "level": "older",
-  "text": "Some beaches in Bermuda and the Bahamas have pink sand. Tiny sea creatures called foraminifera leave behind pink shells, and these mix with crushed coral.",
+  "text": "Some beaches in Bermuda and the Bahamas have pink sand. Tiny sea creatures called foraminifera leave behind pink shells. These shells mix with crushed coral.",
   "source": {
    "name": "Ocean Conservancy: Top facts about the beach",
    "url": "https://oceanconservancy.org/?p=67699"
@@ -5217,7 +5217,7 @@
   "id": "oc161",
   "topic": "oceans",
   "level": "younger",
-  "text": "A wave carries energy across the sea. The water itself does not travel very far.",
+  "text": "A wave moves energy across the sea. But the water in the wave does not go very far.",
   "source": {
    "name": "NOAA Ocean Today: Why does the ocean have waves?",
    "url": "https://oceantoday.noaa.gov/fullmoon-whydoestheoceanhavewaves/"
@@ -5228,7 +5228,7 @@
   "id": "oc162",
   "topic": "oceans",
   "level": "older",
-  "text": "A tide station in San Francisco has been measuring the height of the sea for more than a hundred and fifty years. Tides are caused by the pull of the Moon and the Sun.",
+  "text": "A tide station in San Francisco measures sea height. It has measured for more than a hundred and fifty years. Tides are caused by the pull of the Moon and the Sun.",
   "source": {
    "name": "NOAA Ocean Service: Tides and tidal waves",
    "url": "https://oceanservice.noaa.gov/facts/tidalwave.html"
@@ -5239,7 +5239,7 @@
   "id": "we148",
   "topic": "weather",
   "level": "younger",
-  "text": "A windsock is a cloth tube that shows which way the wind blows. It droops in light wind and stands out straight in strong wind.",
+  "text": "A windsock is a cloth tube. It shows which way the wind blows. It droops in light wind. It stands out straight in strong wind.",
   "source": {
    "name": "SKYbrary: Windsock",
    "url": "https://skybrary.aero/articles/windsock"
@@ -5305,7 +5305,7 @@
   "id": "we154",
   "topic": "weather",
   "level": "younger",
-  "text": "Inside a classic thermometer is a thin glass tube of colored liquid. The liquid takes up more room when warm and less room when cool.",
+  "text": "A classic thermometer has a thin glass tube of colored liquid. The liquid takes up more room when warm. It takes up less room when cool.",
   "source": {
    "name": "NOAA NESDIS: Thermometer activity",
    "url": "https://nesdis.noaa.gov/s3/2023-02/thermometer%20activity%20web.pdf"
@@ -5338,7 +5338,7 @@
   "id": "we157",
   "topic": "weather",
   "level": "younger",
-  "text": "A cup anemometer has three or four small cups on a spinning stand. The faster the wind blows, the faster the cups spin.",
+  "text": "A cup anemometer measures wind speed. It has three or four small cups on a spinning stand. The faster the wind blows, the faster the cups spin.",
   "source": {
    "name": "Met Office: How we measure wind",
    "url": "https://weather.metoffice.gov.uk/guides/observations/how-we-measure-wind"
@@ -5382,7 +5382,7 @@
   "id": "we161",
   "topic": "weather",
   "level": "younger",
-  "text": "Icicles end in a point. Water runs down them and freezes at the tip, so they get long and thin.",
+  "text": "Icicles end in a point. Water runs down them. It freezes at the tip. This makes them long and thin.",
   "source": {
    "name": "Wonderopolis: How are icicles formed?",
    "url": "https://wonderopolis.org/wonder/how-are-icicles-formed"
@@ -5404,7 +5404,7 @@
   "id": "we163",
   "topic": "weather",
   "level": "older",
-  "text": "Frost likes clear, calm nights. Objects near the ground lose heat to the sky and get cold enough to pull water vapor out of the air.",
+  "text": "Frost likes clear, calm nights. Objects near the ground lose heat to the sky. They get cold enough to pull water vapor out of the air.",
   "source": {
    "name": "UNDRR PreventionWeb: Hoar frost",
    "url": "https://www.preventionweb.net/understanding-disaster-risk/terminology/hips/mh0505"
