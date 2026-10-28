@@ -1,6 +1,6 @@
 import { TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
 import { achievements, currentTitle } from '../../game/achievements';
-import { activeDragon, eggProgress } from '../../game/progress';
+import { activeDragon, eggProgress, kindName } from '../../game/progress';
 import { today } from '../../save/store';
 import { breakDue, go, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
@@ -54,7 +54,7 @@ export const hub = (root: HTMLElement): (() => void) => {
   const dailyDone = daily.races >= DAILY_RACES || daily.lessons >= 1;
 
   const showcase = d
-    ? h('div', { class: 'showcase' }, aerieScene(p, svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap bob', d.skin, d.marking, d.stars), 'showcase-dragon')), h('p', {}, h('strong', {}, d.name), ` the ${TRIBES[d.tribe].name}`))
+    ? h('div', { class: 'showcase' }, aerieScene(p, svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap bob', d.skin, d.marking, d.stars), 'showcase-dragon')), h('p', {}, h('strong', {}, d.name), ` the ${kindName(d)}`))
     : p.nest
       ? h('div', { class: 'showcase' }, svg(eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), 'showcase-egg wobble'), h('p', {}, `Your ${TRIBES[p.nest.tribe].name} egg is ${pct(eggProgress(p))} warm. Every correct key helps!`))
       : null;

@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { formatCode, grantSupporter, isSupporterCode, makeSupporterCode, normalizeCode, redeemSupporterCode } from '../src/game/supporter';
-import { currentTitle } from '../src/game/achievements';
-import { createProfile, normalizeProfile } from '../src/save/store';
+import { achievements, currentTitle } from '../src/game/achievements';
+import { STARGLINT_ID, createProfile, isStarglint, normalizeProfile, type Profile } from '../src/save/store';
+import { lookHolder, perkTribe } from '../src/game/progress';
+import { perkTuning } from '../src/game/raceRules';
+import { canBuyEgg, foundLooks } from '../src/game/collection';
 
 describe('supporter codes', () => {
   it('makes codes that check out', () => {
@@ -59,10 +62,56 @@ describe('supporter codes', () => {
   });
 });
 
-describe('supporter skin rename', () => {
-  it('keeps the skin on dragons saved under its old name', () => {
+describe('Starglint dragon', () => {
+  const load = (p: Profile): Profile => normalizeProfile(JSON.parse(JSON.stringify(p)))!;
+
+  it('takes the skin off old dragons and gives a supporter their own Starglint', () => {
     const p = createProfile('Ria');
-    p.dragons = [{ id: 'd1', tribe: 'emberback', palette: 0, name: 'Ash', xp: 0, hatchedAt: 0, skin: 'starfire' as never }];
-    expect(normalizeProfile(JSON.parse(JSON.stringify(p)))!.dragons[0].skin).toBe('starglint');
+    p.supporter = true;
+    p.dragons = [
+      { id: 'd1', tribe: 'emberback', palette: 0, name: 'Ash', xp: 500, hatchedAt: 0, skin: 'starfire' as never },
+      { id: 'd2', tribe: 'mossclaw', palette: 1, name: 'Fern', xp: 0, hatchedAt: 0, skin: 'starglint' },
+    ];
+    p.activeDragonId = 'd1';
+    const q = load(p);
+    expect(q.dragons.filter((d) => d.skin).map((d) => d.id)).toEqual([STARGLINT_ID]);
+    expect(q.dragons.find((d) => d.id === 'd1')!.xp).toBe(500);
+    // The rider was flying in the skin, so they keep flying Starglint.
+    expect(q.activeDragonId).toBe(STARGLINT_ID);
+    expect(q.dragons.find(isStarglint)!.xp).toBe(500);
+    expect(load(q).dragons.filter(isStarglint)).toHaveLength(1);
+  });
+
+  it('leaves non-supporters without one, and a rider not wearing the skin keeps their dragon', () => {
+    const p = createProfile('Ria');
+    p.dragons = [{ id: 'd1', tribe: 'emberback', palette: 0, name: 'Ash', xp: 0, hatchedAt: 0 }];
+    p.activeDragonId = 'd1';
+    expect(load(p).dragons).toHaveLength(1);
+    p.supporter = true;
+    const q = load(p);
+    expect(q.dragons.some(isStarglint)).toBe(true);
+    expect(q.activeDragonId).toBe('d1');
+  });
+
+  it('arrives with the pack, once', () => {
+    const p = createProfile('Ria');
+    grantSupporter(p);
+    grantSupporter(p);
+    expect(p.dragons.filter(isStarglint)).toHaveLength(1);
+    const r = createProfile('Bo');
+    expect(redeemSupporterCode(r, makeSupporterCode())).toBe(true);
+    expect(r.dragons.filter(isStarglint)).toHaveLength(1);
+  });
+
+  it('has no perk and counts toward no tribe, set or goal', () => {
+    const p = createProfile('Ria');
+    grantSupporter(p);
+    const d = p.dragons[0];
+    expect(perkTribe(d)).toBeNull();
+    expect(perkTuning(perkTribe(d))).toEqual(perkTuning(null));
+    expect(foundLooks(p).size).toBe(0);
+    expect(lookHolder(p, d.tribe, d.palette, d.marking ?? 0)).toBeNull();
+    expect(canBuyEgg(p, d.tribe)).toBe('unknown');
+    expect(achievements(p).filter((a) => ['hatch', 'tribes', 'grown'].includes(a.track)).every((a) => a.value === 0)).toBe(true);
   });
 });

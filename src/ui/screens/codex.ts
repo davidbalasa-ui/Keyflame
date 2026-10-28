@@ -1,6 +1,7 @@
 import { MARKINGS, TRIBES, dragonSvg, eggSvg, lookName, stageFor, type TribeId } from '../../game/dragons';
 import { EGG_PRICE, MAX_BASKET, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, foundLooks, lookKey } from '../../game/collection';
 import { MAX_STARS, MILESTONES, lookHolder } from '../../game/progress';
+import { isStarglint } from '../../save/store';
 import { UNITS } from '../../content/lessons';
 import { FACTS, TOPIC_LABEL, factById, type FactTopic } from '../../content/facts';
 import { go, persist, profile } from '../app';
@@ -131,7 +132,7 @@ function lookPage(tribe: TribeId, palette: number, marking: number): HTMLElement
   const p = profile();
   const t = TRIBES[tribe];
   const pal = t.palettes[palette];
-  const mine = p.dragons.filter((d) => d.tribe === tribe && d.palette === palette && (d.marking ?? 0) === marking);
+  const mine = p.dragons.filter((d) => !isStarglint(d) && d.tribe === tribe && d.palette === palette && (d.marking ?? 0) === marking);
   const holder = lookHolder(p, tribe, palette, marking);
   const close = (): void => modal.remove();
   const modal = h(
@@ -148,7 +149,7 @@ function lookPage(tribe: TribeId, palette: number, marking: number): HTMLElement
       h('p', {}, t.lore),
       mine.length
         ? h('div', { class: 'look-mine' }, h('strong', {}, mine.length === 1 ? 'Your dragon with this look' : `Your ${mine.length} dragons with this look`), h('ul', {}, ...mine.map((d) => h('li', {}, `${d.name} · ${stageFor(d.xp)} · hatched ${new Date(d.hatchedAt).toLocaleDateString()}`))))
-        : h('p', { class: 'fine' }, p.dragons.some((d) => d.tribe === tribe) ? `Hatch more ${t.name} eggs to find it. ${pal.rare ? 'Rare colors turn up about one egg in ten.' : ''}` : eggHint(tribe)),
+        : h('p', { class: 'fine' }, p.dragons.some((d) => d.tribe === tribe && !isStarglint(d)) ? `Hatch more ${t.name} eggs to find it. ${pal.rare ? 'Rare colors turn up about one egg in ten.' : ''}` : eggHint(tribe)),
       h('div', { class: 'row' }, button('Close', close)),
     ),
   );
@@ -210,17 +211,17 @@ function seasonVault(): HTMLElement | null {
   );
 }
 
-/** Where the supporter skin will live once the pack is on sale. */
+/** The supporter dragon, shown beside the tribes but never part of a set. */
 function starglintSpot(owned: boolean): HTMLElement {
   return h(
     'section',
     { class: 'codex-tribe starglint-spot' },
-    h('div', { class: 'codex-head' }, h('h2', {}, 'Starglint skin'), h('span', { class: 'codex-found' }, owned ? 'Yours' : 'Supporter pack')),
+    h('div', { class: 'codex-head' }, h('h2', {}, 'Starglint'), h('span', { class: 'codex-found' }, owned ? 'Yours' : 'Supporter pack')),
     h(
       'div',
       { class: 'starglint-row' },
       svg(dragonSvg('emberback', 0, 'adult', owned ? 'flap bob' : '', 'starglint'), 'codex-art' + (owned ? '' : ' dim')),
-      h('p', {}, owned ? 'Thank you for supporting Keyflame! Starglint works on any of your dragons.' : 'A special skin that works on any dragon. It will come with the optional supporter pack later. It only changes how a dragon looks, never how fast it flies.'),
+      h('p', {}, owned ? 'Thank you for supporting Keyflame! Starglint lives in your nest.' : 'A special storm dragon that comes with the optional supporter pack. It has no perk, so it never flies faster.'),
     ),
   );
 }

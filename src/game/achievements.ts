@@ -3,7 +3,8 @@
 // Nothing here can be lost once earned, and nothing has a timer.
 
 import { LESSONS } from '../content/lessons';
-import type { Profile } from '../save/store';
+import { isStarglint, type Profile } from '../save/store';
+
 import { COURSES } from './courses';
 import { TOTAL_LOOKS, codexSets, foundLooks } from './collection';
 import { TRIBES, stageFor } from './dragons';
@@ -13,6 +14,9 @@ import { SUPPORTER_TITLE, SUPPORTER_TITLE_ID } from './supporter';
 
 export type Medal = 'bronze' | 'silver' | 'gold' | 'platinum' | 'legend';
 const MEDALS: Medal[] = ['bronze', 'silver', 'gold', 'platinum', 'legend'];
+
+/** The supporter's Starglint is a thank-you, so it never counts toward goals. */
+const hatched = (p: Profile) => p.dragons.filter((d) => !isStarglint(d));
 
 interface Track {
   id: string;
@@ -87,19 +91,19 @@ const TRACKS: Track[] = [
   {
     id: 'hatch', name: 'Hatcher', icon: '🥚', goals: [1, 4, 10, 25],
     how: (g) => (g === 1 ? 'Hatch your first dragon' : `Hatch ${plural(g, 'dragon')}`),
-    value: (p) => p.dragons.length,
+    value: (p) => hatched(p).length,
     titles: ['Egg Warmer', 'Dragon Keeper', 'Dragon Friend', 'Dragon Whisperer'],
   },
   {
     id: 'tribes', name: 'Tribes', icon: '🗺️', goals: [3, 5, Object.keys(TRIBES).length],
     how: (g) => (g === Object.keys(TRIBES).length ? `Hatch one of all ${g} tribes` : `Hatch dragons from ${g} tribes`),
-    value: (p) => new Set(p.dragons.map((d) => d.tribe)).size,
+    value: (p) => new Set(hatched(p).map((d) => d.tribe)).size,
     titles: ['Tribe Visitor', 'Tribe Friend', 'Friend of Every Tribe'],
   },
   {
     id: 'rare', name: 'Rare colors', icon: '🌈', goals: [1, 3],
     how: (g) => (g === 1 ? 'Hatch a rare color' : `Hatch ${plural(g, 'rare color')}`),
-    value: (p) => p.dragons.filter((d) => TRIBES[d.tribe].palettes[d.palette]?.rare).length,
+    value: (p) => hatched(p).filter((d) => TRIBES[d.tribe].palettes[d.palette]?.rare).length,
     titles: ['Lucky Find', 'Treasure Seeker'],
   },
   {
@@ -117,7 +121,7 @@ const TRACKS: Track[] = [
   {
     id: 'grown', name: 'Grown up', icon: '🐉', goals: [1, 3],
     how: (g) => (g === 1 ? 'Raise a dragon to full size' : `Raise ${plural(g, 'dragon')} to full size`),
-    value: (p) => p.dragons.filter((d) => stageFor(d.xp) === 'adult').length,
+    value: (p) => hatched(p).filter((d) => stageFor(d.xp) === 'adult').length,
     titles: ['Dragon Raiser', 'Wise Keeper'],
   },
   {

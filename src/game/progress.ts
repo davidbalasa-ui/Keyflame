@@ -4,7 +4,7 @@
 import { LESSONS, UNITS, lessonsInUnit, type Lesson } from '../content/lessons';
 import { mergeKeyStats, type SessionSummary } from '../engine/typing';
 import { MARKINGS, NAME_ENDS, NAME_STARTS, TRIBES, rollMarking, rollPalette, stageFor, type Stage, type TribeId } from './dragons';
-import { today, type InputMode, type OwnedDragon, type Profile } from '../save/store';
+import { isStarglint, today, type InputMode, type OwnedDragon, type Profile } from '../save/store';
 import { courseById } from './courses';
 import { noteSeasonLesson, noteSeasonRace, rollSeasonPalette, type ChallengeState } from './seasons';
 
@@ -184,7 +184,14 @@ export const EVOLVE_XP = 1500;
 /** Embers a hatch turns into if every look it could be is already at full stars. */
 export const MAXED_EMBERS = 300;
 
-const sameLook = (d: OwnedDragon, tribe: TribeId, palette: number, marking: number): boolean => d.tribe === tribe && d.palette === palette && (d.marking ?? 0) === marking;
+/** What kind of dragon this is, for labels: its tribe, or the supporter dragon. */
+export const kindName = (d: OwnedDragon): string => (isStarglint(d) ? 'supporter dragon' : TRIBES[d.tribe].name);
+
+/** The supporter pack never makes anyone faster, so Starglint races with no perk. */
+export const perkText = (d: OwnedDragon): string => (isStarglint(d) ? 'No perk. It flies on your typing alone.' : TRIBES[d.tribe].perk);
+export const perkTribe = (d: OwnedDragon | null): TribeId | null => (d && !isStarglint(d) ? d.tribe : null);
+
+const sameLook = (d: OwnedDragon, tribe: TribeId, palette: number, marking: number): boolean => !isStarglint(d) && d.tribe === tribe && d.palette === palette && (d.marking ?? 0) === marking;
 
 /** The dragon that wears a look and collects its stars: the most evolved, then the most grown. */
 export function lookHolder(p: Profile, tribe: TribeId, palette: number, marking: number): OwnedDragon | null {

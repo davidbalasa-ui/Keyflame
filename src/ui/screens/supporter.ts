@@ -2,6 +2,7 @@ import { CONFIG } from '../../config';
 import { dragonSvg } from '../../game/dragons';
 import { redeemSupporterCode } from '../../game/supporter';
 import { go, persist, profile } from '../app';
+import { ensureStarglint } from '../../save/store';
 import { button, h, svg } from '../dom';
 import { sfx } from '../sound';
 import { achievementsPage } from './achievementsPage';
@@ -71,7 +72,12 @@ export const supporter = (root: HTMLElement): void => {
       p.supporterCode
         ? h('div', { class: 'sup-code-show' }, h('p', {}, 'Your supporter code'), h('strong', { class: 'sup-code-value' }, p.supporterCode), h('p', { class: 'fine' }, 'Write it down. It unlocks the pack for another rider or on another device. Each code is for your family only.'))
         : null,
-      h('div', { class: 'row center' }, button('Dress a dragon in Starglint', () => go(nest)), button('Pick the Supporter title', () => go(achievementsPage), 'btn ghost')),
+      h('div', { class: 'row center' }, button('Fly with Starglint', () => {
+          const d = ensureStarglint(p);
+          if (d) p.activeDragonId = d.id;
+          persist();
+          go(nest);
+        }), button('Pick the Supporter title', () => go(achievementsPage), 'btn ghost')),
     );
 
   root.append(
@@ -85,11 +91,11 @@ export const supporter = (root: HTMLElement): void => {
       h(
         'ul',
         { class: 'pack-list' },
-        h('li', {}, h('strong', {}, 'The Starglint skin: '), 'an extra-detailed storm dragon with glowing lightning across its body and wings, crackling sparks, and a lightning bolt on its tail. Any of your dragons can wear it.'),
+        h('li', {}, h('strong', {}, 'Starglint, a dragon of your own: '), 'an extra-detailed storm dragon with glowing lightning, crackling sparks, and a lightning bolt on its tail. It hatches into your nest and grows as you type.'),
         h('li', {}, h('strong', {}, 'The Keyflame Supporter title '), 'to show under your name.'),
         h('li', {}, h('strong', {}, 'A supporter code '), 'that unlocks the pack on other devices. No account needed.'),
       ),
-      h('p', { class: 'fine' }, 'It never makes your dragons faster. Everyone races on the same skill.'),
+      h('p', { class: 'fine' }, 'Starglint has no perk, so it never flies faster. Everyone races on the same skill.'),
       p.supporter
         ? owned()
         : ready

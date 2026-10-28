@@ -2,7 +2,7 @@
 // Finishing a set pays embers once. More eggs of a tribe you have met cost embers,
 // which are only ever earned by typing.
 
-import type { Profile } from '../save/store';
+import { isStarglint, type Profile } from '../save/store';
 import { giveEgg, tribeMaxed } from './progress';
 import { MARKINGS, TRIBES, isSeasonPalette, type TribeId } from './dragons';
 
@@ -19,7 +19,7 @@ export function foundLooks(p: Profile): Map<string, number> {
   const found = new Map<string, number>();
   for (const d of p.dragons) {
     // Season colors have their own page in the Codex and do not count toward tribe sets.
-    if (isSeasonPalette(d.palette)) continue;
+    if (isSeasonPalette(d.palette) || isStarglint(d)) continue;
     const k = lookKey(d.tribe, d.palette, d.marking ?? 0);
     found.set(k, (found.get(k) ?? 0) + 1);
   }
@@ -41,7 +41,7 @@ export function codexSets(p: Profile): CodexSet[] {
   const found = foundLooks(p);
   const claimed = new Set(p.setsClaimed);
   return (Object.keys(TRIBES) as TribeId[]).flatMap((tribe) => {
-    const colors = new Set(p.dragons.filter((d) => d.tribe === tribe && !isSeasonPalette(d.palette)).map((d) => d.palette)).size;
+    const colors = new Set(p.dragons.filter((d) => d.tribe === tribe && !isSeasonPalette(d.palette) && !isStarglint(d)).map((d) => d.palette)).size;
     const looks = [...found.keys()].filter((k) => k.startsWith(tribe + ':')).length;
     const make = (kind: string, label: string, have: number, need: number, embers: number): CodexSet => {
       const id = `${tribe}-${kind}`;
@@ -64,7 +64,7 @@ export function claimSets(p: Profile): CodexSet[] {
 
 /** Tribes whose eggs can be bought: ones the player has already hatched. */
 export function canBuyEgg(p: Profile, tribe: TribeId): 'ok' | 'unknown' | 'embers' | 'full' | 'maxed' {
-  if (!p.dragons.some((d) => d.tribe === tribe)) return 'unknown';
+  if (!p.dragons.some((d) => d.tribe === tribe && !isStarglint(d))) return 'unknown';
   if (tribeMaxed(p, tribe)) return 'maxed';
   if (p.nest && p.basket.length >= MAX_BASKET) return 'full';
   if (p.embers < EGG_PRICE) return 'embers';
