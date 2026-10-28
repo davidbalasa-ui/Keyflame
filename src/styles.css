@@ -69,20 +69,19 @@ section { margin: 24px 0; }
 .btn.small { padding: 7px 14px; font-size: 0.9em; }
 .btn.danger { background: #c92a49; color: #fff; box-shadow: 0 4px 0 #7a1328; }
 .link { background: none; border: none; color: var(--ember-2); font: inherit; text-decoration: underline; cursor: pointer; }
-button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
 
-select, textarea {
+textarea {
   font: inherit;
   background: var(--bg-2);
   color: var(--text);
   border: 2px solid var(--line);
   border-radius: 12px;
   padding: 8px 12px;
-  /* A select is as wide as its longest option; never let that push the page sideways on a phone. */
   max-width: 100%;
-  text-overflow: ellipsis;
 }
-.code-box { width: 100%; margin-top: 12px; font-family: ui-monospace, monospace; font-size: 0.8em; word-break: break-all; }
+/* 16px or more, or iPad and iPhone Safari zoom the whole page in when the box is tapped. */
+.code-box { width: 100%; margin-top: 12px; font-family: ui-monospace, monospace; font-size: max(16px, 0.8em); word-break: break-all; }
 
 .art svg { width: 100%; height: auto; display: block; }
 
@@ -444,7 +443,21 @@ body.kb-pinned .type-text { --type-size: 22px; padding: 10px 14px; max-height: c
 
 /* Settings */
 .toggle { display: flex; gap: 12px; align-items: center; padding: 10px 0; font-size: 1.05em; cursor: pointer; }
-.toggle input { width: 22px; height: 22px; accent-color: var(--ember); }
+/* Checkboxes are drawn as glowing switches instead of the browser's own box. */
+.toggle input {
+  appearance: none; -webkit-appearance: none; margin: 0; flex: none; cursor: pointer;
+  position: relative; width: 52px; height: 30px; border-radius: 999px;
+  background: var(--bg-2); border: 2px solid var(--line); transition: background 0.18s, border-color 0.18s;
+}
+.toggle input::before {
+  content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--muted); box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3); transition: transform 0.18s, background 0.18s;
+}
+.toggle input:checked { background: linear-gradient(180deg, var(--ember-2), var(--ember)); border-color: var(--ember-2); }
+.toggle input:checked::before { transform: translateX(22px); background: #fff7e6; }
+.toggle.small input { width: 44px; height: 26px; }
+.toggle.small input::before { width: 16px; height: 16px; }
+.toggle.small input:checked::before { transform: translateX(18px); }
 .parents { background: var(--panel); border-radius: var(--radius); padding: 18px; }
 
 /* Modals */
@@ -454,8 +467,86 @@ body.kb-pinned .type-text { --type-size: 22px; padding: 10px 14px; max-height: c
 .modal-egg { width: 90px; margin: 0 auto; }
 .codex-paid { background: linear-gradient(135deg, rgba(255, 212, 59, 0.25), rgba(255, 122, 26, 0.2)); border: 2px solid var(--gold); border-radius: var(--radius); padding: 10px 14px; margin: 0; font-weight: 600; }
 .modal-dragon { width: 180px; margin: 0 auto; }
-.name-pickers { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-.name-preview { font-size: 1.6rem; font-weight: 600; color: var(--gold); margin: 12px 0; }
+.name-pickers { display: flex; gap: 10px 14px; justify-content: center; flex-wrap: wrap; margin: 6px 0; }
+.name-preview { font-size: 1.6rem; font-weight: 600; color: var(--gold); margin: 12px 0; text-shadow: 0 0 14px rgba(255, 212, 59, 0.35); overflow-wrap: anywhere; }
+.name-dice { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 12px; }
+
+/* Word picker: arrows step through words, the word itself opens a sheet of chips. */
+.word-picker { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
+.wp-arrow {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; padding: 10px;
+  background: var(--panel-2); color: var(--ember-2); box-shadow: 0 3px 0 #1f1745; transition: transform 0.08s;
+}
+.wp-arrow svg { width: 100%; height: 100%; display: block; }
+.wp-arrow:active { transform: translateY(2px); box-shadow: 0 1px 0 #1f1745; }
+.wp-face {
+  font: inherit; font-size: 1.15em; font-weight: 600; color: var(--gold); cursor: pointer;
+  width: 6.6em; min-width: 0; flex: 0 1 auto; min-height: 48px; padding: 6px 12px; border-radius: 999px;
+  background: linear-gradient(180deg, #4a3a92, var(--panel-2)); border: 2px solid #7a5fd6;
+  box-shadow: 0 4px 0 #1f1745, inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.wp-face::after { content: ''; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 6px solid var(--ember-2); opacity: 0.85; }
+.wp-face:hover { border-color: var(--ember-2); }
+.wp-word { display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wp-bump { animation: wpBump 0.22s ease-out; }
+@keyframes wpBump { 0% { transform: scale(0.8); opacity: 0.4; } 100% { transform: scale(1); opacity: 1; } }
+
+.dice-btn {
+  width: 48px; height: 48px; border-radius: 50%; border: none; cursor: pointer; padding: 10px;
+  background: linear-gradient(180deg, var(--ember-2), var(--ember)); color: #fff7e6; box-shadow: 0 4px 0 #b34700;
+}
+.dice-btn .die, .dice-btn svg { display: block; width: 100%; height: 100%; }
+.dice-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #b34700; }
+.dice-btn.rolling .die { animation: diceRoll 0.45s ease-out; }
+@keyframes diceRoll { 0% { transform: rotate(0) scale(1); } 50% { transform: rotate(200deg) scale(1.2); } 100% { transform: rotate(360deg) scale(1); } }
+
+/* The sheet a word picker opens: rises from the bottom on phones, floats in the middle on wider screens. */
+.picker-backdrop {
+  position: fixed; inset: 0; z-index: 40; display: flex; align-items: flex-end; justify-content: center;
+  background: rgba(10, 6, 25, 0.6); animation: fadeIn 0.16s;
+}
+.picker-backdrop.closing { opacity: 0; transition: opacity 0.16s; }
+.picker-sheet {
+  width: 100%; max-width: 520px; max-height: 82vh; overflow: auto; overscroll-behavior: contain; text-align: center;
+  background: radial-gradient(ellipse at top, #4a2f8a 0%, var(--panel) 70%); border: 2px solid #7a5fd6; border-bottom: none;
+  border-radius: 26px 26px 0 0; padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.45); animation: sheetUp 0.22s ease-out;
+}
+.picker-sheet::before { content: ''; display: block; width: 44px; height: 5px; border-radius: 3px; background: var(--line); margin: -6px auto 12px; }
+@media (min-width: 600px) {
+  .picker-backdrop { align-items: center; padding: 16px; }
+  .picker-sheet { border-bottom: 2px solid #7a5fd6; border-radius: 26px; animation: popIn 0.2s; }
+  .picker-sheet::before { display: none; }
+}
+.ps-title { font-size: 1.05rem; color: var(--muted); font-weight: 500; margin: 0; }
+.ps-preview { font-size: 1.5rem; font-weight: 600; color: var(--gold); margin: 4px 0 14px; min-height: 1.4em; text-shadow: 0 0 14px rgba(255, 212, 59, 0.35); overflow-wrap: anywhere; }
+.ps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 8px; }
+.ps-chip {
+  font: inherit; color: var(--text); cursor: pointer; min-height: 46px; padding: 8px 6px; border-radius: 14px;
+  background: var(--bg-2); border: 2px solid var(--line); box-shadow: 0 3px 0 #150f2e; transition: transform 0.08s, border-color 0.12s;
+  overflow-wrap: anywhere;
+}
+.ps-chip:hover, .ps-chip:focus-visible { border-color: var(--ember-2); }
+.ps-chip:active { transform: translateY(2px); box-shadow: 0 1px 0 #150f2e; }
+.ps-chip.on { background: linear-gradient(180deg, var(--gold), var(--ember-2)); color: #2a1200; border-color: var(--gold); font-weight: 600; box-shadow: 0 3px 0 #b34700, 0 0 14px rgba(255, 212, 59, 0.4); }
+.ps-close { margin-top: 16px; }
+@keyframes sheetUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* A short list of choices shown as cards (settings), in place of a dropdown. */
+.choice-list { display: flex; flex-direction: column; gap: 8px; max-width: 560px; }
+.cl-card {
+  font: inherit; color: var(--text); cursor: pointer; text-align: left; display: flex; align-items: center; gap: 12px;
+  min-height: 48px; padding: 10px 14px; border-radius: 14px; background: var(--bg-2); border: 2px solid var(--line);
+  box-shadow: 0 3px 0 #150f2e; transition: border-color 0.12s, background 0.12s;
+}
+.cl-card:hover { border-color: #7a5fd6; }
+.cl-card.on { background: linear-gradient(135deg, rgba(255, 179, 71, 0.22), rgba(255, 122, 26, 0.12)); border-color: var(--ember-2); }
+.cl-dot { flex: none; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--muted); display: grid; place-items: center; }
+.cl-card.on .cl-dot { border-color: var(--gold); }
+.cl-card.on .cl-dot::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+.cl-text { min-width: 0; overflow-wrap: anywhere; }
 
 /* Dragon animation: wings pivot at the shoulder and sweep through edge-on to below the body,
    so a flap reads as a real wingbeat instead of a squash. */
@@ -794,6 +885,13 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .ach-body summary { cursor: pointer; min-height: 28px; }
 .ach-body ul { list-style: none; padding: 0; margin: 4px 0 0; }
 .ach-body li.on { color: var(--text); }
+.hatch-name { margin: 4px 0 8px; }
+.hatch-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 14px; }
+.hatch-tag { padding: 4px 12px; border-radius: 999px; background: var(--bg-2); border: 2px solid var(--line); font-size: 0.95em; }
+.hatch-tag.shiny { border-color: var(--gold); color: var(--gold); font-weight: 600; box-shadow: 0 0 12px rgba(255, 212, 59, 0.3); }
+.reward-pills { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 14px 0 4px; }
+.reward-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 6px; border-radius: 999px; background: rgba(255, 212, 59, 0.14); border: 2px solid rgba(255, 212, 59, 0.55); color: var(--gold); font-weight: 600; font-size: 0.95em; }
+.reward-pill .ach-mini { width: 24px; }
 .ach-line { display: flex; align-items: center; gap: 8px; justify-content: center; }
 .ach-mini { width: 30px; flex: none; }
 .ach-mini svg { width: 100%; height: auto; display: block; }

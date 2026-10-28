@@ -3,6 +3,7 @@ import { READING_LEVEL_LABEL, type ReadingLevel } from '../../content/facts';
 import { parentGate } from './supporter';
 import { applySettings, go, persist, persistNow, profile, saveData } from '../app';
 import { button, h } from '../dom';
+import { choiceList } from '../picker';
 import { canInstall, installApp, isInstalled, isOfflineReady, onInstallChange } from '../install';
 import { hub, topBar } from './hub';
 import { title } from './title';
@@ -49,45 +50,35 @@ export const settings = (root: HTMLElement): void => {
         'section',
         {},
         h('h2', {}, 'How do you type?'),
-        (() => {
-          const sel = h(
-            'select',
-            {
-              onchange: () => {
-                p.settings.input = sel.value as Settings['input'];
-                persist();
-              },
-            },
-            ...(
-              [
-                ['auto', 'Pick for me (a real keyboard as soon as you press one)'],
-                ['keyboard', 'A real keyboard'],
-                ['touch', 'Tap the game’s keyboard (phones and tablets)'],
-                ['device', 'My phone or tablet’s own keyboard'],
-              ] as const
-            ).map(([v, label]) => h('option', { value: v, selected: p.settings.input === v }, label)),
-          );
-          return sel;
-        })(),
+        choiceList({
+          label: 'How do you type?',
+          value: p.settings.input,
+          choices: [
+            ['auto', 'Pick for me (a real keyboard as soon as you press one)'],
+            ['keyboard', 'A real keyboard'],
+            ['touch', 'Tap the game’s keyboard (phones and tablets)'],
+            ['device', 'My phone or tablet’s own keyboard'],
+          ],
+          onChange: (v) => {
+            p.settings.input = v;
+            persist();
+          },
+        }),
         h('p', { class: 'fine' }, 'Touch typing keeps its own records, so phone races and keyboard races are fair.'),
       ),
       h(
         'section',
         {},
         h('h2', {}, 'Fun facts in races'),
-        (() => {
-          const sel = h(
-            'select',
-            {
-              onchange: () => {
-                p.settings.readingLevel = sel.value as ReadingLevel;
-                persist();
-              },
-            },
-            ...(['younger', 'older'] as const).map((v) => h('option', { value: v, selected: (p.settings.readingLevel ?? 'younger') === v }, READING_LEVEL_LABEL[v])),
-          );
-          return sel;
-        })(),
+        choiceList({
+          label: 'Fun facts in races',
+          value: p.settings.readingLevel ?? 'younger',
+          choices: (['younger', 'older'] as const).map((v) => [v, READING_LEVEL_LABEL[v]] as const),
+          onChange: (v: ReadingLevel) => {
+            p.settings.readingLevel = v;
+            persist();
+          },
+        }),
         h('p', { class: 'fine' }, 'Once you know every letter, races use real facts at this reading level.'),
       ),
       h(

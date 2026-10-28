@@ -1,12 +1,13 @@
 import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggCracksSvg, eggSvg, isSeasonPalette, lookName, paletteFor, stageFor, type TribeId } from '../../game/dragons';
 import { EGG_PRICE, claimSets, foundLooks, lookKey } from '../../game/collection';
-import { codex } from './codex';
+import { codex, codexLook } from './codex';
 import type { OwnedDragon } from '../../save/store';
 import { EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor } from './aerie';
 import { button, h, pct, svg } from '../dom';
+import { diceButton, randomOf, wordPicker } from '../picker';
 import { sfx } from '../sound';
 import { CONFETTI, TRAIL_COLORS, attachField } from '../particles';
 import { claimNewAchievements, earnedIds } from '../../game/achievements';
@@ -261,10 +262,14 @@ function hatchSequence(root: HTMLElement): void {
     fx.emit(x, y, { count: 60, colors: CONFETTI, kind: 'confetti', vy: -260, spread: 520, size: 6, life: 2.4 });
     sfx.hatch();
 
-    const extras = (): HTMLElement[] => [
-      ...sets.map((x) => h('p', { class: 'reward' }, `Codex set done: ${TRIBES[x.tribe].name} ${x.label.toLowerCase()}! +${x.embers} embers`)),
-      ...fresh.map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),
-    ];
+    // Rewards are short pills; the Codex and the trophy room hold the longer story.
+    const extras = (): HTMLElement[] => {
+      const pills = [
+        ...sets.map((x) => h('span', { class: 'reward-pill', title: `${TRIBES[x.tribe].name} ${x.label.toLowerCase()}` }, `Set done +${x.embers} 🔥`)),
+        ...fresh.map((a) => h('span', { class: 'reward-pill', title: a.how }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `New title: ${a.title}`)),
+      ];
+      return pills.length ? [h('div', { class: 'reward-pills' }, ...pills)] : [];
+    };
     const d = result.dragon;
     const stars = result.evolved && d ? (d.stars ?? 1) - 1 : 0;
     const art = d
@@ -295,7 +300,8 @@ function hatchSequence(root: HTMLElement): void {
       }
       const first = art.getBoundingClientRect();
       art.classList.remove('reveal-art');
-      panel.append(art, ...(d ? dragonDetails(d, looksBefore) : embersDetails(egg.tribe)), ...extras(), h('div', { class: 'row' }, button('Done', () => go(nest))));
+      const codexBtn = d && button('See it in Codex', () => go(isSeasonPalette(d.palette) ? codex : codexLook(d.tribe, d.palette, d.marking ?? 0)), 'btn ghost');
+      panel.append(art, ...(d ? dragonDetails(d, looksBefore) : embersDetails(egg.tribe)), ...extras(), h('div', { class: 'row' }, codexBtn, button('Done', () => go(nest))));
       reveal.replaceWith(panel);
       const last = art.getBoundingClientRect();
       if (!calm && last.width) {
@@ -311,13 +317,13 @@ function embersDetails(tribe: TribeId): HTMLElement[] {
   return [h('h2', {}, `+${MAXED_EMBERS} embers!`), h('p', {}, `Every ${TRIBES[tribe].name} look you could get is already at full stars, so this egg turned into ${MAXED_EMBERS} embers.`)];
 }
 
-/** The new dragon's card: what it is, whether the Codex has it, and a name to pick. */
+/** The new dragon's card: its name, a look tag, and the name pickers. */
 function dragonDetails(dragon: OwnedDragon, looksBefore: Map<string, number>): HTMLElement[] {
   const isNewLook = !looksBefore.has(lookKey(dragon.tribe, dragon.palette, dragon.marking));
   const palette = paletteFor(dragon.tribe, dragon.palette);
   const season = isSeasonPalette(dragon.palette);
   let name = dragon.name;
-  const nameEl = h('h2', {}, `Meet ${name}!`);
+  const nameEl = h('h2', { class: 'hatch-name' }, `Meet ${name}!`);
   const setName = (n: string): void => {
     name = n;
     dragon.name = n;
@@ -326,17 +332,22 @@ function dragonDetails(dragon: OwnedDragon, looksBefore: Map<string, number>): H
   };
   let start = NAME_STARTS.find((s) => name.startsWith(s)) ?? NAME_STARTS[0];
   let end = name.slice(start.length);
-  const sel = (opts: string[], value: string, on: (v: string) => void): HTMLSelectElement => {
-    const s = h('select', { onchange: () => on(s.value) }, ...opts.map((o) => h('option', { value: o, selected: o === value }, o)));
-    return s;
-  };
+  const first = wordPicker({ words: NAME_STARTS, value: start, label: 'Name start', onChange: (v) => ((start = v), setName(start + end)), preview: (v) => v + end });
+  const second = wordPicker({ words: NAME_ENDS, value: end, label: 'Name ending', onChange: (v) => ((end = v), setName(start + end)), preview: (v) => start + v });
+  const dice = diceButton(() => {
+    first.set(randomOf(NAME_STARTS.filter((w) => w !== start)));
+    second.set(randomOf(NAME_ENDS.filter((w) => w !== end)));
+  });
+  const tag = season ? 'Season color' : palette.rare ? 'Rare color' : isNewLook ? 'New look' : null;
   return [
     nameEl,
-    h('p', {}, `A ${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}${season ? ', a season color!' : palette.rare ? ', a rare color!' : '!'}`),
-    h('p', { class: 'fine' }, season ? 'It joins the season looks in your Codex.' : isNewLook ? 'A new look for your Codex!' : 'You already have this look in your Codex.'),
-    h('p', { class: 'fine' }, TRIBES[dragon.tribe].lore),
-    h('p', {}, 'Pick a name:'),
-    h('div', { class: 'name-pickers' }, sel(NAME_STARTS, start, (v) => ((start = v), setName(start + end))), sel(NAME_ENDS, end, (v) => ((end = v), setName(start + end)))),
+    h(
+      'div',
+      { class: 'hatch-tags' },
+      h('span', { class: 'hatch-tag' }, `${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}`),
+      tag ? h('span', { class: 'hatch-tag shiny' }, `✨ ${tag}`) : null,
+    ),
+    h('div', { class: 'name-pickers' }, first.el, second.el, dice),
   ];
 }
 

@@ -118,6 +118,14 @@ export const codex = (root: HTMLElement): void => {
   );
 };
 
+/** The Codex with one look's page already open (used by "See it in Codex" after a hatch). */
+export const codexLook =
+  (tribe: TribeId, palette: number, marking: number) =>
+  (root: HTMLElement): void => {
+    codex(root);
+    root.append(lookPage(tribe, palette, marking));
+  };
+
 /** A page for one look: big art, the tribe's story, and your dragons that wear it. */
 function lookPage(tribe: TribeId, palette: number, marking: number): HTMLElement {
   const p = profile();

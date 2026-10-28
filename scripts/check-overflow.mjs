@@ -94,6 +94,11 @@ for (const size of SIZES) {
   await check('title');
   await page.click('.profile-card.new');
   await check('new rider');
+  await page.click('.modal .wp-face >> nth=0');
+  await page.waitForSelector('.picker-sheet');
+  await check('name sheet');
+  await page.keyboard.press('Escape');
+  await page.waitForSelector('.picker-backdrop', { state: 'detached' });
   await page.click('.modal .btn:not(.ghost)');
   await page.waitForTimeout(600); // let the save land before reloading
   for (const [name, clicks] of SCREENS) {
