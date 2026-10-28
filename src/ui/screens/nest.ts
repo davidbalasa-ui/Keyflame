@@ -119,7 +119,7 @@ export const nest = (root: HTMLElement): void => {
                   h('small', {}, growthText(d)),
                   h('small', { class: 'perk' }, TRIBES[d.tribe].perk),
                   p.supporter
-                    ? h('label', { class: 'toggle small' }, h('input', { type: 'checkbox', checked: d.skin === 'starfire', onchange: () => ((d.skin = d.skin ? undefined : 'starfire'), persist(), go(nest)) }), 'Starfire skin')
+                    ? h('label', { class: 'toggle small' }, h('input', { type: 'checkbox', checked: d.skin === 'starglint', onchange: () => ((d.skin = d.skin ? undefined : 'starglint'), persist(), go(nest)) }), 'Starglint skin')
                     : null,
                   active?.id === d.id
                     ? h('span', { class: 'badge' }, 'Racing')

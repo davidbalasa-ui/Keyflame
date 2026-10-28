@@ -430,8 +430,8 @@ body.kb-pinned .type-text { --type-size: 22px; padding: 10px 14px; max-height: c
 .codex-buy > div:nth-child(2) { flex: 1; display: flex; flex-direction: column; }
 .codex-egg { width: 44px; flex: none; }
 .codex-buy .btn[disabled] { opacity: 0.45; pointer-events: none; }
-.starfire-row { display: flex; align-items: center; gap: 14px; }
-.starfire-row .codex-art { width: 140px; flex: none; }
+.starglint-row { display: flex; align-items: center; gap: 14px; }
+.starglint-row .codex-art { width: 140px; flex: none; }
 .look-art { width: min(300px, 80%); margin: 0 auto; }
 .look-tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .tag { background: var(--bg-2); border-radius: 999px; padding: 2px 10px; font-size: 0.85rem; }
@@ -862,7 +862,7 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .chip.medal-gold { border-color: #ffc61a; }
 .chip.medal-platinum { border-color: #7fe3f0; }
 .chip.medal-legend { border-color: #c77dff; }
-.chip.medal-starfire { border-color: #ffd43b; background: linear-gradient(135deg, #3b2b8f, #7048e8); }
+.chip.medal-starglint { border-color: #ffd43b; background: linear-gradient(135deg, #3b2b8f, #7048e8); }
 .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
 .ach-card { display: flex; gap: 12px; background: var(--panel); border-radius: var(--radius); padding: 12px; border: 2px solid transparent; }
 .ach-card.earned { border-color: var(--line); }

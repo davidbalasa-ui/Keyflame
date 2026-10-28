@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { formatCode, grantSupporter, isSupporterCode, makeSupporterCode, normalizeCode, redeemSupporterCode } from '../src/game/supporter';
 import { currentTitle } from '../src/game/achievements';
-import { createProfile } from '../src/save/store';
+import { createProfile, normalizeProfile } from '../src/save/store';
 
 describe('supporter codes', () => {
   it('makes codes that check out', () => {
@@ -56,5 +56,13 @@ describe('supporter codes', () => {
     const code = grantSupporter(p);
     expect(isSupporterCode(code)).toBe(true);
     expect(grantSupporter(p)).toBe(code);
+  });
+});
+
+describe('supporter skin rename', () => {
+  it('keeps the skin on dragons saved under its old name', () => {
+    const p = createProfile('Ria');
+    p.dragons = [{ id: 'd1', tribe: 'emberback', palette: 0, name: 'Ash', xp: 0, hatchedAt: 0, skin: 'starfire' as never }];
+    expect(normalizeProfile(JSON.parse(JSON.stringify(p)))!.dragons[0].skin).toBe('starglint');
   });
 });

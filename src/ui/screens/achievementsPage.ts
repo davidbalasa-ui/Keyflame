@@ -66,7 +66,7 @@ export const achievementsPage = (root: HTMLElement): void => {
   for (const a of all) tracks.set(a.track, [...(tracks.get(a.track) ?? []), a]);
   const earned = all.filter((a) => a.earned).length;
 
-  const titles: Array<{ id: string; title: string; medal: string }> = [...(p.supporter ? [{ id: SUPPORTER_TITLE_ID, title: SUPPORTER_TITLE, medal: 'starfire' }] : []), ...earnedTitles(p)];
+  const titles: Array<{ id: string; title: string; medal: string }> = [...(p.supporter ? [{ id: SUPPORTER_TITLE_ID, title: SUPPORTER_TITLE, medal: 'starglint' }] : []), ...earnedTitles(p)];
   const wearing = currentTitle(p);
   const about = (t: string | null): string => (t ? `You fly as “${t}”. Every achievement unlocks a new title.` : 'Pick a title to show under your name. Every achievement unlocks one.');
   const note = h('p', { class: 'fine' }, about(wearing));

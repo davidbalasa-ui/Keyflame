@@ -18,7 +18,7 @@ export interface OwnedDragon {
   xp: number;
   hatchedAt: number;
   /** Supporter-only cosmetic skin. */
-  skin?: 'starfire';
+  skin?: 'starglint';
   /** Index into MARKINGS; older dragons have none and are plain. */
   marking?: number;
   /** Evolution stars, one per extra copy of this look hatched (0 to 4). */
@@ -225,7 +225,7 @@ export function normalizeProfile(raw: unknown): Profile | null {
     lessons: r.lessons ?? {},
     keyStats: r.keyStats ?? {},
     basket: r.basket ?? [],
-    dragons: backfillStars(r.dragons ?? [], r.starsBackfilled === true),
+    dragons: backfillStars(renameSkins(r.dragons ?? []), r.starsBackfilled === true),
     starsBackfilled: true,
     unitsRewarded: r.unitsRewarded ?? [],
     races: r.races ?? [],
@@ -239,6 +239,12 @@ export function normalizeProfile(raw: unknown): Profile | null {
     setsClaimed: Array.isArray(r.setsClaimed) ? r.setsClaimed.filter((id) => typeof id === 'string') : [],
     achievements: Array.isArray(r.achievements) ? r.achievements.filter((id) => typeof id === 'string') : undefined,
   } as Profile;
+}
+
+/** The supporter skin was first called Starfire; dragons saved wearing it keep it. */
+function renameSkins(dragons: OwnedDragon[]): OwnedDragon[] {
+  for (const d of dragons) if ((d.skin as string) === 'starfire') d.skin = 'starglint';
+  return dragons;
 }
 
 /**
