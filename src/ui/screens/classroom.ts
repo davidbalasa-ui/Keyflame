@@ -16,7 +16,7 @@ import { MIN_PASSWORD, deriveKeys, newSalt, pullVault, pushVault, type VaultKeys
 import { openClassLink, type ClassLink } from '../../net/classLink';
 import type { SessionSummary } from '../../engine/typing';
 import type { InputMode } from '../../save/store';
-import { go, inputMode, profile } from '../app';
+import { go, inputMode, profile, type Screen } from '../app';
 import { button, h, svg } from '../dom';
 import { sfx } from '../sound';
 import { topBar } from './hub';
@@ -476,9 +476,19 @@ function readTeacher(): TeacherSave | null {
 
 const writeTeacher = (t: TeacherSave): void => writeStore(TEACHER_KEY, JSON.stringify(t));
 
+/** Where the teacher screen's Back button goes: the title screen or the Grown-ups tab. */
+let teacherBack: Screen | null = null;
+
 /** Behind the grown-up check on the title screen. */
 export function openTeacher(root: HTMLElement): void {
+  teacherBack = null;
   root.append(parentGate(() => go(teacherScreen)));
+}
+
+/** From the Grown-ups tab, which has already asked the grown-up question. */
+export function openTeacherFrom(back: Screen): void {
+  teacherBack = back;
+  go(teacherScreen);
 }
 
 /** The illustrated banner on top of the teacher screens. */
@@ -507,7 +517,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
   let raf = 0;
   let tab: 'live' | 'progress' = 'live';
   let progress: { stop: () => void } | null = null;
-  const back = h('header', { class: 'top-bar' }, button('← Back', () => go(title), 'btn ghost small'), h('strong', {}, 'Classroom'), h('span'));
+  const back = h('header', { class: 'top-bar' }, button('← Back', () => go(teacherBack ?? title), 'btn ghost small'), h('strong', {}, 'Classroom'), h('span'));
   const main = h('main', { class: 'teacher' });
   root.append(svg(teacherBackdropSvg(), 'tm-backdrop-wrap'), back, main);
 

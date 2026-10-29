@@ -39,21 +39,32 @@ const SHOTS = process.env.SHOTS;
 if (SHOTS) (await import('node:fs')).mkdirSync(SHOTS, { recursive: true });
 
 // Each step opens one screen from the hub by clicking what a player would click.
+// GATE answers the grown-up question.
+const GATE = 'GATE';
+const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+async function answerGate(page) {
+  const q = await page.textContent('.modal', { timeout: 3000 });
+  const m = q.match(/What is (\w+) times (\w+)/);
+  await page.fill('.gate-input', String(NUMBER_WORDS.indexOf(m[1]) * NUMBER_WORDS.indexOf(m[2])));
+  await page.click('.modal .btn:not(.ghost)');
+}
 const SCREENS = [
   ['hub', []],
-  ['settings', ['[aria-label^="Settings and backup"]']],
-  ['progress', ['[aria-label="My progress"]']],
-  ['supporter', ['[aria-label="Support Keyflame"]']],
-  ['achievements', ['.icon-btn.trophy']],
-  ['ideas', ['[aria-label="Report a bug or idea"]']],
+  ['settings', ['.tab-settings']],
+  ['progress', ['.tab-progress']],
+  ['achievements', ['.tab-progress', '.ach-card']],
+  ['ideas', ['.tab-settings', 'text=Send an idea or bug']],
+  ['grown-ups', ['.tab-grownups', GATE]],
+  ['family', ['.tab-grownups', GATE, '.gu-family']],
+  ['supporter', ['.tab-grownups', GATE, '.gu-support']],
   ['season', ['.season-btn']],
   ['lessons', ['.tile-lessons']],
   ['lesson', ['.tile-lessons', '.lesson-tile >> nth=0']],
   ['race map', ['.tile-race']],
   ['race', ['.tile-race', '.course-card >> nth=0']],
-  ['class join', ['.tile-race', '.class-card']],
-  ['nest', ['.tile-nest']],
-  ['codex', ['.tile-codex']],
+  ['class join', ['.class-chip']],
+  ['nest', ['.tab-dragon']],
+  ['codex', ['.tab-dragon', '.seg >> nth=1']],
 ];
 
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
@@ -90,6 +101,15 @@ for (const size of SIZES) {
   const check = async (name) => {
     const o = await overflow(page);
     if (o.scrollW > o.vw) failures.push(`${label} ${name}: page is ${o.scrollW}px wide (${o.wide.join(', ') || 'unknown element'})`);
+    if (name === 'hub') {
+      // The home screen fits one screen: nothing may be cut off below the tab bar.
+      const cut = await page.evaluate(() => {
+        const bottom = document.querySelector('.tab-bar')?.getBoundingClientRect().bottom ?? 0;
+        const tooTall = [...document.querySelectorAll('.home-top, .hub.home > *, .tab-bar')].some((el) => el.getBoundingClientRect().bottom > innerHeight + 1);
+        return tooTall || bottom > innerHeight + 1;
+      });
+      if (cut) failures.push(`${label} hub: the home screen does not fit without scrolling`);
+    }
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/${size.name.replace(/\W+/g, '-')}-${name.replace(/\W+/g, '-')}.png` });
   };
   await check('title');
@@ -106,7 +126,7 @@ for (const size of SIZES) {
     await page.goto(URL);
     await page.click('.profile-card:not(.new)');
     try {
-      for (const sel of clicks) await page.click(sel, { timeout: 3000 });
+      for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 3000 }));
     } catch {
       failures.push(`${label} ${name}: could not open the screen`);
       continue;
@@ -135,4 +155,4 @@ if (failures.length) {
   console.error('Sideways scrolling found:\n  ' + failures.join('\n  '));
   process.exit(1);
 }
-console.log(`${ENGINE}: no sideways scrolling on ${SCREENS.length + 2} screens at ${SIZES.length} sizes, and a real key press puts the tap keyboard away on tablets.`);
+console.log(`${ENGINE}: no sideways scrolling on ${SCREENS.length + 2} screens at ${SIZES.length} sizes, the home screen fits without scrolling, and a real key press puts the tap keyboard away on tablets.`);

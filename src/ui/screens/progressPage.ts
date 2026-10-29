@@ -1,38 +1,59 @@
 import { ROWS } from '../../content/keyboard';
 import { achievements } from '../../game/achievements';
+import { lessonsPassed, personalBests, recentAccuracy, recentSessions, unitProgress } from '../../game/riderStats';
+import type { Profile } from '../../save/store';
 import { go, profile } from '../app';
+import { lineChart } from '../charts';
 import { button, h, pct } from '../dom';
+import { sfx } from '../sound';
+import { withTabs } from '../tabBar';
 import { achievementsPage } from './achievementsPage';
+import { classRaceEntry } from './classroom';
 import { hub, topBar } from './hub';
 
-/** Line chart of recent race speeds, oldest on the left. */
-function wpmChart(points: number[]): HTMLElement {
-  const W = 640, H = 220, left = 40, right = 16, top = 16, bottom = 28;
-  const max = Math.max(10, ...points) * 1.15;
-  const x = (i: number): number => left + (points.length === 1 ? 0 : (i / (points.length - 1)) * (W - left - right));
-  const y = (v: number): number => top + (1 - v / max) * (H - top - bottom);
-  // About five gridlines at a round step (1, 2 or 5 times a power of ten).
-  const raw = max / 5;
-  const mag = 10 ** Math.floor(Math.log10(raw));
-  const step = [1, 2, 5, 10].map((m) => m * mag).find((v) => v >= raw) ?? 10 * mag;
-  const ticks: number[] = [];
-  for (let t = 0; t <= max; t += step) ticks.push(t);
-  const line = points.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`).join(' ');
-  const el = h('div', { class: 'chart' });
-  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Words per minute in your recent races">
-    ${ticks.map((t) => `<line x1="${left}" x2="${W - right}" y1="${y(t)}" y2="${y(t)}" stroke="#4d3f8f" stroke-width="1"/><text x="${left - 8}" y="${y(t) + 4}" text-anchor="end" font-size="12" fill="#c3b8e8">${t}</text>`).join('')}
-    <path d="${line}" fill="none" stroke="#ffb347" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
-    ${points.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="#ffd43b"><title>${Math.round(v)} WPM</title></circle>`).join('')}
-    <text x="${left}" y="${H - 6}" font-size="12" fill="#c3b8e8">older</text>
-    <text x="${W - right}" y="${H - 6}" font-size="12" fill="#c3b8e8" text-anchor="end">latest</text>
-  </svg>`;
-  return el;
+const stat = (value: string, label: string, note = ''): HTMLElement =>
+  h('div', { class: 'stat-tile' }, h('small', {}, label), h('strong', {}, value), note ? h('small', { class: 'st-note' }, note) : null);
+
+/** Speed and accuracy charts plus lesson stars, shared with the Family view. */
+export function progressCharts(p: Profile): Array<HTMLElement | null> {
+  const recent = recentSessions(p, 20);
+  const hollow = recent.map((r) => r.kind === 'lesson');
+  return [
+    h(
+      'section',
+      { class: 'pg-card' },
+      h('h2', {}, 'Speed'),
+      recent.length >= 2
+        ? lineChart(recent.map((r) => r.wpm), { label: 'Words per minute in recent races and lessons', unit: ' WPM', hollow })
+        : h('p', { class: 'fine' }, 'Finish two races or lessons to see your chart.'),
+      recent.length >= 2 ? h('p', { class: 'chart-key fine' }, h('span', { class: 'dot full' }), 'Race ', h('span', { class: 'dot hollow' }), 'Lesson') : null,
+    ),
+    recent.length >= 2
+      ? h('section', { class: 'pg-card' }, h('h2', {}, 'Accuracy'), lineChart(recent.map((r) => r.accuracy * 100), { label: 'Accuracy in recent races and lessons', unit: '%', min: 50, max: 100, color: '#5ee6a8', hollow }))
+      : null,
+    h(
+      'section',
+      { class: 'pg-card' },
+      h('h2', {}, 'Lessons'),
+      h(
+        'div',
+        { class: 'unit-bars' },
+        ...unitProgress(p).map((u) =>
+          h('div', { class: 'unit-bar' }, h('span', { class: 'ub-title' }, u.title), h('span', { class: 'bar wide' }, h('span', { style: `width:${pct(u.passed / u.total)}` })), h('span', { class: 'ub-stars' }, `★ ${u.stars}/${u.total * 3}`)),
+        ),
+      ),
+    ),
+  ];
 }
 
-export const progressPage = (root: HTMLElement): void => {
+export const progressPage = (root: HTMLElement): (() => void) => {
   const p = profile();
-  const recent = p.races.slice(0, 20).reverse();
   const all = achievements(p);
+  const earned = all.filter((a) => a.earned).length;
+  const unseen = p.achievements ? all.filter((a) => a.earned && !p.achievements!.includes(a.id)).length : 0;
+  const best = personalBests(p);
+  const acc = recentAccuracy(p);
+  const lessons = lessonsPassed(p);
   const errRate = (k: string): number | null => {
     const s = p.keyStats[k];
     if (!s || s.hits + s.misses < 8) return null;
@@ -44,21 +65,46 @@ export const progressPage = (root: HTMLElement): void => {
     h(
       'main',
       { class: 'progress' },
-      h('h1', {}, 'My progress'),
       h(
         'div',
-        { class: 'stat-row' },
-        h('div', { class: 'stat' }, h('strong', {}, String(Math.round(p.totals.bestWpm))), h('small', {}, 'Best WPM, keyboard')),
-        h('div', { class: 'stat' }, h('strong', {}, String(Math.round(p.totals.bestTouchWpm))), h('small', {}, 'Best WPM, touch')),
-        h('div', { class: 'stat' }, h('strong', {}, String(p.totals.races)), h('small', {}, 'Races')),
-        h('div', { class: 'stat' }, h('strong', {}, String(Math.round(p.totals.minutes))), h('small', {}, 'Minutes practiced')),
+        { class: 'pg-head' },
+        h('h1', {}, 'My progress'),
+        p.classBadge ? button(`🏫 My class #${p.classBadge}`, () => (sfx.click(), go(classRaceEntry())), 'class-pill') : null,
       ),
-      h('section', {}, h('h2', {}, 'Speed in recent races'), recent.length >= 2 ? wpmChart(recent.map((r) => r.wpm)) : h('p', { class: 'fine' }, 'Finish two races to see your speed chart.')),
+      h(
+        'div',
+        { class: 'stat-tiles' },
+        stat(String(Math.max(best.keyboardWpm, best.touchWpm)), 'Top speed', 'WPM'),
+        stat(acc === null ? '–' : pct(acc), 'Accuracy', 'Last 10'),
+        stat(`${lessons.passed}/${lessons.total}`, 'Lessons'),
+        stat(String(best.streak), 'Day streak', best.bestStreak > best.streak ? `Best ${best.bestStreak}` : ''),
+        stat(String(p.totals.races), 'Races', best.wins ? `${best.wins} wins` : ''),
+        stat(String(Math.round(p.totals.minutes)), 'Minutes'),
+      ),
+      button(
+        h('span', { class: 'ach-card-in' }, h('span', { class: 'ach-trophy', 'aria-hidden': 'true' }, '🏆'), h('span', {}, h('strong', {}, 'Achievements'), h('small', {}, `${earned} of ${all.length}`)), unseen ? h('span', { class: 'tab-badge static' }, `${unseen} new`) : null, h('span', { class: 'play-card-go', 'aria-hidden': 'true' }, '›')),
+        () => (sfx.click(), go(achievementsPage)),
+        'ach-card',
+      ),
+      ...progressCharts(p),
       h(
         'section',
-        {},
+        { class: 'pg-card' },
+        h('h2', {}, 'Personal bests'),
+        h(
+          'div',
+          { class: 'stat-tiles small' },
+          stat(String(best.keyboardWpm), 'Keyboard', 'WPM'),
+          stat(String(best.touchWpm), 'Touch', 'WPM'),
+          stat(best.bestAccuracy === null ? '–' : pct(best.bestAccuracy), 'Best accuracy'),
+          stat(String(best.bestStreak), 'Longest streak', 'days'),
+        ),
+      ),
+      h(
+        'section',
+        { class: 'pg-card' },
         h('h2', {}, 'Key accuracy'),
-        h('p', { class: 'fine' }, 'Green keys are solid. Orange and red keys need a little more practice. Gray keys need more typing before we can tell.'),
+        h('p', { class: 'chart-key fine' }, h('span', { class: 'dot good' }), 'Solid ', h('span', { class: 'dot weak' }), 'Practice ', h('span', { class: 'dot unknown' }), 'Not sure yet'),
         h(
           'div',
           { class: 'heat-keys' },
@@ -75,12 +121,7 @@ export const progressPage = (root: HTMLElement): void => {
           ),
         ),
       ),
-      h(
-        'section',
-        {},
-        h('h2', {}, 'Achievements'),
-        h('p', {}, `${all.filter((a) => a.earned).length} of ${all.length} earned. `, button('See them all', () => go(achievementsPage), 'link')),
-      ),
     ),
   );
+  return withTabs(root, 'progress');
 };

@@ -6,8 +6,10 @@ import { ensureStarglint } from '../../save/store';
 import { button, h, svg } from '../dom';
 import { sfx } from '../sound';
 import { achievementsPage } from './achievementsPage';
-import { hub, topBar } from './hub';
+import { topBar } from './hub';
+import { grownUps } from './grownUps';
 import { nest } from './nest';
+import { withTabs } from '../tabBar';
 
 const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
 
@@ -44,7 +46,7 @@ export function parentGate(onPass: () => void): HTMLElement {
   return modal;
 }
 
-export const supporter = (root: HTMLElement): void => {
+export const supporter = (root: HTMLElement): (() => void) => {
   const p = profile();
   const ready = !!CONFIG.supporterCheckoutUrl;
 
@@ -81,7 +83,7 @@ export const supporter = (root: HTMLElement): void => {
     );
 
   root.append(
-    topBar(() => go(hub)),
+    topBar(() => go(grownUps)),
     h(
       'main',
       { class: 'supporter' },
@@ -104,4 +106,5 @@ export const supporter = (root: HTMLElement): void => {
       p.supporter ? null : codeBox(),
     ),
   );
+  return withTabs(root, 'grownups');
 };

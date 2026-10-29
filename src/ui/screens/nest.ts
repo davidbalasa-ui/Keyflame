@@ -13,6 +13,7 @@ import { CONFETTI, TRAIL_COLORS, attachField } from '../particles';
 import { claimNewAchievements, earnedIds } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
 import { hub, refreshEmbers, topBar } from './hub';
+import { dragonTabs, withTabs } from '../tabBar';
 import { raceMap } from './race';
 
 function growthText(d: OwnedDragon): string {
@@ -23,7 +24,7 @@ function growthText(d: OwnedDragon): string {
   return `${evo}${stage === 'hatchling' ? 'Hatchling' : 'Young'} · ${goal - d.xp} keys to grow`;
 }
 
-export const nest = (root: HTMLElement): void => {
+export const nest = (root: HTMLElement): (() => void) => {
   const p = profile();
   const egg = p.nest;
   const prog = eggProgress(p);
@@ -68,7 +69,8 @@ export const nest = (root: HTMLElement): void => {
     h(
       'main',
       { class: 'nest' },
-      h('h1', {}, 'Nest'),
+      h('h1', { class: 'sr-only' }, 'Nest'),
+      dragonTabs('nest'),
       nestPanel,
       p.basket.length
         ? h(
@@ -175,6 +177,7 @@ export const nest = (root: HTMLElement): void => {
         : null,
     ),
   );
+  return withTabs(root, 'dragons');
 };
 
 /** A clip-path that keeps one side of the seam the shell splits along. */

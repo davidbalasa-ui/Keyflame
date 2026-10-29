@@ -1354,3 +1354,313 @@ body.teacher-mode .student-list { min-height: 0; }
   .tm-primary { width: 100%; }
   body.teacher-mode .tm-backdrop-wrap { display: none; }
 }
+
+/* ===== Home screen (2026-10 layout): rider bar, season, nest hero, daily flight, play cards, tab bar ===== */
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+body.hub-fit { background: radial-gradient(ellipse at 50% 0%, #4b2a86 0%, #2a1d57 40%, var(--bg) 75%) fixed, var(--bg); }
+.home-top {
+  flex: none; display: flex; align-items: center; gap: 12px; width: 100%; max-width: 760px; margin: 0 auto;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 4px;
+}
+.home-avatar {
+  flex: none; width: 58px; height: 58px; border-radius: 50%; padding: 0; border: 3px solid var(--gold); cursor: pointer; overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #6a4fc2, #2a1d57); box-shadow: 0 0 0 3px rgba(255, 212, 59, 0.18), 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+.home-avatar-art { width: 150%; margin: 6% 0 0 -12%; }
+.home-avatar-art.egg { width: 70%; margin: 14% auto 0; }
+.home-who { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; }
+.home-who strong { font-size: 1.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.home-who .bar { width: min(150px, 100%); height: 7px; margin-top: 4px; }
+.home-who .bar span { background: linear-gradient(90deg, var(--gold), var(--ember-2)); border-radius: 4px; }
+.streak-pill {
+  flex: none; display: flex; align-items: center; gap: 6px; padding: 6px 12px 6px 8px; border-radius: 16px;
+  background: rgba(20, 13, 44, 0.75); border: 2px solid var(--line); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+.streak-flame { font-size: 1.5rem; line-height: 1; }
+.streak-in { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.streak-in strong { font-size: 1.35rem; }
+.streak-in small { font-size: 0.68rem; color: var(--muted); white-space: nowrap; }
+.streak-pill.cold .streak-flame { filter: grayscale(1); opacity: 0.55; }
+.streak-pill.lit { border-color: #ff922b; box-shadow: 0 0 14px rgba(255, 146, 43, 0.35); }
+.home-logo { display: none; }
+@media (min-height: 700px) and (max-aspect-ratio: 4 / 5) {
+  .home-logo { display: block; flex: none; margin: -2px 0 -4px; font-size: 2.2rem; line-height: 1.1; text-align: center; background: linear-gradient(180deg, #fff3bf, var(--gold) 45%, var(--ember)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.35)); }
+}
+
+body.hub-fit .hub.home { gap: 10px; padding: 6px 16px 10px; max-width: 760px; margin: 0 auto; }
+body.hub-fit .hub.home .season-btn { margin: 0; border: 2px solid rgba(255, 255, 255, 0.22); }
+.home-hero { flex: 1 1 0; min-height: 110px; width: 100%; container-type: size; display: flex; align-items: center; justify-content: center; }
+.hero-frame { position: relative; width: min(100cqw, 100cqh * 400 / 240); aspect-ratio: 400 / 240; }
+/* Upright phones have height to spare: the scene grows a little taller and trims its sides. */
+@container (max-aspect-ratio: 400 / 240) { .hero-frame { width: 100cqw; aspect-ratio: auto; height: min(100cqh, 100cqw * 0.72); } .hero-open .aerie-back svg { width: 100%; height: 100%; } }
+.hero-open { display: block; width: 100%; height: 100%; padding: 0; border: none; background: none; cursor: pointer; border-radius: 22px; overflow: hidden; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12), 0 10px 24px rgba(0, 0, 0, 0.45); }
+.hero-open .aerie { max-width: none; width: 100%; height: 100%; }
+.hero-open:active { transform: scale(0.99); }
+.hero-chip {
+  position: absolute; z-index: 3; display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 999px;
+  font: inherit; font-size: 0.85rem; font-weight: 600; color: var(--text); background: rgba(20, 13, 44, 0.78); border: 1px solid rgba(255, 255, 255, 0.18);
+  white-space: nowrap; max-width: 48%; overflow: hidden; text-overflow: ellipsis; pointer-events: none;
+}
+.class-chip { top: 8px; left: 8px; pointer-events: auto; cursor: pointer; background: linear-gradient(180deg, #9775fa, #6741d9); border-color: rgba(255, 255, 255, 0.35); }
+.embers-chip { top: 8px; right: 8px; color: var(--gold); }
+.name-chip { bottom: 8px; left: 8px; }
+.egg-chip { bottom: 8px; right: 8px; }
+.egg-chip.ready { background: linear-gradient(180deg, var(--gold), var(--ember)); color: #2a1200; }
+/* The egg sits in a twig nest at the dragon's side, or alone in the middle. */
+.egg-nest { position: absolute; z-index: 2; width: 30%; right: 5%; bottom: 7%; pointer-events: none; }
+.egg-nest.alone { position: relative; width: 46%; margin: 0 auto; right: auto; bottom: auto; }
+.aerie-dragon:has(> .egg-nest.alone) { left: 0; right: 0; }
+.egg-nest-egg { width: 52%; margin: 0 auto -20%; position: relative; z-index: 1; }
+.egg-nest-twigs { position: relative; z-index: 2; }
+.egg-glow { position: absolute; left: 10%; right: 10%; top: -10%; bottom: 20%; border-radius: 50%; background: radial-gradient(circle, rgba(255, 212, 59, calc(0.15 + var(--warm) * 0.5)) 0%, rgba(255, 146, 43, 0) 65%); }
+.egg-nest.ready .egg-glow { animation: pulse 1.2s ease-in-out infinite; }
+.hero-frame:has(.egg-nest.beside) .aerie-dragon { left: 4%; right: 30%; }
+
+.daily-card {
+  flex: none; width: 100%; display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 18px; text-align: left;
+  background: linear-gradient(180deg, rgba(58, 46, 116, 0.92), rgba(38, 29, 74, 0.92)); border: 2px solid var(--line);
+}
+.daily-card.done { border-color: var(--good); background: linear-gradient(180deg, #1f5e4b, #183f39); }
+.daily-icon { flex: none; width: 34px; height: 34px; }
+.daily-icon svg { width: 100%; height: 100%; display: block; }
+.daily-text { flex: none; display: flex; flex-direction: column; line-height: 1.15; }
+.daily-text strong { font-size: 1.05rem; }
+.daily-text small { color: var(--muted); font-size: 0.82rem; }
+.daily-track { flex: 1; min-width: 40px; display: flex; align-items: center; justify-content: space-between; position: relative; margin: 0 4px; }
+.daily-track::before { content: ''; position: absolute; left: 6px; right: 6px; top: 50%; height: 4px; margin-top: -2px; background: var(--bg-2); border-radius: 2px; }
+.daily-dot { position: relative; width: 14px; height: 14px; border-radius: 50%; background: var(--bg-2); border: 2px solid var(--line); }
+.daily-dot.on { background: var(--gold); border-color: #fff3bf; box-shadow: 0 0 8px rgba(255, 212, 59, 0.7); }
+.daily-end { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 1.2rem; color: var(--gold); background: var(--bg-2); border: 2px solid var(--line); }
+.daily-card.done .daily-end { color: #fff; background: var(--good); border-color: #c3fae8; }
+
+.play-cards { flex: none; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.play-card { font: inherit; color: #fff; border: 2px solid rgba(255, 255, 255, 0.28); padding: 0; cursor: pointer; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 0 rgba(0, 0, 0, 0.3); text-align: left; height: clamp(86px, 18vh, 170px); background: #2a1d57; }
+.play-card:active { transform: translateY(3px); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.3); }
+.play-card-in { position: relative; display: block; width: 100%; height: 100%; }
+.play-card-bg { position: absolute; inset: 0; }
+.play-card-bg svg { width: 100%; height: 100%; }
+.play-card-dragon { position: absolute; width: 62%; top: 2%; right: 4%; }
+.tile-lessons .play-card-dragon { width: 54%; right: 22%; top: 6%; }
+.play-card-text { position: absolute; left: 12px; bottom: 8px; right: 44px; display: flex; flex-direction: column; line-height: 1.1; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.75); }
+.play-card-text strong { font-size: 1.45rem; }
+.play-card-text small { font-size: 0.85rem; opacity: 0.95; }
+.play-card-go { position: absolute; right: 8px; bottom: 8px; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 1.5rem; font-weight: 700; line-height: 1; color: #fff; background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(255, 255, 255, 0.5); }
+.tile-race .play-card-go { background: #e8364f; }
+.tile-lessons .play-card-go { background: #3b5bdb; }
+.tile-race { border-color: #ffa94d; }
+.tile-lessons { border-color: #74c0fc; }
+
+/* Tab bar: a row at the foot of the hub, and pinned to the bottom of the screens it opens. */
+.tab-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; padding: 0 10px calc(6px + env(safe-area-inset-bottom)); pointer-events: none; }
+body.hub-fit .tab-bar { position: static; flex: none; }
+.tab-bar-in {
+  pointer-events: auto; max-width: 640px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr 84px 1fr 1fr; align-items: end;
+  padding: 6px 4px 6px; border-radius: 24px; background: rgba(23, 16, 51, 0.96); border: 2px solid var(--line); box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+}
+.tab { font: inherit; color: var(--muted); background: none; border: none; padding: 4px 0; cursor: pointer; min-width: 0; }
+.tab-in { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.tab-icon { width: 28px; height: 28px; }
+.tab-icon svg { width: 100%; height: 100%; display: block; fill: #9d8fd6; }
+.tab small { font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.tab.on { color: var(--gold); }
+.tab.on .tab-icon svg { fill: var(--gold); }
+.tab.on .tab-in::after { content: ''; position: absolute; bottom: -6px; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.tab-progress .tab-icon svg { fill: #b197fc; }
+.tab-grownups .tab-icon svg { fill: #91a7ff; }
+.tab-badge { position: absolute; top: -4px; right: calc(50% - 24px); min-width: 18px; height: 18px; border-radius: 9px; padding: 0 5px; background: var(--bad); color: #fff; font-size: 0.7rem; font-weight: 700; line-height: 18px; text-align: center; }
+.tab-badge.static { position: static; margin-left: auto; }
+.tab-dragon {
+  position: relative; justify-self: center; width: 76px; height: 76px; margin-top: -30px; border-radius: 50%; padding: 0; cursor: pointer;
+  border: 3px solid var(--gold); background: radial-gradient(circle at 50% 38%, #6b3fa0, #2b1650 70%);
+  box-shadow: 0 0 0 4px rgba(23, 16, 51, 0.96), 0 0 22px 4px rgba(255, 179, 71, 0.5);
+}
+.tab-dragon-in { display: block; width: 74%; margin: 0 auto; }
+.tab-dragon-in svg { width: 100%; height: auto; display: block; }
+.tab-dragon:active { transform: translateY(2px); }
+.tab-dragon.on { box-shadow: 0 0 0 4px rgba(23, 16, 51, 0.96), 0 0 28px 8px rgba(255, 212, 59, 0.7); }
+.tab-dragon.ready { animation: trophyGlow 1.4s ease-in-out infinite; }
+.tab-dragon .tab-badge { top: 2px; right: 2px; }
+body.has-tabs:not(.hub-fit) main { padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+body.has-tabs:not(.hub-fit) .top-bar > .btn:first-child { visibility: visible; }
+
+/* Nest and Codex tabs inside the big dragon button's screen */
+.seg-tabs { display: flex; gap: 6px; padding: 5px; margin: 0 auto 14px; width: 100%; max-width: 420px; box-sizing: border-box; border-radius: 999px; background: var(--bg-2); border: 2px solid var(--line); }
+.seg { flex: 1; font: inherit; font-weight: 600; font-size: 1.05rem; color: var(--muted); background: none; border: none; padding: 9px 12px; border-radius: 999px; cursor: pointer; }
+.seg.on { color: #2a1200; background: linear-gradient(180deg, var(--ember-2), var(--ember)); box-shadow: 0 3px 0 #b34700; }
+.seg.ping { animation: pulse 1.2s ease-in-out infinite; color: var(--gold); }
+
+/* Progress tab */
+.pg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.pg-head h1 { margin: 0; }
+.progress .stat-tiles { grid-template-columns: repeat(3, 1fr); }
+.pg-card { background: var(--panel); border: 2px solid var(--line); border-radius: 18px; padding: 12px 14px; margin: 14px 0; }
+.pg-card h2 { font-size: 1.15rem; margin: 0 0 8px; }
+.pg-card .chart { background: var(--bg-2); }
+.chart-key { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 6px 0 4px; }
+.dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; border: 2px solid #ffb347; }
+.dot.full { background: #ffb347; }
+.dot.hollow { background: transparent; }
+.dot.good { background: #5ee6a8; border-color: #5ee6a8; }
+.dot.weak { background: #ff8787; border-color: #ff8787; }
+.dot.unknown { background: #6c5fa8; border-color: #6c5fa8; }
+.unit-bars { display: grid; gap: 8px; }
+.unit-bar { display: grid; grid-template-columns: 7.5em 1fr auto; align-items: center; gap: 10px; }
+.bar.wide { width: 100%; height: 10px; border-radius: 5px; }
+.bar.wide span { background: linear-gradient(90deg, var(--good), #3bc9db); border-radius: 5px; }
+.ub-stars { color: var(--gold); font-weight: 600; font-size: 0.9em; white-space: nowrap; }
+.ach-card { font: inherit; color: inherit; width: 100%; margin-top: 14px; padding: 10px 14px; border-radius: 18px; cursor: pointer; text-align: left; border: 2px solid #f59f00; background: linear-gradient(100deg, #5c3a00, #3a2a10 60%, var(--panel)); }
+.ach-card-in { position: relative; width: 100%; display: flex; align-items: center; gap: 12px; min-height: 40px; padding-right: 40px; }
+.ach-card-in strong, .ach-card-in small { display: block; }
+.ach-card-in small { color: var(--gold); }
+.ach-card .play-card-go { top: 50%; bottom: auto; margin-top: -16px; right: 0; background: #f59f00; }
+.ach-trophy { font-size: 2rem; }
+
+/* Grown-ups tab */
+.gu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.gu-card { font: inherit; color: inherit; text-align: left; cursor: pointer; padding: 14px; border-radius: 18px; background: var(--panel); border: 2px solid var(--line); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25); }
+.gu-card:active { transform: translateY(2px); }
+.gu-card-in { position: relative; width: 100%; display: flex; align-items: center; gap: 12px; padding-right: 40px; }
+.gu-card .play-card-go { top: 50%; bottom: auto; margin-top: -16px; right: 0; background: var(--panel-2); }
+.gu-glyph { flex: none; width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: var(--bg-2); }
+.gu-glyph svg { width: 32px; height: 32px; }
+.gu-text strong { display: block; font-size: 1.15rem; }
+.gu-text small { display: block; color: var(--muted); }
+.gu-family { border-color: #ffa94d; }
+.gu-classroom { border-color: #9775fa; }
+.gu-facts { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 6px; color: var(--muted); }
+.gu-facts li::before { content: '✓ '; color: var(--good); font-weight: 700; }
+
+/* Family view */
+.fam-list { display: grid; gap: 14px; }
+.fam-card { background: var(--panel); border: 2px solid var(--line); border-radius: 18px; padding: 10px 14px 14px; }
+.fam-card.open { border-color: #ffa94d; }
+.fam-toggle { font: inherit; color: inherit; width: 100%; background: none; border: none; padding: 0; cursor: pointer; text-align: left; }
+.fam-head { width: 100%; display: flex; align-items: center; gap: 12px; }
+.fam-avatar { flex: none; width: 56px; height: 56px; border-radius: 50%; overflow: hidden; background: var(--bg-2); border: 2px solid var(--gold); }
+.fam-avatar svg { width: 150%; margin: 6% 0 0 -12%; }
+.fam-avatar.egg svg { width: 70%; margin: 12% auto 0; }
+.fam-name { flex: 1; min-width: 0; }
+.fam-name strong { display: block; font-size: 1.15rem; }
+.fam-name small { color: var(--muted); }
+.fam-class { flex: none; font-size: 0.8rem; font-weight: 600; padding: 2px 10px; border-radius: 999px; background: #6741d9; }
+.fam-more { flex: none; font-size: 1.3rem; color: var(--muted); }
+.fam-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 10px 0 6px; }
+.fam-stat { background: var(--bg-2); border-radius: 12px; padding: 6px 4px; text-align: center; }
+.fam-stat strong { display: block; color: var(--gold); font-size: 1.15rem; line-height: 1.1; }
+.fam-stat small { color: var(--muted); font-size: 0.72rem; }
+.chart.compact { padding: 4px; background: var(--bg-2); }
+.fam-detail .pg-card { background: var(--bg-2); }
+.fam-note { margin-top: 16px; }
+
+@media (max-width: 420px) {
+  .home-top { gap: 10px; padding-left: 12px; padding-right: 12px; }
+  .home-avatar { width: 50px; height: 50px; }
+  body.hub-fit .hub.home { padding-left: 12px; padding-right: 12px; gap: 8px; }
+  .play-cards { gap: 10px; }
+  .play-card-text strong { font-size: 1.25rem; }
+  .play-card-text small { font-size: 0.78rem; }
+  .daily-text small { font-size: 0.76rem; }
+  .tab-bar { padding-left: 6px; padding-right: 6px; }
+  .tab-bar-in { grid-template-columns: 1fr 1fr 74px 1fr 1fr; }
+  .tab-dragon { width: 68px; height: 68px; }
+  .tab small { font-size: 0.68rem; }
+  .fam-stats { grid-template-columns: repeat(3, 1fr); }
+  .progress .stat-tiles { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 340px) {
+  .daily-track { display: none; }
+  .streak-in small { display: none; }
+  .play-card-text small { display: none; }
+}
+/* Tablets: everything a size up, so it reads at arm's length. */
+@media (min-width: 700px) {
+  .home-top { padding-top: calc(14px + env(safe-area-inset-top)); }
+  .home-who .rank { font-size: 0.95rem; }
+  .streak-pill { padding: 8px 16px 8px 12px; }
+  .streak-flame { font-size: 2rem; }
+  .streak-in strong { font-size: 1.7rem; }
+  .streak-in small { font-size: 0.8rem; }
+  .hero-chip { font-size: 1.05rem; padding: 5px 14px; }
+  .daily-text strong { font-size: 1.25rem; }
+  .daily-text small { font-size: 0.95rem; }
+  .daily-track { max-width: 260px; margin-left: auto; }
+  .daily-icon, .daily-end { width: 42px; height: 42px; }
+  .play-card-text { left: 18px; bottom: 12px; }
+  .play-card-text small { font-size: 1rem; }
+  .play-card-go { width: 40px; height: 40px; right: 12px; bottom: 12px; }
+  .tab small { font-size: 0.85rem; }
+  .tab-icon { width: 32px; height: 32px; }
+  .tab-bar-in { grid-template-columns: 1fr 1fr 96px 1fr 1fr; }
+  .tab-dragon { width: 86px; height: 86px; }
+  body.hub-fit .hub.home .season-btn-text strong { font-size: 1.35rem; }
+}
+/* Tall screens (iPads upright) have room for the logo and bigger cards. */
+@media (min-height: 900px) and (min-width: 700px) {
+  .home-logo { display: block; flex: none; margin: 0; font-size: 3rem; text-align: center; background: linear-gradient(180deg, #fff3bf, var(--gold) 45%, var(--ember)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.35)); }
+  .home-avatar { width: 70px; height: 70px; }
+  .home-who strong { font-size: 1.4rem; }
+  .play-card-text strong { font-size: 1.9rem; }
+  .daily-card { padding: 12px 18px; }
+}
+/* Short screens, such as a phone on its side or a laptop. */
+@media (max-height: 600px) {
+  .home-top { padding-top: calc(4px + env(safe-area-inset-top)); }
+  .home-avatar { width: 42px; height: 42px; border-width: 2px; }
+  .home-who .rank, .home-who .rider-title { display: none; }
+  body.hub-fit .hub.home { gap: 6px; padding-top: 4px; padding-bottom: 6px; }
+  body.hub-fit .hub.home .season-btn { padding-top: 0; padding-bottom: 0; }
+  .daily-card { padding: 4px 12px; }
+  .daily-icon, .daily-end { width: 26px; height: 26px; }
+  .play-card { height: 64px; }
+  .play-card-text small { display: none; }
+  .tab-bar-in { padding: 2px 4px; }
+  .tab-icon { width: 22px; height: 22px; }
+  .tab-dragon { width: 58px; height: 58px; margin-top: -18px; }
+}
+
+/* Lesson flight: the dragon flies away into the screen through a ring at each word. */
+.flight {
+  --f1: #3b5bdb; --f2: #748ffc; --f3: #d0bfff;
+  position: relative; overflow: hidden; border-radius: var(--radius); margin: 8px 0 6px;
+  height: clamp(130px, 28vh, 320px); contain: strict; isolation: isolate; container-type: size;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+.flight-sky { position: absolute; inset: 0; background: linear-gradient(180deg, var(--f1) 0%, var(--f2) 26%, var(--f3) 34%, #6d5bd0 34.5%, #3a2e74 100%); }
+.flight-mountains { position: absolute; left: 0; right: 0; top: calc(34% - 13%); height: 13.5%; }
+.flight-mountains svg { width: 100%; height: 100%; }
+.flight-ground { position: absolute; left: -20%; right: -20%; top: 34%; bottom: 0; background: radial-gradient(ellipse 60% 120% at 50% 0%, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 70%); }
+.flight-world { position: absolute; inset: 0; }
+.flight-world > * { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; will-change: transform, opacity; opacity: 0; }
+.f-ring { border-radius: 50%; border: 9px solid #ffd43b; box-shadow: 0 0 0 3px rgba(255, 244, 191, 0.6) inset, 0 0 22px 6px rgba(255, 212, 59, 0.55); transition: border-color 0.25s, box-shadow 0.25s; }
+.f-ring-glow { position: absolute; inset: -9px; border-radius: 50%; border: 3px solid rgba(255, 255, 255, 0.55); }
+.f-ring.next { border-color: #fff3bf; }
+.f-ring.dim { border-color: #8a7fc0; box-shadow: none; }
+.f-ring.dim .f-ring-glow { border-color: rgba(255, 255, 255, 0.15); }
+.f-gate { border-width: 14px; border-color: #ff922b; border-radius: 50% 50% 8px 8px; box-shadow: 0 0 30px 10px rgba(255, 146, 43, 0.6); }
+.f-gate-flag { position: absolute; left: 50%; top: -28%; transform: translateX(-50%); font-size: 2.4rem; color: var(--gold); text-shadow: 0 0 12px #fff; }
+.f-cloud { height: 0; padding-bottom: 12%; border-radius: 50%; background: radial-gradient(ellipse at 50% 60%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 70%); }
+.f-tuft { width: 0; height: 0; border-left: 14px solid transparent; border-right: 14px solid transparent; border-bottom: 40px solid #2b8a3e; }
+.f-dragon { position: absolute; left: 6%; bottom: 0; width: min(40cqw, 120cqh); z-index: 2000; will-change: transform; pointer-events: none; }
+/* Seen from behind its shoulder: the side-view dragon climbs up and away toward the horizon. */
+.f-dragon-art { transform: perspective(700px) rotateY(32deg) rotateZ(-16deg); transform-origin: 30% 70%; }
+.f-dragon.wobble-once .f-dragon-art { animation: wobble 0.3s; }
+.flight .fx-layer { z-index: 2001; }
+body.reduced-motion .f-ring { transition: none; }
+body.kb-pinned .flight { height: clamp(96px, 19vh, 190px); margin: 4px 0; }
+@media (max-height: 560px) { body.kb-pinned .flight { height: 80px; } }
+
+/* Phones on their side: the hero on the left, everything else stacked on the right. */
+@media (max-height: 500px) and (min-aspect-ratio: 3 / 2) {
+  body.hub-fit .hub.home {
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto minmax(0, 1fr); gap: 6px 12px;
+    grid-template-areas: 'hero season' 'hero daily' 'hero cards'; max-width: 900px; align-items: stretch;
+  }
+  body.hub-fit .hub.home .home-logo { display: none; }
+  body.hub-fit .hub.home .home-hero { grid-area: hero; min-height: 0; height: 100%; }
+  body.hub-fit .hub.home .season-btn { grid-area: season; }
+  body.hub-fit .hub.home .season-btn-dragon { width: 44px; }
+  body.hub-fit .hub.home .daily-card { grid-area: daily; }
+  body.hub-fit .hub.home .play-cards { grid-area: cards; min-height: 0; grid-template-rows: minmax(56px, 1fr); }
+  body.hub-fit .hub.home .play-card { height: auto; }
+  .tab-bar-in { max-width: 520px; }
+}

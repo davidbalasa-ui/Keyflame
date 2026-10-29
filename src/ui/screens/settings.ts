@@ -7,6 +7,8 @@ import { choiceList } from '../picker';
 import { canInstall, installApp, isInstalled, isOfflineReady, onInstallChange } from '../install';
 import { hub, topBar } from './hub';
 import { title } from './title';
+import { feedbackPage } from './feedbackPage';
+import { withTabs } from '../tabBar';
 
 type BoolSetting = { [K in keyof Settings]: Settings[K] extends boolean ? K : never }[keyof Settings];
 
@@ -19,7 +21,7 @@ const TOGGLES: Array<[BoolSetting, string]> = [
   ['relaxed', 'Relaxed lessons: no clock, mistakes don’t stop you'],
 ];
 
-export const settings = (root: HTMLElement): void => {
+export const settings = (root: HTMLElement): (() => void) => {
   const p = profile();
   const code = h('textarea', { class: 'code-box', rows: 4, readonly: true });
   const copied = h('span', { class: 'fine' });
@@ -117,11 +119,9 @@ export const settings = (root: HTMLElement): void => {
       offlineSection(),
       h(
         'section',
-        { class: 'parents' },
-        h('h2', {}, 'For parents'),
-        h('p', {}, 'Keyflame keeps all progress in this browser. It does not ask for names, emails, or any personal information, and it does not track players. Rider and dragon names are picked from preset word lists.'),
-        h('p', {}, 'Keyflame has no ads. The only thing to buy is an optional one-time supporter pack, behind a grown-up check. It adds the Starglint dragon and a Supporter title, never speed. It works with a code instead of an account.'),
-        h('p', {}, h('a', { href: './privacy.html', target: '_blank', rel: 'noopener' }, 'Read the privacy policy')),
+        {},
+        h('h2', {}, 'More'),
+        h('div', { class: 'row' }, button('💬 Send an idea or bug', () => go(feedbackPage('settings', settings)), 'btn ghost'), button('⇄ Switch rider', () => go(title), 'btn ghost')),
       ),
       h(
         'section',
@@ -142,6 +142,7 @@ export const settings = (root: HTMLElement): void => {
       ),
     ),
   );
+  return withTabs(root, 'settings');
 };
 
 function offlineSection(): HTMLElement {

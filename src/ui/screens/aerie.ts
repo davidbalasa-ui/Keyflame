@@ -64,7 +64,7 @@ const CAVE = '<path d="M0 240 V60 Q0 0 80 0 H320 Q400 0 400 60 V240z" fill="#2a2
 export function aerieScene(p: Profile, dragon: HTMLElement): HTMLElement {
   const owned = DECOR.filter((d) => p.decor.includes(d.id));
   const back = h('div', { class: 'aerie-back' });
-  back.innerHTML = `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${CAVE}${owned.map((d) => d.art).join('')}</svg>`;
+  back.innerHTML = `<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${CAVE}${owned.map((d) => d.art).join('')}</svg>`;
   const scene = h('div', { class: 'aerie' }, back, h('div', { class: 'aerie-dragon' }, dragon));
   // Soft sparkles drifting up through the cave, in the active dragon's colors.
   const d = activeDragon(p);

@@ -8,6 +8,7 @@ import type { ReadingLevel } from '../content/facts';
 
 export const SAVE_VERSION = 1;
 export const MAX_PROFILES = 4;
+export const LESSON_LOG_MAX = 50;
 
 export interface OwnedDragon {
   id: string;
@@ -138,6 +139,19 @@ export interface Profile {
   /** The class this rider's lessons and races count toward, if any, and their badge number in it. */
   classCode?: string;
   classBadge?: number;
+  /** Days in a row with a race or lesson. Missing on saves from before streaks. */
+  streak?: { last: string; days: number; best: number };
+  /** Recent lessons, newest first, for the Progress and Family charts. */
+  lessonLog?: LessonRecord[];
+}
+
+export interface LessonRecord {
+  at: number;
+  lesson: string;
+  stars: number;
+  /** Null in relaxed mode, which has no clock. */
+  wpm: number | null;
+  accuracy: number;
 }
 
 /** One month of a season: counts toward its three challenges. */
@@ -266,6 +280,8 @@ export function normalizeProfile(raw: unknown): Profile | null {
     classKey: typeof r.classKey === 'string' && /^[0-9a-f]{32}$/.test(r.classKey) ? r.classKey : undefined,
     classCode: typeof r.classCode === 'string' && /^[A-Z]{6}$/.test(r.classCode) ? r.classCode : undefined,
     classBadge: Number.isInteger(r.classBadge) && r.classBadge! >= 1 && r.classBadge! <= 99 ? r.classBadge : undefined,
+    streak: r.streak && typeof r.streak.last === 'string' && Number.isFinite(r.streak.days) ? { last: r.streak.last, days: r.streak.days, best: Number.isFinite(r.streak.best) ? r.streak.best : r.streak.days } : undefined,
+    lessonLog: Array.isArray(r.lessonLog) ? r.lessonLog.filter((x) => x && typeof x.at === 'number' && typeof x.accuracy === 'number').slice(0, LESSON_LOG_MAX) : undefined,
   } as Profile;
   return starglintDragon(p);
 }

@@ -3,13 +3,15 @@ import { weakKeys } from '../../engine/typing';
 import { TRIBES, eggSvg } from '../../game/dragons';
 import { claimNewAchievements, earnedIds, type Achievement } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
-import { applyPlacement, isTouch, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
+import { activeDragon, applyPlacement, isTouch, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
 import { reportToClass } from '../classTrack';
 import { PASSAGES } from '../../content/words';
 import { go, inputMode, persist, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
+import { createLessonFlight } from '../lessonFlight';
+import { seasonAt } from '../../content/seasons';
 import { hub, refreshEmbers, topBar } from './hub';
 import { nest } from './nest';
 import { CHALLENGE_EMBERS } from '../../game/seasons';
@@ -75,13 +77,14 @@ export function playLesson(lesson: Lesson) {
       input,
       relaxed,
       showKeyboard: p.settings.showKeyboard,
+      onKey: (r, s) => flight.update(s, r.correct),
       onFinish: (s) => {
         clearInterval(timer);
         const sum = s.summary();
         // Relaxed mode has no clock, so it can earn up to two stars.
         const stars = starsFor(lesson, relaxed ? 0 : sum.wpm, sum.accuracy);
         const before = earnedIds(p);
-        const reward = recordLesson(p, lesson, sum, stars);
+        const reward = recordLesson(p, lesson, sum, stars, relaxed);
         reportToClass(p, { kind: 'lesson', lesson: lesson.id, stars, wpm: relaxed ? null : sum.wpm, accuracy: sum.accuracy, touch: isTouch(view.input) });
         const fresh = claimNewAchievements(p, before);
         persist();
@@ -90,9 +93,12 @@ export function playLesson(lesson: Lesson) {
         showResult(root, lesson, relaxed ? null : sum.wpm, sum.accuracy, stars, reward.embers, reward.newEgg ? TRIBES[reward.newEgg].name : null, reward.eggReady, fresh, reward.seasonDone?.map((c) => c.text));
       },
     });
+    // The flight follows the text the typing view really shows.
+    const flight = createLessonFlight(view.session.text, activeDragon(p), seasonAt()?.sky);
     const tick = (): void => {
       const s = view.session;
-      stats.textContent = relaxed ? `Relaxed mode · ${pct(s.accuracy())} accuracy` : `${Math.round(s.wpm())} WPM · ${pct(s.accuracy())} accuracy`;
+      // No speed on screen during a lesson: accuracy is what counts here.
+      stats.textContent = `◎ ${flight.clean}/${flight.rings} rings · ${pct(s.accuracy())} accuracy${relaxed ? ' · Relaxed' : ''}`;
     };
     timer = window.setInterval(tick, 250);
     tick();
@@ -105,6 +111,7 @@ export function playLesson(lesson: Lesson) {
         lesson.newKeys.filter((k) => k !== ' ').length
           ? h('p', { class: 'new-keys' }, 'New keys: ', ...lesson.newKeys.filter((k) => k !== ' ').map((k) => h('kbd', {}, k.toUpperCase())), lesson.id === 'L1' ? (input === 'keyboard' ? ' Rest your pointer fingers on the bumps on F and J.' : ' Hold your device with both hands and tap with your thumbs.') : '')
           : h('p', { class: 'new-keys' }, 'Keep your eyes on the screen, not your fingers.'),
+        flight.el,
         stats,
         view.el,
       ),

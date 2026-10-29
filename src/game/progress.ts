@@ -4,8 +4,9 @@
 import { LESSONS, UNITS, lessonsInUnit, type Lesson } from '../content/lessons';
 import { mergeKeyStats, type SessionSummary } from '../engine/typing';
 import { MARKINGS, NAME_ENDS, NAME_STARTS, TRIBES, rollMarking, rollPalette, stageFor, type Stage, type TribeId } from './dragons';
-import { isStarglint, today, type InputMode, type OwnedDragon, type Profile } from '../save/store';
+import { LESSON_LOG_MAX, isStarglint, today, type InputMode, type OwnedDragon, type Profile } from '../save/store';
 import { courseById } from './courses';
+import { bumpStreak } from './streak';
 import { noteSeasonLesson, noteSeasonRace, rollSeasonPalette, type ChallengeState } from './seasons';
 
 export interface TypingRewards {
@@ -54,6 +55,7 @@ export function checkMilestones(p: Profile): TribeId | null {
 /** Counts a new play day the first time a race or lesson finishes that day. */
 function countPlayDay(p: Profile): void {
   if (p.daily.races + p.daily.lessons === 0) p.totals.playDays++;
+  bumpStreak(p);
 }
 
 function rollDaily(p: Profile): void {
@@ -140,8 +142,9 @@ export function recordRace(p: Profile, s: SessionSummary, place: number, info: R
   return { ...base, embers, newEgg, seasonDone, rivalFirstWin, newBest: prevBest > 0 && s.wpm > prevBest, eggReady: eggProgress(p) >= 1 };
 }
 
-export function recordLesson(p: Profile, lesson: Lesson, s: SessionSummary, stars: number): TypingRewards {
+export function recordLesson(p: Profile, lesson: Lesson, s: SessionSummary, stars: number, relaxed = false): TypingRewards {
   const base = applySession(p, s);
+  p.lessonLog = [{ at: Date.now(), lesson: lesson.id, stars, wpm: relaxed ? null : s.wpm, accuracy: s.accuracy }, ...(p.lessonLog ?? [])].slice(0, LESSON_LOG_MAX);
   const prev = p.lessons[lesson.id];
   p.lessons[lesson.id] = {
     stars: Math.max(prev?.stars ?? 0, stars),

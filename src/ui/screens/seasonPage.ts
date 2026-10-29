@@ -9,6 +9,7 @@ import { go, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { hub, topBar } from './hub';
+import { withTabs } from '../tabBar';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const TRIBE_CYCLE: TribeId[] = ['frostspine', 'stormcrest', 'tidefin', 'mossclaw', 'emberback', 'duneskimmer', 'shadeglide'];
@@ -44,7 +45,7 @@ function seasonCard(s: Season, note: string): HTMLElement {
   return h('div', { class: 'season-card', style: skyStyle(s) }, svg(seasonDragon(s, ''), 'season-card-dragon'), h('strong', {}, s.name), h('small', {}, note));
 }
 
-export const seasonPage = (root: HTMLElement): void => {
+export const seasonPage = (root: HTMLElement): (() => void) => {
   const p = profile();
   const s = seasonAt();
   const parts: Array<HTMLElement | null> = [];
@@ -97,4 +98,5 @@ export const seasonPage = (root: HTMLElement): void => {
   }
 
   root.append(topBar(() => go(hub)), h('main', { class: 'season-page' }, h('h1', {}, 'Seasons'), ...parts, h('div', { class: 'row' }, button('Back to the hub', () => go(hub), 'btn ghost'))));
+  return withTabs(root, 'home');
 };
