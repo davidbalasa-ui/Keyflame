@@ -1,6 +1,6 @@
 import { MARKINGS, TRIBES, dragonSvg, eggSvg, lookName, stageFor, type TribeId } from '../../game/dragons';
 import { EGG_PRICE, MAX_BASKET, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, foundLooks, lookKey } from '../../game/collection';
-import { MAX_STARS, MILESTONES, lookHolder } from '../../game/progress';
+import { MAX_STARS, MILESTONES, eggProgress, lookHolder } from '../../game/progress';
 import { isStarglint } from '../../save/store';
 import { UNITS } from '../../content/lessons';
 import { FACTS, TOPIC_LABEL, factById, type FactTopic } from '../../content/facts';
@@ -8,6 +8,7 @@ import { go, persist, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { hub, refreshEmbers, topBar } from './hub';
+import { dragonTabs, withTabs } from '../tabBar';
 import { nest } from './nest';
 import { SEASONS, pastSeasons, seasonAt } from '../../content/seasons';
 import { SEASON_COLOR_CHANCE, VAULT_COLOR_CHANCE, seasonPalette } from '../../game/seasons';
@@ -24,7 +25,7 @@ function eggHint(tribe: TribeId): string {
   return m ? `${m.label} to earn this tribe’s first egg.` : 'Keep flying to find this tribe.';
 }
 
-export const codex = (root: HTMLElement): void => {
+export const codex = (root: HTMLElement): (() => void) => {
   const p = profile();
   // Sets finished before this screen existed, or by a bought egg, pay out here.
   const paid = claimSets(p);
@@ -106,7 +107,8 @@ export const codex = (root: HTMLElement): void => {
     h(
       'main',
       { class: 'codex' },
-      h('h1', {}, 'Dragon Codex'),
+      h('h1', { class: 'sr-only' }, 'Dragon Codex'),
+      dragonTabs('codex', !!p.nest && eggProgress(p) >= 1),
       ...paid.map((x) => h('p', { class: 'codex-paid' }, `🧩 Codex set done: ${TRIBES[x.tribe].name} ${x.label.toLowerCase()}! +${x.embers} embers`)),
       h('div', { class: 'codex-total' }, h('p', {}, h('strong', {}, `${found.size} of ${TOTAL_LOOKS}`), ' dragon looks found'), h('span', { class: 'bar' }, h('span', { style: `width:${pct(found.size / TOTAL_LOOKS)}` }))),
       h('p', { class: 'fine' }, `Every tribe comes in ${TRIBES.emberback.palettes.length} colors and ${MARKINGS.length} patterns: ${MARKINGS.join(', ').toLowerCase()}. Hatch eggs to fill your Codex.`),
@@ -117,14 +119,16 @@ export const codex = (root: HTMLElement): void => {
       starglintSpot(p.supporter),
     ),
   );
+  return withTabs(root, 'dragons');
 };
 
 /** The Codex with one look's page already open (used by "See it in Codex" after a hatch). */
 export const codexLook =
   (tribe: TribeId, palette: number, marking: number) =>
-  (root: HTMLElement): void => {
-    codex(root);
+  (root: HTMLElement): (() => void) => {
+    const stop = codex(root);
     root.append(lookPage(tribe, palette, marking));
+    return stop;
   };
 
 /** A page for one look: big art, the tribe's story, and your dragons that wear it. */

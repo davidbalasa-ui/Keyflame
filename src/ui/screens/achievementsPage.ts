@@ -3,7 +3,9 @@ import { SUPPORTER_TITLE, SUPPORTER_TITLE_ID } from '../../game/supporter';
 import { go, persist, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
-import { hub, topBar } from './hub';
+import { topBar } from './hub';
+import { progressPage } from './progressPage';
+import { withTabs } from '../tabBar';
 
 const MEDAL_COLORS: Record<Medal, [string, string, string]> = {
   bronze: ['#f0a875', '#b8652f', '#7a3e17'],
@@ -59,7 +61,7 @@ function trackCard(tiers: Achievement[]): HTMLElement {
   );
 }
 
-export const achievementsPage = (root: HTMLElement): void => {
+export const achievementsPage = (root: HTMLElement): (() => void) => {
   const p = profile();
   const all = achievements(p);
   const tracks = new Map<string, Achievement[]>();
@@ -83,7 +85,7 @@ export const achievementsPage = (root: HTMLElement): void => {
   };
 
   root.append(
-    topBar(() => go(hub)),
+    topBar(() => go(progressPage)),
     h(
       'main',
       { class: 'achievements' },
@@ -110,4 +112,5 @@ export const achievementsPage = (root: HTMLElement): void => {
       h('div', { class: 'ach-grid' }, ...[...tracks.values()].map(trackCard)),
     ),
   );
+  return withTabs(root, 'progress');
 };

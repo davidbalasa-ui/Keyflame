@@ -1,7 +1,7 @@
 import { CONFIG } from '../../config';
 import { FEEDBACK_KINDS, MAX_FEEDBACK_LENGTH, canSendToday, describeDevice, scrubFeedback, type FeedbackKind, type FeedbackReport } from '../../game/feedback';
 import { today } from '../../save/store';
-import { go, inputMode } from '../app';
+import { go, inputMode, type Screen } from '../app';
 import { button, h } from '../dom';
 import { sfx } from '../sound';
 import { hub, topBar } from './hub';
@@ -44,7 +44,7 @@ async function send(report: FeedbackReport): Promise<boolean> {
 }
 
 /** Report a bug or share an idea. A grown-up checks and sends it. */
-export function feedbackPage(from: string) {
+export function feedbackPage(from: string, back: Screen = hub) {
   return (root: HTMLElement): void => {
     let kind: FeedbackKind = 'bug';
     const kinds = FEEDBACK_KINDS.map(([k, label]) =>
@@ -83,8 +83,8 @@ export function feedbackPage(from: string) {
             markSent();
             sfx.coin();
             root.replaceChildren(
-              topBar(() => go(hub)),
-              h('main', { class: 'feedback' }, h('h1', {}, 'Thank you!'), h('p', {}, 'Your message is on its way. Bugs get fixed and good ideas get tried. Keep flying!'), button('Back to the hub', () => go(hub))),
+              topBar(() => go(back)),
+              h('main', { class: 'feedback' }, h('h1', {}, 'Thank you!'), h('p', {}, 'Your message is on its way. Bugs get fixed and good ideas get tried. Keep flying!'), button('Back', () => go(back))),
             );
           } else msg.textContent = 'It didn’t send. Check the internet connection and try again.';
         }),
@@ -93,7 +93,7 @@ export function feedbackPage(from: string) {
 
     const on = Boolean(CONFIG.feedbackUrl);
     root.append(
-      topBar(() => go(hub)),
+      topBar(() => go(back)),
       h(
         'main',
         { class: 'feedback' },
@@ -108,7 +108,7 @@ export function feedbackPage(from: string) {
               h('p', { class: 'feedback-warn' }, 'Please don’t write your name, school, address, email, or phone number. We never need them. Emails, phone numbers and links are removed before sending.'),
               h('p', { class: 'fine' }, 'We also send the game version, the screen you came from, and what kind of device this is (like “Android phone, Chrome, tap keyboard”), so we can find the bug. Nothing else.'),
               msg,
-              h('div', { class: 'row' }, button('Cancel', () => go(hub), 'btn ghost'), button('Ask a grown-up to send', submit)),
+              h('div', { class: 'row' }, button('Cancel', () => go(back), 'btn ghost'), button('Ask a grown-up to send', submit)),
             )
           : h('p', {}, 'Sending reports isn’t switched on yet. It’s coming soon!'),
       ),

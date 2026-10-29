@@ -60,7 +60,7 @@ async function passGate(page) {
 async function newRider(page) {
   await page.click('.profile-card.new');
   await page.click('text=Let’s fly');
-  await page.waitForSelector('.tiles');
+  await page.waitForSelector('.play-cards');
 }
 
 async function joinClass(page, code, badge) {
@@ -149,7 +149,7 @@ try {
 
   await joinClass(ipad, code, 1);
   // The phone joins from the home screen's Join class button.
-  await phone.click('.class-pill');
+  await phone.click('.class-chip');
   await phone.fill('.class-code-input', code);
   await phone.fill('.badge-input', '2');
   await phone.click('text=🏁 Join');
@@ -250,7 +250,7 @@ try {
   await ipad.click('text=Back to class');
   await ipad.click('text=← Back');
   await ipad.click('text=← Back');
-  await ipad.click('text=Switch rider');
+  await ipad.click('.home-avatar');
   await newRider(ipad);
   await ipad.click('.tile-race');
   await ipad.click('.class-card');
