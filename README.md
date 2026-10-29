@@ -31,6 +31,10 @@ A teacher taps **Teachers: make a class** on the title screen (behind a grown-up
 
 It runs on the KeyFlame Supabase project: `supabase/migrations/20261028100000_classroom.sql` (class codes and the board, reachable only through functions) and Realtime presence and broadcast for live races. `npm run check:classroom` races an iPad-sized and a phone-sized browser against a local stand-in (`scripts/fake-supabase.mjs`); the `Classroom live check` workflow checks the real project from GitHub.
 
+## Supabase heartbeat
+
+Supabase pauses free projects after about a week with no activity, which would switch off classroom mode and the feedback form. The `Supabase heartbeat` workflow (`.github/workflows/heartbeat.yml`) runs every day and writes today's date to the `heartbeats` table through the `heartbeat()` function (`supabase/migrations/20261029010000_heartbeat.sql`). Reading the beats back doubles as a health check: if the database doesn't answer, the run fails and GitHub emails the repo owner. The daily feedback routine also beats and warns if the GitHub beat goes quiet (GitHub turns off scheduled workflows after 60 days without commits). Run one by hand with `node scripts/heartbeat.mjs manual`.
+
 ## Supporter pack (off until set up)
 
 Keyflame has no ads. The optional $3 supporter pack stays switched off until you add this under **Settings → Secrets and variables → Actions → Variables**, then re-run the deploy:
