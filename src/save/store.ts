@@ -280,8 +280,8 @@ export function normalizeProfile(raw: unknown): Profile | null {
     classKey: typeof r.classKey === 'string' && /^[0-9a-f]{32}$/.test(r.classKey) ? r.classKey : undefined,
     classCode: typeof r.classCode === 'string' && /^[A-Z]{6}$/.test(r.classCode) ? r.classCode : undefined,
     classBadge: Number.isInteger(r.classBadge) && r.classBadge! >= 1 && r.classBadge! <= 99 ? r.classBadge : undefined,
-    streak: r.streak && typeof r.streak.last === 'string' && Number.isFinite(r.streak.days) ? { last: r.streak.last, days: r.streak.days, best: Number.isFinite(r.streak.best) ? r.streak.best : r.streak.days } : undefined,
-    lessonLog: Array.isArray(r.lessonLog) ? r.lessonLog.filter((x) => x && typeof x.at === 'number' && typeof x.accuracy === 'number').slice(0, LESSON_LOG_MAX) : undefined,
+    streak: r.streak && typeof r.streak.last === 'string' && Number.isInteger(r.streak.days) && r.streak.days > 0 ? { last: r.streak.last, days: r.streak.days, best: Number.isInteger(r.streak.best) ? Math.max(r.streak.best, r.streak.days) : r.streak.days } : undefined,
+    lessonLog: Array.isArray(r.lessonLog) ? r.lessonLog.filter((x) => x && Number.isFinite(x.at) && Number.isFinite(x.accuracy) && (x.wpm === null || Number.isFinite(x.wpm))).slice(0, LESSON_LOG_MAX) : undefined,
   } as Profile;
   return starglintDragon(p);
 }

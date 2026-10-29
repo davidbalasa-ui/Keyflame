@@ -19,10 +19,17 @@ export function recentSessions(p: Profile, n = 20): SpeedPoint[] {
   return [...races, ...lessons].sort((a, b) => b.at - a.at).slice(0, n).reverse();
 }
 
+/** Recent races and every lesson, relaxed ones too (they have no speed), oldest first. */
+export function recentAccuracySeries(p: Profile, n = 20): Array<{ at: number; accuracy: number; kind: 'race' | 'lesson' }> {
+  const races = p.races.map((r) => ({ at: r.at, accuracy: r.accuracy, kind: 'race' as const }));
+  const lessons = (p.lessonLog ?? []).map((l) => ({ at: l.at, accuracy: l.accuracy, kind: 'lesson' as const }));
+  return [...races, ...lessons].sort((a, b) => b.at - a.at).slice(0, n).reverse();
+}
+
 /** Average accuracy over the last few races and lessons (relaxed ones count too), or null. */
 export function recentAccuracy(p: Profile, n = 10): number | null {
-  const all = [...p.races.map((r) => ({ at: r.at, a: r.accuracy })), ...(p.lessonLog ?? []).map((l) => ({ at: l.at, a: l.accuracy }))].sort((x, y) => y.at - x.at).slice(0, n);
-  return all.length ? all.reduce((s, x) => s + x.a, 0) / all.length : null;
+  const all = recentAccuracySeries(p, n);
+  return all.length ? all.reduce((s, x) => s + x.accuracy, 0) / all.length : null;
 }
 
 export interface UnitProgress {
@@ -77,11 +84,11 @@ export interface Bests {
 }
 
 export function personalBests(p: Profile): Bests {
-  const accs = [...p.races.map((r) => r.accuracy), ...Object.values(p.lessons).map((l) => l.bestAccuracy)];
+  const accs = [...p.races.map((r) => r.accuracy), ...Object.values(p.lessons).map((l) => l.bestAccuracy)].filter((a) => Number.isFinite(a));
   return {
     keyboardWpm: Math.round(p.totals.bestWpm),
     touchWpm: Math.round(p.totals.bestTouchWpm),
-    bestAccuracy: accs.length ? Math.max(...accs) : null,
+    bestAccuracy: accs.length ? accs.reduce((m, a) => Math.max(m, a), 0) : null,
     streak: currentStreak(p),
     bestStreak: p.streak?.best ?? 0,
     wins: p.totals.wins,

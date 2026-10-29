@@ -5,6 +5,7 @@ import { activeDragon, eggProgress, kindName } from '../../game/progress';
 import { today, type Profile } from '../../save/store';
 import { currentStreak, playedToday } from '../../game/streak';
 import { withTabs } from '../tabBar';
+import { leaveGrownUps } from './grownUps';
 import { breakDue, go, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
@@ -67,6 +68,7 @@ const LESSON_ART = (): string =>
   `<svg viewBox="0 0 200 110" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="les-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa9ff"/><stop offset="0.6" stop-color="#4263eb"/><stop offset="1" stop-color="#2b2a7a"/></linearGradient></defs><rect width="200" height="110" fill="url(#les-sky)"/><path d="M0 84 L36 54 L60 72 L96 44 L130 74 L160 56 L200 76 V110 H0z" fill="#33408f"/><path d="M0 98 Q60 84 110 96 T200 92 V110 H0z" fill="#1f2366"/><g fill="none" stroke="#ffd43b" stroke-width="4"><ellipse cx="168" cy="40" rx="12" ry="20" opacity="0.95"/><ellipse cx="138" cy="52" rx="7" ry="12" opacity="0.7"/><ellipse cx="118" cy="60" rx="4" ry="7" opacity="0.5"/></g></svg>`;
 
 export const hub = (root: HTMLElement): (() => void) => {
+  leaveGrownUps();
   const p = profile();
   const d = activeDragon(p);
   const daily = p.daily.date === today() ? p.daily : { races: 0, lessons: 0 };

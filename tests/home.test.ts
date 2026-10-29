@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { LESSONS } from '../src/content/lessons';
 import { recordLesson, recordRace } from '../src/game/progress';
-import { lastPlayedText, lessonsPassed, personalBests, recentAccuracy, recentSessions, unitProgress } from '../src/game/riderStats';
+import { lastPlayedText, lessonsPassed, personalBests, recentAccuracy, recentAccuracySeries, recentSessions, unitProgress } from '../src/game/riderStats';
 import { bumpStreak, currentStreak, dayBefore, playedToday } from '../src/game/streak';
 import { cleanWord, ringStops } from '../src/ui/lessonFlight';
 import { createProfile, normalizeProfile, today } from '../src/save/store';
@@ -125,5 +125,23 @@ describe('lesson flight rings', () => {
     expect(cleanWord(text, missed, stops, 2)).toBe(true);
     // A mistake on the space after a word counts for that word.
     expect(cleanWord(text, new Set([2]), stops, 0)).toBe(false);
+  });
+});
+
+describe('accuracy chart data', () => {
+  it('includes relaxed lessons, which have no speed', () => {
+    const p = createProfile('Brave Comet');
+    p.lessonLog = [{ at: 2, lesson: 'L1', stars: 1, wpm: null, accuracy: 0.9 }, { at: 1, lesson: 'L1', stars: 1, wpm: null, accuracy: 0.8 }];
+    expect(recentSessions(p)).toHaveLength(0);
+    expect(recentAccuracySeries(p).map((x) => x.accuracy)).toEqual([0.8, 0.9]);
+  });
+
+  it('drops broken lesson log rows and bad streaks from a save', () => {
+    const p = createProfile('Brave Comet') as unknown as Record<string, unknown>;
+    p.lessonLog = [{ at: 1, lesson: 'L1', stars: 1, wpm: '20', accuracy: 0.9 }, { at: 2, lesson: 'L1', stars: 1, wpm: 12, accuracy: 0.9 }, null];
+    p.streak = { last: '2026-10-01', days: 2.5, best: 3 };
+    const back = normalizeProfile(JSON.parse(JSON.stringify(p)))!;
+    expect(back.lessonLog).toHaveLength(1);
+    expect(back.streak).toBeUndefined();
   });
 });

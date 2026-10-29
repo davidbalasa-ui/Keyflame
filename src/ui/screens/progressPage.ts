@@ -1,6 +1,6 @@
 import { ROWS } from '../../content/keyboard';
 import { achievements } from '../../game/achievements';
-import { lessonsPassed, personalBests, recentAccuracy, recentSessions, unitProgress } from '../../game/riderStats';
+import { lessonsPassed, personalBests, recentAccuracy, recentAccuracySeries, recentSessions, unitProgress } from '../../game/riderStats';
 import type { Profile } from '../../save/store';
 import { go, profile } from '../app';
 import { lineChart } from '../charts';
@@ -18,6 +18,8 @@ const stat = (value: string, label: string, note = ''): HTMLElement =>
 export function progressCharts(p: Profile): Array<HTMLElement | null> {
   const recent = recentSessions(p, 20);
   const hollow = recent.map((r) => r.kind === 'lesson');
+  // Relaxed lessons have no speed, but their accuracy belongs on the chart.
+  const accs = recentAccuracySeries(p, 20);
   return [
     h(
       'section',
@@ -28,8 +30,8 @@ export function progressCharts(p: Profile): Array<HTMLElement | null> {
         : h('p', { class: 'fine' }, 'Finish two races or lessons to see your chart.'),
       recent.length >= 2 ? h('p', { class: 'chart-key fine' }, h('span', { class: 'dot full' }), 'Race ', h('span', { class: 'dot hollow' }), 'Lesson') : null,
     ),
-    recent.length >= 2
-      ? h('section', { class: 'pg-card' }, h('h2', {}, 'Accuracy'), lineChart(recent.map((r) => r.accuracy * 100), { label: 'Accuracy in recent races and lessons', unit: '%', min: 50, max: 100, color: '#5ee6a8', hollow }))
+    accs.length >= 2
+      ? h('section', { class: 'pg-card' }, h('h2', {}, 'Accuracy'), lineChart(accs.map((r) => r.accuracy * 100), { label: 'Accuracy in recent races and lessons', unit: '%', min: 50, max: 100, color: '#5ee6a8', hollow: accs.map((r) => r.kind === 'lesson') }))
       : null,
     h(
       'section',
@@ -39,7 +41,7 @@ export function progressCharts(p: Profile): Array<HTMLElement | null> {
         'div',
         { class: 'unit-bars' },
         ...unitProgress(p).map((u) =>
-          h('div', { class: 'unit-bar' }, h('span', { class: 'ub-title' }, u.title), h('span', { class: 'bar wide' }, h('span', { style: `width:${pct(u.passed / u.total)}` })), h('span', { class: 'ub-stars' }, `★ ${u.stars}/${u.total * 3}`)),
+          h('div', { class: 'unit-bar' }, h('span', { class: 'ub-title' }, u.title), h('span', { class: 'bar wide' }, h('span', { style: `width:${u.total ? pct(u.passed / u.total) : '0%'}` })), h('span', { class: 'ub-stars' }, `★ ${u.stars}/${u.total * 3}`)),
         ),
       ),
     ),

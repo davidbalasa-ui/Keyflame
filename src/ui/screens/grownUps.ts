@@ -18,9 +18,16 @@ import { hub, topBar } from './hub';
 import { progressCharts } from './progressPage';
 import { parentGate, supporter } from './supporter';
 
-/** One pass of the grown-up question lasts a while, so moving around here doesn't ask again. */
+/**
+ * One pass of the grown-up question lasts while a grown-up moves around these screens.
+ * It ends on going back to the kid screens, so a handed-back device asks again.
+ */
 const GATE_MS = 10 * 60000;
 let gateUntil = 0;
+
+export function leaveGrownUps(): void {
+  gateUntil = 0;
+}
 
 export function openGrownUps(): void {
   if (Date.now() < gateUntil) {

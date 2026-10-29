@@ -4,7 +4,7 @@
 import { achievements } from '../game/achievements';
 import { eggProgress } from '../game/progress';
 import { go, profile } from './app';
-import { openGrownUps } from './screens/grownUps';
+import { leaveGrownUps, openGrownUps } from './screens/grownUps';
 import { hub } from './screens/hub';
 import { nest } from './screens/nest';
 import { codex } from './screens/codex';
@@ -46,8 +46,10 @@ export function tabBar(active: Tab | null): HTMLElement {
   const eggReady = !!p.nest && eggProgress(p) >= 1;
   const open = (tab: Tab): void => {
     sfx.click();
-    if (tab === 'grownups') openGrownUps();
-    else go({ home: hub, progress: progressPage, dragons: nest, settings }[tab]);
+    if (tab === 'grownups') return openGrownUps();
+    // Leaving for a kid screen ends the grown-up pass.
+    leaveGrownUps();
+    go({ home: hub, progress: progressPage, dragons: nest, settings }[tab]);
   };
   const tab = (id: Exclude<Tab, 'dragons'>, label: string, badge = ''): HTMLElement =>
     button(
