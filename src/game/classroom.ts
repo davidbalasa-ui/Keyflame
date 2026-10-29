@@ -140,3 +140,123 @@ export function estimateProgress(tick: Tick | null, now: number, done: boolean):
 export function tickEvery(racers: number): number {
   return Math.max(1000, Math.round((racers * racers * 1000) / 60));
 }
+
+// ---------- Teacher dashboard ----------
+
+/** A new random key that lets a class follow one rider. */
+export function newRiderKey(rand: (bytes: Uint8Array) => Uint8Array = (b) => crypto.getRandomValues(b)): string {
+  return [...rand(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+export type Trend = 'up' | 'down' | 'flat';
+
+/** Is a rider's speed moving? Compares their last five timed sessions with the five before. */
+export function speedTrend(recent: number | null, prev: number | null): Trend | null {
+  if (recent === null || prev === null) return null;
+  const step = Math.max(1, prev * 0.05);
+  if (recent - prev >= step) return 'up';
+  if (prev - recent >= step) return 'down';
+  return 'flat';
+}
+
+const DAY = 86400000;
+
+/** "Today", "Yesterday", "3 days ago", "2 weeks ago", in the teacher's own time zone. */
+export function lastActive(iso: string, now: Date = new Date()): string {
+  const then = new Date(iso);
+  const startOf = (d: Date): number => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const days = Math.round((startOf(now) - startOf(then)) / DAY);
+  if (days <= 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 14) return `${days} days ago`;
+  if (days < 60) return `${Math.floor(days / 7)} weeks ago`;
+  return then.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+export function daysSince(iso: string, now: Date = new Date()): number {
+  return Math.floor((now.getTime() - new Date(iso).getTime()) / DAY);
+}
+
+/** Short notes that help a teacher spot who could use a hand. */
+export function riderNotes(r: { last_seen: string; recent_accuracy: number | null; lessons: number; races: number }, now: Date = new Date()): string[] {
+  const notes: string[] = [];
+  if (daysSince(r.last_seen, now) >= 7) notes.push('Not seen this week');
+  if (r.recent_accuracy !== null && r.lessons + r.races >= 3 && r.recent_accuracy < 0.85) notes.push('Accuracy under 85%');
+  return notes;
+}
+
+/** This week and last week from the weekly rows (weeks start on Monday, UTC). */
+export function weekCompare<T extends { week: string }>(weeks: T[], now: Date = new Date()): { thisWeek: T | null; lastWeek: T | null } {
+  const monday = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - ((now.getUTCDay() + 6) % 7)));
+  const key = (d: Date): string => d.toISOString().slice(0, 10);
+  const last = new Date(monday.getTime() - 7 * DAY);
+  // The database sends a plain date; some drivers send a full timestamp.
+  const find = (k: string): T | null => weeks.find((w) => w.week.slice(0, 10) === k) ?? null;
+  return { thisWeek: find(key(monday)), lastWeek: find(key(last)) };
+}
+
+/** "Oct 26" for a week starting that day. */
+export function weekLabel(isoDate: string): string {
+  const d = new Date(`${isoDate.slice(0, 10)}T00:00:00Z`);
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+}
+
+/** Turns a pasted class list into names, one per line, skipping blanks and numbering. */
+export function parseStudentList(text: string, max = 99): string[] {
+  return text
+    .split(/\r?\n/)
+    .map((l) => l.replace(/^\s*\d+[.)]?\s*/, '').trim().slice(0, 40))
+    .filter(Boolean)
+    .slice(0, max);
+}
+
+/** The next free badge number after every one already given out or joined. */
+export function nextBadge(used: number[]): number | null {
+  const n = Math.max(0, ...used) + 1;
+  return n <= 99 ? n : null;
+}
+
+export interface DashRow<R> {
+  badge: number;
+  /** The teacher's own name for this badge, kept only on their device. */
+  student: string;
+  /** Server progress, once the badge has joined. */
+  rider: R | null;
+}
+
+/** Every badge on the teacher's list and every badge that joined, in badge order. */
+export function mergeRoster<R extends { badge: number }>(roster: Record<number, string>, riders: R[]): Array<DashRow<R>> {
+  const badges = new Set<number>([...Object.keys(roster).map(Number), ...riders.map((r) => r.badge)]);
+  return [...badges].sort((a, b) => a - b).map((badge) => ({ badge, student: roster[badge] ?? '', rider: riders.find((r) => r.badge === badge) ?? null }));
+}
+
+/** A spreadsheet of the class for the teacher's own records. Names never leave their device. */
+export function ridersCsv(
+  rows: Array<DashRow<{ name: string; last_seen: string; lessons_passed: number; lessons: number; races: number; best_wpm: number | null; recent_wpm: number | null; recent_accuracy: number | null; active_days: number }>>,
+  totalLessons: number,
+): string {
+  const cell = (v: string | number): string => {
+    // A leading = + - or @ could run as a formula in a spreadsheet.
+    const s = String(v).replace(/^([=+\-@])/, "'$1");
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const head = ['Badge', 'Student', 'Rider name', 'Last active', 'Lessons passed', 'Lessons played', 'Races', 'Best WPM', 'Recent WPM', 'Recent accuracy', 'Days played'];
+  const body = rows.map(({ badge, student, rider: r }) =>
+    r
+      ? [
+          badge,
+          student,
+          r.name,
+          r.last_seen.slice(0, 10),
+          `${r.lessons_passed}/${totalLessons}`,
+          r.lessons,
+          r.races,
+          r.best_wpm === null ? '' : Math.round(r.best_wpm),
+          r.recent_wpm === null ? '' : Math.round(r.recent_wpm),
+          r.recent_accuracy === null ? '' : `${Math.round(r.recent_accuracy * 100)}%`,
+          r.active_days,
+        ]
+      : [badge, student, 'Not joined yet', '', '', '', '', '', '', '', ''],
+  );
+  return [head, ...body].map((line) => line.map(cell).join(',')).join('\n') + '\n';
+}

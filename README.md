@@ -27,9 +27,11 @@ The game installs as an app (Chrome or Edge on a PC: the install icon in the add
 
 ## Classroom mode
 
-A teacher taps **Teachers: make a class** on the title screen (behind a grown-up check) and gets a six-letter code. Riders open **Race → Class race** and type it. Riders who tap **Race!** in the class lobby race each other live (up to 6 at a time), or the teacher taps **Race everyone**. Results go on a class board. A shared device remembers the class code, so the next rider goes straight in.
+A teacher taps **Teachers: make a class** on the title screen (behind a grown-up check), types her students one per line, picks a teacher password, and gets a six-letter code plus a badge number for each student (a printable class sheet and badge cards). Kids open **Race → Class race** and type the code and their badge number; a badge already used by another rider asks "Is that you?". Riders who tap **Race!** in the class lobby race each other live (up to 6 at a time), or the teacher taps **Race everyone**. Results go on a class board.
 
-It runs on the KeyFlame Supabase project: `supabase/migrations/20261028100000_classroom.sql` (class codes and the board, reachable only through functions) and Realtime presence and broadcast for live races. `npm run check:classroom` races an iPad-sized and a phone-sized browser against a local stand-in (`scripts/fake-supabase.mjs`); the `Classroom live check` workflow checks the real project from GitHub.
+The teacher's **Progress** tab follows every badge over time: lessons passed, speed and accuracy trends, last active, a weekly class chart, and a CSV download. She can rename, add or remove students and give the class a new code. Student names never leave her device unencrypted: the list is locked with her teacher password (PBKDF2 + AES-GCM in the browser) and backed up after every change, so the class opens on any device with the code and password. A backup file is a second copy.
+
+It runs on the KeyFlame Supabase project: `supabase/migrations/20261028100000_classroom.sql` (class codes and the board) and `20261029100000_teacher_dashboard.sql` (badges, results over time, the locked student list), all reachable only through functions, and Realtime presence and broadcast for live races. `npm run check:classroom` races an iPad-sized and a phone-sized browser against a local stand-in (`scripts/fake-supabase.mjs`); the `Classroom live check` workflow checks the real project from GitHub.
 
 ## Supporter pack (off until set up)
 

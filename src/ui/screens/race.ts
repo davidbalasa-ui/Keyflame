@@ -24,6 +24,7 @@ import type { Look } from '../../game/classroom';
 import type { SessionSummary } from '../../engine/typing';
 import { isStarglint, type InputMode } from '../../save/store';
 import { classRaceEntry } from './classroom';
+import { reportToClass } from '../classTrack';
 
 /** A race against classmates on other devices, run by the classroom screens. */
 export interface LiveRace {
@@ -346,7 +347,8 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     const prevBest = isTouch(typedWith) ? p.totals.bestTouchWpm : p.totals.bestWpm;
     const before = earnedIds(p);
     const reward = recordRace(p, sum, placeNum, { input: typedWith, courseId: live ? 'class' : course.id, beatRival });
-    live?.finish(myMs, sum, placeNum, typedWith);
+    if (live) live.finish(myMs, sum, placeNum, typedWith);
+    else reportToClass(p, { kind: 'race', wpm: sum.wpm, accuracy: sum.accuracy, place: placeNum, racers: ghosts.length + 1, touch: isTouch(typedWith) });
     const newFact = fact ? recordFact(p, fact.id) : false;
     const fresh = claimNewAchievements(p, before);
     persist();

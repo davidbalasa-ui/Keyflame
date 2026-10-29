@@ -3,7 +3,8 @@ import { weakKeys } from '../../engine/typing';
 import { TRIBES, eggSvg } from '../../game/dragons';
 import { claimNewAchievements, earnedIds, type Achievement } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
-import { applyPlacement, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
+import { applyPlacement, isTouch, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
+import { reportToClass } from '../classTrack';
 import { PASSAGES } from '../../content/words';
 import { go, inputMode, persist, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
@@ -81,6 +82,7 @@ export function playLesson(lesson: Lesson) {
         const stars = starsFor(lesson, relaxed ? 0 : sum.wpm, sum.accuracy);
         const before = earnedIds(p);
         const reward = recordLesson(p, lesson, sum, stars);
+        reportToClass(p, { kind: 'lesson', lesson: lesson.id, stars, wpm: relaxed ? null : sum.wpm, accuracy: sum.accuracy, touch: isTouch(view.input) });
         const fresh = claimNewAchievements(p, before);
         persist();
         refreshEmbers();
