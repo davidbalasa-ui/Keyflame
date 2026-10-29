@@ -133,6 +133,11 @@ export interface Profile {
   starsBackfilled?: boolean;
   /** Season challenge progress by month (YYYY-MM). Missing on saves from before seasons. */
   seasonLog?: Record<string, SeasonLog>;
+  /** Random key that lets a class follow this rider over time. Only its sha256 leaves the device. */
+  classKey?: string;
+  /** The class this rider's lessons and races count toward, if any, and their badge number in it. */
+  classCode?: string;
+  classBadge?: number;
 }
 
 /** One month of a season: counts toward its three challenges. */
@@ -258,6 +263,9 @@ export function normalizeProfile(raw: unknown): Profile | null {
     title: typeof r.title === 'string' ? r.title : null,
     setsClaimed: Array.isArray(r.setsClaimed) ? r.setsClaimed.filter((id) => typeof id === 'string') : [],
     achievements: Array.isArray(r.achievements) ? r.achievements.filter((id) => typeof id === 'string') : undefined,
+    classKey: typeof r.classKey === 'string' && /^[0-9a-f]{32}$/.test(r.classKey) ? r.classKey : undefined,
+    classCode: typeof r.classCode === 'string' && /^[A-Z]{6}$/.test(r.classCode) ? r.classCode : undefined,
+    classBadge: Number.isInteger(r.classBadge) && r.classBadge! >= 1 && r.classBadge! <= 99 ? r.classBadge : undefined,
   } as Profile;
   return starglintDragon(p);
 }
