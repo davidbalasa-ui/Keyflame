@@ -1,0 +1,33 @@
+name: Supabase heartbeat
+
+# Supabase pauses free projects after about a week with no activity. This writes today's
+# date to the heartbeats table every day so classroom mode and feedback stay on, and
+# fails (GitHub emails the repo owner) if the database does not answer.
+# Note: GitHub turns off scheduled workflows after 60 days with no commits; the daily
+# feedback routine also beats and warns when the github beat goes quiet.
+on:
+  schedule:
+    - cron: '17 14 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/*heartbeat*'
+      - 'scripts/heartbeat.mjs'
+      - '.github/workflows/heartbeat.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  beat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # On a push, give the Supabase GitHub integration a minute to apply the migration.
+      - if: github.event_name == 'push'
+        run: sleep 90
+      - run: node scripts/heartbeat.mjs github

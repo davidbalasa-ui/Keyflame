@@ -12,6 +12,7 @@ Players send bug reports and ideas from **Report a bug or idea** on the hub. A g
 
 Prompt for the scheduled Claude session:
 
+> First, write the heartbeat: call the `heartbeat` function with `p_source = 'routine'` (SQL: `select * from heartbeat('routine')`, or `node scripts/heartbeat.mjs routine` where supabase.co is reachable). This keeps the free Supabase project from pausing. If it fails, or the `github` row's `last_day` is more than 3 days old, put that at the top of the summary for David (the GitHub schedule may have been turned off; re-enable **Supabase heartbeat** under Actions).
 > Read new rows from the Keyflame `feedback` table (`status = 'new'`), oldest first.
 > For each bug: reproduce it from the message, version, device and screen. If it is real and the fix is small and safe, fix it on a branch, add a test, open a PR, and set `status = 'fixed'` with the PR link in `notes`. If you cannot reproduce it, leave a short note and `status = 'needs-info'`.
 > For ideas and anything else, set `status = 'sent-to-david'` and add it to that day's summary for David.
