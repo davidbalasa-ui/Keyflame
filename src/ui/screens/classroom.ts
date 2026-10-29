@@ -11,7 +11,7 @@ import {
 import { classBoard, clearClassBoard, createClass, joinClassRider, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
 import { reportToClass, riderSeat, seatFor, setRiderSeat } from '../classTrack';
 import { badgeCards, classSheet, progressPanel, readBackupFile, readRetired, readRoster, saveBackupFile, writeRetired, writeRoster, type Roster } from './teacherDashboard';
-import { heroDragon, heroEgg, teacherBackdropSvg, teacherHeroSvg } from '../teacherArt';
+import { classroomScene, teacherBackdropSvg } from '../teacherArt';
 import { MIN_PASSWORD, deriveKeys, newSalt, pullVault, pushVault, type VaultKeys } from '../../net/teacherVault';
 import { openClassLink, type ClassLink } from '../../net/classLink';
 import type { SessionSummary } from '../../engine/typing';
@@ -335,7 +335,7 @@ function joinScreen(root: HTMLElement, note: string): void {
     h(
       'main',
       { class: 'class-join' },
-      h('h1', {}, '🏫 Class race'),
+      h('h1', {}, '🏫 Join your class'),
       h(
         'div',
         { class: 'join-ticket pop-in' },
@@ -483,20 +483,21 @@ export function openTeacher(root: HTMLElement): void {
 
 /** The illustrated banner on top of the teacher screens. */
 function teacherHero(...content: HTMLElement[]): HTMLElement {
-  return h(
-    'div',
-    { class: 'tm-hero' },
-    svg(teacherHeroSvg(), 'th-bg'),
-    h('div', { class: 'th-content' }, ...content),
-    svg(heroEgg(), 'th-egg'),
-    svg(heroDragon(), 'th-dragon-wrap'),
-  );
+  return h('section', { class: 'tm-hero' }, svg(classroomScene(), 'tm-scene'), h('div', { class: 'tm-hero-body' }, ...content));
+}
+
+function stepCard(n: number, title: string, text: string): HTMLElement {
+  return h('li', { class: 'tm-step' }, h('span', { class: 'tm-step-n', 'aria-hidden': 'true' }, String(n)), h('div', {}, h('strong', {}, title), h('p', {}, text)));
+}
+
+function field(label: string, input: HTMLElement, hint = ''): HTMLElement {
+  return h('label', { class: 'tm-field' }, h('span', { class: 'tm-label' }, label), input, hint ? h('small', { class: 'tm-hint' }, hint) : null);
 }
 
 const HOME_SCREEN_TIP = 'On an iPad, tap Share → Add to Home Screen so Safari doesn’t clear Keyflame’s saved data.';
 
 function passwordInput(label: string, autocomplete: string): HTMLInputElement {
-  return h('input', { type: 'password', class: 'label-input', minlength: MIN_PASSWORD, autocomplete, 'aria-label': label, placeholder: label });
+  return h('input', { type: 'password', class: 'label-input', minlength: MIN_PASSWORD, autocomplete, 'aria-label': label, placeholder: `At least ${MIN_PASSWORD} characters` });
 }
 
 export const teacherScreen = (root: HTMLElement): (() => void) => {
@@ -506,7 +507,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
   let raf = 0;
   let tab: 'live' | 'progress' = 'live';
   let progress: { stop: () => void } | null = null;
-  const back = h('header', { class: 'top-bar' }, button('← Back', () => go(title), 'btn ghost small'), h('strong', {}, 'Teacher'), h('span'));
+  const back = h('header', { class: 'top-bar' }, button('← Back', () => go(title), 'btn ghost small'), h('strong', {}, 'Classroom'), h('span'));
   const main = h('main', { class: 'teacher' });
   root.append(svg(teacherBackdropSvg(), 'tm-backdrop-wrap'), back, main);
 
@@ -571,7 +572,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
   };
 
   const startForm = (): void => {
-    const list = h('textarea', { class: 'student-list', rows: 8, placeholder: 'Ava\nBen\nCara\n…', 'aria-label': 'Your students, one per line' });
+    const list = h('textarea', { class: 'student-list', rows: 6, placeholder: 'Ava\nBen\nCara\n…', 'aria-label': 'Your students, one per line' });
     const pw = passwordInput('Teacher password', 'new-password');
     const msg = h('p', { class: 'fine', role: 'status' });
     const make = (): void => {
@@ -582,7 +583,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       void makeClass(parseStudentList(list.value), pw.value);
     };
 
-    const code = h('input', { type: 'text', class: 'label-input', maxlength: 8, autocapitalize: 'characters', autocomplete: 'off', 'aria-label': 'Class code', placeholder: 'Class code' });
+    const code = h('input', { type: 'text', class: 'label-input code-field', maxlength: 8, autocapitalize: 'characters', autocomplete: 'off', 'aria-label': 'Class code', placeholder: 'ABCDEF' });
     const pw2 = passwordInput('Teacher password', 'current-password');
     const msg2 = h('p', { class: 'fine', role: 'status' });
     const open = async (): Promise<void> => {
@@ -604,7 +605,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         msg2.textContent = 'Can’t open it right now. Check the Wi-Fi. After ten wrong passwords it waits an hour.';
       }
     };
-    const file = h('input', { type: 'file', accept: '.json,application/json', class: 'file-input', 'aria-label': 'Backup file' });
+    const file = h('input', { type: 'file', accept: '.json,application/json', class: 'visually-hidden', 'aria-label': 'Backup file' });
     file.addEventListener('change', () => {
       const f = file.files?.[0];
       if (!f) return;
@@ -619,25 +620,34 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       });
     });
 
+    const fileBtn = h('label', { class: 'btn ghost small file-btn' }, 'Open a backup file', file);
     main.replaceChildren(
-      teacherHero(h('h1', {}, 'Classroom'), h('p', { class: 'th-sub' }, 'Live races and typing progress for your class')),
-      h('ol', { class: 'teacher-steps' }, h('li', {}, 'Type your students, one per line'), h('li', {}, 'Make the class and print the class sheet'), h('li', {}, 'Kids open Race → Class race and type the code and their badge number')),
-      h('section', { class: 'board-panel teacher-form' },
-        h('label', { class: 'rs-label' }, h('span', {}, 'Your students (you can add more later)'), list),
-        h('label', { class: 'rs-label' }, h('span', {}, 'Teacher password'), pw, h('small', { class: 'fine' }, 'Locks your student list. You need it to open the class on another device.')),
+      teacherHero(h('h1', {}, 'Set up your class'), h('p', { class: 'tm-sub' }, 'Live races and typing progress for your class, with no student accounts.')),
+      h(
+        'ol',
+        { class: 'tm-steps', 'aria-label': 'How it works' },
+        stepCard(1, 'Add your students', 'One name per line. Names stay on your device.'),
+        stepCard(2, 'Print the class sheet', 'It lists the class code and each student’s badge number.'),
+        stepCard(3, 'Students join', 'Tap Join class on the home screen, then type the class code and their badge number.'),
+      ),
+      h(
+        'section',
+        { class: 'tm-card' },
+        h('h2', {}, 'New class'),
+        field('Students', list, 'You can add more later.'),
+        field('Teacher password', pw, 'Locks your student list. You need it to open the class on another device.'),
         msg,
-        h('div', { class: 'row center' }, button('Make a class', make)),
-        h('p', { class: 'fine' }, 'Names stay on your device and in your locked backup. Keyflame only sees badge numbers and typing results.'),
+        h('div', { class: 'tm-actions' }, button('Make the class', make, 'btn tm-primary')),
       ),
-      h('section', { class: 'board-panel teacher-form' },
-        h('h2', {}, 'Already have a class?'),
-        code,
-        pw2,
-        h('div', { class: 'row center' }, button('Open my class', () => void open(), 'btn ghost')),
-        h('label', { class: 'fine file-label' }, 'Or open a backup file: ', file),
+      h(
+        'section',
+        { class: 'tm-card' },
+        h('h2', {}, 'Open an existing class'),
+        h('div', { class: 'tm-grid2' }, field('Class code', code), field('Teacher password', pw2)),
         msg2,
+        h('div', { class: 'tm-actions' }, button('Open my class', () => void open(), 'btn ghost'), fileBtn),
       ),
-      h('p', { class: 'fine' }, HOME_SCREEN_TIP),
+      h('p', { class: 'tm-tip' }, HOME_SCREEN_TIP),
     );
   };
 
@@ -770,7 +780,14 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
 
     main.replaceChildren(
       linkBanner(l),
-      teacherHero(h('div', { class: 'teacher-code' }, h('small', {}, 'Class code'), h('strong', {}, spacedCode(t.code)), h('small', {}, 'Students: Race → Class race → code and badge number'))),
+      teacherHero(
+        h(
+          'div',
+          { class: 'teacher-code' },
+          h('div', {}, h('small', {}, 'Class code'), h('strong', {}, spacedCode(t.code))),
+          h('p', { class: 'tm-sub' }, 'Students tap Join class on the home screen, then type this code and their badge number.'),
+        ),
+      ),
       tabs,
       live,
       prog.el,

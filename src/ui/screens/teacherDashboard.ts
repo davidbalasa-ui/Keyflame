@@ -179,7 +179,7 @@ const nameOf = (r: Row): string => r.student || r.rider?.name || 'Not joined yet
 function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement {
   const r = row.rider;
   const nameInput = h('input', { type: 'text', class: 'label-input', maxlength: MAX_NAME, value: row.student, placeholder: 'Student name', autocomplete: 'off', 'aria-label': `Student name for badge ${row.badge}` });
-  const body = h('div', {}, r ? h('p', { class: 'fine' }, 'Loading…') : h('p', { class: 'fine' }, `Badge ${row.badge} hasn’t joined yet. They open Race → Class race and type ${spacedCode(t.code)} and ${row.badge}.`));
+  const body = h('div', {}, r ? h('p', { class: 'fine' }, 'Loading…') : h('p', { class: 'fine' }, `Badge ${row.badge} hasn’t joined yet. They tap Join class on the home screen and type ${spacedCode(t.code)} and ${row.badge}.`));
   const badgeInput = h('input', { type: 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: 2, class: 'label-input badge-edit', value: String(row.badge), autocomplete: 'off', 'aria-label': 'Badge number' });
   const msg = h('p', { class: 'fine rs-msg', role: 'status' });
   const close = (): void => {
@@ -349,7 +349,7 @@ export function classSheet(t: TeacherClass, roster: Roster): void {
         h('thead', {}, h('tr', {}, h('th', {}, 'Badge'), h('th', {}, 'Student'))),
         h('tbody', {}, ...rosterList(roster).map(([b, n]) => h('tr', {}, h('td', {}, String(b)), h('td', {}, n)))),
       ),
-      h('p', {}, 'Students: open keyflame.org → Race → Class race → type the class code and your badge number.'),
+      h('p', {}, 'Students: open keyflame.org → Join class → type the class code and your badge number.'),
     ),
   );
 }
@@ -368,7 +368,7 @@ export function badgeCards(t: TeacherClass, roster: Roster): void {
           h('strong', { class: 'bc-name' }, name),
           h('div', { class: 'bc-row' }, h('span', {}, 'Class code'), h('b', {}, spacedCode(t.code))),
           h('div', { class: 'bc-row' }, h('span', {}, 'Badge'), h('b', { class: 'bc-badge' }, String(badge))),
-          h('small', {}, 'Race → Class race → type both'),
+          h('small', {}, 'Join class → type both'),
         ),
       ),
     ),
