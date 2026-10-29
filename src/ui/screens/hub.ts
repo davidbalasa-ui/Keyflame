@@ -1,3 +1,4 @@
+import { classRaceEntry } from './classroom';
 import { TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
 import { achievements, currentTitle } from '../../game/achievements';
 import { activeDragon, eggProgress, kindName } from '../../game/progress';
@@ -87,9 +88,15 @@ export const hub = (root: HTMLElement): (() => void) => {
       seasonButton(),
       h(
         'div',
-        { class: 'daily' + (dailyDone ? ' done' : '') },
-        h('strong', {}, dailyDone ? '✓ Daily flight done!' : 'Daily flight: '),
-        dailyDone ? '' : `${daily.races}/${DAILY_RACES} races or 1 lesson`,
+        { class: 'hub-pills' },
+        h(
+          'div',
+          { class: 'daily' + (dailyDone ? ' done' : '') },
+          h('strong', {}, dailyDone ? '✓ Daily flight done!' : 'Daily flight: '),
+          dailyDone ? '' : `${daily.races}/${DAILY_RACES} races or 1 lesson`,
+        ),
+        // Kids in a class go straight to it; everyone else can join one here.
+        button(p.classBadge ? `🏫 My class #${p.classBadge}` : '🏫 Join class', () => (sfx.click(), go(classRaceEntry())), 'class-pill'),
       ),
       h(
         'div',

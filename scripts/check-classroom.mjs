@@ -105,11 +105,11 @@ try {
     await p.click('text=Teachers: make a class');
     await passGate(p);
     await p.fill('.student-list', 'Ava\nBen\nCara');
-    await p.getByRole('button', { name: 'Make a class', exact: true }).click();
+    await p.getByRole('button', { name: 'Make the class', exact: true }).click();
     await p.waitForSelector('text=Pick a teacher password');
     await p.fill('input[type=password][autocomplete=new-password]', PASSWORD);
     await shot(p, '0-teacher-start');
-    await p.getByRole('button', { name: 'Make a class', exact: true }).click();
+    await p.getByRole('button', { name: 'Make the class', exact: true }).click();
     await p.waitForSelector('text=Your class is ready');
   }
   const code = (await teacher.locator('.teacher-code strong').textContent()).replace(/\s/g, '');
@@ -148,7 +148,13 @@ try {
   await phone.click('text=← Back');
 
   await joinClass(ipad, code, 1);
-  await joinClass(phone, code, 2);
+  // The phone joins from the home screen's Join class button.
+  await phone.click('.class-pill');
+  await phone.fill('.class-code-input', code);
+  await phone.fill('.badge-input', '2');
+  await phone.click('text=🏁 Join');
+  await phone.waitForSelector('.race-classmates');
+  check(true, 'a kid can join from the home screen’s Join class button');
   await teacher.waitForFunction(() => document.querySelectorAll('.teacher .roster-chip').length === 2, null, { timeout: 5000 });
   check(true, 'teacher sees both riders');
   await ipad.waitForFunction(() => document.querySelectorAll('.class-lobby .roster-chip').length === 2, null, { timeout: 5000 });
