@@ -9,7 +9,7 @@ import {
   teacherRacers, tickEvery, waitingRiders, type Member, type RaceStart, type Tick,
 } from '../../game/classroom';
 import { classBoard, clearClassBoard, createClass, joinClassRider, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
-import { reportToClass, riderSeat, seatFor, setRiderSeat } from '../classTrack';
+import { reportToClass, riderSeat, setRiderSeat } from '../classTrack';
 import { badgeCards, classSheet, progressPanel, readBackupFile, readRetired, readRoster, saveBackupFile, writeRetired, writeRoster, type Roster } from './teacherDashboard';
 import { classroomScene, teacherBackdropSvg } from '../teacherArt';
 import { MIN_PASSWORD, deriveKeys, newSalt, pullVault, pushVault, type VaultKeys } from '../../net/teacherVault';
@@ -19,15 +19,14 @@ import type { InputMode } from '../../save/store';
 import { go, inputMode, profile, type Screen } from '../app';
 import { button, h, svg } from '../dom';
 import { sfx } from '../sound';
-import { topBar } from './hub';
+import { hub, topBar } from './hub';
 import { liveRace, raceMap, type LiveRace } from './race';
-import { parentGate } from './supporter';
-import { title } from './title';
+import { wing, wingScreen } from './wing';
 
-const LAST_CODE_KEY = 'keyflame-class-code';
+export const LAST_CODE_KEY = 'keyflame-class-code';
 const TEACHER_KEY = 'keyflame-teacher-class';
 
-function readStore(key: string): string | null {
+export function readStore(key: string): string | null {
   try {
     return localStorage.getItem(key);
   } catch {
@@ -35,7 +34,7 @@ function readStore(key: string): string | null {
   }
 }
 
-function writeStore(key: string, value: string | null): void {
+export function writeStore(key: string, value: string | null): void {
   try {
     if (value === null) localStorage.removeItem(key);
     else localStorage.setItem(key, value);
@@ -221,134 +220,11 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
 /** Straight to the lobby when this rider already joined their class. */
 export function classRaceEntry(): (root: HTMLElement) => (() => void) | void {
   const seat = riderSeat(profile());
-  return seat ? classLobby(seat.code) : classJoin;
+  return seat ? classLobby(seat.code) : wing;
 }
-
-/** Where riders type the class code and their badge number. */
-export const classJoin = (root: HTMLElement): void => joinScreen(root, '');
 
 /** Shown when the class or badge this rider had no longer works. */
-const joinWithNote = (note: string) => (root: HTMLElement): void => joinScreen(root, note);
-
-const BADGE_MAX = 99;
-
-function joinScreen(root: HTMLElement, note: string): void {
-  const p = profile();
-  const input = h('input', {
-    type: 'text',
-    class: 'class-code-input',
-    maxlength: 8,
-    autocapitalize: 'characters',
-    autocomplete: 'off',
-    autocorrect: 'off',
-    spellcheck: 'false',
-    enterkeyhint: 'next',
-    'aria-label': 'Class code',
-    placeholder: 'ABCDEF',
-    value: readStore(LAST_CODE_KEY) ?? '',
-  });
-  const badgeInput = h('input', {
-    type: 'text',
-    class: 'badge-input',
-    maxlength: 2,
-    inputmode: 'numeric',
-    pattern: '[0-9]*',
-    autocomplete: 'off',
-    enterkeyhint: 'go',
-    'aria-label': 'Your badge number',
-    placeholder: '00',
-    value: p.classBadge ? String(p.classBadge) : '',
-  });
-  const msg = h('p', { class: 'fine', role: 'status' }, note);
-  const joinBtn = button('🏁 Join', () => void join(false), 'btn race-classmates');
-  const confirmBox = h('div', { class: 'badge-confirm pop-in', hidden: true });
-  const join = async (confirm: boolean): Promise<void> => {
-    const code = normalizeCode(input.value);
-    input.value = code;
-    const badge = Number(badgeInput.value);
-    if (!isClassCode(code)) {
-      msg.textContent = 'A class code is 6 letters.';
-      return;
-    }
-    if (!Number.isInteger(badge) || badge < 1 || badge > BADGE_MAX) {
-      msg.textContent = 'Type the badge number your teacher gave you.';
-      badgeInput.focus();
-      return;
-    }
-    joinBtn.disabled = true;
-    confirmBox.hidden = true;
-    msg.textContent = 'Finding your class…';
-    try {
-      const res = await joinClassRider(seatFor(p, code, badge), confirm);
-      joinBtn.disabled = false;
-      if (res.status === 'none') {
-        msg.textContent = 'No class has that code. Check each letter.';
-        return;
-      }
-      if (res.status === 'taken') {
-        // Another device already rides as this badge: the same kid on a new device, or a typo.
-        msg.textContent = '';
-        sfx.tap(2);
-        confirmBox.replaceChildren(
-          h('p', {}, 'Badge ', h('b', {}, `#${badge}`), ' is'),
-          h('p', { class: 'bc-holder' }, res.holder),
-          h('p', {}, 'Is that you?'),
-          h('div', { class: 'row center' }, button('Yes, that’s me', () => void join(true)), button('No', () => {
-            confirmBox.hidden = true;
-            joinBtn.hidden = false;
-            badgeInput.value = '';
-            msg.textContent = 'Check your badge number with your teacher.';
-            badgeInput.focus();
-          }, 'btn ghost')),
-        );
-        confirmBox.hidden = false;
-        joinBtn.hidden = true;
-        return;
-      }
-    } catch {
-      msg.textContent = 'Can’t reach the class. Check the Wi-Fi.';
-      joinBtn.disabled = false;
-      return;
-    }
-    setRiderSeat(p, code, badge);
-    writeStore(LAST_CODE_KEY, code);
-    sfx.coin();
-    go(classLobby(code));
-  };
-  input.addEventListener('input', () => {
-    const v = normalizeCode(input.value);
-    if (v !== input.value) input.value = v;
-    if (v.length === 6 && document.activeElement === input) badgeInput.focus();
-  });
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') badgeInput.focus();
-  });
-  badgeInput.addEventListener('input', () => {
-    const v = badgeInput.value.replace(/\D/g, '').slice(0, 2);
-    if (v !== badgeInput.value) badgeInput.value = v;
-  });
-  badgeInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') void join(false);
-  });
-  root.append(
-    topBar(() => go(raceMap)),
-    h(
-      'main',
-      { class: 'class-join' },
-      h('h1', {}, '🏫 Join your class'),
-      h(
-        'div',
-        { class: 'join-ticket pop-in' },
-        h('label', { class: 'jt-field' }, h('span', { class: 'jt-label' }, 'Class code'), input),
-        h('label', { class: 'jt-field jt-badge' }, h('span', { class: 'jt-label' }, 'Badge'), h('span', { class: 'badge-ring' }, h('span', { class: 'badge-hash', 'aria-hidden': 'true' }, '#'), badgeInput)),
-      ),
-      msg,
-      confirmBox,
-      h('div', { class: 'row center' }, joinBtn),
-    ),
-  );
-  (isClassCode(input.value) ? badgeInput : input).focus();
-}
+const joinWithNote = (note: string): Screen => wingScreen({ note });
 
 /** The class lobby: who is here, a big Race button, and the class board. */
 export function classLobby(code: string) {
@@ -368,15 +244,15 @@ export function classLobby(code: string) {
       setRiderSeat(p, null, null);
       go(joinWithNote(note));
     };
-    if (!seat || seat.code !== code) queueMicrotask(() => !gone && go(classJoin));
+    if (!seat || seat.code !== code) queueMicrotask(() => !gone && go(wing));
     else
       void joinClassRider(seat, null).then(
         (res) => {
           if (gone) return;
           if (res.status === 'none') {
             writeStore(LAST_CODE_KEY, null);
-            recheck('That class code has changed. Ask your teacher for the new one.');
-          } else if (res.status === 'taken' || res.status === 'removed') recheck('Type your class code and badge number.');
+            recheck('That code has changed. Ask for the new one.');
+          } else if (res.status === 'taken' || res.status === 'removed') recheck('Type your code and badge number.');
           else connect();
         },
         // Offline check-ins don't stop a race; the link reports its own trouble.
@@ -463,7 +339,7 @@ export function classLobby(code: string) {
 // ---------- Teachers ----------
 
 /** The class this device teaches, and the keys that keep its locked backup up to date. */
-type TeacherSave = TeacherClass & { vault?: VaultKeys };
+type TeacherSave = TeacherClass & { vault?: VaultKeys; kind?: 'family' };
 
 function readTeacher(): TeacherSave | null {
   try {
@@ -476,18 +352,15 @@ function readTeacher(): TeacherSave | null {
 
 const writeTeacher = (t: TeacherSave): void => writeStore(TEACHER_KEY, JSON.stringify(t));
 
-/** Where the teacher screen's Back button goes: the title screen or the Grown-ups tab. */
+/** Where the teacher screen's Back button goes: a Grown-ups screen. */
 let teacherBack: Screen | null = null;
-
-/** Behind the grown-up check on the title screen. */
-export function openTeacher(root: HTMLElement): void {
-  teacherBack = null;
-  root.append(parentGate(() => go(teacherScreen)));
-}
+/** A family wing is a class a parent makes for their kids: same codes, homelier words. */
+let teacherKind: 'class' | 'family' = 'class';
 
 /** From the Grown-ups tab, which has already asked the grown-up question. */
-export function openTeacherFrom(back: Screen): void {
+export function openTeacherFrom(back: Screen, kind: 'class' | 'family' = 'class'): void {
   teacherBack = back;
+  teacherKind = kind;
   go(teacherScreen);
 }
 
@@ -517,7 +390,8 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
   let raf = 0;
   let tab: 'live' | 'progress' = 'live';
   let progress: { stop: () => void } | null = null;
-  const back = h('header', { class: 'top-bar' }, button('← Back', () => go(teacherBack ?? title), 'btn ghost small'), h('strong', {}, 'Classroom'), h('span'));
+  const fam = (readTeacher()?.kind ?? teacherKind) === 'family';
+  const back = h('header', { class: 'top-bar' }, button('← Back', () => go(teacherBack ?? hub), 'btn ghost small'), h('strong', {}, fam ? 'Family wing' : 'Classroom'), h('span'));
   const main = h('main', { class: 'teacher' });
   root.append(svg(teacherBackdropSvg(), 'tm-backdrop-wrap'), back, main);
 
@@ -547,7 +421,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
     try {
       const made = await createClass();
       const vault = await deriveKeys(password, newSalt());
-      const t: TeacherSave = { ...made, vault };
+      const t: TeacherSave = { ...made, vault, ...(fam ? { kind: 'family' as const } : {}) };
       const roster: Roster = {};
       names.forEach((n, i) => (roster[i + 1] = n));
       writeRoster(roster);
@@ -632,22 +506,24 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
 
     const fileBtn = h('label', { class: 'btn ghost small file-btn' }, 'Open a backup file', file);
     main.replaceChildren(
-      teacherHero(h('h1', {}, 'Set up your class'), h('p', { class: 'tm-sub' }, 'Live races and typing progress for your class, with no student accounts.')),
+      fam
+        ? teacherHero(h('h1', {}, 'Set up your family wing'), h('p', { class: 'tm-sub' }, 'Races and progress for your kids on any device, with no accounts.'))
+        : teacherHero(h('h1', {}, 'Set up your class'), h('p', { class: 'tm-sub' }, 'Live races and typing progress for your class, with no student accounts.')),
       h(
         'ol',
         { class: 'tm-steps', 'aria-label': 'How it works' },
-        stepCard(1, 'Add your students', 'One name per line. Names stay on your device.'),
+        stepCard(1, fam ? 'Add your kids' : 'Add your students', 'One name per line. Names stay on your device.'),
         stepCard(2, 'Print the class sheet', 'It lists the class code and each student’s badge number.'),
-        stepCard(3, 'Students join', 'Tap Join class on the home screen, then type the class code and their badge number.'),
+        stepCard(3, 'Students join', 'They scan their badge card, or tap Join a wing on the home screen and type the code and their badge number.'),
       ),
       h(
         'section',
         { class: 'tm-card' },
-        h('h2', {}, 'New class'),
-        field('Students', list, 'You can add more later.'),
-        field('Teacher password', pw, 'Locks your student list. You need it to open the class on another device.'),
+        h('h2', {}, fam ? 'New family wing' : 'New class'),
+        field(fam ? 'Kids' : 'Students', list, 'You can add more later.'),
+        field(fam ? 'Grown-up password' : 'Teacher password', pw, 'Locks your list. You need it to open it on another device.'),
         msg,
-        h('div', { class: 'tm-actions' }, button('Make the class', make, 'btn tm-primary')),
+        h('div', { class: 'tm-actions' }, button(fam ? 'Make the wing' : 'Make the class', make, 'btn tm-primary')),
       ),
       h(
         'section',
@@ -795,7 +671,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
           'div',
           { class: 'teacher-code' },
           h('div', {}, h('small', {}, 'Class code'), h('strong', {}, spacedCode(t.code))),
-          h('p', { class: 'tm-sub' }, 'Students tap Join class on the home screen, then type this code and their badge number.'),
+          h('p', { class: 'tm-sub' }, 'Students scan their badge card, or tap Join a wing on the home screen and type this code and their badge number.'),
         ),
       ),
       tabs,

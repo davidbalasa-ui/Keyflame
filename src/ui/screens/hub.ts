@@ -1,4 +1,3 @@
-import { classRaceEntry } from './classroom';
 import { TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
 import { currentTitle } from '../../game/achievements';
 import { activeDragon, eggProgress, kindName } from '../../game/progress';
@@ -6,7 +5,7 @@ import { today, type Profile } from '../../save/store';
 import { currentStreak, playedToday } from '../../game/streak';
 import { withTabs } from '../tabBar';
 import { leaveGrownUps } from './grownUps';
-import { breakDue, go, profile } from '../app';
+import { breakDue, go, isGuest, profile } from '../app';
 import { button, h, pct, svg } from '../dom';
 import { sfx } from '../sound';
 import { aerieScene } from './aerie';
@@ -14,7 +13,7 @@ import { lessons } from './lessons';
 import { nest } from './nest';
 import { raceMap } from './race';
 import { seasonButton } from './seasonPage';
-import { title } from './title';
+import { wing } from './wing';
 
 /** Rider rank grows with total practice, so it always moves forward. */
 export function riderRank(correctKeys: number): { level: number; progress: number } {
@@ -30,7 +29,7 @@ export function topBar(back?: () => void): HTMLElement {
   return h(
     'header',
     { class: 'top-bar' },
-    back ? button('← Back', back, 'btn ghost small') : button('Switch rider', () => go(title), 'btn ghost small'),
+    back ? button('← Back', back, 'btn ghost small') : button('Switch rider', () => go(wing), 'btn ghost small'),
     h('div', { class: 'who' }, h('strong', {}, p.name), h('span', { class: 'rider-title' }, currentTitle(p) ?? ''), h('span', { class: 'rank' }, `Rider rank ${rank.level}`), h('span', { class: 'bar' }, h('span', { style: `width:${pct(rank.progress)}` }))),
     h('div', { class: 'embers', title: 'Embers' }, h('span', { class: 'ember-icon' }, '🔥'), h('span', { class: 'ember-count' }, String(p.embers))),
   );
@@ -82,12 +81,12 @@ export const hub = (root: HTMLElement): (() => void) => {
   const top = h(
     'header',
     { class: 'home-top' },
-    button(avatarArt, () => (sfx.click(), go(title)), 'home-avatar', { 'aria-label': `${p.name}. Switch rider`, title: 'Switch rider' }),
+    button(avatarArt, () => (sfx.click(), go(wing)), 'home-avatar', { 'aria-label': `${p.name}. My wing and riders`, title: 'My wing' }),
     h(
       'div',
       { class: 'home-who' },
       h('strong', {}, p.name),
-      h('span', { class: 'rider-title' }, currentTitle(p) ?? ''),
+      h('span', { class: 'rider-title' }, isGuest() ? 'Guest rider' : currentTitle(p) ?? ''),
       h('span', { class: 'rank' }, `Rider rank ${rank.level}`),
       h('span', { class: 'bar' }, h('span', { style: `width:${pct(rank.progress)}` })),
     ),
@@ -111,8 +110,8 @@ export const hub = (root: HTMLElement): (() => void) => {
       'div',
       { class: 'hero-frame' + (d ? '' : ' egg-only') },
       button(scene, () => (sfx.click(), go(nest)), 'hero-open', { 'aria-label': `${heroLabel}. Open the nest` }),
-      // Kids in a class go straight to it; everyone else can join one here.
-      button(p.classBadge ? `🏫 Class #${p.classBadge}` : '🏫 Join class', () => (sfx.click(), go(classRaceEntry())), 'hero-chip class-chip'),
+      // A class or family: the wing page has the badge, its QR code and wing races.
+      button(p.classBadge ? `🐉 Wing #${p.classBadge}` : '🐉 Join a wing', () => (sfx.click(), go(wing)), 'hero-chip class-chip'),
       h('span', { class: 'hero-chip embers-chip', 'aria-label': `${p.embers} embers` }, h('span', { 'aria-hidden': 'true' }, '🔥'), h('span', { class: 'ember-count' }, String(p.embers))),
       h('span', { class: 'hero-chip name-chip', 'aria-hidden': 'true' }, d ? d.name : heroLabel),
       p.nest ? h('span', { class: 'hero-chip egg-chip' + (eggReady ? ' ready pulse' : ''), 'aria-hidden': 'true' }, eggReady ? 'Tap to hatch!' : `Egg ${pct(prog)}`) : null,

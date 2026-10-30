@@ -1,12 +1,12 @@
-import { exportBackupCode, type Settings } from '../../save/store';
+import { exportBackupCode, importBackupCode, type Settings } from '../../save/store';
 import { READING_LEVEL_LABEL, type ReadingLevel } from '../../content/facts';
 import { parentGate } from './supporter';
-import { applySettings, go, persist, persistNow, profile, saveData } from '../app';
+import { applySettings, go, isGuest, persist, persistNow, playAsGuest, profile, roomForRider, saveData, switchRider } from '../app';
 import { button, h } from '../dom';
 import { choiceList } from '../picker';
 import { canInstall, installApp, isInstalled, isOfflineReady, onInstallChange } from '../install';
 import { hub, topBar } from './hub';
-import { title } from './title';
+import { wing } from './wing';
 import { feedbackPage } from './feedbackPage';
 import { withTabs } from '../tabBar';
 
@@ -115,15 +115,16 @@ export const settings = (root: HTMLElement): (() => void) => {
           }, 'btn ghost'),
           copied,
         ),
+        h('div', { class: 'row' }, button('Restore from a backup code', () => restore(root), 'btn ghost')),
       ),
       offlineSection(),
       h(
         'section',
         {},
         h('h2', {}, 'More'),
-        h('div', { class: 'row' }, button('💬 Send an idea or bug', () => go(feedbackPage('settings', settings)), 'btn ghost'), button('⇄ Switch rider', () => go(title), 'btn ghost')),
+        h('div', { class: 'row' }, button('💬 Send an idea or bug', () => go(feedbackPage('settings', settings)), 'btn ghost'), button('⇄ Switch rider', () => go(wing), 'btn ghost')),
       ),
-      h(
+      isGuest() ? null : h(
         'section',
         {},
         h('h2', {}, 'Remove this rider'),
@@ -134,8 +135,8 @@ export const settings = (root: HTMLElement): (() => void) => {
               if (!confirm(`Remove ${p.name} and all their dragons from this device?`)) return;
               const save = saveData();
               save.profiles = save.profiles.filter((x) => x.id !== p.id);
-              save.activeId = null;
-              void persistNow().then(() => go(title));
+              playAsGuest();
+              void persistNow().then(() => go(hub));
             }),
           );
         }, 'btn danger'),
@@ -144,6 +145,45 @@ export const settings = (root: HTMLElement): (() => void) => {
   );
   return withTabs(root, 'settings');
 };
+
+/** Brings back a rider from a backup code, including codes made on the old address. */
+function restore(root: HTMLElement): void {
+  const input = h('textarea', { rows: 4, placeholder: 'Paste a code that starts with KF1-', class: 'code-box' });
+  const msg = h('p', { class: 'fine' });
+  const modal = h(
+    'div',
+    { class: 'modal-backdrop' },
+    h(
+      'div',
+      { class: 'modal' },
+      h('h2', {}, 'Restore a rider'),
+      input,
+      msg,
+      h(
+        'div',
+        { class: 'row' },
+        button('Cancel', () => modal.remove(), 'btn ghost'),
+        button('Restore', () => {
+          const p = importBackupCode(input.value);
+          const save = saveData();
+          if (!p) {
+            msg.textContent = 'That code did not work. Check that you copied all of it.';
+            return;
+          }
+          const existing = save.profiles.findIndex((x) => x.id === p.id);
+          if (existing >= 0) save.profiles[existing] = p;
+          else if (!roomForRider()) {
+            msg.textContent = 'This device already has 4 riders. Remove one first.';
+            return;
+          } else save.profiles.push(p);
+          switchRider(p);
+          go(hub);
+        }),
+      ),
+    ),
+  );
+  root.append(modal);
+}
 
 function offlineSection(): HTMLElement {
   const body = h('div');

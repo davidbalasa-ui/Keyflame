@@ -123,7 +123,7 @@ export const raceMap = (root: HTMLElement): void => {
       h('h1', {}, 'Choose a course'),
       h('p', { class: 'fine' }, 'Beat each course’s champion to earn a big ember bonus. Finish lesson units to open new courses.'),
       factsUnlocked(p) && !p.settings.readingLevel ? readerPicker(() => go(raceMap)) : null,
-      button(h('span', { class: 'class-card-inner' }, h('span', { class: 'class-card-icon', 'aria-hidden': 'true' }, '🏫'), h('strong', {}, 'Class race'), h('small', {}, 'Race your classmates')), () => (sfx.click(), go(classRaceEntry())), 'class-card'),
+      button(h('span', { class: 'class-card-inner' }, h('span', { class: 'class-card-icon', 'aria-hidden': 'true' }, '🐉'), h('strong', {}, 'Wing race'), h('small', {}, 'Race your class or family')), () => (sfx.click(), go(classRaceEntry())), 'class-card'),
       h(
         'div',
         { class: 'course-grid' },

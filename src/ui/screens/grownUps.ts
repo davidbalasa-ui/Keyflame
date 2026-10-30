@@ -148,6 +148,17 @@ export const family = (root: HTMLElement): (() => void) => {
     );
   };
   render();
-  root.append(topBar(() => go(grownUps)), h('main', { class: 'family' }, h('h1', {}, 'Family'), list, h('p', { class: 'fine fam-note' }, 'Saved on this device only. Use a backup code in Settings to move a rider.')));
+  root.append(
+    topBar(() => go(grownUps)),
+    h(
+      'main',
+      { class: 'family' },
+      h('h1', {}, 'Family'),
+      list,
+      // A family wing works like a class: each kid joins with its code and a badge number.
+      h('div', { class: 'row center' }, button('🐉 Family wing', () => (sfx.click(), openTeacherFrom(family, 'family')), 'btn')),
+      h('p', { class: 'fine fam-note' }, 'Saved on this device only. A family wing lets your kids join with a code or QR card on any device.'),
+    ),
+  );
   return withTabs(root, 'grownups');
 };

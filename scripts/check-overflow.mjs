@@ -112,9 +112,13 @@ for (const size of SIZES) {
     }
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/${size.name.replace(/\W+/g, '-')}-${name.replace(/\W+/g, '-')}.png` });
   };
-  await check('title');
-  await page.click('.profile-card.new');
-  await check('new rider');
+  // Keyflame opens on the home screen as a guest. Keep me saves the guest as a rider.
+  await page.waitForSelector('.play-cards');
+  await check('hub');
+  await page.click('.home-avatar');
+  await check('wing');
+  await page.click('.rider-chip.new');
+  await check('keep me');
   await page.click('.modal .wp-face >> nth=0');
   await page.waitForSelector('.picker-sheet');
   await check('name sheet');
@@ -124,7 +128,7 @@ for (const size of SIZES) {
   await page.waitForTimeout(600); // let the save land before reloading
   for (const [name, clicks] of SCREENS) {
     await page.goto(URL);
-    await page.click('.profile-card:not(.new)');
+    await page.waitForSelector('.play-cards');
     try {
       for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 3000 }));
     } catch {
@@ -137,7 +141,6 @@ for (const size of SIZES) {
   if (size.tablet) {
     // A touch screen starts with the tap keyboard; one real key press should put it away.
     await page.goto(URL);
-    await page.click('.profile-card:not(.new)');
     await page.click('.tile-lessons');
     await page.click('.lesson-tile >> nth=0');
     const tap = await page.waitForSelector('.keyboard.pinned', { timeout: 3000 }).catch(() => null);
@@ -155,4 +158,4 @@ if (failures.length) {
   console.error('Sideways scrolling found:\n  ' + failures.join('\n  '));
   process.exit(1);
 }
-console.log(`${ENGINE}: no sideways scrolling on ${SCREENS.length + 2} screens at ${SIZES.length} sizes, the home screen fits without scrolling, and a real key press puts the tap keyboard away on tablets.`);
+console.log(`${ENGINE}: no sideways scrolling on ${SCREENS.length + 4} screens at ${SIZES.length} sizes, the home screen fits without scrolling, and a real key press puts the tap keyboard away on tablets.`);

@@ -57,10 +57,16 @@ async function passGate(page) {
   await page.locator('.modal').getByRole('button', { name: 'Continue' }).click();
 }
 
-async function newRider(page) {
-  await page.click('.profile-card.new');
-  await page.click('text=Let’s fly');
+// Opening Keyflame goes straight to the home screen as a guest: nothing to pick.
+async function guestHome(page) {
   await page.waitForSelector('.play-cards');
+}
+
+// After joining, the wing page shows the badge and its QR code; Wing race opens the lobby.
+async function toLobby(page) {
+  await page.waitForSelector('.wing-card');
+  await page.click('text=🏁 Wing race');
+  await page.waitForSelector('.class-lobby .race-classmates');
 }
 
 async function joinClass(page, code, badge) {
@@ -68,8 +74,14 @@ async function joinClass(page, code, badge) {
   await page.click('.class-card');
   await page.fill('.class-code-input', code.toLowerCase());
   await page.fill('.badge-input', String(badge));
-  await page.click('text=🏁 Join');
-  await page.waitForSelector('.race-classmates');
+  await page.click('text=🐉 Join');
+  await toLobby(page);
+}
+
+async function openClassroom(page) {
+  await page.click('.tab-grownups');
+  await passGate(page);
+  await page.click('.gu-classroom');
 }
 const PASSWORD = 'dragons1';
 // Rows on the teacher's Progress list, and those with a joined rider.
@@ -102,8 +114,7 @@ try {
   const teacher = await open({ viewport: { width: 1280, height: 800 } });
   await page0(teacher);
   async function page0(p) {
-    await p.click('text=Teachers: make a class');
-    await passGate(p);
+    await openClassroom(p);
     await p.fill('.student-list', 'Ava\nBen\nCara');
     await p.getByRole('button', { name: 'Make the class', exact: true }).click();
     await p.waitForSelector('text=Pick a teacher password');
@@ -121,6 +132,10 @@ try {
   check(/Ava/.test(sheet) && /Cara/.test(sheet) && sheet.includes(code.slice(0, 3)), 'the class sheet lists the code and every student');
   await shot(teacher, '1b-class-sheet');
   await teacher.click('.print-bar >> text=Close');
+  await teacher.click('.modal >> text=Badge cards');
+  check((await teacher.locator('.badge-card .bc-qr').count()) === 3, 'every badge card has its QR code');
+  await shot(teacher, '1c-badge-cards');
+  await teacher.click('.print-bar >> text=Close');
   await teacher.click('.modal >> text=Done');
   await teacher.waitForSelector('text=✓ Student list backed up');
   check(true, 'the student list is backed up, locked');
@@ -130,8 +145,9 @@ try {
 
   const ipad = await open({ viewport: { width: 820, height: 1180 }, hasTouch: true, isMobile: true, userAgent: IPAD_UA });
   const phone = await open({ viewport: { width: 412, height: 860 }, hasTouch: true, isMobile: true, userAgent: PHONE_UA, deviceScaleFactor: 2 });
-  await newRider(ipad);
-  await newRider(phone);
+  await guestHome(ipad);
+  await guestHome(phone);
+  check(!(await phone.locator('text=Who is riding').count()), 'Keyflame opens straight on the home screen, no rider picker');
   await shot(phone, '2-phone-race-map');
 
   // A wrong code is turned away.
@@ -141,10 +157,9 @@ try {
   await phone.fill('.badge-input', '2');
   await phone.waitForTimeout(600);
   await shot(phone, '2b-phone-join');
-  await phone.click('text=🏁 Join');
-  await phone.waitForSelector('text=No class has that code');
+  await phone.click('text=🐉 Join');
+  await phone.waitForSelector('text=No wing has that code');
   check(true, 'a wrong code is turned away');
-  await phone.click('text=← Back');
   await phone.click('text=← Back');
 
   await joinClass(ipad, code, 1);
@@ -152,9 +167,13 @@ try {
   await phone.click('.class-chip');
   await phone.fill('.class-code-input', code);
   await phone.fill('.badge-input', '2');
-  await phone.click('text=🏁 Join');
-  await phone.waitForSelector('.race-classmates');
-  check(true, 'a kid can join from the home screen’s Join class button');
+  await phone.click('text=🐉 Join');
+  await phone.waitForSelector('.wing-card .wing-qr');
+  check((await phone.locator('.wing-badge strong').textContent()) === '#2', 'the wing page shows badge #2 and its QR code');
+  await phone.waitForTimeout(600);
+  await shot(phone, '2c-phone-wing');
+  await toLobby(phone);
+  check(true, 'a kid can join from the home screen’s Join a wing button');
   await teacher.waitForFunction(() => document.querySelectorAll('.teacher .roster-chip').length === 2, null, { timeout: 5000 });
   check(true, 'teacher sees both riders');
   await ipad.waitForFunction(() => document.querySelectorAll('.class-lobby .roster-chip').length === 2, null, { timeout: 5000 });
@@ -210,6 +229,7 @@ try {
   check((await teacher.locator('.week-chart li').count()) === 1, 'the weekly chart has this week');
   await teacher.locator('.rt-row', { hasText: 'Ava' }).click();
   await teacher.waitForSelector('.rider-sheet .activity-list li');
+  check((await teacher.locator('.rider-sheet .badge-qr').count()) === 1, 'the teacher’s rider sheet shows the badge’s QR code');
   check(/Class race/.test(await teacher.locator('.rider-sheet .activity-list').textContent()), 'Ava’s history shows the class race');
   await teacher.fill('.rider-sheet .label-input', 'Ava R');
   await teacher.waitForTimeout(600);
@@ -251,21 +271,22 @@ try {
   await ipad.click('text=← Back');
   await ipad.click('text=← Back');
   await ipad.click('.home-avatar');
-  await newRider(ipad);
+  await ipad.click('.rider-chip >> text=Guest');
+  await guestHome(ipad);
   await ipad.click('.tile-race');
   await ipad.click('.class-card');
   // The code is remembered on the shared iPad; the next kid types their own badge.
   check((await ipad.inputValue('.class-code-input')) === code, 'the shared iPad remembers the class code');
-  await ipad.fill('.badge-input', '1');
-  await ipad.click('text=🏁 Join');
+  await ipad.fill('.badge-input', '2');
+  await ipad.click('text=🐉 Join');
   await ipad.waitForSelector('.badge-confirm:not([hidden])');
   check(/Is that you/.test(await ipad.locator('.badge-confirm').textContent()), 'a badge in use on another rider asks “Is that you?”');
   await ipad.waitForTimeout(600);
   await shot(ipad, '9-ipad-badge-taken');
   await ipad.click('.badge-confirm >> text=No');
   await ipad.fill('.badge-input', '3');
-  await ipad.click('text=🏁 Join');
-  await ipad.waitForSelector('.race-classmates', { timeout: 5000 });
+  await ipad.click('text=🐉 Join');
+  await toLobby(ipad);
   check(true, 'the next kid on the shared iPad joins with their own badge');
   await shot(ipad, '9b-ipad-lobby');
   await teacher.waitForFunction(() => document.querySelectorAll('.teacher .roster-chip').length === 2, null, { timeout: 5000 });
@@ -283,7 +304,7 @@ try {
   check(true, 'teacher deleted Cara and her badge');
   await ipad.click('text=← Back');
   await ipad.click('.class-card');
-  await ipad.waitForSelector('text=Type your class code and badge number', { timeout: 5000 });
+  await ipad.waitForSelector('text=Type your code and badge number', { timeout: 5000 });
   check(true, 'the removed badge’s device is asked to join again');
 
   // Adding a student gives the next badge number.
@@ -316,14 +337,27 @@ try {
   check(true, 'a new class code keeps every student');
   await phone.click('text=← Back');
   await phone.click('.class-card');
-  await phone.waitForSelector('text=That class code has changed', { timeout: 5000 });
+  await phone.waitForSelector('text=That code has changed', { timeout: 5000 });
   check(true, 'a rider on the old code is asked for the new one');
   await teacher.waitForSelector('text=✓ Student list backed up');
 
+  // Scanning a badge card opens keyflame.org/?join=CODE-BADGE and joins straight away.
+  const scanCtx = await browser.newContext({ serviceWorkers: 'block', viewport: { width: 820, height: 1180 }, hasTouch: true, isMobile: true, userAgent: IPAD_UA });
+  const scan = await scanCtx.newPage();
+  scan.on('pageerror', (e) => check(false, `page error: ${e.message}`));
+  await scan.goto(`http://localhost:${PORT}/?join=${newCode}-4`);
+  await scan.waitForSelector('.wing-card', { timeout: 6000 });
+  check((await scan.locator('.wing-badge strong').textContent()) === '#4' && !scan.url().includes('join='), 'a scanned QR link joins badge 4 and cleans the address');
+  await scan.waitForTimeout(600);
+  await shot(scan, '9c-ipad-qr-joined');
+  await teacher.getByRole('tab', { name: 'Live' }).click();
+  await teacher.getByRole('tab', { name: 'Progress' }).click();
+  await rowCount(teacher, 3, 3);
+  check(true, 'the teacher sees the scanned badge join');
+
   // The teacher's iPad loses its saved data: code + password bring the class back.
   const fresh = await open({ viewport: { width: 820, height: 1180 }, hasTouch: true, isMobile: true, userAgent: IPAD_UA });
-  await fresh.click('text=Teachers: make a class');
-  await passGate(fresh);
+  await openClassroom(fresh);
   await fresh.fill('input[aria-label="Class code"]', newCode);
   await fresh.fill('input[type=password][autocomplete=current-password]', 'wrong-pass');
   await fresh.click('text=Open my class');
@@ -331,7 +365,7 @@ try {
   check(true, 'a wrong teacher password is turned away');
   await fresh.fill('input[type=password][autocomplete=current-password]', PASSWORD);
   await fresh.click('text=Open my class');
-  await rowCount(fresh, 3, 2);
+  await rowCount(fresh, 3, 3);
   const names = await fresh.locator('.rt-name strong').allTextContents();
   check(names.join(',') === 'Ava R,Dev,Ben', `code + password bring back every name (${names.join(', ')})`);
   await shot(fresh, '10-ipad-restored');
