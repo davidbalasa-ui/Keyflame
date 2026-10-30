@@ -238,6 +238,14 @@ try {
   await teacher.getByRole('tab', { name: 'Progress' }).click();
   await rowCount(teacher, 3, 2);
   check(true, 'Progress shows Ava and Ben joined, Cara not yet');
+  // The phone's result can land a moment after the board updates: let the list catch up.
+  for (let i = 0; i < 10; i++) {
+    const n = await teacher.locator('.rider-table li:not(.rt-waiting):not(.rt-head) .rt-speed strong').allTextContents();
+    if (n.length === 2 && n.every((t) => /^\d+$/.test(t))) break;
+    await teacher.waitForTimeout(500);
+    await teacher.getByRole('tab', { name: 'Live' }).click();
+    await teacher.getByRole('tab', { name: 'Progress' }).click();
+  }
   const speeds = await teacher.locator('.rider-table li:not(.rt-waiting):not(.rt-head) .rt-speed strong').allTextContents();
   check(speeds.length === 2 && speeds.every((t) => /^\d+$/.test(t)), `Progress shows each rider's speed (${speeds.join(', ')})`);
   check((await teacher.locator('.week-chart li').count()) === 1, 'the weekly chart has this week');

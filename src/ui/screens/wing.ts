@@ -44,7 +44,8 @@ export function wingScreen(opts: { note?: string; join?: WingSeat }): Screen {
     main.append(ticket.el);
     root.append(topBar(() => go(hub)), main);
     if (!ticket.el.hidden) ticket.focus();
-    if (opts.join) void ticket.join();
+    // After this screen is up: a join can switch screens, which mustn't happen mid-build.
+    if (opts.join) queueMicrotask(() => void ticket.join());
     return withTabs(root, null);
   };
 }
@@ -111,8 +112,11 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
       // This badge already rides on this device: no word needed.
       const rider = plan.kind === 'switch' ? plan.rider : now;
       if (plan.kind === 'switch') switchRider(rider);
-      if (name) rider.wingName = name;
-      if (BADGE_WORDS.includes(word)) setRiderSeat(rider, code, badge, word);
+      // A link can't prove its word here, so it only fills in a word (and name) this rider
+      // doesn't have yet; it never overwrites the real one.
+      const fresh = !rider.classWord || rider.classWord === word;
+      if (name && fresh) rider.wingName = name;
+      if (BADGE_WORDS.includes(word) && fresh) setRiderSeat(rider, code, badge, word);
       persist();
       writeStore(LAST_CODE_KEY, code);
       sfx.coin();
@@ -150,6 +154,7 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
     if (status === 'none') return fail('No wing has that code. Check each letter.', input);
     if (status === 'wrong') return fail(`That word doesn’t match badge #${badge}. Check your card.`, wordInput);
     if (status === 'locked') return fail('Too many tries. Ask your grown-up, or try again in 15 minutes.');
+    if (status === 'removed') return fail(`Badge #${badge} isn’t in this wing anymore. Ask your grown-up.`, badgeInput);
     if (status !== 'ok') return fail('Check your card and try again.');
     joinBtn.disabled = false;
     if (plan.kind === 'guest') keepGuest();

@@ -5,7 +5,7 @@
 import { dragonSvg, stageFor } from '../../game/dragons';
 import { activeDragon, isTouch } from '../../game/progress';
 import {
-  GATHER_MS, MAX_LANES, classRiderName, parseStudentList, estimateProgress, isClassCode, newRace, normalizeCode, placeFor, quickRacers, raceHost, spacedCode,
+  GATHER_MS, MAX_LANES, classRiderName, parseStudentList, estimateProgress, isClassCode, newRace, normalizeCode, quickRacers, raceHost, spacedCode,
   teacherRacers, tickEvery, waitingRiders, type Member, type RaceStart, type Tick,
 } from '../../game/classroom';
 import { classBoard, clearClassBoard, createClass, joinBadge, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
@@ -168,11 +168,14 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
   let mine: { ms: number; wpm: number } | null = null;
   const list = h('ol', { class: 'live-results' });
 
+  // Places go by who crossed the line first, as the finishes arrive. Each device starts its
+  // own race clock when the start reaches it, so race times can't be compared across devices.
+  const order: string[] = [];
   const renderResults = (): void => {
-    const rows = [...done.entries()].map(([id, d]) => ({ id, name: byId.get(id)?.name ?? 'Classmate', ...d }));
-    if (mine) rows.push({ id: me.id, name: me.name, ...mine });
-    rows.sort((a, b) => a.ms - b.ms);
-    const flying = others.filter((id) => !done.has(id)).length;
+    const rows = order.map((id) => (id === me.id ? { id, name: me.name, ...mine! } : { id, name: byId.get(id)?.name ?? 'Classmate', ...done.get(id)! }));
+    // Classmates who left the class (closed the app, lost the Wi-Fi) aren't waited for.
+    const here = new Set(link.members().map((m) => m.id));
+    const flying = others.filter((id) => !done.has(id) && here.has(id)).length;
     list.replaceChildren(...rows.map((r, i) => h('li', { class: r.id === me.id ? 'me' : '' }, h('span', {}, `${i + 1}. ${r.name}`), h('strong', {}, `${Math.round(r.wpm)} WPM`))));
     if (flying) list.append(h('li', { class: 'flying' }, `${flying} still flying…`));
   };
@@ -182,9 +185,11 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
     done: (id, ms, wpm) => {
       if (done.has(id) || !race.racers.includes(id)) return;
       done.set(id, { ms, wpm });
+      order.push(id);
       renderResults();
     },
   });
+  const offMembers = link.onChange(() => mine && renderResults());
   const every = tickEvery(race.racers.length);
   let lastSent = -Infinity;
   s.here = 'race';
@@ -195,7 +200,7 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
     rivals: others.slice(0, MAX_LANES).map((id) => ({ id, name: byId.get(id)?.name ?? 'Classmate', look: byId.get(id)?.look ?? null })),
     racers: race.racers.length,
     progress: (id, now) => estimateProgress(ticks.get(id) ?? null, now, done.has(id)),
-    place: (ms) => placeFor(ms, others.map((id) => done.get(id)?.ms ?? null)),
+    place: () => done.size + 1,
     report(progress, ms) {
       if (ms - lastSent < every) return;
       lastSent = ms;
@@ -203,6 +208,7 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
     },
     finish(ms: number, sum: SessionSummary, place: number, input: InputMode) {
       mine = { ms, wpm: sum.wpm };
+      if (!order.includes(me.id)) order.push(me.id);
       room.sendDone(ms, sum.wpm, sum.accuracy);
       renderResults();
       reportToClass(profile(), { kind: 'class', wpm: sum.wpm, accuracy: sum.accuracy, place, racers: race.racers.length, touch: isTouch(input) });
@@ -210,6 +216,7 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
     results: () => (renderResults(), h('div', { class: 'live-results-card' }, h('strong', {}, 'Class race'), list)),
     back: () => go(classLobby(s.code)),
     leave() {
+      offMembers();
       room.leave();
       link.setStatus('lobby');
       leftClass(s);
@@ -314,6 +321,7 @@ export function classLobby(code: string) {
         roster,
         board.el,
         h('p', { class: 'fine center' }, button('Leave class', () => {
+          if (!confirm('Leave this class? You’ll need your badge card to join again.')) return;
           writeStore(LAST_CODE_KEY, null);
           setRiderSeat(profile(), null, null);
           endSession();
@@ -491,7 +499,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         writeStore(LAST_CODE_KEY, c);
         void show(readTeacher()!, 'progress');
       } catch {
-        msg2.textContent = 'Can’t open it right now. Check the Wi-Fi. After ten wrong passwords it waits an hour.';
+        msg2.textContent = 'Can’t open it right now. Check the Wi-Fi. If there were many wrong passwords, it opens again in an hour.';
       }
     };
     const file = h('input', { type: 'file', accept: '.json,application/json', class: 'visually-hidden', 'aria-label': 'Backup file' });
@@ -557,14 +565,18 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
     const pw = passwordInput(fam ? 'Grown-up password' : 'Teacher password', 'current-password');
     pw.removeAttribute('placeholder');
     const msg = h('p', { class: 'fine', role: 'status' });
+    let busy = false;
     const tryIt = async (): Promise<void> => {
+      if (busy) return;
+      busy = true;
       msg.textContent = 'Checking…';
-      const keys = await deriveKeys(pw.value, vault.salt);
+      const keys = await deriveKeys(pw.value, vault.salt).finally(() => (busy = false));
       if (keys.proof !== vault.proof) {
         msg.textContent = 'That password doesn’t match.';
         pw.select();
         return;
       }
+      busy = true;
       void show(t);
     };
     pw.addEventListener('keydown', (e) => e.key === 'Enter' && void tryIt());
@@ -617,7 +629,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
     l.onRace((race) => races.prepend(watchRace(l, race, () => board.refresh())));
 
     const newCode = async (): Promise<void> => {
-      if (!confirm('Give this class a new code? Devices that already joined move over by themselves. Print new badge cards for new devices. Progress stays.')) return;
+      if (!confirm('Give this class a new code? The old code stops working, so print new badge cards. Kids type the new code once; their badge numbers and words stay the same, and so does their progress.')) return;
       const code = await newClassCode(t).catch(() => null);
       if (!code) return alert('Can’t change the code right now. Check the Wi-Fi.');
       const next = { ...t, code };
@@ -762,15 +774,25 @@ function watchRace(link: ClassLink, race: RaceStart, finished: () => void): HTML
     done: (id, ms, wpm) => {
       if (done.has(id) || !rows.has(id)) return;
       done.set(id, { ms, wpm });
-      const order = [...done.values()].sort((a, b) => a.ms - b.ms).findIndex((d) => d.ms === ms) + 1;
-      rows.get(id)!.tag.textContent = `${['🥇', '🥈', '🥉'][order - 1] ?? `#${order}`} ${Math.round(wpm)} WPM`;
-      if (done.size === race.racers.length) {
-        room.leave();
-        el.querySelector('h2')!.textContent = 'Race finished';
-        window.setTimeout(finished, 1500);
-      }
+      // Places go by arrival, the way each rider's own device counts them.
+      const order = [...done.entries()];
+      order.forEach(([who, d], i) => (rows.get(who)!.tag.textContent = `${['🥇', '🥈', '🥉'][i] ?? `#${i + 1}`} ${Math.round(d.wpm)} WPM`));
+      checkOver();
     },
   });
+  // The race is over when every rider finished or left the class (closed the app, lost the Wi-Fi).
+  let over = false;
+  const checkOver = (): void => {
+    const here = new Set(link.members().map((m) => m.id));
+    if (over || !race.racers.every((id) => done.has(id) || !here.has(id))) return;
+    over = true;
+    offMembers();
+    list.append(...[...done.keys()].map((who) => rows.get(who)!.tag.closest('li')!));
+    room.leave();
+    el.querySelector('h2')!.textContent = 'Race finished';
+    window.setTimeout(finished, 1500);
+  };
+  const offMembers = link.onChange(checkOver);
   el.step = () => {
     const now = performance.now();
     for (const [id, r] of rows) r.bar.style.width = `${(estimateProgress(ticks.get(id) ?? null, now, done.has(id)) * 100).toFixed(1)}%`;
@@ -778,6 +800,7 @@ function watchRace(link: ClassLink, race: RaceStart, finished: () => void): HTML
   // Old races fold away so the board stays in view.
   window.setTimeout(() => {
     if (!el.isConnected) return;
+    offMembers();
     room.leave();
     el.remove();
   }, 5 * 60000);

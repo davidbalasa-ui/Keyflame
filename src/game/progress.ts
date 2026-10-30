@@ -72,7 +72,9 @@ export const MILESTONES: Array<{ id: string; tribe: TribeId; label: string; goal
     id: 'speed', tribe: 'duneskimmer', label: 'Race at 25 WPM (18 on touch), or 5 WPM faster than your start',
     // Once the rider has a starting speed, show the one number they need on the input they last used.
     goal: (p) => {
-      const kind = inputKind(p.races[0]?.input);
+      // The input they last used, or the other one if only that one has a starting speed yet.
+      const last = inputKind(p.races[0]?.input);
+      const kind = p.startSpeed?.[last] ? last : last === 'touch' ? 'keyboard' : 'touch';
       const start = p.startSpeed?.[kind];
       if (!start) return null;
       const wpm = Math.min(SPEED_GOAL[kind], start.wpm + START_GAIN);

@@ -211,7 +211,7 @@ describe('classroom database functions', () => {
     }
   });
 
-  it('removes a badge with its history and frees the number', async () => {
+  it('removes a badge with its history, and its card never works again', async () => {
     const [a] = await call<{ id: string }>('teacher_riders', { p_code: code, p_key: key });
     expect(await one('teacher_remove_rider', { p_code: code, p_key: key, p_rider: a.id })).toBe(true);
     expect((await call('teacher_riders', { p_code: code, p_key: key })).length).toBe(1);
@@ -219,7 +219,18 @@ describe('classroom database functions', () => {
     expect(await post(3, K1, 'Brave Comet', {})).toBe('removed');
     // Its device checking in doesn't quietly claim the number again.
     expect(await join(3, K1, 'Brave Comet', null)).toBe('removed');
-    expect(await join(3, K2, 'Swift Ember')).toBe('ok');
+    // Nor does the removed student's card on a new device: the number stays retired.
+    expect(await join(3, K2, 'Swift Ember')).toBe('removed');
+  });
+
+  it('keeps two kids with the same rider name on separate board rows', async () => {
+    expect(await join(11, K3, 'Brave Rider')).toBe('ok');
+    expect(await join(12, '8'.repeat(32), 'Brave Rider')).toBe('ok');
+    await age();
+    expect(await post(11, K3, 'Brave Rider', { p_kind: 'class', p_wpm: 18, p_place: 1, p_racers: 2 })).toBe('ok');
+    expect(await post(12, '8'.repeat(32), 'Brave Rider', { p_kind: 'class', p_wpm: 15, p_place: 2, p_racers: 2 })).toBe('ok');
+    const board = await call<{ rider: string; wins: number }>('class_board', { p_code: code });
+    expect(board.map((r) => [r.rider, r.wins])).toEqual([['Brave Rider', 1], ['Brave Rider', 0]]);
   });
 
   it('keeps the locked student list and hands it back only for the right proof', async () => {
@@ -238,12 +249,14 @@ describe('classroom database functions', () => {
     const before = await call('teacher_riders', { p_code: code, p_key: key });
     const next = await one<string>('teacher_new_code', { p_code: code, p_key: key });
     expect(next).toMatch(/^[BCDFGHJKLMNPQRSTVWXZ]{6}$/);
-    expect(await join(3, K2, 'Swift Ember', null)).toBe('none');
+    expect(await join(7, K2, 'Swift Ember', null)).toBe('none');
     code = next;
     expect(await call('teacher_riders', { p_code: code, p_key: key })).toEqual(before);
     // Same words under the new code: they come from the teacher key, not the code.
-    expect(await join(3, K2, 'Swift Ember', null)).toBe('ok');
-    expect(await join(3, '7'.repeat(32), 'Swift Ember')).toBe('ok');
+    expect(await join(7, K2, 'Swift Ember', null)).toBe('ok');
+    expect(await join(7, '7'.repeat(32), 'Swift Ember')).toBe('ok');
+    // A deleted badge stays deleted under the new code.
+    expect(await join(3, '9'.repeat(32), 'Swift Ember')).toBe('removed');
     expect(await one('teacher_restore', { p_code: code, p_proof: 'p'.repeat(64) })).toBe('v1.locked');
   });
 });

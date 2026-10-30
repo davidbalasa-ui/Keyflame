@@ -339,7 +339,12 @@ function printView(...content: HTMLElement[]): void {
   const close = (): void => {
     sheet.remove();
     document.body.classList.remove('printing');
+    document.removeEventListener('keydown', onKey);
   };
+  const onKey = (e: KeyboardEvent): void => {
+    if (e.key === 'Escape') close();
+  };
+  document.addEventListener('keydown', onKey);
   const sheet = h('div', { class: 'print-sheet' }, h('div', { class: 'print-bar' }, button('Print', () => window.print()), button('Close', close, 'btn ghost')), ...content);
   document.body.classList.add('printing');
   document.body.append(sheet);
@@ -497,7 +502,7 @@ export function progressPanel(t: TeacherClass, rosterChanged: () => void): { el:
         h('h2', {}, 'Students'),
         button('Refresh', refresh, 'btn ghost small'),
         button('Badge cards', () => badgeCards(t, readRoster()), 'btn ghost small'),
-        button('Export CSV', () => download(`keyflame-class-${t.code}.csv`, ridersCsv(rows(), LESSONS.length)), 'btn ghost small'),
+        button('Export CSV', () => download(`keyflame-class-${t.code}.csv`, '\ufeff' + ridersCsv(rows(), LESSONS.length)), 'btn ghost small'),
       ),
       sortBar,
       table,

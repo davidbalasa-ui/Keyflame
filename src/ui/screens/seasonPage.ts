@@ -97,6 +97,6 @@ export const seasonPage = (root: HTMLElement): (() => void) => {
     );
   }
 
-  root.append(topBar(() => go(hub)), h('main', { class: 'season-page' }, h('h1', {}, 'Seasons'), ...parts, h('div', { class: 'row' }, button('Back to the hub', () => go(hub), 'btn ghost'))));
+  root.append(topBar(() => go(hub)), h('main', { class: 'season-page' }, h('h1', {}, 'Seasons'), ...parts, h('div', { class: 'row' }, button('Home', () => go(hub), 'btn ghost'))));
   return withTabs(root, 'home');
 };

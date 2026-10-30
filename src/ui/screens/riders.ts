@@ -43,6 +43,7 @@ export function openRiders(root: HTMLElement = document.getElementById('app') ??
         chip(guest ? `${me.name} (guest)` : 'Guest', guest ? riderAvatar(me, 'rider-chip-art') : h('span', { class: 'rider-chip-plus', 'aria-hidden': 'true' }, '👋'), guest, () => ride(() => playAsGuest())),
         guest && roomForRider() ? chip('Keep me', h('span', { class: 'rider-chip-plus', 'aria-hidden': 'true' }, '+'), false, () => (close(), keepPicker(root)), ' new') : null,
       ),
+      guest && !roomForRider() ? h('p', { class: 'fine center' }, 'This device has 4 riders, the most it can keep. A grown-up can remove one in Settings.') : null,
       h('div', { class: 'row' }, button('Close', close, 'btn ghost')),
     ),
   );

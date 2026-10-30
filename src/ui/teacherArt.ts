@@ -3,7 +3,7 @@
 // about to hatch, and the approved cel-shaded Emberback. The banner is art only; text sits
 // below it, so nothing ever collides at any width.
 
-import { eggSvg, seededRandom } from '../game/dragons';
+import { dragonSvg, eggSvg, seededRandom, usingSimpleArt } from '../game/dragons';
 import { celEmberback } from './art/celEmberback';
 
 const W = 640;
@@ -149,7 +149,7 @@ ${grass(3, 0, W, ground)}
 ${nest(eggX, eggY, 4, false)}
 <g class="cs-egg">${place(eggSvg('tidefin', 0.95, 11), eggX - 21, eggY - 46, 42, 50)}</g>
 ${nest(eggX, eggY, 4, true)}
-<g class="cs-dragon">${place(celEmberback('adult'), 150, 70, 230, 150)}</g>
+<g class="cs-dragon">${place(usingSimpleArt() ? dragonSvg('emberback', 0) : celEmberback('adult'), 150, 70, 230, 150)}</g>
 ${mushroom(60, ground(60) + 2, 48, id, -5)}
 ${mushroom(92, ground(92) + 3, 30, id, 7)}
 ${mushroom(36, ground(36) + 3, 22, id, -10)}

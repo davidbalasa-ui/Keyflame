@@ -57,7 +57,7 @@ export const supporter = (root: HTMLElement): (() => void) => {
     const unlock = (): void => {
       // A guest's pack would end with the visit, so a full device asks for a saved rider first.
       if (isGuest() && !roomForRider()) {
-        msg.textContent = 'This device has 4 riders. Pick yours in My wing first, so the pack stays.';
+        msg.textContent = 'This device has 4 riders. Pick yours in Who’s playing? first, so the pack stays.';
         return;
       }
       if (!redeemSupporterCode(p, input.value)) {
@@ -101,7 +101,7 @@ export const supporter = (root: HTMLElement): (() => void) => {
       h(
         'ul',
         { class: 'pack-list' },
-        h('li', {}, h('strong', {}, 'Starglint, a dragon of your own: '), 'an extra-detailed storm dragon with glowing lightning, crackling sparks, and a lightning bolt on its tail. It hatches into your nest and grows as you type.'),
+        h('li', {}, h('strong', {}, 'Starglint, a dragon of your own: '), 'an extra-detailed storm dragon with glowing lightning, crackling sparks, and a lightning bolt on its tail. It lands in your nest and grows as you type.'),
         h('li', {}, h('strong', {}, 'The Keyflame Supporter title '), 'to show under your name.'),
         h('li', {}, h('strong', {}, 'A supporter code '), 'that unlocks the pack on other devices. No account needed.'),
       ),
