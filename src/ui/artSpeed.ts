@@ -9,8 +9,11 @@ import { setSimpleArt } from '../game/dragons';
 const KEY = 'kf-art';
 type Choice = 'simple' | 'full' | 'auto-simple' | 'auto-full';
 
-/** Average frames per second below which the device gets the simple art. */
-export const SLOW_FPS = 32;
+/**
+ * Average frames per second below which the device gets the simple art. iPads in
+ * Low Power Mode cap at 30, so the line sits below that.
+ */
+export const SLOW_FPS = 24;
 
 function read(): Choice | null {
   try {
@@ -44,20 +47,26 @@ export function startArtSpeed(): void {
   setSimpleArt(simpleArtOn());
   if (read() || typeof requestAnimationFrame !== 'function') return;
   // Give the first screen a moment to settle, then count frames for 3 seconds.
-  // A hidden tab pauses frames, so only a visible run counts.
+  // A hidden tab pauses frames, so a run that was hidden at any point doesn't count.
   setTimeout(() => {
+    if (document.visibilityState !== 'visible') return;
+    let hidden = false;
+    const onHide = (): void => {
+      hidden = true;
+    };
+    document.addEventListener('visibilitychange', onHide, { once: true });
     let frames = 0;
     const t0 = performance.now();
     const tick = (): void => {
       frames++;
       const ms = performance.now() - t0;
-      if (ms < 3000) {
+      if (ms < 3000 && !hidden) {
         requestAnimationFrame(tick);
         return;
       }
-      if (document.visibilityState !== 'visible' || ms > 6000) return;
-      const fps = (frames * 1000) / ms;
-      const slow = fps < SLOW_FPS;
+      document.removeEventListener('visibilitychange', onHide);
+      if (hidden) return;
+      const slow = (frames * 1000) / ms < SLOW_FPS;
       write(slow ? 'auto-simple' : 'auto-full');
       // The next screen draws with the new art; nothing on screen jumps now.
       setSimpleArt(slow);
