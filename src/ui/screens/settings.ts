@@ -10,6 +10,7 @@ import { openRiders } from './riders';
 import { feedbackPage } from './feedbackPage';
 import { withTabs } from '../tabBar';
 import { chooseSimpleArt, simpleArtOn } from '../artSpeed';
+import { riderLabel } from '../../game/wing';
 
 type BoolSetting = { [K in keyof Settings]: Settings[K] extends boolean ? K : never }[keyof Settings];
 
@@ -95,7 +96,7 @@ export const settings = (root: HTMLElement): (() => void) => {
         'section',
         {},
         h('h2', {}, 'Backup'),
-        h('p', {}, 'Your progress is saved on this device only. Make a backup code to move it to another device, or to keep it safe if the browser is cleared.'),
+        h('p', {}, isGuest() ? 'You’re playing as a guest, so your dragons last until this tab closes. Tap your picture on Home and pick Keep me to save them.' : 'Your progress is saved on this device only. Make a backup code to move it to another device, or to keep it safe if the browser is cleared.'),
         button('Make a backup code', () => {
           code.value = exportBackupCode(p);
           p.lastBackupAt = Date.now();
@@ -140,7 +141,7 @@ export const settings = (root: HTMLElement): (() => void) => {
         button('Remove rider', () => {
           root.append(
             parentGate(() => {
-              if (!confirm(`Remove ${p.name} and all their dragons from this device?`)) return;
+              if (!confirm(`Remove ${riderLabel(p)} and all their dragons from this device?`)) return;
               const save = saveData();
               save.profiles = save.profiles.filter((x) => x.id !== p.id);
               playAsGuest();

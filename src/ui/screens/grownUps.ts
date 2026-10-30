@@ -72,7 +72,7 @@ export const grownUps = (root: HTMLElement): (() => void) => {
         { class: 'gu-grid' },
         card(GLYPH.family, 'Family', riders === 1 ? '1 rider on this device' : `${riders} riders on this device`, () => go(family), 'gu-family'),
         card(GLYPH.classroom, 'Classroom', 'For teachers', () => openTeacherFrom(grownUps), 'gu-classroom'),
-        card(GLYPH.ideas, 'Ideas', 'Send a bug or idea', () => go(feedbackPage('grownups', grownUps)), 'gu-ideas'),
+        card(GLYPH.ideas, 'Ideas', 'Send a bug or idea', () => go(feedbackPage('grownups', grownUps, true)), 'gu-ideas'),
         card(GLYPH.support, p.supporter ? 'Supporter pack' : 'Support Keyflame', p.supporter ? 'Thank you!' : 'Optional, one time', () => go(supporter), 'gu-support'),
         card(GLYPH.privacy, 'Privacy', 'No ads, no tracking', () => window.open('./privacy.html', '_blank', 'noopener'), 'gu-privacy'),
       ),

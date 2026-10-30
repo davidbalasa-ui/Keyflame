@@ -1,6 +1,6 @@
 // App state and screen switching.
 
-import { MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, loadSave, normalizeProfile, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
+import { LS_KEY, MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, loadSave, normalizeProfile, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
 import { setSoundEnabled } from './sound';
 import { grantSupporter } from '../game/supporter';
 
@@ -113,18 +113,33 @@ export function switchRider(p: Profile): void {
 }
 
 let pending: number | undefined;
+// Set once another tab saves: this tab's copy is old, so it stops saving (it would wipe out
+// the other tab's progress) and reloads the save as soon as it's looked at again.
+let stale = false;
 /** Saves soon, batching bursts of changes into one write. */
 export function persist(): void {
   writeGuest();
   clearTimeout(pending);
+  if (stale) return;
   pending = window.setTimeout(() => void writeSave(state.save), 150);
 }
 
 export function persistNow(): Promise<void> {
   writeGuest();
   clearTimeout(pending);
-  return writeSave(state.save);
+  return stale ? Promise.resolve() : writeSave(state.save);
 }
+
+const reloadIfStale = (): void => {
+  if (stale && document.visibilityState === 'visible') location.reload();
+};
+window.addEventListener('storage', (e) => {
+  if (e.key !== LS_KEY || e.newValue === null || !state) return;
+  stale = true;
+  clearTimeout(pending);
+  reloadIfStale();
+});
+document.addEventListener('visibilitychange', reloadIfStale);
 
 export function applySettings(): void {
   const s = hasProfile() ? profile().settings : null;
@@ -141,7 +156,37 @@ export function go(screen: Screen): void {
   state.root.replaceChildren();
   window.scrollTo(0, 0);
   state.cleanup = screen(state.root) ?? null;
+  guardBack();
 }
+
+// The browser's back (Android's back gesture, an iPad swipe) steps back inside the game, the
+// way the screen's own ← Back does, instead of leaving Keyflame. Home lets it leave.
+let guarded = false;
+let dropping = false;
+function guardBack(): void {
+  const home = !!state.root.querySelector('.hub.home');
+  if (guarded && home) {
+    // Back home by the game's own buttons: take the extra step off, so Back leaves from here.
+    guarded = false;
+    dropping = true;
+    history.back();
+  }
+  if (guarded || home) return;
+  history.pushState({ keyflame: true }, '');
+  guarded = true;
+}
+window.addEventListener('popstate', () => {
+  // A badge card scanned while the game is open changes the # part: that's a join, not a back.
+  if (location.hash.includes('join=') || !state) return;
+  if (dropping) {
+    dropping = false;
+    return;
+  }
+  guarded = false;
+  const back = [...state.root.querySelectorAll<HTMLButtonElement>('.top-bar button')].find((b) => b.textContent?.startsWith('←'));
+  if (back) back.click();
+  else if (!state.root.querySelector('.hub.home')) void import('./screens/hub').then((m) => go(m.hub));
+});
 
 /** True once per session after enough play, so the hub can suggest a rest. */
 export function breakDue(): boolean {

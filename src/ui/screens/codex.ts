@@ -22,6 +22,7 @@ function eggHint(p: Profile, tribe: TribeId): string {
   const unit = UNITS.find((u) => u.reward === tribe);
   if (unit) return `Pass every ${unit.title} lesson to earn this tribe’s first egg.`;
   const m = MILESTONES.find((x) => x.tribe === tribe);
+  if (m && p.milestones.includes(m.id)) return 'You earned this tribe’s egg. Hatch it in your nest!';
   return m ? `${milestoneText(m, p)} to earn this tribe’s first egg.` : 'Keep flying to find this tribe.';
 }
 

@@ -83,7 +83,11 @@ export type JoinPlan =
 export function planJoin(saved: Profile[], active: Profile, guest: boolean, seat: WingSeat): JoinPlan {
   const local = saved.find((p) => p.classCode === seat.code && p.classBadge === seat.badge);
   if (local) return local.id === active.id ? { kind: 'same' } : { kind: 'switch', rider: local };
-  if (guest) return { kind: 'guest' };
+  if (guest) {
+    if (active.classCode === seat.code && active.classBadge === seat.badge) return { kind: 'same' };
+    // A guest already riding as another badge (a full shared iPad) is someone else: a new nest.
+    return active.classCode && active.classBadge ? { kind: 'new' } : { kind: 'guest' };
+  }
   if (!active.classCode || !active.classBadge) return { kind: 'ask' };
   return { kind: 'new' };
 }

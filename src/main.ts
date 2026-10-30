@@ -34,11 +34,18 @@ function takeJoin(): WingSeat | null {
 }
 const join = takeJoin();
 // A card scanned while Keyflame is already open in this tab only changes the # part.
-window.addEventListener('hashchange', () => {
+// One scanned while the game is still starting waits until it's up.
+let started = false;
+const joinFromHash = (): void => {
+  if (!started) return;
   const next = takeJoin();
   if (next) go(wingScreen({ join: next }));
+};
+window.addEventListener('hashchange', joinFromHash);
+void startApp(document.getElementById('app')!, join ? wingScreen({ join }) : hub).then(() => {
+  started = true;
+  joinFromHash();
 });
-void startApp(document.getElementById('app')!, join ? wingScreen({ join }) : hub);
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   // When a new version's worker takes over, reload once so players never keep

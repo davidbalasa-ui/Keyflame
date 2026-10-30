@@ -82,6 +82,10 @@ describe('who rides as a badge after joining', () => {
     expect(planJoin([other], other, false, seat)).toEqual({ kind: 'new' });
     const otherWing = rider('Quiet Falcon', 'KLMNPQ', 3);
     expect(planJoin([otherWing], otherWing, false, seat)).toEqual({ kind: 'new' });
+    // On a full shared iPad the guest of the visit may already be another kid's badge.
+    const guestBadge = rider('Brave Rider', 'BCDFGH', 5);
+    expect(planJoin([], guestBadge, true, seat)).toEqual({ kind: 'new' });
+    expect(planJoin([], rider('Brave Rider', 'BCDFGH', 3), true, seat)).toEqual({ kind: 'same' });
   });
 });
 

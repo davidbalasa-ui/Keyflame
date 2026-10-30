@@ -44,7 +44,7 @@ async function send(report: FeedbackReport): Promise<boolean> {
 }
 
 /** Report a bug or share an idea. A grown-up checks and sends it. */
-export function feedbackPage(from: string, back: Screen = hub) {
+export function feedbackPage(from: string, back: Screen = hub, gated = false) {
   return (root: HTMLElement): void => {
     let kind: FeedbackKind = 'bug';
     const kinds = FEEDBACK_KINDS.map(([k, label]) =>
@@ -68,27 +68,28 @@ export function feedbackPage(from: string, back: Screen = hub) {
         msg.textContent = 'Thanks! That’s plenty of reports for today. You can send more tomorrow.';
         return;
       }
-      root.append(
-        parentGate(async () => {
-          msg.textContent = 'Sending…';
-          const report: FeedbackReport = {
-            kind,
-            message,
-            screen: from,
-            version: __BUILD_ID__,
-            input: inputMode(),
-            ...describeDevice(navigator.userAgent, navigator.maxTouchPoints > 0, Math.min(screen.width, screen.height)),
-          };
-          if (await send(report)) {
-            markSent();
-            sfx.coin();
-            root.replaceChildren(
-              topBar(() => go(back)),
-              h('main', { class: 'feedback' }, h('h1', {}, 'Thank you!'), h('p', {}, 'Your message is on its way. Bugs get fixed and good ideas get tried. Keep flying!'), button('Back', () => go(back))),
-            );
-          } else msg.textContent = 'It didn’t send. Check the internet connection and try again.';
-        }),
-      );
+      // From the Grown-ups screens the grown-up already answered the question.
+      const deliver = async (): Promise<void> => {
+        msg.textContent = 'Sending…';
+        const report: FeedbackReport = {
+          kind,
+          message,
+          screen: from,
+          version: __BUILD_ID__,
+          input: inputMode(),
+          ...describeDevice(navigator.userAgent, navigator.maxTouchPoints > 0, Math.min(screen.width, screen.height)),
+        };
+        if (await send(report)) {
+          markSent();
+          sfx.coin();
+          root.replaceChildren(
+            topBar(() => go(back)),
+            h('main', { class: 'feedback' }, h('h1', {}, 'Thank you!'), h('p', {}, 'Your message is on its way. Bugs get fixed and good ideas get tried. Keep flying!'), button('Back', () => go(back))),
+          );
+        } else msg.textContent = 'It didn’t send. Check the internet connection and try again.';
+      };
+      if (gated) void deliver();
+      else root.append(parentGate(() => void deliver()));
     };
 
     const on = Boolean(CONFIG.feedbackUrl);

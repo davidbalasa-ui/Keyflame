@@ -274,7 +274,7 @@ function emberback(p, stage = 'adult', sf = false) {
   }
   const ground = `<ellipse cx="128" cy="150" rx="66" ry="5" fill="#000" opacity="0.18"/>`;
   const sc = A.scale;
-  return `<svg class="dragon flap" viewBox="-48 -20 300 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${starfire ? 'Starfire' : 'Emberback'} ${stage}">
+  return `<svg class="dragon flap" viewBox="-48 -20 300 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${starfire ? 'Starglint' : 'Emberback'} ${stage}">
 <defs>${defs}</defs>${aura}${ground}
 <g transform="translate(${f(120 - 120 * sc)} ${f(78 - 78 * sc)}) scale(${sc})"><g class="rig">
 <g transform="translate(122 68) scale(${f(A.wing * 0.86)})"><g class="wing wing-back">${wing(true)}</g></g>

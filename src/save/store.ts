@@ -352,7 +352,7 @@ function backfillStars(dragons: OwnedDragon[], done: boolean): OwnedDragon[] {
 const DB_NAME = 'keyflame';
 const STORE = 'saves';
 const KEY = 'main';
-const LS_KEY = 'keyflame-save';
+export const LS_KEY = 'keyflame-save';
 
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
