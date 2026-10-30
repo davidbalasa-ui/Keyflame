@@ -52,7 +52,7 @@ const SCREENS = [
   ['hub', []],
   ['settings', ['.tab-settings']],
   ['progress', ['.tab-progress']],
-  ['achievements', ['.tab-progress', '.ach-card']],
+  ['achievements', ['.tab-progress', '.ach-link']],
   ['ideas', ['.tab-settings', 'text=Send an idea or bug']],
   ['grown-ups', ['.tab-grownups', GATE]],
   ['family', ['.tab-grownups', GATE, '.gu-family']],

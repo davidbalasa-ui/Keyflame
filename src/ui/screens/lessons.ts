@@ -41,7 +41,7 @@ export const lessons = (root: HTMLElement): void => {
             'div',
             { class: 'unit-head' },
             h('div', {}, h('h2', {}, u.title), h('p', {}, u.blurb)),
-            h('div', { class: 'unit-reward' + (earned ? ' earned' : '') }, svg(eggSvg(u.reward, 0, 3), 'mini-egg'), h('small', {}, earned ? 'Egg earned' : `Finish to earn a ${TRIBES[u.reward].name} egg`)),
+            h('div', { class: 'unit-reward' + (earned ? ' earned' : '') }, svg(eggSvg(u.reward, 0, 3), 'mini-egg'), h('small', {}, earned ? '✓ Egg earned' : `${TRIBES[u.reward].name} egg`)),
           ),
           h(
             'div',

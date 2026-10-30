@@ -362,20 +362,20 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     }
 
     const rewards: RewardCard[] = [{ art: flameSvg(), title: 'Embers', value: reward.embers, tone: 'ember' }];
-    if (reward.rivalFirstWin) rewards.push({ art: crownSvg(), title: `${r.name} beaten!`, value: 'Champion!', note: 'Includes +25 bonus embers', tone: 'gold' });
+    if (reward.rivalFirstWin) rewards.push({ art: crownSvg(), title: `${r.name} beaten!`, value: 'Champion!', note: '+25 bonus embers', tone: 'gold' });
     if (reward.warmthAdded && p.nest) {
       const ready = eggProgress(p) >= 1;
       rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Visit your nest' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
     }
     for (const c of reward.seasonDone ?? []) rewards.push({ art: medalSvg('gold', '🌟'), title: 'Season challenge', value: `+${CHALLENGE_EMBERS}`, note: c.text, tone: 'gold' });
     if (reward.newEgg) rewards.push({ art: eggSvg(reward.newEgg, 0, 5), title: `${TRIBES[reward.newEgg].name} egg`, value: 'New egg!', tone: 'egg' });
-    for (const a of fresh.slice(0, fresh.length > 3 ? 2 : 3)) rewards.push({ art: medalSvg(a.medal, a.icon), title: `New title “${a.title}”`, value: 'Achievement!', note: a.how, tone: 'gold' });
-    if (fresh.length > 3) rewards.push({ art: medalSvg(fresh[2].medal, '🏅'), title: 'More achievements', value: `+${fresh.length - 2}`, note: 'See them all on the hub', tone: 'gold' });
+    // One achievement gets its own card; several share one card so the results stay short.
+    if (fresh.length === 1) rewards.push({ art: medalSvg(fresh[0].medal, fresh[0].icon), title: `New title “${fresh[0].title}”`, value: 'Achievement!', note: fresh[0].how, tone: 'gold' });
+    else if (fresh.length > 1) rewards.push({ art: medalSvg(fresh[0].medal, '🏅'), title: 'New achievements', value: `+${fresh.length}`, note: 'See them in Progress', tone: 'gold' });
     if (reward.grewTo && me) rewards.push({ art: dragonSvg(me.tribe, me.palette, reward.grewTo, '', me.skin, me.marking), title: `${me.name} grew!`, value: 'Grew up!', note: `Now a ${reward.grewTo} dragon`, tone: 'grow' });
 
     const lines: string[] = [];
-    if (reward.rivalFirstWin) lines.push(`You beat ${r.name}, the ${course.name} champion!`);
-    else if (!beatRival && !live) lines.push(`${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`);
+    if (!reward.rivalFirstWin && !beatRival && !live) lines.push(`${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`);
 
     const factCard = fact
       ? h(

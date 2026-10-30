@@ -5,7 +5,7 @@ import { isStarglint, type OwnedDragon } from '../../save/store';
 import { kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
-import { DECOR, aerieScene, buyDecor } from './aerie';
+import { DECOR, aerieScene, buyDecor, decorThumb } from './aerie';
 import { button, h, pct, svg } from '../dom';
 import { diceButton, randomOf, wordPicker } from '../picker';
 import { sfx } from '../sound';
@@ -41,7 +41,7 @@ export const nest = (root: HTMLElement): (() => void) => {
         h('div', { class: 'warmth' }, h('span', { style: `width:${pct(prog)}` })),
         prog >= 1
           ? h('p', { class: 'tap-hint' }, 'It is ready! Tap to open')
-          : h('p', {}, `${pct(prog)} warm. ${TRIBES[egg.tribe].hatchKeys - egg.warmth} more correct keys to hatch.`),
+          : h('p', { class: 'nest-keys' }, `${TRIBES[egg.tribe].hatchKeys - egg.warmth} keys to hatch`),
         prog >= 1
           ? null
           : h(
@@ -151,7 +151,6 @@ export const nest = (root: HTMLElement): (() => void) => {
             {},
             h('h2', {}, 'Your aerie'),
             scene,
-            h('p', { class: 'fine' }, 'Spend embers to decorate your dragon’s cave. Decorations are just for fun.'),
             h(
               'div',
               { class: 'shop' },
@@ -160,9 +159,10 @@ export const nest = (root: HTMLElement): (() => void) => {
                 return h(
                   'div',
                   { class: 'shop-item' + (owned ? ' owned' : '') },
+                  svg(decorThumb(item), 'shop-thumb'),
                   h('strong', {}, item.name),
                   owned
-                    ? h('small', {}, 'In your aerie')
+                    ? h('span', { class: 'shop-tag' }, '✓ Placed')
                     : button(`🔥 ${item.cost}`, () => {
                         if (buyDecor(p, item.id)) {
                           sfx.win();
