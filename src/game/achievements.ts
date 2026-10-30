@@ -65,7 +65,7 @@ const TRACKS: Track[] = [
     titles: ['Flawless', 'Spotless Scales', 'Perfect Flight'],
   },
   {
-    id: 'keys', name: 'Keys', icon: '⌨️', goals: [1000, 10000, 50000, 200000, 1000000],
+    id: 'keys', name: 'Keys', icon: '⌨️', goals: [1000, 10000, 50000, 100000, 200000],
     how: (g) => `Type ${plural(g, 'correct key')}`,
     value: (p) => p.totals.correctKeys,
     titles: ['Key Tapper', 'Key Crafter', 'Key Master', 'Key Wizard', 'Keyflame Legend'],

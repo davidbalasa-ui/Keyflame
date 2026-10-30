@@ -35,10 +35,55 @@ export function giveEgg(p: Profile, tribe: TribeId): void {
   else p.nest = { tribe, warmth: 0, seed: Math.floor(Math.random() * 1e9) };
 }
 
-export const MILESTONES: Array<{ id: string; tribe: TribeId; label: string; done: (p: Profile) => boolean }> = [
+/** Races that set a rider's starting speed on each kind of input. */
+export const START_RACES = 3;
+/** How much faster than their starting speed a rider must race to earn the Duneskimmer egg. */
+export const START_GAIN = 5;
+
+const inputKind = (input: InputMode | undefined): 'keyboard' | 'touch' => (isTouch(input) ? 'touch' : 'keyboard');
+
+/**
+ * Sets the starting speed for any input that now has enough races. Saves from before
+ * starting speeds use their oldest kept races, so nobody has to start over.
+ */
+export function noteStartSpeed(p: Profile): void {
+  for (const kind of ['keyboard', 'touch'] as const) {
+    if (p.startSpeed?.[kind]) continue;
+    const first = p.races.filter((r) => inputKind(r.input) === kind).slice(-START_RACES);
+    if (first.length < START_RACES) continue;
+    const wpm = Math.round(first.reduce((n, r) => n + r.wpm, 0) / first.length);
+    p.startSpeed = { ...p.startSpeed, [kind]: { wpm, at: Math.max(...first.map((r) => r.at)) } };
+  }
+}
+
+/** True once a race after the starting ones beats the starting speed on that input by START_GAIN. */
+export function beatStartSpeed(p: Profile): boolean {
+  return p.races.some((r) => {
+    const start = p.startSpeed?.[inputKind(r.input)];
+    return !!start && r.at > start.at && Math.round(r.wpm) >= start.wpm + START_GAIN;
+  });
+}
+
+const SPEED_GOAL = { keyboard: 25, touch: 18 };
+
+export const MILESTONES: Array<{ id: string; tribe: TribeId; label: string; goal?: (p: Profile) => string | null; done: (p: Profile) => boolean }> = [
   { id: 'accuracy', tribe: 'frostspine', label: 'Finish 3 races with 95% accuracy', done: (p) => p.races.filter((r) => r.accuracy >= 0.95).length >= 3 },
-  { id: 'speed', tribe: 'duneskimmer', label: 'Race at 25 WPM on a keyboard, or 18 WPM on touch', done: (p) => p.totals.bestWpm >= 25 || p.totals.bestTouchWpm >= 18 },
+  {
+    id: 'speed', tribe: 'duneskimmer', label: 'Race at 25 WPM (18 on touch), or 5 WPM faster than your start',
+    // Once the rider has a starting speed, show the one number they need on the input they last used.
+    goal: (p) => {
+      const kind = inputKind(p.races[0]?.input);
+      const start = p.startSpeed?.[kind];
+      if (!start) return null;
+      const wpm = Math.min(SPEED_GOAL[kind], start.wpm + START_GAIN);
+      return `Race at ${wpm} WPM${kind === 'touch' ? ' on touch' : ''}`;
+    },
+    done: (p) => p.totals.bestWpm >= SPEED_GOAL.keyboard || p.totals.bestTouchWpm >= SPEED_GOAL.touch || beatStartSpeed(p),
+  },
 ];
+
+/** The words for a milestone goal, using the rider's own target when there is one. */
+export const milestoneText = (m: (typeof MILESTONES)[number], p: Profile): string => m.goal?.(p) ?? m.label;
 
 /** Awards any milestone eggs newly earned. */
 export function checkMilestones(p: Profile): TribeId | null {
@@ -137,6 +182,7 @@ export function recordRace(p: Profile, s: SessionSummary, place: number, info: R
   if (s.accuracy >= 1) p.totals.perfectRaces++;
   p.embers += embers;
   p.totals.embersEarned += embers;
+  noteStartSpeed(p);
   const seasonDone = noteSeasonRace(p, s, place);
   const newEgg = checkMilestones(p);
   return { ...base, embers, newEgg, seasonDone, rivalFirstWin, newBest: prevBest > 0 && s.wpm > prevBest, eggReady: eggProgress(p) >= 1 };

@@ -2,7 +2,7 @@ import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg
 import { EGG_PRICE, claimSets, foundLooks, lookKey } from '../../game/collection';
 import { codex, codexLook } from './codex';
 import { isStarglint, type OwnedDragon } from '../../save/store';
-import { kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
+import { kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor, decorThumb } from './aerie';
@@ -60,7 +60,7 @@ export const nest = (root: HTMLElement): (() => void) => {
 
   const goals = [
     ...UNITS.map((u) => ({ tribe: u.reward, label: `Finish the ${u.title} lessons`, done: p.unitsRewarded.includes(u.id) })),
-    ...MILESTONES.map((m) => ({ tribe: m.tribe, label: m.label, done: p.milestones.includes(m.id) })),
+    ...MILESTONES.map((m) => ({ tribe: m.tribe, label: milestoneText(m, p), done: p.milestones.includes(m.id) })),
   ];
   const scene = active ? aerieScene(p, svg(dragonSvg(active.tribe, active.palette, stageFor(active.xp), 'flap bob', active.skin, active.marking, active.stars), 'showcase-dragon')) : null;
 
