@@ -129,6 +129,8 @@ export interface TribeArt {
   draw: (c: Ctx) => Parts;
   /** Optional per-tribe sizes for each age, merged over AGES. */
   age?: Partial<Record<Stage, Partial<Age>>>;
+  /** Moves the full-stars circlet (drawn for a head around 184-206, 22-32) onto this tribe's head. */
+  crown?: Partial<Record<Stage, [number, number]>>;
 }
 
 let uid = 0;
@@ -160,6 +162,9 @@ export interface FrameExtras {
   /** Added to the head (evolution circlet). */
   head?: string;
 }
+
+const crowned = (head: string | undefined, at: [number, number] | undefined): string =>
+  !head ? '' : at ? `<g transform="translate(${at[0]} ${at[1]})">${head}</g>` : head;
 
 /** Draws one tribe dragon on the shared rig, as an SVG string. */
 export function celDragon(tribe: string, art: TribeArt, p: Palette, stage: Stage, extraClass: string, marking: number, detail: Detail, extras: FrameExtras = {}): string {
@@ -196,7 +201,7 @@ ${parts.farLeg ?? ''}
 ${parts.back ?? ''}
 ${parts.body}
 ${parts.legs ?? ''}
-<g transform="translate(184 52) scale(${A.head})"><g class="head"><g transform="translate(-184 -52)">${parts.head}${extras.head ?? ''}</g></g></g>
+<g transform="translate(184 52) scale(${A.head})"><g class="head"><g transform="translate(-184 -52)">${parts.head}${crowned(extras.head, art.crown?.[stage])}</g></g></g>
 <g transform="translate(132 70) scale(${A.wing})"><g class="wing wing-front">${parts.wing(false)}</g></g>
 </g></g>${extras.front ?? ''}</svg>`;
 }
