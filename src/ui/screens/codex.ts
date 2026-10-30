@@ -1,7 +1,7 @@
 import { MARKINGS, TRIBES, dragonSvg, eggSvg, lookName, stageFor, type TribeId } from '../../game/dragons';
 import { EGG_PRICE, MAX_BASKET, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, foundLooks, lookKey } from '../../game/collection';
-import { MAX_STARS, MILESTONES, eggProgress, lookHolder } from '../../game/progress';
-import { isStarglint } from '../../save/store';
+import { MAX_STARS, MILESTONES, eggProgress, lookHolder, milestoneText } from '../../game/progress';
+import { isStarglint, type Profile } from '../../save/store';
 import { UNITS } from '../../content/lessons';
 import { FACTS, TOPIC_LABEL, factById, type FactTopic } from '../../content/facts';
 import { go, persist, profile } from '../app';
@@ -17,12 +17,12 @@ type Filter = 'all' | 'found' | 'missing' | 'rare';
 let filter: Filter = 'all';
 
 /** Where the first egg of a tribe comes from. */
-function eggHint(tribe: TribeId): string {
+function eggHint(p: Profile, tribe: TribeId): string {
   if (tribe === 'emberback') return 'Every rider starts with an Emberback egg.';
   const unit = UNITS.find((u) => u.reward === tribe);
   if (unit) return `Pass every ${unit.title} lesson to earn this tribe’s first egg.`;
   const m = MILESTONES.find((x) => x.tribe === tribe);
-  return m ? `${m.label} to earn this tribe’s first egg.` : 'Keep flying to find this tribe.';
+  return m ? `${milestoneText(m, p)} to earn this tribe’s first egg.` : 'Keep flying to find this tribe.';
 }
 
 export const codex = (root: HTMLElement): (() => void) => {
@@ -76,7 +76,7 @@ export const codex = (root: HTMLElement): (() => void) => {
       ),
       h('div', { class: 'codex-row' }, ...cards),
       buy === 'unknown'
-        ? h('p', { class: 'fine' }, eggHint(tribe))
+        ? h('p', { class: 'fine' }, eggHint(p, tribe))
         : buy === 'maxed'
           ? h('p', { class: 'reward' }, `Every ${t.name} look is at full stars. Amazing! ${t.name} eggs are all done.`)
         : h(
@@ -153,7 +153,7 @@ function lookPage(tribe: TribeId, palette: number, marking: number): HTMLElement
       h('p', {}, t.lore),
       mine.length
         ? h('div', { class: 'look-mine' }, h('strong', {}, mine.length === 1 ? 'Your dragon with this look' : `Your ${mine.length} dragons with this look`), h('ul', {}, ...mine.map((d) => h('li', {}, `${d.name} · ${stageFor(d.xp)} · hatched ${new Date(d.hatchedAt).toLocaleDateString()}`))))
-        : h('p', { class: 'fine' }, p.dragons.some((d) => d.tribe === tribe && !isStarglint(d)) ? `Hatch more ${t.name} eggs to find it. ${pal.rare ? 'Rare colors turn up about one egg in ten.' : ''}` : eggHint(tribe)),
+        : h('p', { class: 'fine' }, p.dragons.some((d) => d.tribe === tribe && !isStarglint(d)) ? `Hatch more ${t.name} eggs to find it. ${pal.rare ? 'Rare colors turn up about one egg in ten.' : ''}` : eggHint(p, tribe)),
       h('div', { class: 'row' }, button('Close', close)),
     ),
   );

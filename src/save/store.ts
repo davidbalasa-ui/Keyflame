@@ -143,6 +143,13 @@ export interface Profile {
   streak?: { last: string; days: number; best: number };
   /** Recent lessons, newest first, for the Progress and Family charts. */
   lessonLog?: LessonRecord[];
+  /** Average of the first three races on each kind of input, and when the third one finished. */
+  startSpeed?: Partial<Record<'keyboard' | 'touch', StartSpeed>>;
+}
+
+export interface StartSpeed {
+  wpm: number;
+  at: number;
 }
 
 export interface LessonRecord {
@@ -281,9 +288,20 @@ export function normalizeProfile(raw: unknown): Profile | null {
     classCode: typeof r.classCode === 'string' && /^[A-Z]{6}$/.test(r.classCode) ? r.classCode : undefined,
     classBadge: Number.isInteger(r.classBadge) && r.classBadge! >= 1 && r.classBadge! <= 99 ? r.classBadge : undefined,
     streak: r.streak && typeof r.streak.last === 'string' && Number.isInteger(r.streak.days) && r.streak.days > 0 ? { last: r.streak.last, days: r.streak.days, best: Number.isInteger(r.streak.best) ? Math.max(r.streak.best, r.streak.days) : r.streak.days } : undefined,
+    startSpeed: cleanStartSpeed(r.startSpeed),
     lessonLog: Array.isArray(r.lessonLog) ? r.lessonLog.filter((x) => x && Number.isFinite(x.at) && Number.isFinite(x.accuracy) && (x.wpm === null || Number.isFinite(x.wpm))).slice(0, LESSON_LOG_MAX) : undefined,
   } as Profile;
   return starglintDragon(p);
+}
+
+function cleanStartSpeed(raw: Profile['startSpeed']): Profile['startSpeed'] {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const out: NonNullable<Profile['startSpeed']> = {};
+  for (const k of ['keyboard', 'touch'] as const) {
+    const v = raw[k];
+    if (v && Number.isFinite(v.wpm) && v.wpm >= 0 && Number.isFinite(v.at) && v.at > 0) out[k] = { wpm: v.wpm, at: v.at };
+  }
+  return Object.keys(out).length ? out : undefined;
 }
 
 /**

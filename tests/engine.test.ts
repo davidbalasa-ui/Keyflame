@@ -1,8 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TypingSession, computeWpm, weakKeys } from '../src/engine/typing';
 import { LESSONS, buildLessonText, buildRaceText, starsFor } from '../src/content/lessons';
 import { createProfile, exportBackupCode, importBackupCode, migrate } from '../src/save/store';
-import { checkUnitReward, eggProgress, ghostProgress, hatchEgg, knownLetters, recordLesson, recordRace } from '../src/game/progress';
+import { MILESTONES, checkUnitReward, eggProgress, ghostProgress, hatchEgg, knownLetters, milestoneText, recordLesson, recordRace } from '../src/game/progress';
 import { TRIBES, rollPalette, seededRandom, stageFor } from '../src/game/dragons';
 
 describe('typing engine', () => {
@@ -239,5 +239,55 @@ describe('campaign and milestones', () => {
     expect(buyDecor(p, 'moss')).toBe(false);
     expect(buyDecor(p, 'stars')).toBe(false);
     expect(p.embers).toBe(10);
+  });
+});
+
+describe('Duneskimmer by beating your starting speed', () => {
+  const race = (wpm: number) => ({ wpm, accuracy: 0.9, correct: 40, errors: 4, durationMs: 60000, keyStats: {} });
+  const touch = { input: 'touch' as const, courseId: 'volcano', beatRival: false };
+  // Races finish at least a few seconds apart in real play.
+  let clock = 1_700_000_000_000;
+  beforeEach(() => vi.spyOn(Date, 'now').mockImplementation(() => (clock += 60_000)));
+  afterEach(() => vi.restoreAllMocks());
+
+  it('sets the starting speed from the first three races on each input', () => {
+    const p = createProfile('Bold Ranger');
+    recordRace(p, race(8), 3, touch);
+    recordRace(p, race(10), 3, touch);
+    expect(p.startSpeed).toBeUndefined();
+    recordRace(p, race(12), 3, touch);
+    expect(p.startSpeed?.touch?.wpm).toBe(10);
+    expect(p.startSpeed?.keyboard).toBeUndefined();
+    expect(milestoneText(MILESTONES.find((m) => m.id === 'speed')!, p)).toBe('Race at 15 WPM on touch');
+  });
+
+  it('a fast starting race never counts as beating the start', () => {
+    const p = createProfile('Bold Ranger');
+    for (const w of [6, 6, 17]) expect(recordRace(p, race(w), 3, touch).newEgg).toBeNull();
+    expect(p.milestones).not.toContain('speed');
+  });
+
+  it('5 WPM over the starting speed earns the egg, below the usual 18 on touch', () => {
+    const p = createProfile('Bold Ranger');
+    for (const w of [6, 7, 8]) recordRace(p, race(w), 3, touch);
+    expect(recordRace(p, race(11.4), 3, touch).newEgg).toBeNull();
+    expect(recordRace(p, race(11.6), 3, touch).newEgg).toBe('duneskimmer');
+  });
+
+  it('keyboard and touch keep separate starting speeds', () => {
+    const p = createProfile('Bold Ranger');
+    for (const w of [15, 15, 15]) recordRace(p, race(w), 3, touch);
+    // 9 WPM on a keyboard is not 5 over the touch start, and the keyboard start is not set yet.
+    for (const w of [4, 4, 4]) recordRace(p, race(w), 3);
+    expect(p.startSpeed?.keyboard?.wpm).toBe(4);
+    expect(recordRace(p, race(9), 3).newEgg).toBe('duneskimmer');
+  });
+
+  it('older saves use their oldest kept races as the start', () => {
+    const p = createProfile('Bold Ranger');
+    p.races = [12, 11, 10, 9, 8].map((wpm, i) => ({ at: 1000 - i, wpm, accuracy: 0.9, place: 3, input: 'keyboard' as const }));
+    const restored = migrate({ profiles: [JSON.parse(JSON.stringify(p))] }).profiles[0];
+    expect(recordRace(restored, race(14), 3).newEgg).toBe('duneskimmer');
+    expect(restored.startSpeed?.keyboard?.wpm).toBe(9);
   });
 });
