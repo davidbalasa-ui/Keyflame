@@ -148,7 +148,7 @@ function lookPage(tribe: TribeId, palette: number, marking: number): HTMLElement
       { class: 'modal look-page' + (mine.length ? '' : ' unknown') },
       svg(dragonSvg(tribe, palette, mine.length ? stageFor(Math.max(...mine.map((d) => d.xp))) : 'adult', mine.length ? 'flap bob' : '', undefined, marking, holder?.stars ?? 0, 'portrait'), 'look-art'),
       holder?.stars ? h('p', { class: 'evo-stars small', 'aria-label': `${holder.stars} of ${MAX_STARS} stars` }, '★'.repeat(holder.stars) + '☆'.repeat(MAX_STARS - holder.stars)) : null,
-      h('h2', {}, mine.length ? `${lookName(tribe, palette, marking)} ${t.name}` : `A ${t.name} still to find`),
+      h('h2', {}, mine.length ? `${lookName(tribe, palette, marking)} ${t.name}` : `${/^[AEIOU]/.test(t.name) ? 'An' : 'A'} ${t.name} still to find`),
       h('p', { class: 'look-tags' }, h('span', { class: 'tag' }, t.home), pal.rare ? h('span', { class: 'tag rare' }, 'Rare color') : null, h('span', { class: 'tag' }, `${MARKINGS[marking]} pattern`)),
       h('p', { class: 'fine' }, `Racing perk: ${t.perk}`),
       h('p', {}, t.lore),
