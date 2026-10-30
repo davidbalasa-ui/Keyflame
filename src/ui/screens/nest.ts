@@ -276,7 +276,7 @@ function hatchSequence(root: HTMLElement): void {
     const d = result.dragon;
     const stars = result.evolved && d ? (d.stars ?? 1) - 1 : 0;
     const art = d
-      ? svg(dragonSvg(d.tribe, d.palette, result.evolved ? stageFor(d.xp) : 'hatchling', 'flap bob', result.evolved ? d.skin : undefined, d.marking, stars), 'hatch-dragon reveal-art')
+      ? svg(dragonSvg(d.tribe, d.palette, result.evolved ? stageFor(d.xp) : 'hatchling', 'flap bob', result.evolved ? d.skin : undefined, d.marking, stars, 'portrait'), 'hatch-dragon reveal-art')
       : h('div', { class: 'reveal-art reveal-embers' }, '🔥');
     const palette = d ? paletteFor(d.tribe, d.palette) : null;
     const season = d ? isSeasonPalette(d.palette) : false;
@@ -363,7 +363,7 @@ function evolveSequence(box: HTMLElement, fx: ReturnType<typeof attachField>, d:
   const colors = TRAIL_COLORS[d.tribe];
   const glow = paletteFor(d.tribe, d.palette).accent;
   const stage = stageFor(d.xp);
-  const art = (n: number, cls: string): HTMLElement => svg(dragonSvg(d.tribe, d.palette, stage, cls, d.skin, d.marking, n), 'hatch-dragon');
+  const art = (n: number, cls: string): HTMLElement => svg(dragonSvg(d.tribe, d.palette, stage, cls, d.skin, d.marking, n, 'portrait'), 'hatch-dragon');
   const before = art(stars - 1, 'flap');
   const flash = h('div', { class: 'evo-flash', style: `--glow:${glow}` });
   const title = h('h2', {}, `${d.name} is changing…`);

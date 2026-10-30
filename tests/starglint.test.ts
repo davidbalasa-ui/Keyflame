@@ -22,7 +22,7 @@ describe('Starglint art', () => {
     const n = shapes(starglintSvg('adult'));
     expect(n).toBeGreaterThan(520);
     expect(n).toBeLessThan(700);
-    expect(shapes(dragonSvg('emberback', 0, 'adult'))).toBeLessThan(n / 5);
+    expect(shapes(dragonSvg('emberback', 0, 'adult'))).toBeLessThan(n * 0.65);
   });
 
   it('gives every drawing its own ids, so two on one screen never clash', () => {

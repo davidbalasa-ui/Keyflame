@@ -2,6 +2,8 @@
 
 import { SEASONS } from '../content/seasons';
 import { STARGLINT_LOOK, starglintSvg } from './starglintArt';
+import { celDragon, type Detail } from './art/cel';
+import { CEL_ART } from './art';
 
 export type TribeId = 'emberback' | 'tidefin' | 'stormcrest' | 'mossclaw' | 'frostspine' | 'duneskimmer' | 'shadeglide';
 
@@ -340,17 +342,42 @@ const MAX_EVOLVE = 4;
 let artId = 0;
 
 /**
+ * Detailed cel-shaded art, or the simple classic art for devices too slow for it.
+ * Set from Settings (or the speed check) before screens draw; see src/ui/artSpeed.ts.
+ */
+let simpleArt = false;
+export function setSimpleArt(on: boolean): void {
+  simpleArt = on;
+}
+export const usingSimpleArt = (): boolean => simpleArt;
+
+/** How much to draw: race (small, many at once), full, or portrait (hatch reveal and Codex close-up). */
+export type ArtDetail = Detail;
+
+/**
  * Side-view flying dragon facing right, as an SVG string.
  * Wings, tail and head sit in their own groups, pivoting at the shoulder,
  * tail base and neck, so CSS can animate them (see .flap in styles.css).
+ * `raceSize` takes true (race) or an ArtDetail.
  */
-export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starglint', marking = 0, stars = 0, raceSize = false): string {
+export function dragonSvg(tribe: TribeId, paletteIndex: number, stage: Stage = 'adult', extraClass = '', skin?: 'starglint', marking = 0, stars = 0, raceSize: boolean | ArtDetail = false): string {
+  const detail: ArtDetail = raceSize === true ? 'race' : raceSize === false ? 'full' : raceSize;
   if (skin === 'starglint') {
     // The supporter's Starglint dragon has its own body and art.
     const evo = stars > 0 ? evolvedArt(`kf${++artId}`, STARGLINT, stars) : null;
-    return starglintSvg(stage, extraClass, STARGLINT_LOOK, { behind: evo?.aura, front: evo?.sparkles, head: evo?.head, lite: raceSize });
+    return starglintSvg(stage, extraClass, STARGLINT_LOOK, { behind: evo?.aura, front: evo?.sparkles, head: evo?.head, lite: detail === 'race' || simpleArt });
   }
   const p = paletteFor(tribe, paletteIndex);
+  const cel = CEL_ART[tribe];
+  if (cel && !simpleArt) {
+    const evo = stars > 0 ? evolvedArt(`kf${++artId}`, p, stars) : null;
+    return celDragon(tribe, cel, p, stage, extraClass, marking, detail, { behind: evo?.aura, front: evo?.sparkles, head: evo?.head });
+  }
+  return classicDragonSvg(tribe, p, stage, extraClass, marking, stars);
+}
+
+/** The original simple art: one shared body with tribe parts. Used on slow devices. */
+function classicDragonSvg(tribe: TribeId, p: Palette, stage: Stage, extraClass: string, marking: number, stars: number): string {
   const id = `kf${++artId}`;
   const line = darken(p.body, 0.55);
   const wingDark = darken(p.wing, 0.28);
