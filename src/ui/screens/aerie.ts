@@ -4,12 +4,14 @@ import type { Profile } from '../../save/store';
 import { h } from '../dom';
 import { activeDragon } from '../../game/progress';
 import { TRAIL_COLORS, attachField } from '../particles';
+import { usingSimpleArt } from '../../game/dragons';
+import { CAVE_ART, DECOR_ART, DECOR_THUMB } from '../art/aerieArt';
 
 export interface Decor {
   id: string;
   name: string;
   cost: number;
-  /** Markup inside the 400 x 240 aerie scene. */
+  /** Simple markup inside the 400 x 240 aerie scene, for slow devices (the cel-shaded art is in DECOR_ART). */
   art: string;
   /** The part of the scene the shop card shows as its picture. */
   thumb: string;
@@ -69,11 +71,22 @@ export const DECOR: Decor[] = [
 
 const CAVE = '<path d="M0 240 V60 Q0 0 80 0 H320 Q400 0 400 60 V240z" fill="#2a2150"/><path d="M20 240 V80 Q20 24 96 24 H304 Q380 24 380 80 V240z" fill="#352a66"/><rect x="0" y="228" width="400" height="12" fill="#1f1842"/>';
 
+// Cel-shaded cave and decorations, or the simple ones on slow devices.
+// Each drawing gets its own clip and gradient ids, since the shop pictures and the scene share a page.
+let drawn = 0;
+const ownIds = (svg: string): string => {
+  const n = ++drawn;
+  return svg.replace(/\baer([A-Z]\w*)/g, `aer${n}$1`);
+};
+const caveArt = (): string => (usingSimpleArt() ? CAVE : ownIds(CAVE_ART));
+const decorArt = (d: Decor): string => (usingSimpleArt() ? d.art : DECOR_ART[d.id] ? ownIds(DECOR_ART[d.id]) : d.art);
+const decorFrame = (d: Decor): string => (!usingSimpleArt() && DECOR_ART[d.id] && DECOR_THUMB[d.id]) || d.thumb;
+
 /** The aerie scene with owned decorations and a dragon in the middle. */
 export function aerieScene(p: Profile, dragon: HTMLElement): HTMLElement {
   const owned = DECOR.filter((d) => p.decor.includes(d.id));
   const back = h('div', { class: 'aerie-back' });
-  back.innerHTML = `<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${CAVE}${owned.map((d) => d.art).join('')}</svg>`;
+  back.innerHTML = `<svg viewBox="0 0 400 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${caveArt()}${owned.map(decorArt).join('')}</svg>`;
   const scene = h('div', { class: 'aerie' }, back, h('div', { class: 'aerie-dragon' }, dragon));
   // Soft sparkles drifting up through the cave, in the active dragon's colors.
   const d = activeDragon(p);
@@ -91,7 +104,7 @@ export function aerieScene(p: Profile, dragon: HTMLElement): HTMLElement {
 
 /** A small picture of one decoration for its shop card. */
 export function decorThumb(d: Decor): string {
-  return `<svg viewBox="${d.thumb}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${d.art}</svg>`;
+  return `<svg viewBox="${decorFrame(d)}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${decorArt(d)}</svg>`;
 }
 
 export function buyDecor(p: Profile, id: string): boolean {

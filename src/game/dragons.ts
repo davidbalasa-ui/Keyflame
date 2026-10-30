@@ -4,6 +4,7 @@ import { SEASONS } from '../content/seasons';
 import { STARGLINT_LOOK, starglintSvg } from './starglintArt';
 import { celDragon, type Detail } from './art/cel';
 import { CEL_ART } from './art';
+import { celEggSvg, celEvolvedArt } from './art/eggs';
 
 export type TribeId = 'emberback' | 'tidefin' | 'stormcrest' | 'mossclaw' | 'frostspine' | 'duneskimmer' | 'shadeglide';
 
@@ -328,6 +329,7 @@ const sparkle = (x: number, y: number, r: number, fill: string, cls = ''): strin
  * then sparkles, gold wing glints, and at full stars a small gold circlet.
  */
 function evolvedArt(id: string, p: Palette, stars: number): { aura: string; head: string; sparkles: string } {
+  if (!simpleArt) return celEvolvedArt(id, p, stars);
   const spots: Array<[number, number, number]> = [[40, 20, 4.5], [222, 8, 4], [12, 96, 3.5], [236, 98, 3.5]];
   return {
     aura: `<defs><radialGradient id="${id}v" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${p.accent}" stop-opacity="${(0.16 + stars * 0.08).toFixed(2)}"/><stop offset="1" stop-color="${p.accent}" stop-opacity="0"/></radialGradient></defs>
@@ -467,6 +469,7 @@ function classicDragonSvg(tribe: TribeId, p: Palette, stage: Stage, extraClass: 
 
 /** An egg in the tribe's colors, cracking as warmth fills. */
 export function eggSvg(tribe: TribeId, warmth: number, seed = 1, warmCracks = true): string {
+  if (!simpleArt) return celEggSvg(tribe, warmth, seed, warmCracks);
   const p = TRIBES[tribe].palettes[0];
   const rand = seededRandom(seed);
   const spots = Array.from({ length: 7 }, () => {
