@@ -1722,3 +1722,11 @@ body.kb-pinned .flight { height: clamp(96px, 19vh, 190px); margin: 4px 0; }
 .bc-qr { width: 110px !important; height: 110px !important; align-self: center; }
 /* Printed badge cards share a class name with the achievement badges: keep them plain black on white. */
 .print-sheet .badge-card { opacity: 1; background: #fff; color: #111; outline: none; }
+/* ---- Cel-shaded tribe dragons (src/game/art). Only whole groups animate, never single shapes. ---- */
+.dragon .cel-glow { animation: celGlow 1.8s ease-in-out infinite; }
+.dragon .cel-glow.g2 { animation-delay: -0.9s; }
+.dragon .cel-puff { animation: celPuff 1.6s ease-out infinite; }
+@keyframes celGlow { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes celPuff { 0% { transform: translate(0, 0); opacity: 0.9; } 100% { transform: translate(6px, -10px); opacity: 0; } }
+.racer .dragon .cel-glow, .racer .dragon .cel-puff,
+body.reduced-motion .dragon .cel-glow, body.reduced-motion .dragon .cel-puff { animation: none; }

@@ -2,3 +2,5 @@ node_modules
 dist
 *.log
 dist-classroom
+art-preview/
+.claude/

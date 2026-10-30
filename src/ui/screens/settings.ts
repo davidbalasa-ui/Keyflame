@@ -9,6 +9,7 @@ import { hub, topBar } from './hub';
 import { wing } from './wing';
 import { feedbackPage } from './feedbackPage';
 import { withTabs } from '../tabBar';
+import { chooseSimpleArt, simpleArtOn } from '../artSpeed';
 
 type BoolSetting = { [K in keyof Settings]: Settings[K] extends boolean ? K : never }[keyof Settings];
 
@@ -20,6 +21,12 @@ const TOGGLES: Array<[BoolSetting, string]> = [
   ['reducedMotion', 'Less motion'],
   ['relaxed', 'Relaxed lessons: no clock, mistakes don’t stop you'],
 ];
+
+/** Simple dragon art for slow tablets. It belongs to the device, so every rider on it shares it. */
+function simpleArtToggle(): HTMLElement {
+  const box = h('input', { type: 'checkbox', checked: simpleArtOn(), onchange: () => chooseSimpleArt(box.checked) });
+  return h('label', { class: 'toggle' }, box, 'Simple dragon art (for slow tablets)');
+}
 
 export const settings = (root: HTMLElement): (() => void) => {
   const p = profile();
@@ -47,6 +54,7 @@ export const settings = (root: HTMLElement): (() => void) => {
           });
           return h('label', { class: 'toggle' }, box, label);
         }),
+        simpleArtToggle(),
       ),
       h(
         'section',
