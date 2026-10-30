@@ -284,7 +284,7 @@ function hatchSequence(root: HTMLElement): void {
       ? `+${MAXED_EMBERS} embers!`
       : result.evolved
         ? `${d.name} again!`
-        : `A ${TRIBES[d.tribe].name}!`;
+        : `${/^[AEIOU]/.test(TRIBES[d.tribe].name) ? 'An' : 'A'} ${TRIBES[d.tribe].name}!`;
     const sub = !d ? 'A warm handful of embers' : `${lookName(d.tribe, d.palette, d.marking)}${season ? ' · a season color' : palette?.rare ? ' · a rare color' : ''}`;
     const reveal = h('div', { class: 'hatch-reveal' }, art, h('h2', { class: 'reveal-title' }, headline), h('p', { class: 'reveal-sub' }, sub));
     setTimeout(() => {
