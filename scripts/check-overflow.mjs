@@ -41,12 +41,9 @@ if (SHOTS) (await import('node:fs')).mkdirSync(SHOTS, { recursive: true });
 // Each step opens one screen from the hub by clicking what a player would click.
 // GATE answers the grown-up question.
 const GATE = 'GATE';
-const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
 async function answerGate(page) {
-  const q = await page.textContent('.modal', { timeout: 3000 });
-  const m = q.match(/What is (\w+) times (\w+)/);
-  await page.fill('.gate-input', String(NUMBER_WORDS.indexOf(m[1]) * NUMBER_WORDS.indexOf(m[2])));
-  await page.click('.modal .btn:not(.ghost)');
+  await page.fill('.gate-input', '1985');
+  await page.locator('.modal').getByRole('button', { name: 'Continue' }).click();
 }
 const SCREENS = [
   ['hub', []],

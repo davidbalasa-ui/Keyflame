@@ -1,13 +1,13 @@
-// The grown-up question: numbers written as words, past the times tables young kids know.
+// The grown-up check: the year you were born. Any year that makes you 18 or older passes.
+// The year is only compared here, never saved or sent anywhere.
 
-const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+export const GROWN_UP_AGE = 18;
 
-/** A number from 0 to 19, in words. */
-export const numberWord = (n: number): string => ONES[n];
-
-/** A teen times a single digit, like "fourteen times six": past the times tables young kids know. */
-export function gateQuestion(rand: () => number = Math.random): { text: string; answer: number } {
-  const a = 12 + Math.floor(rand() * 8);
-  const b = 3 + Math.floor(rand() * 7);
-  return { text: `What is ${numberWord(a)} times ${numberWord(b)}?`, answer: a * b };
+/** True for a four-digit birth year at least 18 years back, and no more than 120. */
+export function grownUpYear(text: string, now = new Date()): boolean {
+  const t = text.trim();
+  if (!/^\d{4}$/.test(t)) return false;
+  const year = Number(t);
+  const thisYear = now.getFullYear();
+  return year <= thisYear - GROWN_UP_AGE && year >= thisYear - 120;
 }
