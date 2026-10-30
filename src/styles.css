@@ -1695,7 +1695,7 @@ body.kb-pinned .flight { height: clamp(96px, 19vh, 190px); margin: 4px 0; }
   background: linear-gradient(160deg, var(--panel-2), var(--panel)); border: 3px solid var(--line); border-radius: 24px;
   box-shadow: 0 6px 0 #1f1745, 0 0 30px rgba(112, 72, 232, 0.35);
 }
-.wing-ids { display: flex; gap: 18px; align-items: center; justify-content: center; }
+.wing-ids { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; justify-content: center; }
 .wing-ids > div { display: flex; flex-direction: column; align-items: center; }
 .wing-ids small { color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; }
 .wing-ids strong { font-size: 1.6rem; letter-spacing: 0.12em; color: var(--gold); }
@@ -1738,3 +1738,19 @@ body.reduced-motion .dragon .cel-glow, body.reduced-motion .dragon .cel-puff { a
 .aerie-back .cel-glow.g2 { animation-delay: -0.9s; }
 .aerie-back .twinkle { animation: twinkle 3s ease-in-out infinite alternate; }
 body.reduced-motion .aerie-back .cel-glow, body.reduced-motion .aerie-back .twinkle, body.reduced-motion .aerie-back .flicker { animation: none; }
+/* Badge words and the rider sheet. */
+.join-ticket .jt-code { flex: 1 1 100%; }
+.word-input {
+  font: inherit; font-weight: 700; font-size: max(16px, 1.8rem); letter-spacing: 0.12em; text-align: center; text-transform: uppercase;
+  width: 6.2em; padding: 14px 8px; border-radius: 16px; border: 3px solid var(--line); background: var(--bg-2); color: var(--gold);
+}
+.word-input::placeholder { color: rgba(255, 255, 255, 0.18); }
+.word-input:focus { outline: none; border-color: var(--gold); }
+.jt-word { justify-content: flex-start; }
+.jt-word .word-input { margin-top: 12px; }
+.wing-name { font-size: 1.5rem; color: var(--text); overflow-wrap: anywhere; }
+.rs-word { display: flex; flex-direction: column; gap: 2px; }
+.rs-word strong { font-size: 1.5rem; letter-spacing: 0.12em; color: var(--gold); }
+.riders-sheet h2 { margin-top: 0; }
+.riders-sheet .rider-chips { margin: 8px 0 14px; }
+.tm-unlock { max-width: 420px; margin: 24px auto; }

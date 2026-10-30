@@ -4,6 +4,7 @@ import { lastActive, mergeRoster, newRiderKey, nextBadge, parseStudentList, ride
 import { readBackupFile } from '../src/ui/screens/teacherDashboard';
 import { deriveKeys, lock, newSalt, unlock } from '../src/net/teacherVault';
 import { normalizeProfile, createProfile } from '../src/save/store';
+import { badgeWord, wordIndex } from '../src/game/badgeWord';
 
 describe('teacher dashboard helpers', () => {
   it('makes 32-character hex rider keys', () => {
@@ -108,8 +109,10 @@ describe('classroom database functions', () => {
   const K3 = '3'.repeat(32);
   let code = '';
   let key = '';
-  const join = async (badge: number, k: string, name: string, confirm = false) =>
-    (await call<{ status: string; holder: string | null }>('join_class_rider', { p_code: code, p_badge: badge, p_rider_key: k, p_name: name, p_confirm: confirm }))[0];
+  /** Joins with the badge's real word unless another word number (or null, a check-in) is given. */
+  const join = async (badge: number, k: string, name: string, word?: number | null) =>
+    one<string>('join_badge', { p_code: code, p_badge: badge, p_word: word === undefined ? wordIndex(badgeWord(key, badge)) : word, p_rider_key: k, p_name: name });
+  const wrongWord = (badge: number) => (wordIndex(badgeWord(key, badge)) + 1) % 256;
   const post = (badge: number, k: string, name: string, extra: Record<string, unknown>) =>
     one<string>('post_class_activity', {
       p_code: code, p_badge: badge, p_rider_key: k, p_name: name, p_kind: 'lesson', p_lesson: null, p_stars: null, p_wpm: 10, p_accuracy: 0.9, p_place: null, p_racers: null, p_touch: false, ...extra,
@@ -127,15 +130,45 @@ describe('classroom database functions', () => {
     key = c.teacher_key;
   }, 30000);
 
-  it('lets a badge be claimed, and asks before a second device rides as it', async () => {
-    expect(await join(3, K1, 'Brave Comet')).toEqual({ status: 'ok', holder: null });
-    expect(await join(3, K1, 'Brave Comet')).toEqual({ status: 'ok', holder: null });
-    expect(await join(3, K2, 'Swift Ember')).toEqual({ status: 'taken', holder: 'Brave Comet' });
-    // The same kid on a shared iPad says "that's me".
-    expect(await join(3, K3, 'Brave Comet', true)).toEqual({ status: 'ok', holder: null });
-    expect(await join(7, K2, 'Swift Ember')).toEqual({ status: 'ok', holder: null });
-    expect((await call<{ status: string }>('join_class_rider', { p_code: 'BBBBBB', p_badge: 1, p_rider_key: K1, p_name: 'Brave Comet', p_confirm: false }))[0].status).toBe('none');
+  it('lets a device ride as a badge only with the badge word', async () => {
+    expect(await join(3, K1, 'Brave Comet')).toBe('ok');
+    // A device that already rides as the badge never needs the word again.
+    expect(await join(3, K1, 'Brave Comet', null)).toBe('ok');
+    expect(await join(3, K1, 'Brave Comet', wrongWord(3))).toBe('ok');
+    // A classmate who types badge 3 without its word gets nowhere.
+    expect(await join(3, K2, 'Swift Ember', wrongWord(3))).toBe('wrong');
+    expect(await join(3, K2, 'Swift Ember', null)).toBe('removed');
+    // The same kid on a shared iPad, with their card.
+    expect(await join(3, K3, 'Brave Comet')).toBe('ok');
+    expect(await join(7, K2, 'Swift Ember')).toBe('ok');
+    expect(await one('join_badge', { p_code: 'BBBBBB', p_badge: 1, p_word: 0, p_rider_key: K1, p_name: 'Brave Comet' })).toBe('none');
     await expect(join(100, K1, 'Brave Comet')).rejects.toThrow();
+  });
+
+  it('locks a badge for 15 minutes after five wrong words', async () => {
+    const K4 = '4'.repeat(32);
+    for (let i = 0; i < 4; i++) expect(await join(9, K4, 'Bold Scout', wrongWord(9))).toBe('wrong');
+    // Getting it right resets the count.
+    expect(await join(9, K4, 'Bold Scout')).toBe('ok');
+    const K5 = '5'.repeat(32);
+    for (let i = 0; i < 5; i++) expect(await join(9, K5, 'Bold Scout', wrongWord(9))).toBe('wrong');
+    expect(await join(9, K5, 'Bold Scout')).toBe('locked');
+    // Devices that already ride as the badge aren't locked out.
+    expect(await join(9, K4, 'Bold Scout', null)).toBe('ok');
+    // Other badges are fine.
+    expect(await join(10, K5, 'Bold Scout')).toBe('ok');
+    await db.exec(`update badge_tries set fail_at = now() - interval '16 minutes'`);
+    expect(await join(9, K5, 'Bold Scout')).toBe('ok');
+    const riders = await call<{ id: string; badge: number }>('teacher_riders', { p_code: code, p_key: key });
+    for (const r of riders.filter((x) => x.badge >= 9)) await one('teacher_remove_rider', { p_code: code, p_key: key, p_rider: r.id });
+  });
+
+  it('keeps the old join working only for devices that already joined', async () => {
+    const old = async (badge: number, k: string, confirm: boolean | null) =>
+      (await call<{ status: string; holder: string | null }>('join_class_rider', { p_code: code, p_badge: badge, p_rider_key: k, p_name: 'Brave Comet', p_confirm: confirm }))[0];
+    expect(await old(3, K1, null)).toEqual({ status: 'ok', holder: null });
+    expect(await old(3, '6'.repeat(32), true)).toEqual({ status: 'none', holder: null });
+    expect(await old(3, '6'.repeat(32), null)).toEqual({ status: 'removed', holder: null });
   });
 
   it('keeps lessons and races per badge from any device, and puts class races on the board', async () => {
@@ -185,9 +218,8 @@ describe('classroom database functions', () => {
     expect((await call('class_board', { p_code: code })).length).toBe(0);
     expect(await post(3, K1, 'Brave Comet', {})).toBe('removed');
     // Its device checking in doesn't quietly claim the number again.
-    expect(await join(3, K1, 'Brave Comet', null as unknown as boolean)).toEqual({ status: 'removed', holder: null });
-    expect(await join(3, K2, 'Swift Ember')).toEqual({ status: 'ok', holder: null });
-    expect(await join(3, K1, 'Brave Comet')).toEqual({ status: 'taken', holder: 'Swift Ember' });
+    expect(await join(3, K1, 'Brave Comet', null)).toBe('removed');
+    expect(await join(3, K2, 'Swift Ember')).toBe('ok');
   });
 
   it('keeps the locked student list and hands it back only for the right proof', async () => {
@@ -206,10 +238,12 @@ describe('classroom database functions', () => {
     const before = await call('teacher_riders', { p_code: code, p_key: key });
     const next = await one<string>('teacher_new_code', { p_code: code, p_key: key });
     expect(next).toMatch(/^[BCDFGHJKLMNPQRSTVWXZ]{6}$/);
-    expect((await join(3, K2, 'Swift Ember')).status).toBe('none');
+    expect(await join(3, K2, 'Swift Ember', null)).toBe('none');
     code = next;
     expect(await call('teacher_riders', { p_code: code, p_key: key })).toEqual(before);
-    expect(await join(3, K2, 'Swift Ember')).toEqual({ status: 'ok', holder: null });
+    // Same words under the new code: they come from the teacher key, not the code.
+    expect(await join(3, K2, 'Swift Ember', null)).toBe('ok');
+    expect(await join(3, '7'.repeat(32), 'Swift Ember')).toBe('ok');
     expect(await one('teacher_restore', { p_code: code, p_proof: 'p'.repeat(64) })).toBe('v1.locked');
   });
 });

@@ -8,7 +8,7 @@ import {
   GATHER_MS, MAX_LANES, classRiderName, parseStudentList, estimateProgress, isClassCode, newRace, normalizeCode, placeFor, quickRacers, raceHost, spacedCode,
   teacherRacers, tickEvery, waitingRiders, type Member, type RaceStart, type Tick,
 } from '../../game/classroom';
-import { classBoard, clearClassBoard, createClass, joinClassRider, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
+import { classBoard, clearClassBoard, createClass, joinBadge, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
 import { reportToClass, riderSeat, setRiderSeat } from '../classTrack';
 import { badgeCards, classSheet, progressPanel, readBackupFile, readRetired, readRoster, saveBackupFile, writeRetired, writeRoster, type Roster } from './teacherDashboard';
 import { classroomScene, teacherBackdropSvg } from '../teacherArt';
@@ -16,7 +16,7 @@ import { MIN_PASSWORD, deriveKeys, newSalt, pullVault, pushVault, type VaultKeys
 import { openClassLink, type ClassLink } from '../../net/classLink';
 import type { SessionSummary } from '../../engine/typing';
 import type { InputMode } from '../../save/store';
-import { go, inputMode, profile, type Screen } from '../app';
+import { go, inputMode, isGuest, profile, saveData, type Screen } from '../app';
 import { button, h, svg } from '../dom';
 import { sfx } from '../sound';
 import { hub, topBar } from './hub';
@@ -246,13 +246,13 @@ export function classLobby(code: string) {
     };
     if (!seat || seat.code !== code) queueMicrotask(() => !gone && go(wing));
     else
-      void joinClassRider(seat, null).then(
-        (res) => {
+      void joinBadge(seat, null).then(
+        (status) => {
           if (gone) return;
-          if (res.status === 'none') {
+          if (status === 'none') {
             writeStore(LAST_CODE_KEY, null);
             recheck('That code has changed. Ask for the new one.');
-          } else if (res.status === 'taken' || res.status === 'removed') recheck('Type your code and badge number.');
+          } else if (status !== 'ok') recheck('Scan your card again, or type it in.');
           else connect();
         },
         // Offline check-ins don't stop a race; the link reports its own trouble.
@@ -340,6 +340,11 @@ export function classLobby(code: string) {
 
 /** The class this device teaches, and the keys that keep its locked backup up to date. */
 type TeacherSave = TeacherClass & { vault?: VaultKeys; kind?: 'family' };
+
+/** True when a rider on this device (or this visit's guest) rides in the class: kids play here. */
+function sharedDevice(code: string): boolean {
+  return saveData().profiles.some((p) => p.classCode === code) || (isGuest() && profile().classCode === code);
+}
 
 function readTeacher(): TeacherSave | null {
   try {
@@ -446,9 +451,9 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         { class: 'modal' },
         h('h2', {}, 'Your class is ready'),
         h('p', { class: 'teacher-code-inline' }, spacedCode(t.code)),
-        h('p', {}, 'Print the class sheet and keep it somewhere safe. It has every student’s badge number.'),
-        h('div', { class: 'row center' }, button('Print class sheet', () => classSheet(t, readRoster())), button('Badge cards', () => badgeCards(t, readRoster()), 'btn ghost')),
-        h('p', { class: 'fine' }, 'Your list is also locked with your teacher password and backed up, so you can open the class on any device with the code and password.'),
+        h('p', {}, fam ? 'Print a card for each kid. They scan it to join.' : 'Print a card for each student. They scan it to join.'),
+        h('div', { class: 'row center' }, button('Print badge cards', () => badgeCards(t, readRoster())), button('Class sheet', () => classSheet(t, readRoster()), 'btn ghost')),
+        h('p', { class: 'fine' }, 'Your list is backed up and locked with your password. Open it on any device with the code and password.'),
         h('div', { class: 'row center' }, button('Save backup file', () => saveBackupFile(t), 'btn ghost small'), button('Done', () => sheet.remove(), 'btn small')),
       ),
     );
@@ -513,8 +518,8 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         'ol',
         { class: 'tm-steps', 'aria-label': 'How it works' },
         stepCard(1, fam ? 'Add your kids' : 'Add your students', 'One name per line. Names stay on your device.'),
-        stepCard(2, 'Print the class sheet', 'It lists the class code and each student’s badge number.'),
-        stepCard(3, 'Students join', 'They scan their badge card, or tap Join a wing on the home screen and type the code and their badge number.'),
+        stepCard(2, 'Print badge cards', 'One card each, with a QR code and a secret word.'),
+        stepCard(3, fam ? 'Kids scan their card' : 'Students scan their card', 'The camera opens Keyflame and joins them. No accounts.'),
       ),
       h(
         'section',
@@ -539,8 +544,42 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
 
   const start = (): void => {
     const t = readTeacher();
-    if (t) void show(t);
-    else startForm();
+    if (!t) startForm();
+    else if (t.vault && sharedDevice(t.code)) unlockForm(t, t.vault);
+    else void show(t);
+  };
+
+  /**
+   * On a device kids play on, the class opens only with the teacher password, because the
+   * grown-up question alone won't stop an older kid. The teacher's own device skips this.
+   */
+  const unlockForm = (t: TeacherSave, vault: VaultKeys): void => {
+    const pw = passwordInput(fam ? 'Grown-up password' : 'Teacher password', 'current-password');
+    pw.removeAttribute('placeholder');
+    const msg = h('p', { class: 'fine', role: 'status' });
+    const tryIt = async (): Promise<void> => {
+      msg.textContent = 'Checking…';
+      const keys = await deriveKeys(pw.value, vault.salt);
+      if (keys.proof !== vault.proof) {
+        msg.textContent = 'That password doesn’t match.';
+        pw.select();
+        return;
+      }
+      void show(t);
+    };
+    pw.addEventListener('keydown', (e) => e.key === 'Enter' && void tryIt());
+    main.replaceChildren(
+      h(
+        'section',
+        { class: 'tm-card tm-unlock' },
+        h('h2', {}, fam ? 'Family wing' : 'Classroom'),
+        h('p', { class: 'fine' }, 'Kids play on this device, so the class needs your password.'),
+        field(fam ? 'Grown-up password' : 'Teacher password', pw),
+        msg,
+        h('div', { class: 'tm-actions' }, button('Open', () => void tryIt(), 'btn tm-primary')),
+      ),
+    );
+    pw.focus();
   };
 
   async function show(t: TeacherSave, startTab: 'live' | 'progress' = tab): Promise<void> {
@@ -578,7 +617,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
     l.onRace((race) => races.prepend(watchRace(l, race, () => board.refresh())));
 
     const newCode = async (): Promise<void> => {
-      if (!confirm('Give this class a new code? Students type the new code once, with the same badge numbers. Their progress stays.')) return;
+      if (!confirm('Give this class a new code? Devices that already joined move over by themselves. Print new badge cards for new devices. Progress stays.')) return;
       const code = await newClassCode(t).catch(() => null);
       if (!code) return alert('Can’t change the code right now. Check the Wi-Fi.');
       const next = { ...t, code };
@@ -590,8 +629,8 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         h('div', { class: 'modal' },
           h('h2', {}, 'New class code'),
           h('p', { class: 'teacher-code-inline' }, spacedCode(code)),
-          h('p', {}, 'Print a new class sheet with the new code. Badge numbers stay the same.'),
-          h('div', { class: 'row center' }, button('Print class sheet', () => classSheet(next, readRoster())), button('Done', () => note.remove(), 'btn ghost')),
+          h('p', {}, 'Print new badge cards with the new code. Badge numbers and words stay the same.'),
+          h('div', { class: 'row center' }, button('Print badge cards', () => badgeCards(next, readRoster())), button('Done', () => note.remove(), 'btn ghost')),
         ),
       );
       main.append(note);
@@ -636,6 +675,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       h('h2', {}, 'Class'),
       backupNote,
       h('div', { class: 'row center' },
+        button('Badge cards', () => badgeCards(t, readRoster()), 'btn ghost small'),
         button('Class sheet', () => classSheet(t, readRoster()), 'btn ghost small'),
         button('Save backup file', () => saveBackupFile(t), 'btn ghost small'),
         passwordBtn,
@@ -671,7 +711,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
           'div',
           { class: 'teacher-code' },
           h('div', {}, h('small', {}, 'Class code'), h('strong', {}, spacedCode(t.code))),
-          h('p', { class: 'tm-sub' }, 'Students scan their badge card, or tap Join a wing on the home screen and type this code and their badge number.'),
+          h('p', { class: 'tm-sub' }, fam ? 'Kids scan their badge card to join.' : 'Students scan their badge card to join.'),
         ),
       ),
       tabs,

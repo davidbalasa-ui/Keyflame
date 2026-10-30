@@ -14,6 +14,8 @@ import { nest } from './nest';
 import { raceMap } from './race';
 import { seasonButton } from './seasonPage';
 import { wing } from './wing';
+import { openRiders } from './riders';
+import { riderLabel } from '../../game/wing';
 
 /** Rider rank grows with total practice, so it always moves forward. */
 export function riderRank(correctKeys: number): { level: number; progress: number } {
@@ -29,8 +31,8 @@ export function topBar(back?: () => void): HTMLElement {
   return h(
     'header',
     { class: 'top-bar' },
-    back ? button('← Back', back, 'btn ghost small') : button('Switch rider', () => go(wing), 'btn ghost small'),
-    h('div', { class: 'who' }, h('strong', {}, p.name), h('span', { class: 'rider-title' }, currentTitle(p) ?? ''), h('span', { class: 'rank' }, `Rider rank ${rank.level}`), h('span', { class: 'bar' }, h('span', { style: `width:${pct(rank.progress)}` }))),
+    back ? button('← Back', back, 'btn ghost small') : button('Switch rider', () => openRiders(), 'btn ghost small'),
+    h('div', { class: 'who' }, h('strong', {}, riderLabel(p)), h('span', { class: 'rider-title' }, currentTitle(p) ?? ''), h('span', { class: 'rank' }, `Rider rank ${rank.level}`), h('span', { class: 'bar' }, h('span', { style: `width:${pct(rank.progress)}` }))),
     h('div', { class: 'embers', title: 'Embers' }, h('span', { class: 'ember-icon' }, '🔥'), h('span', { class: 'ember-count' }, String(p.embers))),
   );
 }
@@ -81,11 +83,11 @@ export const hub = (root: HTMLElement): (() => void) => {
   const top = h(
     'header',
     { class: 'home-top' },
-    button(avatarArt, () => (sfx.click(), go(wing)), 'home-avatar', { 'aria-label': `${p.name}. My wing and riders`, title: 'My wing' }),
+    button(avatarArt, () => (sfx.click(), openRiders(root)), 'home-avatar', { 'aria-label': `${riderLabel(p)}. Who’s playing?`, title: 'Who’s playing?' }),
     h(
       'div',
       { class: 'home-who' },
-      h('strong', {}, p.name),
+      h('strong', {}, riderLabel(p)),
       h('span', { class: 'rider-title' }, isGuest() ? 'Guest rider' : currentTitle(p) ?? ''),
       h('span', { class: 'rank' }, `Rider rank ${rank.level}`),
       h('span', { class: 'bar' }, h('span', { style: `width:${pct(rank.progress)}` })),

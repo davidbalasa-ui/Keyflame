@@ -6,7 +6,7 @@ import { button, h } from '../dom';
 import { choiceList } from '../picker';
 import { canInstall, installApp, isInstalled, isOfflineReady, onInstallChange } from '../install';
 import { hub, topBar } from './hub';
-import { wing } from './wing';
+import { openRiders } from './riders';
 import { feedbackPage } from './feedbackPage';
 import { withTabs } from '../tabBar';
 import { chooseSimpleArt, simpleArtOn } from '../artSpeed';
@@ -130,7 +130,7 @@ export const settings = (root: HTMLElement): (() => void) => {
         'section',
         {},
         h('h2', {}, 'More'),
-        h('div', { class: 'row' }, button('💬 Send an idea or bug', () => go(feedbackPage('settings', settings)), 'btn ghost'), button('⇄ Switch rider', () => go(wing), 'btn ghost')),
+        h('div', { class: 'row' }, button('💬 Send an idea or bug', () => go(feedbackPage('settings', settings)), 'btn ghost'), button('⇄ Switch rider', () => openRiders(), 'btn ghost')),
       ),
       isGuest() ? null : h(
         'section',

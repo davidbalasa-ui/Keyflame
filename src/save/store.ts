@@ -139,6 +139,10 @@ export interface Profile {
   /** The class this rider's lessons and races count toward, if any, and their badge number in it. */
   classCode?: string;
   classBadge?: number;
+  /** The badge's secret word, so this device can show the rider's own QR code. */
+  classWord?: string;
+  /** The name the grown-up gave this rider in their wing. Shown on this device only. */
+  wingName?: string;
   /** Days in a row with a race or lesson. Missing on saves from before streaks. */
   streak?: { last: string; days: number; best: number };
   /** Recent lessons, newest first, for the Progress and Family charts. */
@@ -280,6 +284,8 @@ export function normalizeProfile(raw: unknown): Profile | null {
     classKey: typeof r.classKey === 'string' && /^[0-9a-f]{32}$/.test(r.classKey) ? r.classKey : undefined,
     classCode: typeof r.classCode === 'string' && /^[A-Z]{6}$/.test(r.classCode) ? r.classCode : undefined,
     classBadge: Number.isInteger(r.classBadge) && r.classBadge! >= 1 && r.classBadge! <= 99 ? r.classBadge : undefined,
+    classWord: typeof r.classWord === 'string' && /^[A-Z]{3,5}$/.test(r.classWord) ? r.classWord : undefined,
+    wingName: typeof r.wingName === 'string' && r.wingName.trim() ? r.wingName.trim().slice(0, 40) : undefined,
     streak: r.streak && typeof r.streak.last === 'string' && Number.isInteger(r.streak.days) && r.streak.days > 0 ? { last: r.streak.last, days: r.streak.days, best: Number.isInteger(r.streak.best) ? Math.max(r.streak.best, r.streak.days) : r.streak.days } : undefined,
     lessonLog: Array.isArray(r.lessonLog) ? r.lessonLog.filter((x) => x && Number.isFinite(x.at) && Number.isFinite(x.accuracy) && (x.wpm === null || Number.isFinite(x.wpm))).slice(0, LESSON_LOG_MAX) : undefined,
   } as Profile;

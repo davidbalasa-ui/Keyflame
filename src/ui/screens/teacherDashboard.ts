@@ -6,6 +6,8 @@ import { LESSONS } from '../../content/lessons';
 import { lastActive, mergeRoster, nextBadge, riderNotes, ridersCsv, spacedCode, speedTrend, weekCompare, weekLabel, type DashRow, type Trend } from '../../game/classroom';
 import { removeRider, teacherRiderActivity, teacherRiders, teacherWeeks, type ActivityRow, type RiderRow, type TeacherClass, type WeekRow } from '../../net/classApi';
 import { button, h, pct } from '../dom';
+import { badgeWord } from '../../game/badgeWord';
+import { joinLink } from '../../game/wing';
 import { badgeQr } from '../qr';
 
 const ROSTER_KEY = 'keyflame-teacher-roster';
@@ -174,13 +176,17 @@ function activityList(rows: ActivityRow[]): HTMLElement {
 
 type Row = DashRow<RiderRow>;
 
+/** A badge's QR code: it opens keyflame.org with the code, badge, word and the student's name filled in. */
+const cardQr = (t: TeacherClass, badge: number, name: string, cls?: string): HTMLImageElement =>
+  badgeQr(joinLink(t.code, badge, badgeWord(t.key, badge), name), `QR code for badge ${badge}`, cls);
+
 const nameOf = (r: Row): string => r.student || r.rider?.name || 'Not joined yet';
 
 /** One badge up close: the teacher's name for it, progress, and Remove. */
 function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement {
   const r = row.rider;
   const nameInput = h('input', { type: 'text', class: 'label-input', maxlength: MAX_NAME, value: row.student, placeholder: 'Student name', autocomplete: 'off', 'aria-label': `Student name for badge ${row.badge}` });
-  const body = h('div', {}, r ? h('p', { class: 'fine' }, 'Loading…') : h('p', { class: 'fine' }, `Badge ${row.badge} hasn’t joined yet. They scan this code, or tap Join a wing on the home screen and type ${spacedCode(t.code)} and ${row.badge}.`));
+  const body = h('div', {}, r ? h('p', { class: 'fine' }, 'Loading…') : h('p', { class: 'fine' }, `Badge ${row.badge} hasn’t joined yet. They scan this code, or type ${spacedCode(t.code)}, ${row.badge} and ${badgeWord(t.key, row.badge)}.`));
   const badgeInput = h('input', { type: 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: 2, class: 'label-input badge-edit', value: String(row.badge), autocomplete: 'off', 'aria-label': 'Badge number' });
   const msg = h('p', { class: 'fine rs-msg', role: 'status' });
   const close = (): void => {
@@ -195,7 +201,7 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
       if (!name) return void (msg.textContent = 'Type a name to move it to another badge.');
       const other = roster[to];
       if (other && !confirm(`Badge ${to} is ${other}. Swap ${name} and ${other}?`)) return;
-      if (!other && !confirm(`Move ${name} to badge ${to}? ${name} then types ${to} to join, and results already under ${row.badge} stay with ${row.badge}.`)) return;
+      if (!other && !confirm(`Move ${name} to badge ${to}? ${name} gets a new card (badge ${to}, word ${badgeWord(t.key, to)}), and results already under ${row.badge} stay with ${row.badge}.`)) return;
       if (other) roster[row.badge] = other;
       else delete roster[row.badge];
       roster[to] = name.slice(0, MAX_NAME);
@@ -220,7 +226,12 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
       ),
       h('small', { class: 'fine' }, 'Names stay on your device and in your locked backup. Keyflame only sees the number.'),
       msg,
-      h('div', { class: 'rs-qr' }, badgeQr(t.code, row.badge), h('small', { class: 'fine' }, `Scan to join as badge ${row.badge}`)),
+      h(
+        'div',
+        { class: 'rs-qr' },
+        cardQr(t, row.badge, row.student),
+        h('div', { class: 'rs-word' }, h('small', { class: 'fine' }, 'Secret word'), h('strong', {}, badgeWord(t.key, row.badge)), h('small', { class: 'fine' }, 'On the card. A new device needs it to join as this badge.')),
+      ),
       r
         ? h(
             'div',
@@ -336,7 +347,7 @@ function printView(...content: HTMLElement[]): void {
 
 const rosterList = (roster: Roster): Array<[number, string]> => Object.entries(roster).map(([b, n]) => [Number(b), n] as [number, string]).sort((a, b) => a[0] - b[0]);
 
-/** The teacher's paper copy: the code and every badge number with its student. */
+/** The teacher's paper copy: the code and every badge number and word with its student. */
 export function classSheet(t: TeacherClass, roster: Roster): void {
   printView(
     h(
@@ -344,19 +355,19 @@ export function classSheet(t: TeacherClass, roster: Roster): void {
       { class: 'class-sheet' },
       h('h1', {}, 'Keyflame class sheet'),
       h('p', {}, 'Class code ', h('b', { class: 'cs-code' }, spacedCode(t.code)), ` · printed ${new Date().toLocaleDateString()}`),
-      h('p', { class: 'cs-keep' }, 'Keep this sheet safe. It is the paper copy of which badge number belongs to which student.'),
+      h('p', { class: 'cs-keep' }, 'Keep this sheet safe. It is the paper copy of which badge belongs to which student.'),
       h(
         'table',
         {},
-        h('thead', {}, h('tr', {}, h('th', {}, 'Badge'), h('th', {}, 'Student'))),
-        h('tbody', {}, ...rosterList(roster).map(([b, n]) => h('tr', {}, h('td', {}, String(b)), h('td', {}, n)))),
+        h('thead', {}, h('tr', {}, h('th', {}, 'Badge'), h('th', {}, 'Word'), h('th', {}, 'Student'))),
+        h('tbody', {}, ...rosterList(roster).map(([b, n]) => h('tr', {}, h('td', {}, String(b)), h('td', {}, badgeWord(t.key, b)), h('td', {}, n)))),
       ),
-      h('p', {}, 'Students: scan your badge card, or open keyflame.org → Join a wing → type the code and your badge number.'),
+      h('p', {}, 'Students: scan your badge card with the camera. Or open keyflame.org, tap Join a wing, and type the code, your badge number and your word.'),
     ),
   );
 }
 
-/** Cards with the class code and each student's badge number, to cut out and hand out. */
+/** Cards with the class code and each student's badge number and word, to cut out and hand out. */
 export function badgeCards(t: TeacherClass, roster: Roster): void {
   printView(
     h(
@@ -370,8 +381,9 @@ export function badgeCards(t: TeacherClass, roster: Roster): void {
           h('strong', { class: 'bc-name' }, name),
           h('div', { class: 'bc-row' }, h('span', {}, 'Class code'), h('b', {}, spacedCode(t.code))),
           h('div', { class: 'bc-row' }, h('span', {}, 'Badge'), h('b', { class: 'bc-badge' }, String(badge))),
-          badgeQr(t.code, badge, 'bc-qr'),
-          h('small', {}, 'Scan with the camera, or Join a wing → type both'),
+          h('div', { class: 'bc-row' }, h('span', {}, 'Secret word'), h('b', {}, badgeWord(t.key, badge))),
+          cardQr(t, badge, name, 'bc-qr'),
+          h('small', {}, 'Scan with the camera, or tap Join a wing and type all three'),
         ),
       ),
     ),

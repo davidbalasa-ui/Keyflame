@@ -1,4 +1,5 @@
 import { CONFIG } from '../../config';
+import { gateQuestion } from '../../game/gate';
 import { dragonSvg } from '../../game/dragons';
 import { redeemSupporterCode } from '../../game/supporter';
 import { go, isGuest, keepGuest, persist, profile, roomForRider } from '../app';
@@ -11,12 +12,14 @@ import { grownUps } from './grownUps';
 import { nest } from './nest';
 import { withTabs } from '../tabBar';
 
-const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-
-/** A grown-up check: a sum written in words is easy for adults and slows young kids down. */
+/**
+ * A grown-up check before purchases, sending things out and the grown-up screens. It is a
+ * speed bump, not a lock: the class itself is locked with the teacher password on shared
+ * devices, and the supporter pack needs a card.
+ */
 export function parentGate(onPass: () => void): HTMLElement {
-  const a = 3 + Math.floor(Math.random() * 7);
-  const b = 3 + Math.floor(Math.random() * 7);
+  let q = gateQuestion();
+  const ask = h('p', {}, q.text);
   const input = h('input', { type: 'text', inputmode: 'numeric', class: 'gate-input', 'aria-label': 'Answer' });
   const msg = h('p', { class: 'fine' });
   const modal = h(
@@ -27,7 +30,7 @@ export function parentGate(onPass: () => void): HTMLElement {
       { class: 'modal' },
       h('h2', {}, 'Grown-ups only'),
       h('p', {}, 'Please ask a parent or guardian to continue.'),
-      h('p', {}, `What is ${NUMBER_WORDS[a]} times ${NUMBER_WORDS[b]}?`),
+      ask,
       input,
       msg,
       h(
@@ -35,10 +38,16 @@ export function parentGate(onPass: () => void): HTMLElement {
         { class: 'row' },
         button('Cancel', () => modal.remove(), 'btn ghost'),
         button('Continue', () => {
-          if (Number(input.value.trim()) === a * b) {
+          if (Number(input.value.trim()) === q.answer) {
             modal.remove();
             onPass();
-          } else msg.textContent = 'That’s not quite right.';
+          } else {
+            // A new question each miss, so guessing numbers doesn't get through.
+            q = gateQuestion();
+            ask.textContent = q.text;
+            input.value = '';
+            msg.textContent = 'That’s not quite right. Try this one.';
+          }
         }),
       ),
     ),

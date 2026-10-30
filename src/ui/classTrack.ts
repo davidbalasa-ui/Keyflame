@@ -25,10 +25,13 @@ export function riderSeat(p: Profile): ClassSeat | null {
   return p.classCode && p.classBadge ? seatFor(p, p.classCode, p.classBadge) : null;
 }
 
-export function setRiderSeat(p: Profile, code: string | null, badge: number | null): void {
-  if ((p.classCode ?? null) === code && (p.classBadge ?? null) === badge) return;
+/** Sets (or with nulls, clears) the rider's class, badge and badge word. */
+export function setRiderSeat(p: Profile, code: string | null, badge: number | null, word?: string): void {
+  const w = code ? word ?? (p.classCode === code && p.classBadge === badge ? p.classWord : undefined) : undefined;
+  if ((p.classCode ?? null) === code && (p.classBadge ?? null) === badge && p.classWord === w) return;
   p.classCode = code ?? undefined;
   p.classBadge = badge ?? undefined;
+  p.classWord = w;
   persist();
 }
 
