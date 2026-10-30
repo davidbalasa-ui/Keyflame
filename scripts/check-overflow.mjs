@@ -41,7 +41,7 @@ if (SHOTS) (await import('node:fs')).mkdirSync(SHOTS, { recursive: true });
 // Each step opens one screen from the hub by clicking what a player would click.
 // GATE answers the grown-up question.
 const GATE = 'GATE';
-const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
 async function answerGate(page) {
   const q = await page.textContent('.modal', { timeout: 3000 });
   const m = q.match(/What is (\w+) times (\w+)/);
@@ -116,7 +116,7 @@ for (const size of SIZES) {
   await page.waitForSelector('.play-cards');
   await check('hub');
   await page.click('.home-avatar');
-  await check('wing');
+  await check('riders');
   await page.click('.rider-chip.new');
   await check('keep me');
   await page.click('.modal .wp-face >> nth=0');

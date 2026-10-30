@@ -1,62 +1,61 @@
-// My wing: where a rider joins their class or family with a code and badge number, keeps
-// the QR code that does it for them next time, and swaps between the riders on this device.
+// My wing: where a rider joins their class or family with the code, badge number and secret
+// word on their card (or by scanning its QR code), and keeps the QR code for next time.
+// Joining picks the badge's own rider on this device, never whoever happened to be playing,
+// so a shared iPad can't mix up classmates' nests.
 
-import { dragonSvg, eggSvg, stageFor } from '../../game/dragons';
-import { activeDragon } from '../../game/progress';
 import { isClassCode, normalizeCode, spacedCode } from '../../game/classroom';
-import { BADGE_MAX, joinLink, planJoin, type WingSeat } from '../../game/wing';
-import { NAME_ADJECTIVES, NAME_NOUNS, createProfile, type Profile } from '../../save/store';
-import { joinClassRider } from '../../net/classApi';
+import { BADGE_WORDS, normalizeWord, wordIndex } from '../../game/badgeWord';
+import { BADGE_MAX, joinLink, planJoin, riderLabel, type WingSeat } from '../../game/wing';
+import { createProfile, type Profile } from '../../save/store';
+import { joinBadge } from '../../net/classApi';
 import { riderSeat, seatFor, setRiderSeat } from '../classTrack';
-import { go, isGuest, keepGuest, playAsGuest, profile, randomRiderName, roomForRider, saveData, switchRider, type Screen } from '../app';
-import { button, h, svg } from '../dom';
-import { diceButton, randomOf, wordPicker } from '../picker';
+import { go, isGuest, keepGuest, persist, playAsGuest, profile, randomRiderName, roomForRider, saveData, switchRider, type Screen } from '../app';
+import { button, h } from '../dom';
 import { badgeQr, qrDataUrl } from '../qr';
 import { sfx } from '../sound';
 import { withTabs } from '../tabBar';
 import { LAST_CODE_KEY, classLobby, readStore, writeStore } from './classroom';
 import { hub, topBar } from './hub';
-
-function avatar(p: Profile, cls: string): HTMLElement {
-  const d = activeDragon(p);
-  if (d) return svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), '', d.skin, d.marking, d.stars), cls);
-  return svg(eggSvg(p.nest?.tribe ?? 'emberback', 0, p.nest?.seed ?? 1), `${cls} egg`);
-}
+import { riderAvatar } from './riders';
 
 export const wing: Screen = (root) => wingScreen({})(root);
 
 /**
  * The wing page. `note` explains why a rider is back here (their class code changed),
- * and `join` comes from a scanned QR code: it fills in the ticket and joins right away.
+ * and `join` comes from a scanned QR code: it fills in the card and joins right away.
  */
 export function wingScreen(opts: { note?: string; join?: WingSeat }): Screen {
   return (root) => {
     const p = profile();
     const seat = riderSeat(p);
     const ticket = joinTicket(opts.note ?? '', opts.join);
-    const main = h('main', { class: 'wing' }, h('h1', {}, '🐉 My wing'));
+    const main = h('main', { class: 'wing' });
     if (seat && !opts.join) {
       ticket.el.hidden = true;
       main.append(
-        wingCard(seat.code, seat.badge),
-        h('p', { class: 'fine center' }, button('Join another wing', () => {
+        h('h1', {}, '🐉 My wing'),
+        wingCard(p, seat.code, seat.badge),
+        h('p', { class: 'fine center' }, button('Join a different wing', () => {
           ticket.el.hidden = false;
           ticket.focus();
         }, 'link')),
       );
-    }
-    main.append(ticket.el, ridersRow(root));
+    } else main.append(h('h1', {}, '🐉 Join your wing'));
+    main.append(ticket.el);
     root.append(topBar(() => go(hub)), main);
     if (!ticket.el.hidden) ticket.focus();
-    if (opts.join) void ticket.join(false);
+    if (opts.join) void ticket.join();
     return withTabs(root, null);
   };
 }
 
-/** The rider's wing: code, badge, a QR code to save, and the way into wing races. */
-function wingCard(code: string, badge: number): HTMLElement {
+/** The rider's wing: their name, badge, a QR code to save, and the way into wing races. */
+function wingCard(p: Profile, code: string, badge: number): HTMLElement {
+  // Riders who joined before badge words have no word saved, so their QR code would stop at the word.
+  const link = p.classWord ? joinLink(code, badge, p.classWord, p.wingName) : null;
   const saveQr = (): void => {
-    const a = h('a', { href: qrDataUrl(joinLink(code, badge), 10), download: `keyflame-${code}-${badge}.gif` });
+    if (!link) return;
+    const a = h('a', { href: qrDataUrl(link, 10), download: `keyflame-${code}-${badge}.gif` });
     document.body.append(a);
     a.click();
     a.remove();
@@ -64,136 +63,107 @@ function wingCard(code: string, badge: number): HTMLElement {
   return h(
     'section',
     { class: 'wing-card pop-in' },
+    h('strong', { class: 'wing-name' }, riderLabel(p)),
     h(
       'div',
       { class: 'wing-ids' },
       h('div', {}, h('small', {}, 'Code'), h('strong', {}, spacedCode(code))),
       h('div', { class: 'wing-badge' }, h('small', {}, 'Badge'), h('strong', {}, `#${badge}`)),
+      p.classWord ? h('div', {}, h('small', {}, 'Word'), h('strong', {}, p.classWord)) : null,
     ),
-    badgeQr(code, badge, 'wing-qr'),
-    h('small', { class: 'wing-qr-tip' }, '📷 Scan to join on any device'),
+    link ? badgeQr(link, `QR code to play as badge ${badge}`, 'wing-qr') : null,
+    link ? h('small', { class: 'wing-qr-tip' }, '📷 Scan to play as you on another device') : null,
     isGuest() && !roomForRider() ? h('small', { class: 'wing-qr-tip' }, 'This device is full, so your dragons stay for this visit.') : null,
-    h('div', { class: 'row center' }, button('🏁 Wing race', () => (sfx.click(), go(classLobby(code))), 'btn race-classmates'), button('Save QR', saveQr, 'btn ghost')),
+    h('div', { class: 'row center' }, button('🏁 Wing race', () => (sfx.click(), go(classLobby(code))), 'btn race-classmates'), link ? button('Save QR', saveQr, 'btn ghost') : null),
   );
 }
 
-/** Class or family code plus badge number. */
-function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus: () => void; join: (confirm: boolean) => Promise<void> } {
-  const p = profile();
-  const input = h('input', {
-    type: 'text',
-    class: 'class-code-input',
-    maxlength: 8,
-    autocapitalize: 'characters',
-    autocomplete: 'off',
-    autocorrect: 'off',
-    spellcheck: 'false',
-    enterkeyhint: 'next',
-    'aria-label': 'Wing code',
-    placeholder: 'ABCDEF',
-    value: prefill?.code ?? readStore(LAST_CODE_KEY) ?? '',
-  });
-  const badgeInput = h('input', {
-    type: 'text',
-    class: 'badge-input',
-    maxlength: 2,
-    inputmode: 'numeric',
-    pattern: '[0-9]*',
-    autocomplete: 'off',
-    enterkeyhint: 'go',
-    'aria-label': 'Your badge number',
-    placeholder: '00',
-    value: prefill ? String(prefill.badge) : p.classBadge ? String(p.classBadge) : '',
-  });
+/** Class or family code, badge number and secret word, as printed on the badge card. */
+function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus: () => void; join: () => Promise<void> } {
+  const field = (attrs: Record<string, string | number>): HTMLInputElement =>
+    h('input', { type: 'text', autocomplete: 'off', autocorrect: 'off', spellcheck: 'false', ...attrs }) as HTMLInputElement;
+  const input = field({ class: 'class-code-input', maxlength: 8, autocapitalize: 'characters', enterkeyhint: 'next', 'aria-label': 'Wing code', placeholder: 'ABCDEF', value: prefill?.code ?? readStore(LAST_CODE_KEY) ?? '' });
+  const badgeInput = field({ class: 'badge-input', maxlength: 2, inputmode: 'numeric', pattern: '[0-9]*', enterkeyhint: 'next', 'aria-label': 'Your badge number', placeholder: '00', value: prefill ? String(prefill.badge) : '' });
+  const wordInput = field({ class: 'word-input', maxlength: 5, autocapitalize: 'characters', enterkeyhint: 'go', 'aria-label': 'Your secret word', placeholder: 'WORD', value: prefill?.word ?? '' });
   const msg = h('p', { class: 'fine', role: 'status' }, note);
-  const joinBtn = button('🐉 Join', () => void join(false), 'btn race-classmates');
-  const confirmBox = h('div', { class: 'badge-confirm pop-in', hidden: true });
+  const joinBtn = button('🐉 Join', () => void join(), 'btn race-classmates');
+  const askBox = h('div', { class: 'badge-confirm pop-in', hidden: true });
 
-  const askBox = (...content: HTMLElement[]): void => {
-    msg.textContent = '';
-    sfx.tap(2);
-    confirmBox.replaceChildren(...content);
-    confirmBox.hidden = false;
-    joinBtn.hidden = true;
-  };
-  const resetAsk = (): void => {
-    confirmBox.hidden = true;
-    joinBtn.hidden = false;
+  const fail = (text: string, focus?: HTMLInputElement): void => {
+    msg.textContent = text;
+    joinBtn.disabled = false;
+    focus?.focus();
   };
 
-  /** `who` answers "is this you?" when the rider playing already belongs to another wing. */
-  const join = async (confirm: boolean, who?: 'same' | 'new'): Promise<void> => {
+  /** `keep` answers "are these your dragons?" when a saved rider with no wing is playing. */
+  const join = async (keep?: boolean): Promise<void> => {
     const code = normalizeCode(input.value);
     input.value = code;
     const badge = Number(badgeInput.value);
-    if (!isClassCode(code)) {
-      msg.textContent = 'A wing code is 6 letters.';
-      return;
-    }
-    if (!Number.isInteger(badge) || badge < 1 || badge > BADGE_MAX) {
-      msg.textContent = 'Type your badge number.';
-      badgeInput.focus();
-      return;
-    }
+    const word = normalizeWord(wordInput.value);
+    wordInput.value = word;
+    if (!isClassCode(code)) return fail('The code is 6 letters.', input);
+    if (!Number.isInteger(badge) || badge < 1 || badge > BADGE_MAX) return fail('Type your badge number.', badgeInput);
+    const name = prefill && prefill.code === code && prefill.badge === badge ? prefill.name : undefined;
     const now = profile();
     const plan = planJoin(saveData().profiles, now, isGuest(), { code, badge });
-    if (plan.kind === 'switch') {
-      // This badge already rides on this device.
-      switchRider(plan.rider);
+    if (plan.kind === 'switch' || plan.kind === 'same') {
+      // This badge already rides on this device: no word needed.
+      const rider = plan.kind === 'switch' ? plan.rider : now;
+      if (plan.kind === 'switch') switchRider(rider);
+      if (name) rider.wingName = name;
+      if (BADGE_WORDS.includes(word)) setRiderSeat(rider, code, badge, word);
+      persist();
       writeStore(LAST_CODE_KEY, code);
       sfx.coin();
       go(wing);
       return;
     }
-    if (plan.kind === 'ask' && !who) {
-      askBox(
-        h('p', {}, 'Move ', h('b', {}, now.name), ' to this wing?'),
-        h('div', { class: 'row center' }, button('Yes, move', () => void join(confirm, 'same')), button('New rider', () => void join(confirm, 'new'), 'btn ghost')),
+    if (!word) return fail('Type the secret word on your card.', wordInput);
+    const index = wordIndex(word);
+    if (index < 0) return fail('Check the secret word on your card.', wordInput);
+    if (plan.kind === 'ask' && keep === undefined) {
+      msg.textContent = '';
+      sfx.tap(2);
+      askBox.replaceChildren(
+        riderAvatar(now, 'modal-egg'),
+        h('p', {}, 'Are these your dragons?'),
+        h('div', { class: 'row center' }, button('Yes, mine', () => void join(true)), button('New nest', () => void join(false), 'btn ghost')),
       );
+      askBox.hidden = false;
+      joinBtn.hidden = true;
       return;
     }
-    // Who joins: the guest playing now, a brand new rider, or the saved rider playing now.
-    const fresh = plan.kind === 'ask' && who === 'new';
-    const target = fresh ? createProfile(randomRiderName()) : now;
+    askBox.hidden = true;
+    joinBtn.hidden = false;
+    // Who rides as the badge: the guest playing now, the saved rider who said these are
+    // their dragons, or a brand new rider with a fresh nest.
+    const target = plan.kind === 'guest' || keep ? now : createProfile(randomRiderName());
     joinBtn.disabled = true;
-    resetAsk();
     msg.textContent = 'Finding your wing…';
+    let status;
     try {
-      const res = await joinClassRider(seatFor(target, code, badge), confirm);
-      joinBtn.disabled = false;
-      if (res.status === 'none') {
-        msg.textContent = 'No wing has that code. Check each letter.';
-        return;
-      }
-      if (res.status === 'taken') {
-        // Another device already rides as this badge: the same kid on a new device, or a typo.
-        askBox(
-          h('p', {}, 'Badge ', h('b', {}, `#${badge}`), ' is'),
-          h('p', { class: 'bc-holder' }, res.holder),
-          h('p', {}, 'Is that you?'),
-          h('div', { class: 'row center' }, button('Yes, that’s me', () => void join(true, who)), button('No', () => {
-            resetAsk();
-            badgeInput.value = '';
-            msg.textContent = 'Check your badge number.';
-            badgeInput.focus();
-          }, 'btn ghost')),
-        );
-        return;
-      }
+      status = await joinBadge(seatFor(target, code, badge), index);
     } catch {
-      msg.textContent = 'Can’t reach your wing. Check the Wi-Fi.';
-      joinBtn.disabled = false;
-      return;
+      return fail('Can’t reach your wing. Check the Wi-Fi.');
     }
+    if (status === 'none') return fail('No wing has that code. Check each letter.', input);
+    if (status === 'wrong') return fail(`That word doesn’t match badge #${badge}. Check your card.`, wordInput);
+    if (status === 'locked') return fail('Too many tries. Ask your grown-up, or try again in 15 minutes.');
+    if (status !== 'ok') return fail('Check your card and try again.');
+    joinBtn.disabled = false;
     if (plan.kind === 'guest') keepGuest();
-    else if (fresh) {
+    else if (target !== now) {
       // A new rider is saved if there's room, or rides as this visit's guest.
       if (roomForRider()) {
         saveData().profiles.push(target);
         switchRider(target);
       } else playAsGuest(target);
     }
-    setRiderSeat(profile(), code, badge);
+    const rider = profile();
+    if (name) rider.wingName = name;
+    setRiderSeat(rider, code, badge, word);
+    persist();
     writeStore(LAST_CODE_KEY, code);
     sfx.coin();
     go(wing);
@@ -204,95 +174,34 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
     if (v !== input.value) input.value = v;
     if (v.length === 6 && document.activeElement === input) badgeInput.focus();
   });
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') badgeInput.focus();
-  });
+  input.addEventListener('keydown', (e) => e.key === 'Enter' && badgeInput.focus());
   badgeInput.addEventListener('input', () => {
     const v = badgeInput.value.replace(/\D/g, '').slice(0, 2);
     if (v !== badgeInput.value) badgeInput.value = v;
+    if (v.length === 2 && document.activeElement === badgeInput) wordInput.focus();
   });
-  badgeInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') void join(false);
+  badgeInput.addEventListener('keydown', (e) => e.key === 'Enter' && wordInput.focus());
+  wordInput.addEventListener('input', () => {
+    const v = normalizeWord(wordInput.value);
+    if (v !== wordInput.value) wordInput.value = v;
   });
+  wordInput.addEventListener('keydown', (e) => e.key === 'Enter' && void join());
 
   const el = h(
     'section',
     { class: 'wing-join' },
-    h('h2', {}, 'Join a wing'),
     h(
       'div',
       { class: 'join-ticket pop-in' },
-      h('label', { class: 'jt-field' }, h('span', { class: 'jt-label' }, 'Class or family code'), input),
+      h('label', { class: 'jt-field jt-code' }, h('span', { class: 'jt-label' }, 'Code'), input),
       h('label', { class: 'jt-field jt-badge' }, h('span', { class: 'jt-label' }, 'Badge'), h('span', { class: 'badge-ring' }, h('span', { class: 'badge-hash', 'aria-hidden': 'true' }, '#'), badgeInput)),
+      h('label', { class: 'jt-field jt-word' }, h('span', { class: 'jt-label' }, 'Secret word'), wordInput),
     ),
     msg,
-    confirmBox,
+    askBox,
     h('div', { class: 'row center' }, joinBtn),
-    h('small', { class: 'wing-qr-tip' }, '📷 Have a QR card? Scan it with the camera.'),
+    h('small', { class: 'wing-qr-tip' }, '📷 Or scan your card with the camera.'),
   );
-  return { el, focus: () => (isClassCode(input.value) ? badgeInput : input).focus(), join };
-}
-
-/** Every rider on this device, plus the guest. Tap one to ride as them. */
-function ridersRow(root: HTMLElement): HTMLElement {
-  const me = profile();
-  const guest = isGuest();
-  const chip = (label: string, art: HTMLElement, on: boolean, pick: () => void, extra = ''): HTMLElement =>
-    button(h('span', { class: 'rider-chip-in' }, art, h('span', {}, label)), () => (sfx.click(), pick()), `rider-chip${on ? ' on' : ''}${extra}`, { 'aria-pressed': on ? 'true' : 'false' });
-  return h(
-    'section',
-    { class: 'wing-riders' },
-    h('h2', {}, 'Riders'),
-    h(
-      'div',
-      { class: 'rider-chips' },
-      ...saveData().profiles.map((r) => chip(r.name, avatar(r, 'rider-chip-art'), r.id === me.id, () => (switchRider(r), go(hub)))),
-      chip(guest ? `${me.name} (guest)` : 'Guest', guest ? avatar(me, 'rider-chip-art') : h('span', { class: 'rider-chip-plus', 'aria-hidden': 'true' }, '👋'), guest, () => (playAsGuest(), go(hub))),
-      guest && roomForRider() ? chip('Keep me', h('span', { class: 'rider-chip-plus', 'aria-hidden': 'true' }, '+'), false, () => keepPicker(root), ' new') : null,
-    ),
-  );
-}
-
-/** Saves the guest as a rider on this device, with a name from preset words. */
-function keepPicker(root: HTMLElement): void {
-  // Names come from preset parts so kids never type personal information.
-  const [a0, n0] = profile().name.split(' ');
-  let adj = NAME_ADJECTIVES.includes(a0) ? a0 : randomOf(NAME_ADJECTIVES);
-  let noun = NAME_NOUNS.includes(n0) ? n0 : randomOf(NAME_NOUNS);
-  const preview = h('div', { class: 'name-preview', 'aria-live': 'polite' });
-  const update = (): void => {
-    preview.textContent = `${adj} ${noun}`;
-  };
-  const first = wordPicker({ words: NAME_ADJECTIVES, value: adj, label: 'First word', onChange: (v) => ((adj = v), update()), preview: (v) => `${v} ${noun}` });
-  const second = wordPicker({ words: NAME_NOUNS, value: noun, label: 'Second word', onChange: (v) => ((noun = v), update()), preview: (v) => `${adj} ${v}` });
-  const dice = diceButton(() => {
-    first.set(randomOf(NAME_ADJECTIVES.filter((w) => w !== adj)));
-    second.set(randomOf(NAME_NOUNS.filter((w) => w !== noun)));
-  });
-  update();
-  const modal = h(
-    'div',
-    { class: 'modal-backdrop' },
-    h(
-      'div',
-      { class: 'modal' },
-      avatar(profile(), 'modal-egg'),
-      h('h2', {}, 'Keep your dragons here'),
-      preview,
-      h('div', { class: 'name-pickers' }, first.el, second.el),
-      h('div', { class: 'name-dice' }, dice, h('span', { class: 'fine' }, 'Surprise me')),
-      h(
-        'div',
-        { class: 'row' },
-        button('Back', () => modal.remove(), 'btn ghost'),
-        button('Keep me', () => {
-          if (keepGuest(`${adj} ${noun}`)) {
-            sfx.coin();
-            go(hub);
-          }
-        }),
-      ),
-    ),
-  );
-  root.append(modal);
+  const focus = (): void => (!isClassCode(input.value) ? input : !badgeInput.value ? badgeInput : wordInput).focus();
+  return { el, focus, join: () => join() };
 }

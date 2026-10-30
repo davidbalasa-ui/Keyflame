@@ -70,16 +70,15 @@ export interface ClassSeat {
   name: string;
 }
 
-export type JoinResult = { status: 'ok' | 'none' | 'removed'; holder: null } | { status: 'taken'; holder: string };
+/** ok, no such class, wrong word, too many wrong words lately, or (a check-in) this device no longer rides as the badge. */
+export type JoinStatus = 'ok' | 'none' | 'wrong' | 'locked' | 'removed';
 
 /**
- * Opens the class as a badge. 'taken' means another device rides as that badge; `confirm`
- * (the rider said "that's me") adds this device to it. A null `confirm` is a check-in with a
- * remembered badge: it never claims a badge the teacher removed ('removed').
+ * Opens the class as a badge. A new device needs the badge's secret word (its place in the
+ * word list); a null word is a check-in with a remembered badge, which never claims one.
  */
-export async function joinClassRider(seat: ClassSeat, confirm: boolean | null): Promise<JoinResult> {
-  const rows = await rpc<JoinResult[]>('join_class_rider', { p_code: seat.code, p_badge: seat.badge, p_rider_key: seat.key, p_name: seat.name, p_confirm: confirm });
-  return rows[0];
+export function joinBadge(seat: ClassSeat, word: number | null): Promise<JoinStatus> {
+  return rpc<JoinStatus>('join_badge', { p_code: seat.code, p_badge: seat.badge, p_word: word, p_rider_key: seat.key, p_name: seat.name });
 }
 
 export interface ActivityPost {

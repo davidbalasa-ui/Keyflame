@@ -3,6 +3,7 @@
 // and privacy.
 
 import { dragonSvg, eggSvg, stageFor } from '../../game/dragons';
+import { riderLabel } from '../../game/wing';
 import { activeDragon } from '../../game/progress';
 import { lastPlayed, lastPlayedText, lessonsPassed, personalBests, recentAccuracy, recentSessions } from '../../game/riderStats';
 import { weakKeys } from '../../engine/typing';
@@ -109,8 +110,8 @@ function riderCard(p: Profile, open: boolean, toggle: () => void): HTMLElement {
         'span',
         { class: 'fam-head' },
         avatar(p),
-        h('span', { class: 'fam-name' }, h('strong', {}, p.name), h('small', {}, `Last played: ${lastPlayedText(lastPlayed(p))}`)),
-        p.classBadge ? h('span', { class: 'fam-class' }, `Class #${p.classBadge}`) : null,
+        h('span', { class: 'fam-name' }, h('strong', {}, riderLabel(p)), h('small', {}, `Last played: ${lastPlayedText(lastPlayed(p))}`)),
+        p.classBadge ? h('span', { class: 'fam-class' }, `Wing #${p.classBadge}`) : null,
         h('span', { class: 'fam-more', 'aria-hidden': 'true' }, open ? '▴' : '▾'),
       ),
       toggle,
@@ -126,7 +127,7 @@ function riderCard(p: Profile, open: boolean, toggle: () => void): HTMLElement {
       famStat(String(best.streak), 'Day streak'),
       famStat(String(Math.round(p.totals.minutes)), 'Minutes'),
     ),
-    !open && recent.length >= 2 ? lineChart(recent.map((r) => r.wpm), { label: `${p.name}: recent speed`, unit: ' WPM', compact: true }) : null,
+    !open && recent.length >= 2 ? lineChart(recent.map((r) => r.wpm), { label: `${riderLabel(p)}: recent speed`, unit: ' WPM', compact: true }) : null,
     open ? h('div', { class: 'fam-detail' }, ...progressCharts(p), weak.length ? h('p', { class: 'tricky' }, 'Tricky keys: ', ...weak.map((k) => h('kbd', {}, k.toUpperCase()))) : null) : null,
   );
 }
