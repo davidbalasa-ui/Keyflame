@@ -52,16 +52,13 @@ const open = async (opts) => {
   return page;
 };
 
-const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
 // Badge words, worked out the way the game and the server do: from the teacher key.
 const BADGE_WORDS = [...readFileSync(new URL('../src/game/badgeWord.ts', import.meta.url), 'utf8').split('BADGE_WORDS: readonly string[] = [')[1].split('];')[0].matchAll(/'([A-Z]+)'/g)].map((m) => m[1]);
 const sha = (s) => createHash('sha256').update(s).digest('hex');
 let teacherKey = '';
 const wordFor = (badge) => BADGE_WORDS[parseInt(sha(`${sha(teacherKey)}:${badge}`).slice(0, 2), 16)];
 async function passGate(page) {
-  const q = await page.locator('.modal p', { hasText: 'times' }).textContent();
-  const [, a, b] = /What is (\w+) times (\w+)/.exec(q);
-  await page.fill('.gate-input', String(WORDS.indexOf(a) * WORDS.indexOf(b)));
+  await page.fill('.gate-input', '1985');
   await page.locator('.modal').getByRole('button', { name: 'Continue' }).click();
 }
 

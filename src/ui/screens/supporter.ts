@@ -1,5 +1,5 @@
 import { CONFIG } from '../../config';
-import { gateQuestion } from '../../game/gate';
+import { grownUpYear } from '../../game/gate';
 import { dragonSvg } from '../../game/dragons';
 import { redeemSupporterCode } from '../../game/supporter';
 import { go, isGuest, keepGuest, persist, profile, roomForRider } from '../app';
@@ -13,15 +13,23 @@ import { nest } from './nest';
 import { withTabs } from '../tabBar';
 
 /**
- * A grown-up check before purchases, sending things out and the grown-up screens. It is a
- * speed bump, not a lock: the class itself is locked with the teacher password on shared
- * devices, and the supporter pack needs a card.
+ * A grown-up check before purchases, sending things out and the grown-up screens: the year
+ * you were born. It is a speed bump, not a lock: the class itself is locked with the teacher
+ * password on shared devices, and the supporter pack needs a card.
  */
 export function parentGate(onPass: () => void): HTMLElement {
-  let q = gateQuestion();
-  const ask = h('p', {}, q.text);
-  const input = h('input', { type: 'text', inputmode: 'numeric', class: 'gate-input', 'aria-label': 'Answer' });
-  const msg = h('p', { class: 'fine' });
+  const input = h('input', { type: 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: 4, autocomplete: 'off', class: 'gate-input', 'aria-label': 'Year you were born', placeholder: 'YYYY' });
+  const msg = h('p', { class: 'fine', role: 'status' });
+  const submit = (): void => {
+    // Checked here and forgotten: the year is never saved or sent.
+    const ok = grownUpYear(input.value);
+    input.value = '';
+    if (ok) {
+      modal.remove();
+      onPass();
+    } else msg.textContent = 'This part is for grown-ups.';
+  };
+  input.addEventListener('keydown', (e) => e.key === 'Enter' && submit());
   const modal = h(
     'div',
     { class: 'modal-backdrop' },
@@ -29,29 +37,13 @@ export function parentGate(onPass: () => void): HTMLElement {
       'div',
       { class: 'modal' },
       h('h2', {}, 'Grown-ups only'),
-      h('p', {}, 'Please ask a parent or guardian to continue.'),
-      ask,
+      h('p', {}, 'What year were you born?'),
       input,
       msg,
-      h(
-        'div',
-        { class: 'row' },
-        button('Cancel', () => modal.remove(), 'btn ghost'),
-        button('Continue', () => {
-          if (Number(input.value.trim()) === q.answer) {
-            modal.remove();
-            onPass();
-          } else {
-            // A new question each miss, so guessing numbers doesn't get through.
-            q = gateQuestion();
-            ask.textContent = q.text;
-            input.value = '';
-            msg.textContent = 'That’s not quite right. Try this one.';
-          }
-        }),
-      ),
+      h('div', { class: 'row' }, button('Cancel', () => modal.remove(), 'btn ghost'), button('Continue', submit)),
     ),
   );
+  queueMicrotask(() => input.focus());
   return modal;
 }
 

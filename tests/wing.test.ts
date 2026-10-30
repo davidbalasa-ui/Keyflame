@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { cleanWingName, joinFromUrl, joinLink, parseJoin, planJoin, riderLabel } from '../src/game/wing';
 import { BADGE_WORDS, badgeWord, normalizeWord, sha256Hex, wordIndex } from '../src/game/badgeWord';
-import { gateQuestion } from '../src/game/gate';
+import { grownUpYear } from '../src/game/gate';
 import { createProfile } from '../src/save/store';
 
 describe('wing join links', () => {
@@ -85,14 +85,17 @@ describe('who rides as a badge after joining', () => {
   });
 });
 
-describe('grown-up question', () => {
-  it('asks a teen times a single digit, in words', () => {
-    const q = gateQuestion(() => 0.5);
-    expect(q).toEqual({ text: 'What is sixteen times six?', answer: 96 });
-    for (let i = 0; i < 50; i++) {
-      const r = gateQuestion();
-      expect(r.text).not.toMatch(/\d/);
-      expect(r.answer).toBeGreaterThanOrEqual(36);
-    }
+describe('grown-up check', () => {
+  it('passes a birth year 18 or more years back', () => {
+    const now = new Date(2026, 9, 30);
+    expect(grownUpYear('1985', now)).toBe(true);
+    expect(grownUpYear('2008', now)).toBe(true);
+    expect(grownUpYear(' 2008 ', now)).toBe(true);
+    expect(grownUpYear('2009', now)).toBe(false);
+    expect(grownUpYear('2018', now)).toBe(false);
+    expect(grownUpYear('1900', now)).toBe(false);
+    expect(grownUpYear('85', now)).toBe(false);
+    expect(grownUpYear('19850', now)).toBe(false);
+    expect(grownUpYear('', now)).toBe(false);
   });
 });
