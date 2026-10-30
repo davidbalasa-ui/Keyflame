@@ -1730,3 +1730,11 @@ body.kb-pinned .flight { height: clamp(96px, 19vh, 190px); margin: 4px 0; }
 @keyframes celPuff { 0% { transform: translate(0, 0); opacity: 0.9; } 100% { transform: translate(6px, -10px); opacity: 0; } }
 .racer .dragon .cel-glow, .racer .dragon .cel-puff,
 body.reduced-motion .dragon .cel-glow, body.reduced-motion .dragon .cel-puff { animation: none; }
+.dragon .cel-twinkle { animation: celTwinkle 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes celTwinkle { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.97); } }
+.racer .dragon .cel-twinkle, body.reduced-motion .dragon .cel-twinkle { animation: none; }
+/* The cel-shaded aerie: one moving group per decoration. */
+.aerie-back .cel-glow { animation: celGlow 1.8s ease-in-out infinite; }
+.aerie-back .cel-glow.g2 { animation-delay: -0.9s; }
+.aerie-back .twinkle { animation: twinkle 3s ease-in-out infinite alternate; }
+body.reduced-motion .aerie-back .cel-glow, body.reduced-motion .aerie-back .twinkle, body.reduced-motion .aerie-back .flicker { animation: none; }
