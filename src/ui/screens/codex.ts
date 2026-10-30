@@ -111,7 +111,7 @@ export const codex = (root: HTMLElement): (() => void) => {
       dragonTabs('codex', !!p.nest && eggProgress(p) >= 1),
       ...paid.map((x) => h('p', { class: 'codex-paid' }, `🧩 Codex set done: ${TRIBES[x.tribe].name} ${x.label.toLowerCase()}! +${x.embers} embers`)),
       h('div', { class: 'codex-total' }, h('p', {}, h('strong', {}, `${found.size} of ${TOTAL_LOOKS}`), ' dragon looks found'), h('span', { class: 'bar' }, h('span', { style: `width:${pct(found.size / TOTAL_LOOKS)}` }))),
-      h('p', { class: 'fine' }, `Every tribe comes in ${TRIBES.emberback.palettes.length} colors and ${MARKINGS.length} patterns: ${MARKINGS.join(', ').toLowerCase()}. Hatch eggs to fill your Codex.`),
+      h('p', { class: 'fine codex-hint' }, `🎨 ${TRIBES.emberback.palettes.length} colors · ${MARKINGS.length} patterns per tribe`),
       factBook(p.factsSeen),
       h('div', { class: 'chips codex-filters' }, chip('all', 'All'), chip('found', 'Found'), chip('missing', 'Still to find'), chip('rare', 'Rare')),
       ...(sections.length ? sections : [h('p', { class: 'fine' }, filter === 'found' ? 'Hatch your first egg to start your Codex.' : 'Nothing here yet.')]),
@@ -225,7 +225,7 @@ function starglintSpot(owned: boolean): HTMLElement {
       'div',
       { class: 'starglint-row' },
       svg(dragonSvg('emberback', 0, 'adult', owned ? 'flap bob' : '', 'starglint'), 'codex-art' + (owned ? '' : ' dim')),
-      h('p', {}, owned ? 'Thank you for supporting Keyflame! Starglint lives in your nest.' : 'A special storm dragon that comes with the optional supporter pack. Its special is a challenge, not a boost: race with no key hints.'),
+      h('p', {}, owned ? 'Thank you for supporting Keyflame! Starglint lives in your nest.' : 'Storm dragon from the supporter pack. Its special: race with no key hints.'),
     ),
   );
 }

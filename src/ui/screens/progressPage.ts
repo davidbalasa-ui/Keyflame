@@ -86,7 +86,7 @@ export const progressPage = (root: HTMLElement): (() => void) => {
       button(
         h('span', { class: 'ach-card-in' }, h('span', { class: 'ach-trophy', 'aria-hidden': 'true' }, '🏆'), h('span', {}, h('strong', {}, 'Achievements'), h('small', {}, `${earned} of ${all.length}`)), unseen ? h('span', { class: 'tab-badge static' }, `${unseen} new`) : null, h('span', { class: 'play-card-go', 'aria-hidden': 'true' }, '›')),
         () => (sfx.click(), go(achievementsPage)),
-        'ach-card',
+        'ach-link',
       ),
       ...progressCharts(p),
       h(

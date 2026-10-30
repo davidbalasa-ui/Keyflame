@@ -70,7 +70,7 @@ export const achievementsPage = (root: HTMLElement): (() => void) => {
 
   const titles: Array<{ id: string; title: string; medal: string }> = [...(p.supporter ? [{ id: SUPPORTER_TITLE_ID, title: SUPPORTER_TITLE, medal: 'starglint' }] : []), ...earnedTitles(p)];
   const wearing = currentTitle(p);
-  const about = (t: string | null): string => (t ? `You fly as “${t}”. Every achievement unlocks a new title.` : 'Pick a title to show under your name. Every achievement unlocks one.');
+  const about = (t: string | null): string => (t ? `Flying as “${t}”` : 'Shown under your name');
   const note = h('p', { class: 'fine' }, about(wearing));
   const chips: HTMLButtonElement[] = [];
   // Updates in place so the page keeps its scroll position.
@@ -95,7 +95,7 @@ export const achievementsPage = (root: HTMLElement): (() => void) => {
         'section',
         { class: 'title-pick' },
         h('h2', {}, 'Your title'),
-        note,
+        titles.length ? note : null,
         titles.length
           ? h(
               'div',
@@ -107,7 +107,7 @@ export const achievementsPage = (root: HTMLElement): (() => void) => {
                 return c;
               }),
             )
-          : h('p', { class: 'fine' }, 'Finish your first race to earn your first title.'),
+          : h('span', { class: 'chip' }, '🏁 Finish a race to earn one'),
       ),
       h('div', { class: 'ach-grid' }, ...[...tracks.values()].map(trackCard)),
     ),
