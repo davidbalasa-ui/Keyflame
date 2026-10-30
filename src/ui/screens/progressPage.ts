@@ -71,7 +71,7 @@ export const progressPage = (root: HTMLElement): (() => void) => {
         'div',
         { class: 'pg-head' },
         h('h1', {}, 'My progress'),
-        p.classBadge ? button(`🏫 My class #${p.classBadge}`, () => (sfx.click(), go(classRaceEntry())), 'class-pill') : null,
+        p.classBadge ? button(`🐉 My wing #${p.classBadge}`, () => (sfx.click(), go(classRaceEntry())), 'class-pill') : null,
       ),
       h(
         'div',

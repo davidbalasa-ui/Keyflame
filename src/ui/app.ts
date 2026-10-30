@@ -1,6 +1,6 @@
 // App state and screen switching.
 
-import { loadSave, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
+import { MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, loadSave, normalizeProfile, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
 import { setSoundEnabled } from './sound';
 import { grantSupporter } from '../game/supporter';
 
@@ -12,6 +12,8 @@ interface AppState {
   cleanup: (() => void) | null;
   sessionStart: number;
   breakShown: boolean;
+  /** The guest rider: anyone who just opens the game and plays. Kept for this visit only. */
+  guest: Profile | null;
 }
 
 let state: AppState;
@@ -20,7 +22,13 @@ let state: AppState;
 export const BREAK_AFTER_MIN = 20;
 
 export async function startApp(root: HTMLElement, first: Screen): Promise<void> {
-  state = { save: await loadSave(), root, cleanup: null, sessionStart: Date.now(), breakShown: false };
+  state = { save: await loadSave(), root, cleanup: null, sessionStart: Date.now(), breakShown: false, guest: null };
+  const visit = readGuest();
+  state.guest = visit?.guest ?? null;
+  // Straight into the game: the guest of this visit, else the rider who played last,
+  // else a brand new guest. Nobody has to pick or type anything to start flying.
+  if (visit?.active && state.guest) state.save.activeId = state.guest.id;
+  else if (!state.save.profiles.some((x) => x.id === state.save.activeId)) playAsGuest();
   claimSupporterReturn();
   applySettings();
   watchHardwareKeyboard();
@@ -32,23 +40,88 @@ export function saveData(): SaveData {
 }
 
 export function profile(): Profile {
-  const p = state.save.profiles.find((x) => x.id === state.save.activeId);
+  const p = isGuest() ? state.guest : state.save.profiles.find((x) => x.id === state.save.activeId);
   if (!p) throw new Error('No active profile');
   return p;
 }
 
 export function hasProfile(): boolean {
-  return state.save.profiles.some((x) => x.id === state.save.activeId);
+  return isGuest() || state.save.profiles.some((x) => x.id === state.save.activeId);
+}
+
+/** True while the guest is playing: progress lasts for this visit only. */
+export function isGuest(): boolean {
+  return !!state.guest && state.save.activeId === state.guest.id;
+}
+
+const GUEST_KEY = 'keyflame-guest';
+
+function readGuest(): { guest: Profile | null; active: boolean } | null {
+  try {
+    const raw = JSON.parse(sessionStorage.getItem(GUEST_KEY) ?? 'null') as { guest?: unknown; active?: boolean } | null;
+    return raw ? { guest: normalizeProfile(raw.guest), active: raw.active === true } : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeGuest(): void {
+  try {
+    if (state.guest) sessionStorage.setItem(GUEST_KEY, JSON.stringify({ guest: state.guest, active: isGuest() }));
+    else sessionStorage.removeItem(GUEST_KEY);
+  } catch {
+    // Blocked storage: the guest lasts until the page reloads.
+  }
+}
+
+const anyOf = <T>(list: readonly T[]): T => list[Math.floor(Math.random() * list.length)];
+export const randomRiderName = (): string => `${anyOf(NAME_ADJECTIVES)} ${anyOf(NAME_NOUNS)}`;
+
+/** Plays as this visit's guest (or as `next`, who becomes it), making one if there isn't one yet. */
+export function playAsGuest(next?: Profile): Profile {
+  if (next) state.guest = next;
+  else if (!state.guest) state.guest = createProfile(randomRiderName());
+  state.save.activeId = state.guest.id;
+  writeGuest();
+  applySettings();
+  return state.guest;
+}
+
+/** Saves this visit's guest as a rider on the device. Null when the device is full. */
+export function keepGuest(name?: string): Profile | null {
+  const g = state.guest;
+  if (!g || roomForRider() === false) return null;
+  if (name) g.name = name;
+  state.save.profiles.push(g);
+  state.guest = null;
+  state.save.activeId = g.id;
+  writeGuest();
+  persist();
+  applyPendingSupporter();
+  return g;
+}
+
+export const roomForRider = (): boolean => state.save.profiles.length < MAX_PROFILES;
+
+/** Rides as one of the device's saved riders. */
+export function switchRider(p: Profile): void {
+  state.save.activeId = p.id;
+  writeGuest();
+  applyPendingSupporter();
+  persist();
+  applySettings();
 }
 
 let pending: number | undefined;
 /** Saves soon, batching bursts of changes into one write. */
 export function persist(): void {
+  writeGuest();
   clearTimeout(pending);
   pending = window.setTimeout(() => void writeSave(state.save), 150);
 }
 
 export function persistNow(): Promise<void> {
+  writeGuest();
   clearTimeout(pending);
   return writeSave(state.save);
 }
@@ -154,7 +227,8 @@ export function applyPendingSupporter(): void {
   } catch {
     return;
   }
-  if (!pending || !hasProfile()) return;
+  // A guest's pack would vanish with the visit, so it waits for a saved rider.
+  if (!pending || !hasProfile() || isGuest()) return;
   grantSupporter(profile());
   try {
     localStorage.removeItem(PENDING_KEY);

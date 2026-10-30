@@ -1664,3 +1664,40 @@ body.kb-pinned .flight { height: clamp(96px, 19vh, 190px); margin: 4px 0; }
   body.hub-fit .hub.home .play-card { height: auto; }
   .tab-bar-in { max-width: 520px; }
 }
+
+/* My wing: join a class or family, the badge QR code, and the riders on this device. */
+.wing { text-align: center; max-width: 560px; }
+.wing h1 { margin: 4px 0 10px; }
+.wing h2 { margin: 14px 0 6px; font-size: 1.15rem; }
+.wing-card {
+  display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 0 auto; padding: 14px 16px; max-width: 420px;
+  background: linear-gradient(160deg, var(--panel-2), var(--panel)); border: 3px solid var(--line); border-radius: 24px;
+  box-shadow: 0 6px 0 #1f1745, 0 0 30px rgba(112, 72, 232, 0.35);
+}
+.wing-ids { display: flex; gap: 18px; align-items: center; justify-content: center; }
+.wing-ids > div { display: flex; flex-direction: column; align-items: center; }
+.wing-ids small { color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.75rem; }
+.wing-ids strong { font-size: 1.6rem; letter-spacing: 0.12em; color: var(--gold); }
+.wing-badge strong {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 56px; height: 56px; padding: 0 6px; border-radius: 999px; letter-spacing: 0;
+  background: radial-gradient(circle at 35% 30%, #ffe680, var(--gold) 55%, #c98a00); color: #3d2400 !important; box-shadow: 0 4px 0 #8a5300;
+}
+.wing-qr, .badge-qr { display: block; width: 168px; height: 168px; image-rendering: pixelated; border-radius: 12px; background: #fff; -webkit-touch-callout: default; }
+.wing-qr-tip { display: block; color: var(--muted); margin-top: 4px; }
+.wing-card .row { gap: 10px; flex-wrap: wrap; }
+.wing-join { margin-top: 4px; }
+.rider-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.rider-chip {
+  font: inherit; color: var(--text); cursor: pointer; background: var(--panel); border: 2px solid var(--line); border-radius: 999px; padding: 4px 14px 4px 4px; min-height: 48px;
+}
+.rider-chip.on { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(255, 212, 59, 0.35); }
+.rider-chip.new { border-style: dashed; }
+.rider-chip-in { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+.rider-chip-art { width: 44px; height: 38px; }
+.rider-chip-art svg { width: 100%; height: 100%; }
+.rider-chip-plus { display: inline-flex; width: 38px; height: 38px; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--gold); }
+.rs-qr { display: flex; align-items: center; gap: 12px; margin: 8px 0; }
+.rs-qr .badge-qr { width: 120px; height: 120px; }
+.bc-qr { width: 110px !important; height: 110px !important; align-self: center; }
+/* Printed badge cards share a class name with the achievement badges: keep them plain black on white. */
+.print-sheet .badge-card { opacity: 1; background: #fff; color: #111; outline: none; }

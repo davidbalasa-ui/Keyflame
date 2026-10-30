@@ -1,7 +1,7 @@
 import { CONFIG } from '../../config';
 import { dragonSvg } from '../../game/dragons';
 import { redeemSupporterCode } from '../../game/supporter';
-import { go, persist, profile } from '../app';
+import { go, isGuest, keepGuest, persist, profile, roomForRider } from '../app';
 import { ensureStarglint } from '../../save/store';
 import { button, h, svg } from '../dom';
 import { sfx } from '../sound';
@@ -54,11 +54,18 @@ export const supporter = (root: HTMLElement): (() => void) => {
     const input = h('input', { type: 'text', class: 'sup-code-input', placeholder: 'KF-XXXX-XXXX-XXXX', autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', 'aria-label': 'Supporter code' });
     const msg = h('p', { class: 'fine' });
     const unlock = (): void => {
+      // A guest's pack would end with the visit, so a full device asks for a saved rider first.
+      if (isGuest() && !roomForRider()) {
+        msg.textContent = 'This device has 4 riders. Pick yours in My wing first, so the pack stays.';
+        return;
+      }
       if (!redeemSupporterCode(p, input.value)) {
         msg.textContent = 'That code doesn’t look right. Check each letter and try again.';
         return;
       }
       sfx.coin();
+      // A supporter pack is kept: the guest becomes a saved rider.
+      if (isGuest()) keepGuest();
       persist();
       go(supporter);
     };
