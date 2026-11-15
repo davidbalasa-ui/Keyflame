@@ -438,7 +438,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     requestAnimationFrame(() => {
       if (!root.isConnected || started) return;
       fx.resize();
-      stopLaunch = playLaunch(sky, meEl, dragonSvg(me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', '', me?.skin, me?.marking, me?.stars), fx, trailOf.get(meEl) ?? CONFETTI);
+      stopLaunch = playLaunch(sky, meEl, dragonSvg(me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', '', me?.skin, me?.marking, me?.stars), fx, trailOf.get(meEl) ?? CONFETTI, skyColors[0]);
     });
   }
 
