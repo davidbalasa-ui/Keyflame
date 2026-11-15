@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Keyflame: a free dragon typing game</title>
+    <meta name="description" content="A free dragon racing typing game for kids 7 to 13. No ads, no sign-up, free classroom mode, works on iPad." />
+    <meta name="theme-color" content="#1b1536" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://keyflame.org/tour/" />
+    <meta property="og:title" content="Keyflame: a free dragon typing game" />
+    <meta property="og:description" content="Kids type to fly. No ads, no sign-up, free classroom mode, works on iPad." />
+    <meta property="og:image" content="https://keyflame.org/tour/share.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="../icon-192.png" />
+  </head>
+  <body>
+    <header class="tour-top">
+      <a class="tour-logo" href="../">Keyflame</a>
+      <a class="tour-play-sm" href="../">Play free</a>
+    </header>
+
+    <main class="tour" id="tour" aria-roledescription="carousel" aria-label="Keyflame in three steps">
+      <section class="panel" id="p1" aria-roledescription="slide" aria-label="1 of 3">
+        <div class="copy">
+          <p class="step">1 · Type</p>
+          <h1>Type the glowing&nbsp;key.</h1>
+          <p class="sub">Each right key pushes the dragon ahead.</p>
+        </div>
+        <div class="stage">
+          <figure class="shot">
+            <picture><source media="(max-width: 600px) and (orientation: portrait)" srcset="./race-phone.webp" width="780" height="1416" /><img src="./race.webp" width="1400" height="1255" alt="A Keyflame race: four dragons fly over a sunset canyon. Below, a fun fact is half typed and the next key glows on the keyboard." /></picture>
+            <span class="tag wide left" style="--x: 30%; --y: 82%"><b>Lit key</b></span>
+            <span class="tag wide right" style="--x: 63%; --y: 70.3%"><b>Which finger</b></span>
+            <span class="tag wide up" style="--x: 72%; --y: 57%"><b>Real facts</b></span>
+            <span class="tag narrow down" style="--x: 35.3%; --y: 72.4%"><b>Lit key</b></span>
+            <span class="tag narrow down" style="--x: 76%; --y: 59.3%"><b>Which finger</b></span>
+            <span class="tag narrow up" style="--x: 72%; --y: 44.4%"><b>Real facts</b></span>
+          </figure>
+        </div>
+      </section>
+
+      <section class="panel" id="p2" aria-roledescription="slide" aria-label="2 of 3">
+        <div class="copy">
+          <p class="step">2 · Learn</p>
+          <h1>Fly through word&nbsp;rings.</h1>
+          <p class="sub">Short lessons add two new keys at a time.</p>
+        </div>
+        <div class="stage">
+          <figure class="shot">
+            <picture><source media="(max-width: 600px) and (orientation: portrait)" srcset="./lesson-phone.webp" width="780" height="1416" /><img src="./lesson.webp" width="1400" height="1139" alt="A Keyflame lesson: a dragon flies through a golden ring for each word typed. The next key glows on the keyboard." /></picture>
+            <span class="tag wide right" style="--x: 18.5%; --y: 8.3%"><b>New keys</b></span>
+            <span class="tag wide down" style="--x: 34%; --y: 37%"><b>One ring per word</b></span>
+            <span class="tag wide left" style="--x: 30%; --y: 79.4%"><b>Lit key</b></span>
+            <span class="tag narrow right" style="--x: 53.6%; --y: 15.5%"><b>One ring per word</b></span>
+            <span class="tag narrow down" style="--x: 25.3%; --y: 72.4%"><b>Lit key</b></span>
+          </figure>
+        </div>
+      </section>
+
+      <section class="panel last" id="p3" aria-roledescription="slide" aria-label="3 of 3">
+        <div class="copy">
+          <p class="step">3 · Collect</p>
+          <h1>Race. Hatch. Collect.</h1>
+          <p class="sub">Typing warms eggs. Seven dragon tribes to hatch.</p>
+        </div>
+        <div class="stage">
+          <figure class="shot">
+            <img src="./dragons.webp" width="1400" height="920" alt="A nest of seven hatched dragons, one from each tribe, each with its own racing perk." />
+          </figure>
+        </div>
+        <div class="finish">
+          <ul class="perks" aria-label="Good to know">
+            <li>Free</li>
+            <li>No ads</li>
+            <li>No sign-up</li>
+            <li>Classroom mode</li>
+            <li>iPad ready</li>
+          </ul>
+          <a class="cta" href="../">Play free</a>
+        </div>
+      </section>
+    </main>
+
+    <nav class="tour-nav" aria-label="Slides">
+      <button class="nav-btn prev" type="button" aria-label="Back">‹</button>
+      <div class="dots">
+        <button class="dot" type="button" aria-label="Slide 1"></button>
+        <button class="dot" type="button" aria-label="Slide 2"></button>
+        <button class="dot" type="button" aria-label="Slide 3"></button>
+      </div>
+      <button class="nav-btn next" type="button" aria-label="Next">›</button>
+    </nav>
+
+    <script type="module" src="../src/tour/tour.ts"></script>
+  </body>
+</html>

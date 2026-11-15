@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 /// <reference types="vitest/config" />
 import { defineConfig, type Plugin } from 'vite';
 
@@ -30,7 +31,8 @@ function precacheList(): Plugin {
         }
       };
       walk(outDir);
-      const urls = ['./', ...files.filter((f) => f !== 'sw.js' && !f.endsWith('.woff')).sort().map((f) => `./${f}`)];
+      // The tour at /tour/ is a web page for grown-ups, not part of the offline game.
+      const urls = ['./', ...files.filter((f) => f !== 'sw.js' && !f.endsWith('.woff') && !f.startsWith('tour/')).sort().map((f) => `./${f}`)];
       const swPath = join(outDir, 'sw.js');
       const sw = readFileSync(swPath, 'utf8');
       if (!MARKER.test(sw)) throw new Error('sw.js is missing its PRECACHE_LIST marker');
@@ -44,6 +46,14 @@ export default defineConfig({
   base: './',
   define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
   plugins: [precacheList()],
+  build: {
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        tour: fileURLToPath(new URL('./tour/index.html', import.meta.url)),
+      },
+    },
+  },
   // Some content tests generate thousands of texts; give them room on slow machines.
   test: { testTimeout: 30000 },
 });
