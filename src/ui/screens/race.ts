@@ -1,4 +1,5 @@
 import { buildRaceText } from '../../content/lessons';
+import { playLaunch } from '../launch';
 import { COURSES, courseById, type Course } from '../../game/courses';
 import { TRIBES, dragonSvg, eggSvg, stageFor, type Stage, type TribeId } from '../../game/dragons';
 import { activeDragon, capitalsKnown, hidesHints, perkText, perkTribe, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
@@ -324,6 +325,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       clearInterval(cd);
       countEl.textContent = 'Fly!';
       sfx.dash();
+      stopLaunch();
       started = true;
       raceStart = performance.now();
       setTimeout(() => countdown.remove(), 600);
@@ -430,7 +432,18 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     ),
   );
 
+  // The dragon leaps out of its nest during the countdown (skipped for less motion).
+  let stopLaunch = (): void => {};
+  if (!p.settings.reducedMotion && !document.body.classList.contains('reduced-motion')) {
+    requestAnimationFrame(() => {
+      if (!root.isConnected || started) return;
+      fx.resize();
+      stopLaunch = playLaunch(sky, meEl, dragonSvg(me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', '', me?.skin, me?.marking, me?.stars), fx, trailOf.get(meEl) ?? CONFETTI, skyColors[0]);
+    });
+  }
+
   return () => {
+    stopLaunch();
     cancelAnimationFrame(raf);
     clearInterval(cd);
     view.destroy();
