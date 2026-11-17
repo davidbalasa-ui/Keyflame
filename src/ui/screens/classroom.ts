@@ -3,9 +3,9 @@
 // show up only by their preset-word rider name and their dragon.
 
 import { dragonSvg, stageFor } from '../../game/dragons';
-import { activeDragon, isTouch } from '../../game/progress';
+import { activeDragon, capitalsKnown, factsUnlocked, isTouch, knownLetters } from '../../game/progress';
 import {
-  GATHER_MS, MAX_LANES, classRiderName, parseStudentList, estimateProgress, isClassCode, newRace, normalizeCode, quickRacers, raceHost, spacedCode,
+  GATHER_MS, MAX_LANES, classRiderName, parseStudentList, classRaceText, estimateProgress, isClassCode, newRace, normalizeCode, quickRacers, raceHost, spacedCode,
   teacherRacers, tickEvery, waitingRiders, type Member, type RaceStart, type Tick,
 } from '../../game/classroom';
 import { classBoard, clearClassBoard, createClass, joinBadge, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
@@ -194,12 +194,14 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
   let lastSent = -Infinity;
   s.here = 'race';
 
+  const p = profile();
+  const typed = classRaceText(race, knownLetters(p), factsUnlocked(p), capitalsKnown(p));
   return {
-    text: race.text,
-    factId: race.factId,
+    text: typed.text,
+    factId: typed.factId,
     rivals: others.slice(0, MAX_LANES).map((id) => ({ id, name: byId.get(id)?.name ?? 'Classmate', look: byId.get(id)?.look ?? null })),
     racers: race.racers.length,
-    progress: (id, now) => estimateProgress(ticks.get(id) ?? null, now, done.has(id)),
+    progress: (id, now) => estimateProgress(ticks.get(id) ?? null, now, done.has(id), every),
     place: () => done.size + 1,
     report(progress, ms) {
       if (ms - lastSent < every) return;
@@ -837,7 +839,7 @@ function watchRace(link: ClassLink, race: RaceStart, finished: () => void): HTML
   const offMembers = link.onChange(checkOver);
   el.step = () => {
     const now = performance.now();
-    for (const [id, r] of rows) r.bar.style.width = `${(estimateProgress(ticks.get(id) ?? null, now, done.has(id)) * 100).toFixed(1)}%`;
+    for (const [id, r] of rows) r.bar.style.width = `${(estimateProgress(ticks.get(id) ?? null, now, done.has(id), tickEvery(race.racers.length)) * 100).toFixed(1)}%`;
   };
   // Old races fold away so the board stays in view.
   window.setTimeout(() => {
