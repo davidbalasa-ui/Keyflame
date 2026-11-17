@@ -10,6 +10,7 @@ import { withTabs } from '../tabBar';
 import { achievementsPage } from './achievementsPage';
 import { classRaceEntry } from './classroom';
 import { hub, topBar } from './hub';
+import { trickyButton } from './lessons';
 
 const stat = (value: string, label: string, note = ''): HTMLElement =>
   h('div', { class: 'stat-tile' }, h('small', {}, label), h('strong', {}, value), note ? h('small', { class: 'st-note' }, note) : null);
@@ -106,6 +107,7 @@ export const progressPage = (root: HTMLElement): (() => void) => {
         'section',
         { class: 'pg-card' },
         h('h2', {}, 'Key accuracy'),
+        trickyButton(),
         h('p', { class: 'chart-key fine' }, h('span', { class: 'dot good' }), 'Solid ', h('span', { class: 'dot weak' }), 'Practice ', h('span', { class: 'dot unknown' }), 'Not sure yet'),
         h(
           'div',

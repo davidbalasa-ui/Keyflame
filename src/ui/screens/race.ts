@@ -18,6 +18,8 @@ import { medalSvg } from './achievementsPage';
 import { hub, refreshEmbers, topBar } from './hub';
 import { codex } from './codex';
 import { finishBar } from '../finishBar';
+import { payImprovements } from '../../game/improve';
+import { improvementArt, improvementTitle } from '../improveArt';
 import { withTabs } from '../tabBar';
 import { seasonAt } from '../../content/seasons';
 import { CHALLENGE_EMBERS } from '../../game/seasons';
@@ -350,7 +352,10 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     const typedWith = view.input;
     const prevBest = isTouch(typedWith) ? p.totals.bestTouchWpm : p.totals.bestWpm;
     const before = earnedIds(p);
+    // Earlier speeds on the same kind of input, newest first, for the "faster than usual" reward.
+    const prevWpms = p.races.filter((x) => isTouch(x.input) === isTouch(typedWith)).map((x) => x.wpm);
     const reward = recordRace(p, sum, placeNum, { input: typedWith, courseId: live ? 'class' : course.id, beatRival });
+    const better = payImprovements(p, sum, prevWpms);
     if (live) live.finish(myMs, sum, placeNum, typedWith);
     else reportToClass(p, { kind: 'race', wpm: sum.wpm, accuracy: sum.accuracy, place: placeNum, racers: ghosts.length + 1, touch: isTouch(typedWith) });
     const newFact = fact ? recordFact(p, fact.id) : false;
@@ -372,6 +377,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Visit your nest' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
     }
     for (const c of reward.seasonDone ?? []) rewards.push({ art: medalSvg('gold', '🌟'), title: 'Season challenge', value: `+${CHALLENGE_EMBERS}`, note: c.text, tone: 'gold' });
+    for (const b of better) rewards.push({ art: improvementArt(b), title: improvementTitle(b), value: b.embers, note: 'bonus embers', tone: 'gold' });
     if (reward.newEgg) rewards.push({ art: eggSvg(reward.newEgg, 0, 5), title: `${TRIBES[reward.newEgg].name} egg`, value: 'New egg!', tone: 'egg' });
     // One achievement gets its own card; several share one card so the results stay short.
     if (fresh.length === 1) rewards.push({ art: medalSvg(fresh[0].medal, fresh[0].icon), title: `New title “${fresh[0].title}”`, value: 'Achievement!', note: fresh[0].how, tone: 'gold' });
