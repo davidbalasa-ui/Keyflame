@@ -148,6 +148,20 @@ export function newRiderKey(rand: (bytes: Uint8Array) => Uint8Array = (b) => cry
   return [...rand(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
+/** A random id for one finished lesson or race, so the class stores it once however often it's sent. */
+export function newActivityId(rand: (bytes: Uint8Array) => Uint8Array = (b) => crypto.getRandomValues(b)): string {
+  const b = rand(new Uint8Array(16));
+  b[6] = (b[6] & 0x0f) | 0x40;
+  b[8] = (b[8] & 0x3f) | 0x80;
+  const hex = [...b].map((x) => x.toString(16).padStart(2, '0')).join('');
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+/** How long to wait before trying the class again after a failed send: doubles, up to five minutes. */
+export function retryDelay(failures: number): number {
+  return Math.min(300000, 5000 * 2 ** Math.max(0, failures - 1));
+}
+
 export type Trend = 'up' | 'down' | 'flat';
 
 /** Is a rider's speed moving? Compares their last five timed sessions with the five before. */

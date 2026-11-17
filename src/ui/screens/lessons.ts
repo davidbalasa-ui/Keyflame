@@ -3,7 +3,7 @@ import { weakKeys } from '../../engine/typing';
 import { TRIBES, eggSvg } from '../../game/dragons';
 import { claimNewAchievements, earnedIds, type Achievement } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
-import { activeDragon, applyPlacement, isTouch, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
+import { activeDragon, applyPlacement, isTouch, placedThrough, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
 import { reportToClass } from '../classTrack';
 import { PASSAGES } from '../../content/words';
 import { go, inputMode, persist, profile } from '../app';
@@ -178,6 +178,8 @@ export const placement = (root: HTMLElement): (() => void) => {
     const sum = view.session.summary();
     recordPractice(p, sum);
     const units = applyPlacement(p, sum.wpm, sum.accuracy);
+    // The class sees the check as its own line, never as lessons played.
+    reportToClass(p, { kind: 'placement', lesson: placedThrough(units) ?? undefined, wpm: sum.wpm, accuracy: sum.accuracy, touch: isTouch(view.input) });
     persist();
     const msg =
       units === 0

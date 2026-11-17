@@ -7,6 +7,7 @@ import '@fontsource/atkinson-hyperlegible/latin-400.css';
 import '@fontsource/atkinson-hyperlegible/latin-700.css';
 import './styles.css';
 import { go, startApp } from './ui/app';
+import { flushClassOutbox } from './ui/classTrack';
 import { watchInstall } from './ui/install';
 import { hub } from './ui/screens/hub';
 import { wingScreen } from './ui/screens/wing';
@@ -45,6 +46,8 @@ window.addEventListener('hashchange', joinFromHash);
 void startApp(document.getElementById('app')!, join ? wingScreen({ join }) : hub).then(() => {
   started = true;
   joinFromHash();
+  // Results from a visit without Wi-Fi reach the class now.
+  void flushClassOutbox();
 });
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

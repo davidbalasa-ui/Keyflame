@@ -196,7 +196,8 @@ export function recordLesson(p: Profile, lesson: Lesson, s: SessionSummary, star
   const prev = p.lessons[lesson.id];
   p.lessons[lesson.id] = {
     stars: Math.max(prev?.stars ?? 0, stars),
-    bestWpm: Math.max(prev?.bestWpm ?? 0, s.wpm),
+    // Relaxed lessons have no clock, so they never set a best speed.
+    bestWpm: relaxed ? prev?.bestWpm ?? 0 : Math.max(prev?.bestWpm ?? 0, s.wpm),
     bestAccuracy: Math.max(prev?.bestAccuracy ?? 0, s.accuracy),
   };
   const embers = stars > 0 ? 5 + stars * 5 : 2;
@@ -400,10 +401,14 @@ export function courseUnlocked(p: Profile, courseId: string): boolean {
   return unit === null || p.unitsRewarded.includes(unit);
 }
 
+/** The units a placement check can skip, in order. */
+const PLACEMENT_UNITS: Lesson['unit'][] = ['home', 'top', 'bottom'];
+
 /** Placement check: skips lessons the player already knows. Returns how many units it opened. */
 export function applyPlacement(p: Profile, wpm: number, accuracy: number): number {
   if (accuracy < 0.88) return 0;
-  const units: Lesson['unit'][] = wpm >= 22 ? ['home', 'top', 'bottom'] : wpm >= 14 ? ['home', 'top'] : wpm >= 7 ? ['home'] : [];
+  const n = wpm >= 22 ? 3 : wpm >= 14 ? 2 : wpm >= 7 ? 1 : 0;
+  const units = PLACEMENT_UNITS.slice(0, n);
   for (const u of units) {
     for (const l of lessonsInUnit(u)) {
       const prev = p.lessons[l.id];
@@ -412,6 +417,12 @@ export function applyPlacement(p: Profile, wpm: number, accuracy: number): numbe
     checkUnitReward(p, u);
   }
   return units.length;
+}
+
+/** The last lesson a placement check that opened this many units skipped to, if any. */
+export function placedThrough(units: number): string | null {
+  const unit = PLACEMENT_UNITS[units - 1];
+  return unit ? lessonsInUnit(unit).at(-1)?.id ?? null : null;
 }
 
 /** Where a ghost is, 0 to 1, after `ms` of racing. */

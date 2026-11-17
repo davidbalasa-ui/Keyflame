@@ -45,6 +45,13 @@ export function profile(): Profile {
   return p;
 }
 
+/** Every rider on the device, and this visit's guest. */
+export function allRiders(): Profile[] {
+  const list = [...state.save.profiles];
+  if (state.guest && !list.includes(state.guest)) list.push(state.guest);
+  return list;
+}
+
 export function hasProfile(): boolean {
   return isGuest() || state.save.profiles.some((x) => x.id === state.save.activeId);
 }

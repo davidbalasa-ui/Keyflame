@@ -2,6 +2,7 @@
 // IndexedDB is the main store; localStorage is a fallback for browsers that block it.
 
 import type { KeyStats } from '../engine/typing';
+import type { ActivityPost } from '../net/classApi';
 import type { TribeId } from '../game/dragons';
 import type { UnitId } from '../content/lessons';
 import type { ReadingLevel } from '../content/facts';
@@ -141,6 +142,8 @@ export interface Profile {
   classBadge?: number;
   /** The badge's secret word, so this device can show the rider's own QR code. */
   classWord?: string;
+  /** Finished lessons and races the class hasn't got yet (no Wi-Fi), oldest first. */
+  classOutbox?: ClassOutboxItem[];
   /** The name the grown-up gave this rider in their wing. Shown on this device only. */
   wingName?: string;
   /** Days in a row with a race or lesson. Missing on saves from before streaks. */
@@ -154,6 +157,17 @@ export interface Profile {
 export interface StartSpeed {
   wpm: number;
   at: number;
+}
+
+/** A finished lesson or race waiting to reach the rider's class. */
+export interface ClassOutboxItem {
+  /** Random id made on the device, so the class stores it once however often it's sent. */
+  id: string;
+  /** When it was played. */
+  at: number;
+  code: string;
+  badge: number;
+  a: ActivityPost;
 }
 
 export interface LessonRecord {
@@ -292,12 +306,26 @@ export function normalizeProfile(raw: unknown): Profile | null {
     classCode: typeof r.classCode === 'string' && /^[A-Z]{6}$/.test(r.classCode) ? r.classCode : undefined,
     classBadge: Number.isInteger(r.classBadge) && r.classBadge! >= 1 && r.classBadge! <= 99 ? r.classBadge : undefined,
     classWord: typeof r.classWord === 'string' && /^[A-Z]{3,5}$/.test(r.classWord) ? r.classWord : undefined,
+    classOutbox: cleanOutbox(r.classOutbox),
     wingName: typeof r.wingName === 'string' && r.wingName.trim() ? r.wingName.trim().slice(0, 40) : undefined,
     streak: r.streak && typeof r.streak.last === 'string' && Number.isInteger(r.streak.days) && r.streak.days > 0 ? { last: r.streak.last, days: r.streak.days, best: Number.isInteger(r.streak.best) ? Math.max(r.streak.best, r.streak.days) : r.streak.days } : undefined,
     startSpeed: cleanStartSpeed(r.startSpeed),
     lessonLog: Array.isArray(r.lessonLog) ? r.lessonLog.filter((x) => x && Number.isFinite(x.at) && Number.isFinite(x.accuracy) && (x.wpm === null || Number.isFinite(x.wpm))).slice(0, LESSON_LOG_MAX) : undefined,
   } as Profile;
   return starglintDragon(p);
+}
+
+/** The most results a device keeps waiting for the class. */
+export const OUTBOX_MAX = 200;
+
+function cleanOutbox(raw: unknown): ClassOutboxItem[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const ok = raw.filter(
+    (x): x is ClassOutboxItem =>
+      !!x && typeof x.id === 'string' && /^[0-9a-f-]{36}$/.test(x.id) && Number.isFinite(x.at) && typeof x.code === 'string' && /^[A-Z]{6}$/.test(x.code) &&
+      Number.isInteger(x.badge) && x.badge >= 1 && x.badge <= 99 && !!x.a && typeof x.a.kind === 'string' && Number.isFinite(x.a.accuracy),
+  );
+  return ok.length ? ok.slice(-OUTBOX_MAX) : undefined;
 }
 
 function cleanStartSpeed(raw: Profile['startSpeed']): Profile['startSpeed'] {

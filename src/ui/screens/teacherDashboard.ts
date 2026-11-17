@@ -134,20 +134,22 @@ function sparkline(rows: ActivityRow[]): HTMLElement {
   return el;
 }
 
-/** Best stars per lesson, from the rider's class history. */
-function lessonGrid(rows: ActivityRow[]): HTMLElement {
+/** Best stars per lesson, from the rider's class history. Lessons a placement check skipped show as skipped. */
+function lessonGrid(rows: ActivityRow[], placed: string | null): HTMLElement {
   const best = new Map<string, number>();
   for (const r of rows) if (r.kind === 'lesson' && r.lesson) best.set(r.lesson, Math.max(best.get(r.lesson) ?? 0, r.stars ?? 0));
+  const skippedTo = LESSONS.findIndex((l) => l.id === placed);
   return h(
     'ol',
     { class: 'lesson-dots' },
     ...LESSONS.map((l, i) => {
       const s = best.get(l.id);
+      const skipped = s === undefined && i <= skippedTo;
       return h(
         'li',
-        { class: s === undefined ? 'lg-none' : s > 0 ? 'lg-pass' : 'lg-tried', title: l.title, 'aria-label': `${l.title}: ${s === undefined ? 'not played' : `${s} of 3 stars`}` },
+        { class: skipped ? 'lg-skipped' : s === undefined ? 'lg-none' : s > 0 ? 'lg-pass' : 'lg-tried', title: l.title, 'aria-label': `${l.title}: ${skipped ? 'skipped by the typing check' : s === undefined ? 'not played' : `${s} of 3 stars`}` },
         h('span', {}, String(i + 1)),
-        h('small', {}, s === undefined ? '' : s > 0 ? '★'.repeat(s) : '·'),
+        h('small', {}, skipped ? '↷' : s === undefined ? '' : s > 0 ? '★'.repeat(s) : '·'),
       );
     }),
   );
@@ -166,7 +168,13 @@ function activityList(rows: ActivityRow[]): HTMLElement {
         h(
           'span',
           { class: 'al-what' },
-          r.kind === 'lesson' ? `${lessonTitle(r.lesson)} ${r.stars ? '★'.repeat(r.stars) : ''}` : r.kind === 'class' ? `Class race · #${r.place ?? '?'} of ${r.racers ?? '?'}` : 'Race',
+          r.kind === 'lesson'
+            ? `${lessonTitle(r.lesson)} ${r.stars ? '★'.repeat(r.stars) : ''}`
+            : r.kind === 'class'
+              ? `Class race · #${r.place ?? '?'} of ${r.racers ?? '?'}`
+              : r.kind === 'placement'
+                ? r.lesson ? `Typing check · skipped to ${lessonTitle(r.lesson)}` : 'Typing check'
+                : 'Race',
         ),
         h('span', { class: 'al-num' }, r.wpm === null ? 'relaxed' : `${Math.round(r.wpm)} WPM`, ` · ${pct(r.accuracy)} `, r.touch ? 'touch screen' : 'keyboard'),
       ),
@@ -268,7 +276,8 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
           h('h3', {}, 'Speed over time'),
           sparkline(rows),
           h('h3', {}, `Lessons passed: ${r.lessons_passed} of ${LESSONS.length}`),
-          lessonGrid(rows),
+          ...(r.placed ? [h('p', { class: 'fine' }, `↷ The typing check skipped ahead to ${lessonTitle(r.placed)}.`)] : []),
+          lessonGrid(rows, r.placed),
           h('h3', {}, 'Recent'),
           activityList(rows),
         ),
