@@ -60,7 +60,8 @@ async function answerGate(page) {
   await page.locator('.modal').getByRole('button', { name: 'Continue' }).click();
 }
 
-const browser = await playwright.chromium.launch();
+const ENGINE = process.env.BROWSER === 'webkit' ? 'webkit' : 'chromium';
+const browser = await playwright[ENGINE].launch();
 const failures = [];
 for (const size of SIZES) {
   const ctx = await browser.newContext({ viewport: { width: size.width, height: size.height }, hasTouch: size.touch, isMobile: size.touch, reducedMotion: 'reduce' });

@@ -89,7 +89,8 @@ async function typeAll(page) {
   }
 }
 
-const browser = await playwright.chromium.launch();
+const ENGINE = process.env.BROWSER === 'webkit' ? 'webkit' : 'chromium';
+const browser = await playwright[ENGINE].launch();
 const failures = [];
 let checks = 0;
 for (const size of SIZES) {
