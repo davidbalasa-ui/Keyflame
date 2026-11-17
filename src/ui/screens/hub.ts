@@ -1,6 +1,7 @@
 import { TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
 import { currentTitle } from '../../game/achievements';
-import { activeDragon, eggProgress, kindName } from '../../game/progress';
+import { activeDragon, eggProgress, kindName, lessonUnlocked } from '../../game/progress';
+import { LESSONS } from '../../content/lessons';
 import { today, type Profile } from '../../save/store';
 import { currentStreak, playedToday } from '../../game/streak';
 import { withTabs } from '../tabBar';
@@ -9,7 +10,7 @@ import { breakDue, go, isGuest, profile } from '../app';
 import { button, h, pct, svg, tapHand } from '../dom';
 import { sfx } from '../sound';
 import { aerieScene } from './aerie';
-import { lessons } from './lessons';
+import { lessons, playLesson } from './lessons';
 import { nest } from './nest';
 import { raceMap } from './race';
 import { seasonButton } from './seasonPage';
@@ -25,13 +26,14 @@ export function riderRank(correctKeys: number): { level: number; progress: numbe
   return { level, progress: (correctKeys - lo) / (hi - lo) };
 }
 
-export function topBar(back?: () => void): HTMLElement {
+/** The top bar. The back button names where it goes: Home, Courses, Lessons and so on. */
+export function topBar(back?: () => void, to = 'Back'): HTMLElement {
   const p = profile();
   const rank = riderRank(p.totals.correctKeys);
   return h(
     'header',
     { class: 'top-bar' },
-    back ? button('← Back', back, 'btn ghost small') : button('Switch rider', () => openRiders(), 'btn ghost small'),
+    back ? button(`← ${to}`, back, `btn ghost small top-back${to === 'Home' ? ' to-home' : ''}`) : button('Switch rider', () => openRiders(), 'btn ghost small'),
     h('div', { class: 'who' }, h('strong', {}, riderLabel(p)), h('span', { class: 'rider-title' }, currentTitle(p) ?? ''), h('span', { class: 'rank' }, `Rider rank ${rank.level}`), h('span', { class: 'bar' }, h('span', { style: `width:${pct(rank.progress)}` }))),
     h('div', { class: 'embers', title: 'Embers' }, h('span', { class: 'ember-icon' }, '🔥'), h('span', { class: 'ember-count' }, String(p.embers))),
   );
@@ -84,7 +86,7 @@ export const hub = (root: HTMLElement): (() => void) => {
   const top = h(
     'header',
     { class: 'home-top' },
-    button(avatarArt, () => (sfx.click(), openRiders(root)), 'home-avatar', { 'aria-label': `${riderLabel(p)}. Who’s playing?`, title: 'Who’s playing?' }),
+    button(h('span', { class: 'home-avatar-in' }, avatarArt, h('span', { class: 'avatar-swap', 'aria-hidden': 'true' }, '⇄')), () => (sfx.click(), openRiders(root)), 'home-avatar', { 'aria-label': `${riderLabel(p)}. Who’s playing?`, title: 'Who’s playing?' }),
     h(
       'div',
       { class: 'home-who' },
@@ -117,18 +119,24 @@ export const hub = (root: HTMLElement): (() => void) => {
       button(p.classBadge ? `🐉 Wing #${p.classBadge}` : '🐉 Join a wing', () => (sfx.click(), go(wing)), 'hero-chip class-chip'),
       h('span', { class: 'hero-chip embers-chip', 'aria-label': `${p.embers} embers` }, h('span', { 'aria-hidden': 'true' }, '🔥'), h('span', { class: 'ember-count' }, String(p.embers))),
       h('span', { class: 'hero-chip name-chip', 'aria-hidden': 'true' }, d ? d.name : heroLabel),
-      p.nest ? h('span', { class: 'hero-chip egg-chip' + (eggReady ? ' ready pulse' : ''), 'aria-hidden': 'true' }, eggReady ? 'Tap to hatch!' : `Egg ${pct(prog)}`) : null,
+      // Says out loud that the cave opens the nest. Taps fall through to the cave button.
+      h('span', { class: 'hero-chip egg-chip' + (eggReady ? ' ready pulse' : ''), 'aria-hidden': 'true' }, eggReady ? 'Tap to hatch!' : p.nest ? `🥚 Nest · ${pct(prog)} ›` : '🥚 Nest ›'),
+      // A tapping finger until this rider has found the nest once.
+      !p.nestSeen && !eggReady ? h('span', { class: 'hero-hand' }, tapHand()) : null,
     ),
   );
 
   const dots = Array.from({ length: DAILY_RACES }, (_, i) => h('span', { class: 'daily-dot' + (dailyDone || i < daily.races ? ' on' : '') }));
+  // Not done yet: the card is a Go button to the next lesson, or a race once every lesson is passed.
+  const nextLesson = LESSONS.find((l, i) => lessonUnlocked(p, i) && !p.lessons[l.id]?.stars);
+  const dailyGo = (): void => (sfx.click(), go(nextLesson ? playLesson(nextLesson) : raceMap));
   const dailyCard = h(
-    'div',
-    { class: 'daily-card' + (dailyDone ? ' done' : ''), role: 'status' },
+    dailyDone ? 'div' : 'button',
+    dailyDone ? { class: 'daily-card done', role: 'status' } : { class: 'daily-card go', type: 'button', onclick: dailyGo, 'aria-label': `Daily flight: ${daily.races} of ${DAILY_RACES} races or 1 lesson. Go` },
     h('span', { class: 'daily-icon', 'aria-hidden': 'true', html: WING }),
     h('span', { class: 'daily-text' }, h('strong', {}, 'Daily flight'), h('small', {}, dailyDone ? 'Done! See you tomorrow' : `${daily.races}/${DAILY_RACES} races or 1 lesson`)),
     h('span', { class: 'daily-track', 'aria-hidden': 'true' }, ...dots),
-    h('span', { class: 'daily-end', 'aria-hidden': 'true' }, dailyDone ? '✓' : '★'),
+    dailyDone ? h('span', { class: 'daily-end', 'aria-hidden': 'true' }, '✓') : h('span', { class: 'daily-go', 'aria-hidden': 'true' }, '▶ Go'),
   );
 
   const card = (label: string, sub: string, cls: string, art: string, dragon: string, to: () => void): HTMLElement =>

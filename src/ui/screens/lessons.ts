@@ -7,22 +7,23 @@ import { activeDragon, applyPlacement, isTouch, placedThrough, lessonUnlocked, r
 import { reportToClass } from '../classTrack';
 import { PASSAGES } from '../../content/words';
 import { go, inputMode, persist, profile } from '../app';
-import { button, h, pct, svg } from '../dom';
+import { button, h, pct, svg, type Child } from '../dom';
+import { finishBar } from '../finishBar';
+import { withTabs } from '../tabBar';
 import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
 import { createLessonFlight } from '../lessonFlight';
 import { seasonAt } from '../../content/seasons';
 import { hub, refreshEmbers, topBar } from './hub';
-import { nest } from './nest';
 import { CHALLENGE_EMBERS } from '../../game/seasons';
 
 const starText = (n: number): string => '★'.repeat(n) + '☆'.repeat(3 - n);
 
-export const lessons = (root: HTMLElement): void => {
+export const lessons = (root: HTMLElement): (() => void) => {
   const p = profile();
   const weak = weakKeys(p.keyStats, 'abcdefghijklmnopqrstuvwxyz;,./'.split(''));
   root.append(
-    topBar(() => go(hub)),
+    topBar(() => go(hub), 'Home'),
     h(
       'main',
       { class: 'lessons' },
@@ -62,6 +63,7 @@ export const lessons = (root: HTMLElement): void => {
       }),
     ),
   );
+  return withTabs(root, 'home');
 };
 
 export function playLesson(lesson: Lesson) {
@@ -103,7 +105,7 @@ export function playLesson(lesson: Lesson) {
     timer = window.setInterval(tick, 250);
     tick();
     root.append(
-      topBar(() => go(lessons)),
+      topBar(() => go(lessons), 'Lessons'),
       h(
         'main',
         { class: 'play-lesson' },
@@ -127,28 +129,50 @@ export function playLesson(lesson: Lesson) {
 function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = [], seasonDone: string[] = []): void {
   const idx = LESSONS.indexOf(lesson);
   const next = LESSONS[idx + 1];
+  // Picture cards instead of sentences: one card per thing earned.
+  const card = (icon: Child, value: string, label: string, cls = ''): HTMLElement =>
+    h('div', { class: `lr-card ${cls}` }, h('span', { class: 'lr-icon', 'aria-hidden': 'true' }, icon), h('strong', {}, value), h('small', {}, label));
+  const cards = [
+    card('🔥', `+${embers}`, 'Embers'),
+    card('🎯', pct(accuracy), 'Correct'),
+    wpm === null ? null : card('⚡', String(Math.round(wpm)), 'WPM'),
+    newEgg ? card('🥚', 'New egg!', newEgg, 'gold') : null,
+    eggReady ? card('🐣', 'Ready!', 'Egg can hatch', 'gold') : null,
+    ...seasonDone.map((t) => card('🌟', `+${CHALLENGE_EMBERS}`, t, 'gold')),
+    fresh.length === 1 ? card(svg(medalSvg(fresh[0].medal, fresh[0].icon), 'ach-mini'), `“${fresh[0].title}”`, 'New title', 'gold') : null,
+    fresh.length > 1 ? card(svg(medalSvg(fresh[0].medal, fresh[0].icon), 'ach-mini'), `+${fresh.length}`, 'Achievements', 'gold') : null,
+  ];
+  // One short line on how to get the next star, only when there is one to get.
+  const hint =
+    stars === 0
+      ? 'Get 90% correct to pass. Go slow!'
+      : stars === 1
+        ? '95% correct = second star'
+        : stars === 2
+          ? wpm === null
+            ? 'Relaxed mode off = third star'
+            : `${lesson.starWpm} WPM at 95% = third star`
+          : null;
+  const primary =
+    stars > 0 && next
+      ? button('▶ Next lesson', () => go(playLesson(next)))
+      : stars === 0
+        ? button('↻ Try again', () => go(playLesson(lesson)))
+        : button('📚 All lessons', () => go(lessons));
   const modal = h(
     'div',
     { class: 'modal-backdrop' },
     h(
       'div',
-      { class: 'modal' },
+      { class: 'modal lesson-result' },
       h('h2', {}, stars > 0 ? 'Lesson passed!' : 'Almost there'),
       h('p', { class: 'big-stars' }, starText(stars)),
-      h('p', {}, `${wpm === null ? '' : `${Math.round(wpm)} WPM · `}${pct(accuracy)} accuracy · +${embers} embers`),
-      stars === 0 ? h('p', { class: 'fine' }, 'Reach 90% accuracy to pass. Slow down a little; accuracy comes first, speed follows.') : null,
-      stars > 0 && stars < 3 ? h('p', { class: 'fine' }, stars === 1 ? 'Get 95% accuracy for the second star.' : wpm === null ? 'Turn off relaxed mode in Settings to go for the third star.' : `Reach ${lesson.starWpm} WPM at 95% accuracy for the third star.`) : null,
-      newEgg ? h('p', { class: 'reward' }, `You earned a ${newEgg} egg! It is waiting in your nest.`) : null,
-      eggReady ? h('p', { class: 'reward' }, 'Your egg is ready to hatch!') : null,
-      ...seasonDone.map((t) => h('p', { class: 'reward' }, `🌟 Season challenge done: ${t}! +${CHALLENGE_EMBERS} embers`)),
-      ...fresh.slice(0, 3).map((a) => h('p', { class: 'reward ach-line' }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `Achievement: ${a.how}. New title “${a.title}”!`)),
-      fresh.length > 3 ? h('p', { class: 'reward' }, `And ${fresh.length - 3} more achievements!`) : null,
-      h(
-        'div',
-        { class: 'row' },
-        button('Try again', () => go(playLesson(lesson)), 'btn ghost'),
-        eggReady || newEgg ? button('Go to nest', () => go(nest), 'btn ghost') : null,
-        stars > 0 && next ? button('Next lesson', () => go(playLesson(next))) : button('All lessons', () => go(lessons)),
+      h('div', { class: 'lr-cards' }, ...cards),
+      hint ? h('p', { class: 'fine lr-hint' }, hint) : null,
+      finishBar(
+        primary,
+        [stars > 0 ? button('↻ Try again', () => go(playLesson(lesson)), 'btn ghost small') : null, stars > 0 && next ? button('📚 All lessons', () => go(lessons), 'btn ghost small') : null, stars === 0 ? button('📚 All lessons', () => go(lessons), 'btn ghost small') : null],
+        { nestGlow: !!newEgg },
       ),
     ),
   );
@@ -191,13 +215,13 @@ export const placement = (root: HTMLElement): (() => void) => {
       h(
         'div',
         { class: 'modal-backdrop' },
-        h('div', { class: 'modal' }, h('h2', {}, 'Check complete'), h('p', {}, `${Math.round(sum.wpm)} WPM · ${pct(sum.accuracy)} accuracy`), h('p', {}, msg), h('div', { class: 'row' }, button('See lessons', () => go(lessons)))),
+        h('div', { class: 'modal' }, h('h2', {}, 'Check complete'), h('p', {}, `${Math.round(sum.wpm)} WPM · ${pct(sum.accuracy)} accuracy`), h('p', {}, msg), finishBar(button('📚 Lessons', () => go(lessons)))),
       ),
     );
   }
 
   root.append(
-    topBar(() => go(lessons)),
+    topBar(() => go(lessons), 'Lessons'),
     h('main', { class: 'play-lesson' }, h('h1', {}, 'One-minute typing check'), h('p', { class: 'new-keys' }, 'Type as much as you can, as accurately as you can. No pressure!'), stats, view.el),
   );
   view.focus();

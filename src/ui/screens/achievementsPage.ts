@@ -85,7 +85,7 @@ export const achievementsPage = (root: HTMLElement): (() => void) => {
   };
 
   root.append(
-    topBar(() => go(progressPage)),
+    topBar(() => go(progressPage), 'Progress'),
     h(
       'main',
       { class: 'achievements' },

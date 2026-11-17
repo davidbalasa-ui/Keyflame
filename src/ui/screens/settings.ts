@@ -35,7 +35,7 @@ export const settings = (root: HTMLElement): (() => void) => {
   const copied = h('span', { class: 'fine' });
 
   root.append(
-    topBar(() => go(hub)),
+    topBar(() => go(hub), 'Home'),
     h(
       'main',
       { class: 'settings' },

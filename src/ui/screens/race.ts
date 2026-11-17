@@ -17,7 +17,8 @@ import { claimNewAchievements, earnedIds } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
 import { hub, refreshEmbers, topBar } from './hub';
 import { codex } from './codex';
-import { nest } from './nest';
+import { finishBar } from '../finishBar';
+import { withTabs } from '../tabBar';
 import { seasonAt } from '../../content/seasons';
 import { CHALLENGE_EMBERS } from '../../game/seasons';
 import { STARGLINT_LOOK, STARGLINT_LOOKS } from '../../game/starglintArt';
@@ -114,10 +115,10 @@ function readerPicker(done: () => void): HTMLElement {
 }
 
 /** Campaign map: pick a course; new courses open as lesson units are finished. */
-export const raceMap = (root: HTMLElement): void => {
+export const raceMap = (root: HTMLElement): (() => void) => {
   const p = profile();
   root.append(
-    topBar(() => go(hub)),
+    topBar(() => go(hub), 'Home'),
     h(
       'main',
       { class: 'race-map' },
@@ -149,6 +150,7 @@ export const raceMap = (root: HTMLElement): void => {
       ),
     ),
   );
+  return withTabs(root, 'home');
 };
 
 export function race(courseId: string) {
@@ -404,15 +406,11 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       extra: live ? h('div', {}, live.results(), factCard) : factCard,
       reducedMotion: p.settings.reducedMotion,
       actions: live
-        ? h('div', { class: 'row' }, reward.eggReady || reward.newEgg ? button('Go to nest', () => go(nest), 'btn ghost') : null, button('Back to class', () => live.back()))
-        : h(
-        'div',
-        { class: 'row' },
-        button('Map', () => go(raceMap), 'btn ghost'),
-        fact ? button('Fact Book', () => go(codex), 'btn ghost') : null,
-        reward.eggReady || reward.newEgg ? button('Go to nest', () => go(nest), 'btn ghost') : null,
-        button('Race again', () => go(race(course.id))),
-      ),
+        ? finishBar(button('🐉 Back to class', () => live.back()), [], { nestGlow: !!reward.newEgg })
+        : finishBar(button('▶ Race again', () => go(race(course.id))), [
+            button('🗺 Courses', () => go(raceMap), 'btn ghost small'),
+            fact ? button('📖 Fact Book', () => go(codex), 'btn ghost small') : null,
+          ], { nestGlow: !!reward.newEgg }),
     });
     // Let the finish burst on the track play for a moment first.
     window.setTimeout(() => {
@@ -421,7 +419,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   }
 
   root.append(
-    topBar(() => (live ? live.back() : go(raceMap))),
+    topBar(() => (live ? live.back() : go(raceMap)), live ? 'Class' : 'Courses'),
     h(
       'main',
       { class: 'race' },

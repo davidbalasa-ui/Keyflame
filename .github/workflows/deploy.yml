@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -11,11 +12,29 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
   cancel-in-progress: true
 
 jobs:
+  # Kid checks: no sideways scrolling, no dead ends, and a full classroom race, in a real
+  # browser. Nothing goes live unless they pass (KF-17).
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm i --no-save playwright@1.63.0 && npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run check:overflow
+      - run: npm run check:nav
+      - run: npm run check:classroom
   build:
+    needs: checks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,11 +49,13 @@ jobs:
           VITE_SUPPORTER_CHECKOUT_URL: ${{ vars.SUPPORTER_CHECKOUT_URL }}
           VITE_FEEDBACK_URL: ${{ vars.FEEDBACK_URL }}
           VITE_FEEDBACK_KEY: ${{ vars.FEEDBACK_KEY }}
-      - uses: actions/upload-pages-artifact@v3
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

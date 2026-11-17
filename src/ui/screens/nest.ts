@@ -26,6 +26,11 @@ function growthText(d: OwnedDragon): string {
 
 export const nest = (root: HTMLElement): (() => void) => {
   const p = profile();
+  if (!p.nestSeen) {
+    // Home points at the nest with a tapping finger until the rider has found it once.
+    p.nestSeen = true;
+    persist();
+  }
   const egg = p.nest;
   const prog = eggProgress(p);
   const active = activeDragon(p);
@@ -54,6 +59,7 @@ export const nest = (root: HTMLElement): (() => void) => {
                 persist();
                 go(nest);
               }, 'btn ghost', canWarmWithEmbers(p) ? { title: `Adds ${Math.round(WARM_SHARE * 100)}% warmth` } : { disabled: true, title: `Costs ${WARM_PRICE} embers` }),
+              canWarmWithEmbers(p) ? null : h('small', { class: 'warm-need' }, `Need 🔥 ${WARM_PRICE}`),
             ),
       )
     : h('section', { class: 'nest-panel empty' }, h('h2', {}, 'Your nest is empty'), h('p', {}, 'Earn your next egg from a lesson unit or a milestone below.'), p.dragons.length ? button(`Get an egg for 🔥 ${EGG_PRICE} in the Codex`, () => go(codex), 'btn ghost') : null);
@@ -65,7 +71,7 @@ export const nest = (root: HTMLElement): (() => void) => {
   const scene = active ? aerieScene(p, svg(dragonSvg(active.tribe, active.palette, stageFor(active.xp), 'flap bob', active.skin, active.marking, active.stars), 'showcase-dragon')) : null;
 
   root.append(
-    topBar(() => go(hub)),
+    topBar(() => go(hub), 'Home'),
     h(
       'main',
       { class: 'nest' },
