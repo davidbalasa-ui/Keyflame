@@ -19,6 +19,11 @@
 }
 
 * { box-sizing: border-box; }
+/* touch-action does not pass through scrolling boxes (the hatch screen, sheets, modals), so every
+   element opts out of double-tap zoom itself. Without it, quick taps on iPad Safari zoom the
+   page and the next taps get lost, which feels like the game froze. Pinch zoom still works. */
+* { touch-action: manipulation; }
+button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 
 html, body { margin: 0; }
 /* No pull-to-refresh or rubber-band bounce: this is an app, not a page. */
@@ -995,7 +1000,7 @@ body.reduced-motion .evo-flash.boom { animation: none !important; opacity: 0; }
   animation: spinRays 30s linear infinite; transition: opacity 0.6s;
 }
 .hatch-screen.opened .hatch-rays { opacity: 0.6; }
-.hatch-screen.settled .hatch-rays { opacity: 0.15; }
+.hatch-screen.settled .hatch-rays { opacity: 0.15; animation-play-state: paused; }
 .hatch-center { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; max-width: 560px; margin: auto; }
 .hatch-tap { background: none; border: 0; padding: 0; cursor: pointer; border-radius: 40%; }
 .hatch-tap:focus-visible { outline: 3px solid var(--gold); outline-offset: 8px; }
@@ -1768,3 +1773,43 @@ body.reduced-motion .aerie-back .cel-glow, body.reduced-motion .aerie-back .twin
 .launch-flyer svg.dragon { width: 100%; display: block; }
 .launch-smear { position: absolute; inset: 0; opacity: 0; }
 .launch-smear svg { width: 100%; height: 100%; overflow: visible; }
+
+/* What to tap next: a tapping finger, a glowing ring, and buttons that breathe. */
+.tap-hand {
+  position: absolute; z-index: 4; right: 2%; bottom: 4%; font-size: clamp(2.2rem, 9vw, 3.2rem); line-height: 1; pointer-events: none;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.5)); animation: tapHand 1.1s ease-in-out infinite; transform-origin: 50% 0;
+}
+@keyframes tapHand { 0%, 100% { transform: translate(0, 0) scale(1); } 45% { transform: translate(-8px, -14px) scale(1); } 60% { transform: translate(-8px, -14px) scale(0.86); } }
+.egg-nest .tap-hand { right: -12%; bottom: 20%; font-size: clamp(1.6rem, 6vw, 2.6rem); }
+.hatch-tap { position: relative; }
+.hatch-tap .tap-hand { right: -6%; bottom: 8%; font-size: clamp(2.6rem, 11vw, 4rem); }
+.nest-egg-tap { position: relative; padding: 18px 26px; }
+.ready-ring {
+  position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 212, 59, 0.45) 0%, rgba(255, 146, 43, 0.15) 45%, transparent 68%);
+  animation: readyRing 1.4s ease-in-out infinite;
+}
+@keyframes readyRing { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.12); opacity: 1; } }
+.btn.big { font-size: 1.2rem; padding: 14px 28px; min-height: 54px; }
+.glow-btn { animation: glowBtn 1.6s ease-in-out infinite; }
+@keyframes glowBtn { 0%, 100% { box-shadow: 0 4px 0 #b34700, 0 0 0 0 rgba(255, 212, 59, 0); } 50% { box-shadow: 0 4px 0 #b34700, 0 0 0 7px rgba(255, 212, 59, 0.28), 0 0 22px rgba(255, 179, 71, 0.6); } }
+.open-btn { margin-top: 10px; }
+.basket-egg { position: relative; border-color: rgba(255, 179, 71, 0.55); }
+.basket-egg .mini-egg { width: 52px; }
+.up-arrow { display: inline-block; animation: upArrow 1.2s ease-in-out infinite; }
+@keyframes upArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+/* Name pickers: a pencil, the two words stacked, and the dice. */
+.name-pickers { align-items: center; flex-wrap: nowrap; gap: 8px; }
+.name-rows { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.name-pencil { font-size: 1.5rem; flex: none; }
+@media (max-width: 360px) { .name-pencil { display: none; } }
+/* A dragon's name on its card is a button that opens the rename sheet. */
+.dc-rename {
+  font: inherit; font-weight: 600; color: var(--text); cursor: pointer; background: var(--bg-2); border: 2px solid var(--line);
+  border-radius: 999px; padding: 6px 14px; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; max-width: 100%;
+}
+.dc-rename::after { content: '✏️'; font-size: 0.9em; }
+.dc-rename:hover, .dc-rename:focus-visible { border-color: var(--ember-2); }
+.dc-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.modal.rename .name-pickers { margin: 8px 0 16px; }
+body.reduced-motion .tap-hand, body.reduced-motion .ready-ring, body.reduced-motion .glow-btn, body.reduced-motion .up-arrow { animation: none; }

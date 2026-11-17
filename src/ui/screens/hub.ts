@@ -6,7 +6,7 @@ import { currentStreak, playedToday } from '../../game/streak';
 import { withTabs } from '../tabBar';
 import { leaveGrownUps } from './grownUps';
 import { breakDue, go, isGuest, profile } from '../app';
-import { button, h, pct, svg } from '../dom';
+import { button, h, pct, svg, tapHand } from '../dom';
 import { sfx } from '../sound';
 import { aerieScene } from './aerie';
 import { lessons } from './lessons';
@@ -59,6 +59,7 @@ function eggInNest(egg: NonNullable<Profile['nest']>, prog: number, cls: string)
     h('div', { class: 'egg-glow', 'aria-hidden': 'true' }),
     svg(eggSvg(egg.tribe, prog, egg.seed), 'egg-nest-egg' + (prog >= 1 ? ' wobble' : '')),
     svg(NEST_SVG, 'egg-nest-twigs'),
+    prog >= 1 ? tapHand() : null,
   );
 }
 

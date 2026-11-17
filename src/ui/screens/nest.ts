@@ -6,7 +6,7 @@ import { kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STA
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor, decorThumb } from './aerie';
-import { button, h, pct, svg } from '../dom';
+import { button, h, pct, svg, tapHand } from '../dom';
 import { diceButton, randomOf, wordPicker } from '../picker';
 import { sfx } from '../sound';
 import { CONFETTI, TRAIL_COLORS, attachField } from '../particles';
@@ -35,19 +35,19 @@ export const nest = (root: HTMLElement): (() => void) => {
         'section',
         { class: 'nest-panel' },
         prog >= 1
-          ? h('button', { class: 'nest-egg-tap', type: 'button', 'aria-label': `Tap to open the ${TRIBES[egg.tribe].name} egg`, onclick: () => hatchSequence(root) }, svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg ready'))
+          ? h('button', { class: 'nest-egg-tap', type: 'button', 'aria-label': `Tap to open the ${TRIBES[egg.tribe].name} egg`, onclick: () => hatchSequence(root) }, h('span', { class: 'ready-ring', 'aria-hidden': 'true' }), svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg ready'), tapHand())
           : svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg wobble'),
         h('h2', {}, `${TRIBES[egg.tribe].name} egg`),
         h('div', { class: 'warmth' }, h('span', { style: `width:${pct(prog)}` })),
         prog >= 1
-          ? h('p', { class: 'tap-hint' }, 'It is ready! Tap to open')
+          ? button('Tap to open!', () => hatchSequence(root), 'btn big glow-btn open-btn')
           : h('p', { class: 'nest-keys' }, `${TRIBES[egg.tribe].hatchKeys - egg.warmth} keys to hatch`),
         prog >= 1
           ? null
           : h(
               'div',
               { class: 'row center' },
-              button('Race to warm it', () => go(raceMap)),
+              button('▶ Race to warm it', () => go(raceMap), 'btn big glow-btn'),
               button(`Warm with 🔥 ${WARM_PRICE}`, () => {
                 if (!warmWithEmbers(p)) return;
                 sfx.coin();
@@ -96,11 +96,10 @@ export const nest = (root: HTMLElement): (() => void) => {
                   },
                   svg(eggSvg(t, 0, i + 11), 'mini-egg'),
                   h('strong', {}, TRIBES[t].name),
-                  h('small', {}, 'Put in nest'),
+                  h('small', {}, h('span', { class: 'up-arrow', 'aria-hidden': 'true' }, '⬆'), ' Put in nest'),
                 ),
               ),
             ),
-            h('p', { class: 'fine' }, 'Pick which egg to hatch next. The nest stays warm, so switching eggs keeps all the warmth.'),
           )
         : null,
       h(
@@ -116,7 +115,9 @@ export const nest = (root: HTMLElement): (() => void) => {
                   'div',
                   { class: 'dragon-card' + (active?.id === d.id ? ' active' : '') },
                   svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking, d.stars), 'card-dragon'),
-                  h('strong', {}, d.name, d.stars ? h('span', { class: 'stars', 'aria-label': `${d.stars} evolution stars` }, ' ' + '★'.repeat(d.stars)) : null),
+                  isStarglint(d)
+                    ? h('strong', {}, d.name)
+                    : button(h('span', { class: 'dc-name' }, d.name, d.stars ? h('span', { class: 'stars', 'aria-label': `${d.stars} evolution stars` }, ' ' + '★'.repeat(d.stars)) : null), () => (sfx.click(), renameSheet(d)), 'dc-rename', { 'aria-label': `Rename ${d.name}` }),
                   h('small', {}, isStarglint(d) ? 'Supporter dragon' : `${paletteFor(d.tribe, d.palette).name} ${kindName(d)}`),
                   h('small', {}, growthText(d)),
                   h('small', { class: 'perk' }, perkText(d)),
@@ -209,6 +210,8 @@ function hatchSequence(root: HTMLElement): void {
   const eggBtn = h('button', { class: 'hatch-tap', type: 'button', 'aria-label': 'Tap to open the egg' }, eggArt);
   const hint = h('p', { class: 'tap-hint big', 'aria-live': 'polite' }, 'Tap to open');
   const pips = h('div', { class: 'tap-pips', 'aria-hidden': 'true' }, ...Array.from({ length: HATCH_TAPS }, () => h('span')));
+  const hand = tapHand();
+  eggBtn.append(hand);
   const center = h('div', { class: 'hatch-center' }, eggBtn, hint, pips);
   const screen = h('div', { class: 'hatch-screen', style: `--glow:${glow}`, role: 'dialog', 'aria-modal': 'true', 'aria-label': `${TRIBES[egg.tribe].name} egg` }, h('div', { class: 'hatch-rays' }), center);
   root.append(screen);
@@ -230,6 +233,7 @@ function hatchSequence(root: HTMLElement): void {
     eggArt.classList.add('knock');
     fx.emit(...middle(eggArt), { count: 6 + taps * 4, colors, kind: 'spark', spread: 140 + taps * 30, size: 3 + taps * 0.5, life: 0.6 });
     sfx.tap(taps);
+    if (taps > 2) hand.remove();
     hint.textContent = taps === HATCH_TAPS - 1 ? 'One more tap' : taps < HATCH_TAPS ? 'Tap again' : '';
     if (taps >= HATCH_TAPS) setTimeout(open, calm ? 0 : 180);
   };
@@ -304,7 +308,7 @@ function hatchSequence(root: HTMLElement): void {
       const first = art.getBoundingClientRect();
       art.classList.remove('reveal-art');
       const codexBtn = d && button('See it in Codex', () => go(isSeasonPalette(d.palette) ? codex : codexLook(d.tribe, d.palette, d.marking ?? 0)), 'btn ghost');
-      panel.append(art, ...(d ? dragonDetails(d, looksBefore) : embersDetails(egg.tribe)), ...extras(), h('div', { class: 'row' }, codexBtn, button('Done', () => go(nest))));
+      panel.append(art, ...(d ? dragonDetails(d, looksBefore) : embersDetails(egg.tribe)), ...extras(), h('div', { class: 'row' }, codexBtn, button('Done', () => go(nest), 'btn glow-btn')));
       reveal.replaceWith(panel);
       const last = art.getBoundingClientRect();
       if (!calm && last.width) {
@@ -325,22 +329,8 @@ function dragonDetails(dragon: OwnedDragon, looksBefore: Map<string, number>): H
   const isNewLook = !looksBefore.has(lookKey(dragon.tribe, dragon.palette, dragon.marking));
   const palette = paletteFor(dragon.tribe, dragon.palette);
   const season = isSeasonPalette(dragon.palette);
-  let name = dragon.name;
-  const nameEl = h('h2', { class: 'hatch-name' }, `Meet ${name}!`);
-  const setName = (n: string): void => {
-    name = n;
-    dragon.name = n;
-    nameEl.textContent = `Meet ${n}!`;
-    persist();
-  };
-  let start = NAME_STARTS.find((s) => name.startsWith(s)) ?? NAME_STARTS[0];
-  let end = name.slice(start.length);
-  const first = wordPicker({ words: NAME_STARTS, value: start, label: 'Name start', onChange: (v) => ((start = v), setName(start + end)), preview: (v) => v + end });
-  const second = wordPicker({ words: NAME_ENDS, value: end, label: 'Name ending', onChange: (v) => ((end = v), setName(start + end)), preview: (v) => start + v });
-  const dice = diceButton(() => {
-    first.set(randomOf(NAME_STARTS.filter((w) => w !== start)));
-    second.set(randomOf(NAME_ENDS.filter((w) => w !== end)));
-  });
+  const nameEl = h('h2', { class: 'hatch-name' }, `Meet ${dragon.name}!`);
+  const pickers = namePickers(dragon, (n) => (nameEl.textContent = `Meet ${n}!`));
   const tag = season ? 'Season color' : palette.rare ? 'Rare color' : isNewLook ? 'New look' : null;
   return [
     nameEl,
@@ -350,8 +340,53 @@ function dragonDetails(dragon: OwnedDragon, looksBefore: Map<string, number>): H
       h('span', { class: 'hatch-tag' }, `${lookName(dragon.tribe, dragon.palette, dragon.marking)} ${TRIBES[dragon.tribe].name}`),
       tag ? h('span', { class: 'hatch-tag shiny' }, `✨ ${tag}`) : null,
     ),
-    h('div', { class: 'name-pickers' }, first.el, second.el, dice),
+    pickers,
   ];
+}
+
+/** Splits a name into a start and an ending from the word lists (the longest start that fits). */
+function splitName(name: string): [string, string] {
+  const start = [...NAME_STARTS].sort((a, b) => b.length - a.length).find((s) => name.startsWith(s) && NAME_ENDS.includes(name.slice(s.length)));
+  return start ? [start, name.slice(start.length)] : [NAME_STARTS[0], NAME_ENDS[0]];
+}
+
+/** Two word pickers and a dice button that rename `dragon` as they change. */
+function namePickers(dragon: OwnedDragon, onName: (n: string) => void): HTMLElement {
+  let [start, end] = splitName(dragon.name);
+  const setName = (): void => {
+    dragon.name = start + end;
+    onName(dragon.name);
+    persist();
+  };
+  const first = wordPicker({ words: NAME_STARTS, value: start, label: 'Name start', onChange: (v) => ((start = v), setName()), preview: (v) => v + end });
+  const second = wordPicker({ words: NAME_ENDS, value: end, label: 'Name ending', onChange: (v) => ((end = v), setName()), preview: (v) => start + v });
+  const dice = diceButton(() => {
+    first.set(randomOf(NAME_STARTS.filter((w) => w !== start)));
+    second.set(randomOf(NAME_ENDS.filter((w) => w !== end)));
+  });
+  return h('div', { class: 'name-pickers' }, h('span', { class: 'name-pencil', 'aria-hidden': 'true' }, '✏️'), h('div', { class: 'name-rows' }, first.el, second.el), dice);
+}
+
+/** Renaming a dragon later, from its card in the nest. */
+function renameSheet(dragon: OwnedDragon): void {
+  const nameEl = h('h2', { class: 'hatch-name' }, dragon.name);
+  const close = (): void => {
+    backdrop.remove();
+    go(nest);
+  };
+  const backdrop = h(
+    'div',
+    { class: 'modal-backdrop', onclick: (e: Event) => e.target === backdrop && close() },
+    h(
+      'div',
+      { class: 'modal rename', role: 'dialog', 'aria-modal': 'true', 'aria-label': `Rename ${dragon.name}` },
+      svg(dragonSvg(dragon.tribe, dragon.palette, stageFor(dragon.xp), 'flap', dragon.skin, dragon.marking, dragon.stars), 'modal-dragon'),
+      nameEl,
+      namePickers(dragon, (n) => (nameEl.textContent = n)),
+      h('div', { class: 'row' }, button('Done', close, 'btn glow-btn')),
+    ),
+  );
+  document.body.append(backdrop);
 }
 
 /**
@@ -399,7 +434,7 @@ function evolveSequence(box: HTMLElement, fx: ReturnType<typeof attachField>, d:
       h('p', {}, `${STAR_NAMES[stars]} ${d.name} · +${EVOLVE_XP.toLocaleString('en-US')} keys of growth`),
       h('p', { class: 'fine' }, stars >= MAX_STARS ? 'Full stars! This look will not hatch again, so your next eggs bring something else.' : `You found this look again, so ${d.name} grew stronger. ${MAX_STARS - stars} more ${MAX_STARS - stars === 1 ? 'star' : 'stars'} to go.`),
       ...extras,
-      h('div', { class: 'row' }, button('Done', () => go(nest))),
+      h('div', { class: 'row' }, button('Done', () => go(nest), 'btn glow-btn')),
     );
   }, 2300);
 }
