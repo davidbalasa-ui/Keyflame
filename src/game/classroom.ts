@@ -73,6 +73,8 @@ export interface RaceStart {
   factId: string | null;
   courseId: string;
   racers: string[];
+  /** Set on a teacher's "race everyone" start, which kids' devices check with the server. */
+  byTeacher?: boolean;
 }
 
 /**

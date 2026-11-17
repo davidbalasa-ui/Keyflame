@@ -158,6 +158,8 @@ export interface Profile {
   keysMastered?: string[];
   /** How many "faster than usual" rewards were paid today. */
   improveDay?: { date: string; faster: number };
+  /** Word challenge results by challenge id (after the 20 lessons). */
+  challenges?: Record<string, LessonResult>;
 }
 
 export interface StartSpeed {
@@ -318,6 +320,7 @@ export function normalizeProfile(raw: unknown): Profile | null {
     startSpeed: cleanStartSpeed(r.startSpeed),
     lessonLog: Array.isArray(r.lessonLog) ? r.lessonLog.filter((x) => x && Number.isFinite(x.at) && Number.isFinite(x.accuracy) && (x.wpm === null || Number.isFinite(x.wpm))).slice(0, LESSON_LOG_MAX) : undefined,
     nestSeen: r.nestSeen === true ? true : undefined,
+    challenges: r.challenges && typeof r.challenges === 'object' ? Object.fromEntries(Object.entries(r.challenges).filter(([k, v]) => /^C-[a-z]+-[123]$/.test(k) && v && Number.isInteger(v.stars))) : undefined,
     keysMastered: Array.isArray(r.keysMastered) ? [...new Set(r.keysMastered.filter((k) => typeof k === 'string' && k.length === 1))] : undefined,
     improveDay: r.improveDay && typeof r.improveDay.date === 'string' && Number.isInteger(r.improveDay.faster) ? { date: r.improveDay.date, faster: Math.max(0, r.improveDay.faster) } : undefined,
   } as Profile;

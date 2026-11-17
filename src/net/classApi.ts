@@ -57,6 +57,16 @@ export function clearClassBoard(t: TeacherClass): Promise<boolean> {
   return rpc<boolean>('clear_class_board', { p_code: t.code, p_key: t.key });
 }
 
+/** The teacher records a race for everyone, so kids' devices can check it really came from the teacher (KF-06). */
+export function startClassRace(t: TeacherClass, raceId: string, racers: string[]): Promise<boolean> {
+  return rpc<boolean>('start_class_race', { p_code: t.code, p_key: t.key, p_race_id: raceId, p_racers: racers });
+}
+
+/** True when the teacher started this race in the last two minutes with this member in it. */
+export function classRaceOk(code: string, raceId: string, member: string): Promise<boolean> {
+  return rpc<boolean>('class_race_ok', { p_code: code, p_race_id: raceId, p_member: member });
+}
+
 // ---------- Following riders over time ----------
 
 /** What the server says about a rider and the class: in it, no such class, removed by the teacher, or posting too fast. */

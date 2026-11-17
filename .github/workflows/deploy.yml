@@ -28,10 +28,11 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm i --no-save playwright@1.63.0 && npx playwright install --with-deps chromium
+      - run: npm i --no-save playwright@1.63.0 axe-core@4.10.2 && npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run check:overflow
       - run: npm run check:nav
+      - run: npm run check:a11y
       - run: npm run check:classroom
   build:
     needs: checks

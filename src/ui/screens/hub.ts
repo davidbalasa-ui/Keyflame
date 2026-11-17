@@ -10,7 +10,7 @@ import { breakDue, go, isGuest, profile } from '../app';
 import { button, h, pct, svg, tapHand } from '../dom';
 import { sfx } from '../sound';
 import { aerieScene } from './aerie';
-import { lessons, playLesson } from './lessons';
+import { lessons, nextChallenge, playChallenge, playLesson } from './lessons';
 import { nest } from './nest';
 import { raceMap } from './race';
 import { seasonButton } from './seasonPage';
@@ -97,7 +97,7 @@ export const hub = (root: HTMLElement): (() => void) => {
     ),
     h(
       'div',
-      { class: 'streak-pill' + (streak ? '' : ' cold') + (playedToday(p) ? ' lit' : ''), 'aria-label': `${streak} day streak` },
+      { class: 'streak-pill' + (streak ? '' : ' cold') + (playedToday(p) ? ' lit' : ''), role: 'img', 'aria-label': `${streak} day streak` },
       h('span', { class: 'streak-flame', 'aria-hidden': 'true' }, '🔥'),
       h('span', { class: 'streak-in', 'aria-hidden': 'true' }, h('strong', {}, String(streak)), h('small', {}, 'day streak')),
     ),
@@ -129,7 +129,8 @@ export const hub = (root: HTMLElement): (() => void) => {
   const dots = Array.from({ length: DAILY_RACES }, (_, i) => h('span', { class: 'daily-dot' + (dailyDone || i < daily.races ? ' on' : '') }));
   // Not done yet: the card is a Go button to the next lesson, or a race once every lesson is passed.
   const nextLesson = LESSONS.find((l, i) => lessonUnlocked(p, i) && !p.lessons[l.id]?.stars);
-  const dailyGo = (): void => (sfx.click(), go(nextLesson ? playLesson(nextLesson) : raceMap));
+  const challenge = nextLesson ? null : nextChallenge(p);
+  const dailyGo = (): void => (sfx.click(), go(nextLesson ? playLesson(nextLesson) : challenge ? playChallenge(challenge) : raceMap));
   const dailyCard = h(
     dailyDone ? 'div' : 'button',
     dailyDone ? { class: 'daily-card done', role: 'status' } : { class: 'daily-card go', type: 'button', onclick: dailyGo, 'aria-label': `Daily flight: ${daily.races} of ${DAILY_RACES} races or 1 lesson. Go` },

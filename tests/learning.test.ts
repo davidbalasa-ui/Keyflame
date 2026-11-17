@@ -79,3 +79,39 @@ describe('rewards for improving (KF-11)', () => {
     expect(back.improveDay).toEqual({ date: '2026-11-17', faster: 1 });
   });
 });
+
+describe('word challenges (KF-12)', async () => {
+  const { PACKS, CHALLENGES, buildChallengeText, challengeOpen } = await import('../src/content/challenges');
+  const { isSafeText } = await import('../src/content/safety');
+  const { challengesOpen, recordChallenge } = await import('../src/game/progress');
+  it('use only lowercase letters, so every word types on the tap keyboard', () => {
+    for (const p of PACKS) for (const lvl of p.words) for (const word of lvl) expect(word).toMatch(/^[a-z]+$/);
+  });
+  it('pass the safety filter and never repeat a word inside a level', () => {
+    for (const p of PACKS)
+      for (const lvl of p.words) {
+        expect(new Set(lvl).size).toBe(lvl.length);
+        expect(isSafeText(lvl.join(' '))).toBe(true);
+      }
+  });
+  it('make texts from the level words, never the same word twice in a row', () => {
+    for (const c of CHALLENGES) {
+      const t = buildChallengeText(c, seeded(7)).split(' ');
+      const pool = new Set(PACKS.find((p) => p.id === c.pack)!.words[c.level - 1]);
+      expect(t.every((x) => pool.has(x))).toBe(true);
+      expect(t.some((x, i) => x === t[i - 1])).toBe(false);
+    }
+  });
+  it('open after every lesson is passed, one level at a time', () => {
+    const p = createProfile('Brave Comet');
+    expect(challengesOpen(p)).toBe(false);
+    for (const l of LESSONS) p.lessons[l.id] = { stars: 1, bestWpm: 10, bestAccuracy: 0.95 };
+    expect(challengesOpen(p)).toBe(true);
+    const [l1, l2] = CHALLENGES;
+    expect(challengeOpen({}, l2)).toBe(false);
+    recordChallenge(p, l1, sum(15), 2);
+    expect(challengeOpen(p.challenges!, l2)).toBe(true);
+    const back = normalizeProfile(JSON.parse(JSON.stringify(p)))!;
+    expect(back.challenges![l1.id].stars).toBe(2);
+  });
+});

@@ -31,7 +31,7 @@ function simpleArtToggle(): HTMLElement {
 
 export const settings = (root: HTMLElement): (() => void) => {
   const p = profile();
-  const code = h('textarea', { class: 'code-box', rows: 4, readonly: true });
+  const code = h('textarea', { class: 'code-box', rows: 4, readonly: true, 'aria-label': 'Your backup code' });
   const copied = h('span', { class: 'fine' });
 
   root.append(
@@ -157,7 +157,7 @@ export const settings = (root: HTMLElement): (() => void) => {
 
 /** Brings back a rider from a backup code, including codes made on the old address. */
 function restore(root: HTMLElement): void {
-  const input = h('textarea', { rows: 4, placeholder: 'Paste a code that starts with KF1-', class: 'code-box' });
+  const input = h('textarea', { rows: 4, placeholder: 'Paste a code that starts with KF1-', class: 'code-box', 'aria-label': 'Backup code to restore' });
   const msg = h('p', { class: 'fine' });
   const modal = h(
     'div',

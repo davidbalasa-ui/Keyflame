@@ -72,7 +72,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     if (r.finished) opts.onFinish?.(session);
   };
 
-  const shiftKey = h('button', { class: 'key key-shift', type: 'button', 'aria-label': 'Shift' }, '⇧');
+  const shiftKey = h('button', { class: 'key key-shift', type: 'button', tabindex: -1, 'aria-label': 'Shift' }, '⇧');
   // Keys read lowercase and switch to capitals and symbols while shift is on, like a phone keyboard.
   const showShifted = (on: boolean): void => {
     keyEls.forEach((el, k) => {
@@ -99,7 +99,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
       if (w) shiftKey.style.flex = `${w} 1 0`;
       return shiftKey;
     }
-    const el = h('button', { class: `key f-${fingerFor(k)} ${k === 'f' || k === 'j' ? 'bump' : ''} ${k === ' ' ? 'key-space' : ''} ${cls}`, type: 'button', 'aria-label': k === ' ' ? 'space' : k }, keyLabel(k, false));
+    const el = h('button', { class: `key f-${fingerFor(k)} ${k === 'f' || k === 'j' ? 'bump' : ''} ${k === ' ' ? 'key-space' : ''} ${cls}`, type: 'button', tabindex: -1, 'aria-label': k === ' ' ? 'space' : k }, keyLabel(k, false));
     if (w) el.style.flex = `${w} 1 0`;
     actions.set(el, () => {
       let ch = k;

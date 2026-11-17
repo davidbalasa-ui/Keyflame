@@ -3,12 +3,13 @@ import { weakKeys } from '../../engine/typing';
 import { TRIBES, eggSvg } from '../../game/dragons';
 import { claimNewAchievements, earnedIds, type Achievement } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
-import { knownLetters, activeDragon, applyPlacement, isTouch, placedThrough, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
+import { challengesOpen, recordChallenge, knownLetters, activeDragon, applyPlacement, isTouch, placedThrough, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
 import { reportToClass } from '../classTrack';
 import { PASSAGES } from '../../content/words';
 import { go, inputMode, persist, profile } from '../app';
 import { button, h, pct, svg, type Child } from '../dom';
 import { finishBar } from '../finishBar';
+import { CHALLENGES, PACKS, asLesson, buildChallengeText, challengeOpen, levelName, packById, type Challenge } from '../../content/challenges';
 import { payImprovements, type Improvement } from '../../game/improve';
 import { improvementArt, improvementTitle } from '../improveArt';
 import { withTabs } from '../tabBar';
@@ -62,6 +63,7 @@ export const lessons = (root: HTMLElement): (() => void) => {
           ),
         );
       }),
+      challengeSection(),
     ),
   );
   return withTabs(root, 'home');
@@ -334,3 +336,118 @@ export const trickyKeys = (root: HTMLElement): (() => void) => {
     view.destroy();
   };
 };
+
+/** Word challenges: themed word packs after the 20 lessons (KF-12). */
+function challengeSection(): HTMLElement {
+  const p = profile();
+  const open = challengesOpen(p);
+  const res = p.challenges ?? {};
+  return h(
+    'section',
+    { class: 'unit challenges' + (open ? '' : ' locked') },
+    h('div', { class: 'unit-head' }, h('div', {}, h('h2', {}, '🏆 Word challenges'), h('p', {}, open ? 'Pick a pack. Pass a level to open the next.' : 'Pass every lesson to open'))),
+    h(
+      'div',
+      { class: 'pack-grid' },
+      ...PACKS.map((pack) =>
+        h(
+          'div',
+          { class: 'pack-card' },
+          h('div', { class: 'pack-head' }, h('span', { class: 'pack-icon', 'aria-hidden': 'true' }, pack.icon), h('strong', {}, pack.title)),
+          h(
+            'div',
+            { class: 'pack-levels' },
+            ...CHALLENGES.filter((c) => c.pack === pack.id).map((c) => {
+              const can = open && challengeOpen(res, c);
+              return button(
+                h('span', {}, h('strong', {}, levelName(c.level)), h('small', { class: 'stars' }, can ? starText(res[c.id]?.stars ?? 0) : '🔒')),
+                () => go(playChallenge(c)),
+                'lesson-tile pack-level' + (can ? '' : ' locked') + (res[c.id]?.stars ? ' passed' : ''),
+                { disabled: !can, 'aria-label': `${pack.title}, ${levelName(c.level)}${can ? '' : ', locked'}` },
+              );
+            }),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/** The next challenge to play: the first open one not passed yet. */
+export function nextChallenge(p = profile()): Challenge | null {
+  if (!challengesOpen(p)) return null;
+  const res = p.challenges ?? {};
+  return CHALLENGES.find((c) => challengeOpen(res, c) && !(res[c.id]?.stars ?? 0)) ?? null;
+}
+
+export function playChallenge(c: Challenge) {
+  return (root: HTMLElement): (() => void) => {
+    const p = profile();
+    const pack = packById(c.pack);
+    const relaxed = p.settings.relaxed;
+    const stats = h('div', { class: 'live-stats' });
+    let timer = 0;
+    const view = createTypingView({
+      text: buildChallengeText(c),
+      input: inputMode(),
+      relaxed,
+      showKeyboard: p.settings.showKeyboard,
+      onKey: (r, s) => flight.update(s, r.correct),
+      onFinish: (s) => {
+        clearInterval(timer);
+        const sum = s.summary();
+        const stars = starsFor(asLesson(c), relaxed ? 0 : sum.wpm, sum.accuracy);
+        const before = earnedIds(p);
+        const reward = recordChallenge(p, c, sum, stars, relaxed);
+        const better = payImprovements(p, sum, null);
+        const fresh = claimNewAchievements(p, before);
+        persist();
+        refreshEmbers();
+        if (stars > 0) sfx.win();
+        const card = (icon: Child, value: string, label: string, cls = ''): HTMLElement =>
+          h('div', { class: `lr-card ${cls}` }, h('span', { class: 'lr-icon', 'aria-hidden': 'true' }, icon), h('strong', {}, value), h('small', {}, label));
+        const next = stars > 0 ? nextChallenge(p) : null;
+        const primary = next ? button('▶ Next challenge', () => go(playChallenge(next))) : stars === 0 ? button('↻ Try again', () => go(playChallenge(c))) : button('📚 Lessons', () => go(lessons));
+        root.append(
+          h(
+            'div',
+            { class: 'modal-backdrop' },
+            h(
+              'div',
+              { class: 'modal lesson-result' },
+              h('h2', {}, stars > 0 ? 'Challenge done!' : 'Almost there'),
+              h('p', { class: 'big-stars' }, starText(stars)),
+              h(
+                'div',
+                { class: 'lr-cards' },
+                card('🔥', `+${reward.embers}`, 'Embers'),
+                card('🎯', pct(sum.accuracy), 'Correct'),
+                relaxed ? null : card('⚡', String(Math.round(sum.wpm)), 'WPM'),
+                reward.newEgg ? card('🥚', 'New egg!', TRIBES[reward.newEgg].name, 'gold') : null,
+                ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, improvementTitle(b), 'gold')),
+                fresh.length ? card(svg(medalSvg(fresh[0].medal, fresh[0].icon), 'ach-mini'), `+${fresh.length}`, 'Achievements', 'gold') : null,
+              ),
+              stars === 0 ? h('p', { class: 'fine lr-hint' }, 'Get 90% correct to pass. Go slow!') : null,
+              finishBar(primary, [stars > 0 ? button('↻ Try again', () => go(playChallenge(c)), 'btn ghost small') : null, next || stars === 0 ? button('📚 Lessons', () => go(lessons), 'btn ghost small') : null], { nestGlow: !!reward.newEgg }),
+            ),
+          ),
+        );
+      },
+    });
+    const flight = createLessonFlight(view.session.text, activeDragon(p), seasonAt()?.sky);
+    const tick = (): void => {
+      stats.textContent = `◎ ${flight.clean}/${flight.rings} rings · ${pct(view.session.accuracy())} accuracy${relaxed ? ' · Relaxed' : ''}`;
+    };
+    timer = window.setInterval(tick, 250);
+    tick();
+    root.append(
+      topBar(() => go(lessons), 'Lessons'),
+      h('main', { class: 'play-lesson' }, h('h1', {}, `${pack.icon} ${pack.title}`, h('span', { class: 'warm-tag' }, levelName(c.level))), flight.el, stats, view.el),
+    );
+    view.focus();
+    return () => {
+      clearInterval(timer);
+      view.destroy();
+    };
+  };
+}
