@@ -33,9 +33,42 @@ jobs:
       - run: npm run check:overflow
       - run: npm run check:nav
       - run: npm run check:a11y
+      - run: npm run check:flows
       - run: npm run check:classroom
+  # The same checks in Safari's engine, since the classrooms use iPads.
+  webkit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      BROWSER: webkit
+      SHOTS: webkit-shots
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm i --no-save playwright@1.63.0 axe-core@4.10.2 && npx playwright install --with-deps webkit
+      - run: npm run build
+      - if: ${{ !cancelled() }}
+        run: npm run check:overflow
+      - if: ${{ !cancelled() }}
+        run: npm run check:nav
+      - if: ${{ !cancelled() }}
+        run: npm run check:flows
+      - if: ${{ !cancelled() }}
+        run: npm run check:a11y
+      - if: ${{ !cancelled() }}
+        run: npm run check:classroom
+      - if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: webkit-screenshots
+          path: webkit-shots
+          retention-days: 7
   build:
-    needs: checks
+    needs: [checks, webkit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

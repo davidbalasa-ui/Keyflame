@@ -12,6 +12,7 @@
     "check:classroom": "node scripts/check-classroom.mjs",
     "check:nav": "node scripts/check-nav.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
+    "check:flows": "node scripts/check-flows.mjs",
     "codes": "vite-node scripts/supporter-codes.ts"
   },
   "devDependencies": {
