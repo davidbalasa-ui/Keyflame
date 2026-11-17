@@ -44,7 +44,8 @@ const sway = (n: number): number => Math.sin(n * 1.7) * 0.12 - 0.2;
 const MOUNTAINS =
   '<svg viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 60 L0 40 L30 22 L58 38 L92 12 L130 36 L162 20 L196 40 L232 14 L268 34 L300 18 L338 38 L370 24 L400 36 L400 60z" fill="#2f2a78"/><path d="M0 60 L0 48 L44 34 L80 50 L120 36 L170 52 L214 38 L262 52 L310 40 L356 52 L400 44 L400 60z" fill="#231f5c"/></svg>';
 
-export function createLessonFlight(text: string, dragon: OwnedDragon | null, sky?: readonly [string, string, string]): LessonFlight {
+/** warmRings: how many first rings are warm-up rings (review of older keys), drawn in blue. */
+export function createLessonFlight(text: string, dragon: OwnedDragon | null, sky?: readonly [string, string, string], warmRings = 0): LessonFlight {
   const stops = ringStops(text);
   const gateAt = stops.length - 1;
   const world = h('div', { class: 'flight-world' });
@@ -60,7 +61,7 @@ export function createLessonFlight(text: string, dragon: OwnedDragon | null, sky
   // Rings and the finish gate. Each is a flat element that only moves and scales.
   const rings = stops.map((_, n) => {
     const gate = n === gateAt;
-    const r = h('div', { class: gate ? 'f-ring f-gate' : 'f-ring' }, h('span', { class: 'f-ring-glow' }), gate ? h('span', { class: 'f-gate-flag' }, '★') : null);
+    const r = h('div', { class: gate ? 'f-ring f-gate' : n < warmRings ? 'f-ring warm' : 'f-ring' }, h('span', { class: 'f-ring-glow' }), gate ? h('span', { class: 'f-gate-flag' }, '★') : null);
     world.append(r);
     return r;
   });

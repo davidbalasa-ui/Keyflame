@@ -6,6 +6,7 @@ import type { InputMode } from '../save/store';
 import { safeText } from '../content/safety';
 import { inputMode, isHardwareKey, noteHardwareKey } from './app';
 import { h } from './dom';
+import { handsSvg } from './fingerCoach';
 import { sfx } from './sound';
 
 export interface TypingViewOptions {
@@ -15,6 +16,8 @@ export interface TypingViewOptions {
   relaxed?: boolean;
   /** Starglint's special: no glowing next key and no finger hint, only the text. */
   hideHints?: boolean;
+  /** Show the finger picture for these keys ('all' for every key), for kids who can't read yet. */
+  coach?: string[] | 'all';
   /** When false, keys are ignored (for example during a countdown). */
   enabled?: () => boolean;
   onKey?: (r: KeystrokeResult, s: TypingSession) => void;
@@ -47,6 +50,8 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   const chars = [...text].map((c) => h('span', { class: c === ' ' ? 'ch space' : 'ch' }, c));
   const textEl = h('div', { class: 'type-text', 'aria-live': 'off' }, ...chars);
   const hint = h('div', { class: 'finger-hint' });
+  const coachEl = h('div', { class: 'finger-coach', hidden: true });
+  const coachSet = opts.coach === 'all' ? null : new Set(opts.coach ?? []);
   const keyEls = new Map<string, HTMLElement>();
   let shiftOn = false;
   let capsLock = false;
@@ -204,6 +209,12 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     }
     keyEls.forEach((el) => el.classList.remove('next'));
     const next = session.expected;
+    const coachOn = !!next && !opts.hideHints && !!opts.coach && (coachSet === null || coachSet.has(baseKey(next).toLowerCase()));
+    coachEl.hidden = !coachOn;
+    if (coachOn && next) {
+      const finger = fingerFor(next);
+      coachEl.innerHTML = touch ? handsSvg(null, touchThumb(next)) : handsSvg(finger === 'thumb' ? null : finger, finger === 'thumb' ? 'either' : null);
+    }
     if (next && opts.hideHints) {
       shiftKey.classList.remove('next');
       hint.textContent = capsLock ? 'Caps Lock is on. Press Caps Lock to turn it off.' : '';
@@ -324,7 +335,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   if (!pinned) requestAnimationFrame(keepTextVisible);
 
   const device = opts.input === 'device';
-  const el = h('div', { class: `typing-view input-${opts.input}` }, textEl, device ? tapPrompt : null, device ? deviceInput : null, hint, device || pinned ? null : keyboard);
+  const el = h('div', { class: `typing-view input-${opts.input}` }, textEl, device ? tapPrompt : null, device ? deviceInput : null, h('div', { class: 'hint-row' }, coachEl, hint), device || pinned ? null : keyboard);
   return {
     el,
     session,

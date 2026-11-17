@@ -136,6 +136,35 @@ export function buildRaceText(knownLetters: Set<string>, wordCount: number, rand
   return joinLines(chooseLines(sentencesFor(knownLetters), weak.filter((k) => knownLetters.has(k)), wordCount, rand), knownLetters);
 }
 
+/**
+ * A short drill on the rider's tricky keys: sentences with those keys when there are
+ * enough, else key patterns like the first lessons (fj jf ff) using the tricky keys.
+ */
+export function buildTrickyText(known: Set<string>, weak: string[], rand: () => number = Math.random): string {
+  const keys = weak.filter((k) => known.has(k));
+  const pool = sentencesFor(known).filter((l) => keys.some((k) => l.includes(k)));
+  if (keys.length && pool.length >= 4) return joinLines(chooseLines(pool, keys, 14, rand), known);
+  const use = keys.length ? keys : ['f', 'j'];
+  const pickKey = (): string => use[Math.floor(rand() * use.length)];
+  return Array.from({ length: 16 }, () => Array.from({ length: 2 + Math.floor(rand() * 2) }, pickKey).join('')).join(' ');
+}
+
+/**
+ * A short warm-up before a lesson: about four words that use only older keys, leaning
+ * on the tricky ones, so earlier lessons come back now and then (spaced review).
+ * Returns null when there are too few sentences for those keys.
+ */
+export function buildWarmUp(review: Set<string>, weak: string[], rand: () => number = Math.random): string | null {
+  const pool = sentencesFor(review).filter((l) => l.split(' ').length <= 6);
+  if (pool.length < 4) return null;
+  return chooseLines(pool, weak.filter((k) => review.has(k)), 4, rand).join(' ');
+}
+
+/** Warm-ups come before every third lesson played, once there are older keys to review. */
+export function warmUpDue(lessonIndex: number, lessonsPlayed: number, kind: Lesson['kind']): boolean {
+  return lessonIndex >= 3 && kind !== 'passage' && lessonsPlayed % 3 === 2;
+}
+
 /** Stars earned: 1 for passing, 2 for 95% accuracy, 3 for 95% accuracy and the WPM goal. */
 export function starsFor(lesson: Lesson, wpm: number, accuracy: number): number {
   if (accuracy < 0.9) return 0;

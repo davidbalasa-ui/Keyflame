@@ -1,14 +1,16 @@
-import { LESSONS, UNITS, buildLessonText, lessonsInUnit, starsFor, type Lesson } from '../../content/lessons';
+import { LESSONS, UNITS, buildLessonText, buildTrickyText, buildWarmUp, warmUpDue, lessonsInUnit, starsFor, type Lesson } from '../../content/lessons';
 import { weakKeys } from '../../engine/typing';
 import { TRIBES, eggSvg } from '../../game/dragons';
 import { claimNewAchievements, earnedIds, type Achievement } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
-import { activeDragon, applyPlacement, isTouch, placedThrough, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
+import { knownLetters, activeDragon, applyPlacement, isTouch, placedThrough, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
 import { reportToClass } from '../classTrack';
 import { PASSAGES } from '../../content/words';
 import { go, inputMode, persist, profile } from '../app';
 import { button, h, pct, svg, type Child } from '../dom';
 import { finishBar } from '../finishBar';
+import { payImprovements, type Improvement } from '../../game/improve';
+import { improvementArt, improvementTitle } from '../improveArt';
 import { withTabs } from '../tabBar';
 import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
@@ -21,7 +23,6 @@ const starText = (n: number): string => '★'.repeat(n) + '☆'.repeat(3 - n);
 
 export const lessons = (root: HTMLElement): (() => void) => {
   const p = profile();
-  const weak = weakKeys(p.keyStats, 'abcdefghijklmnopqrstuvwxyz;,./'.split(''));
   root.append(
     topBar(() => go(hub), 'Home'),
     h(
@@ -31,7 +32,7 @@ export const lessons = (root: HTMLElement): (() => void) => {
       Object.keys(p.lessons).length < 3
         ? h('div', { class: 'placement-cta' }, h('span', {}, 'Already know some typing? '), button('Take the 1-minute check', () => go(placement), 'btn small'))
         : null,
-      weak.length ? h('p', { class: 'tricky' }, 'Tricky keys to practice: ', ...weak.map((k) => h('kbd', {}, k.toUpperCase()))) : null,
+      trickyButton(),
       ...UNITS.map((u) => {
         const list = lessonsInUnit(u.id);
         const earned = p.unitsRewarded.includes(u.id);
@@ -69,7 +70,13 @@ export const lessons = (root: HTMLElement): (() => void) => {
 export function playLesson(lesson: Lesson) {
   return (root: HTMLElement): (() => void) => {
     const p = profile();
-    const text = buildLessonText(lesson, weakKeys(p.keyStats, lesson.keys));
+    const idx = LESSONS.indexOf(lesson);
+    // Every few lessons, a few blue warm-up rings with keys from two or more lessons back.
+    const review = idx >= 2 ? new Set(LESSONS[idx - 2].keys.filter((k) => k !== ' ')) : null;
+    const warm = review && warmUpDue(idx, p.totals.lessons, lesson.kind) ? buildWarmUp(review, weakKeys(p.keyStats, [...review])) : null;
+    const main = buildLessonText(lesson, weakKeys(p.keyStats, lesson.keys));
+    const text = warm ? `${warm} ${main}` : main;
+    const warmRings = warm ? warm.split(' ').length : 0;
     const stats = h('div', { class: 'live-stats' });
     let timer = 0;
     const relaxed = p.settings.relaxed;
@@ -78,6 +85,8 @@ export function playLesson(lesson: Lesson) {
       text,
       input,
       relaxed,
+      // The first lesson shows the finger picture on every key; later lessons on their new keys.
+      coach: lesson.id === LESSONS[0].id ? 'all' : lesson.newKeys.filter((k) => k !== ' '),
       showKeyboard: p.settings.showKeyboard,
       onKey: (r, s) => flight.update(s, r.correct),
       onFinish: (s) => {
@@ -86,17 +95,20 @@ export function playLesson(lesson: Lesson) {
         // Relaxed mode has no clock, so it can earn up to two stars.
         const stars = starsFor(lesson, relaxed ? 0 : sum.wpm, sum.accuracy);
         const before = earnedIds(p);
+        // Earlier speeds on this lesson, newest first; relaxed runs have no clock.
+        const prevWpms = relaxed ? null : (p.lessonLog ?? []).filter((x) => x.lesson === lesson.id && x.wpm !== null).map((x) => x.wpm as number);
         const reward = recordLesson(p, lesson, sum, stars, relaxed);
+        const better = payImprovements(p, sum, prevWpms);
         reportToClass(p, { kind: 'lesson', lesson: lesson.id, stars, wpm: relaxed ? null : sum.wpm, accuracy: sum.accuracy, touch: isTouch(view.input) });
         const fresh = claimNewAchievements(p, before);
         persist();
         refreshEmbers();
         if (stars > 0) sfx.win();
-        showResult(root, lesson, relaxed ? null : sum.wpm, sum.accuracy, stars, reward.embers, reward.newEgg ? TRIBES[reward.newEgg].name : null, reward.eggReady, fresh, reward.seasonDone?.map((c) => c.text));
+        showResult(root, lesson, relaxed ? null : sum.wpm, sum.accuracy, stars, reward.embers, reward.newEgg ? TRIBES[reward.newEgg].name : null, reward.eggReady, fresh, reward.seasonDone?.map((c) => c.text), better);
       },
     });
     // The flight follows the text the typing view really shows.
-    const flight = createLessonFlight(view.session.text, activeDragon(p), seasonAt()?.sky);
+    const flight = createLessonFlight(view.session.text, activeDragon(p), seasonAt()?.sky, warmRings);
     const tick = (): void => {
       const s = view.session;
       // No speed on screen during a lesson: accuracy is what counts here.
@@ -109,7 +121,7 @@ export function playLesson(lesson: Lesson) {
       h(
         'main',
         { class: 'play-lesson' },
-        h('h1', {}, lesson.title),
+        h('h1', {}, lesson.title, warm ? h('span', { class: 'warm-tag' }, 'Warm-up first') : null),
         lesson.newKeys.filter((k) => k !== ' ').length
           ? h('p', { class: 'new-keys' }, 'New keys: ', ...lesson.newKeys.filter((k) => k !== ' ').map((k) => h('kbd', {}, k.toUpperCase())), lesson.id === 'L1' ? (input === 'keyboard' ? ' Rest your pointer fingers on the bumps on F and J.' : ' Hold your device with both hands and tap with your thumbs.') : '')
           : h('p', { class: 'new-keys' }, 'Keep your eyes on the screen, not your fingers.'),
@@ -126,7 +138,7 @@ export function playLesson(lesson: Lesson) {
   };
 }
 
-function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = [], seasonDone: string[] = []): void {
+function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = [], seasonDone: string[] = [], better: Improvement[] = []): void {
   const idx = LESSONS.indexOf(lesson);
   const next = LESSONS[idx + 1];
   // Picture cards instead of sentences: one card per thing earned.
@@ -138,6 +150,7 @@ function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accur
     wpm === null ? null : card('⚡', String(Math.round(wpm)), 'WPM'),
     newEgg ? card('🥚', 'New egg!', newEgg, 'gold') : null,
     eggReady ? card('🐣', 'Ready!', 'Egg can hatch', 'gold') : null,
+    ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, improvementTitle(b), 'gold')),
     ...seasonDone.map((t) => card('🌟', `+${CHALLENGE_EMBERS}`, t, 'gold')),
     fresh.length === 1 ? card(svg(medalSvg(fresh[0].medal, fresh[0].icon), 'ach-mini'), `“${fresh[0].title}”`, 'New title', 'gold') : null,
     fresh.length > 1 ? card(svg(medalSvg(fresh[0].medal, fresh[0].icon), 'ach-mini'), `+${fresh.length}`, 'Achievements', 'gold') : null,
@@ -223,6 +236,97 @@ export const placement = (root: HTMLElement): (() => void) => {
   root.append(
     topBar(() => go(lessons), 'Lessons'),
     h('main', { class: 'play-lesson' }, h('h1', {}, 'One-minute typing check'), h('p', { class: 'new-keys' }, 'Type as much as you can, as accurately as you can. No pressure!'), stats, view.el),
+  );
+  view.focus();
+  return () => {
+    clearInterval(timer);
+    view.destroy();
+  };
+};
+
+/** The rider's tricky keys among the letters they have learned, worst first. */
+export function trickyKeysOf(p = profile()): string[] {
+  return weakKeys(p.keyStats, [...knownLetters(p)]);
+}
+
+/** "Practice tricky keys" with the keys on it, or nothing when no key is tricky yet. */
+export function trickyButton(): HTMLElement | null {
+  const weak = trickyKeysOf();
+  if (!weak.length) return null;
+  return button(
+    h('span', { class: 'tricky-in' }, h('span', { class: 'tricky-icon', 'aria-hidden': 'true' }, '🎯'), h('strong', {}, 'Tricky keys'), h('span', { class: 'tricky-keys' }, ...weak.map((k) => h('kbd', {}, k.toUpperCase()))), h('span', { class: 'tricky-go', 'aria-hidden': 'true' }, '▶')),
+    () => (sfx.click(), go(trickyKeys)),
+    'tricky-btn',
+    { 'aria-label': `Practice your tricky keys: ${weak.map((k) => k.toUpperCase()).join(', ')}` },
+  );
+}
+
+/** A 30-second-ish drill on the rider's tricky keys. It warms the egg but pays no embers. */
+export const trickyKeys = (root: HTMLElement): (() => void) => {
+  const p = profile();
+  const weak = trickyKeysOf(p);
+  const keys = weak.length ? weak : ['f', 'j'];
+  const text = buildTrickyText(knownLetters(p), keys);
+  const stats = h('div', { class: 'live-stats' });
+  let timer = 0;
+  const view = createTypingView({
+    text,
+    input: inputMode(),
+    showKeyboard: p.settings.showKeyboard,
+    onKey: (r, s) => flight.update(s, r.correct),
+    onFinish: (s) => {
+      clearInterval(timer);
+      const sum = s.summary();
+      const reward = recordPractice(p, sum);
+      const better = payImprovements(p, sum, null);
+      persist();
+      refreshEmbers();
+      sfx.win();
+      const card = (icon: Child, value: string, label: string, cls = ''): HTMLElement =>
+        h('div', { class: `lr-card ${cls}` }, h('span', { class: 'lr-icon', 'aria-hidden': 'true' }, icon), h('strong', {}, value), h('small', {}, label));
+      const keyCard = (k: string): HTMLElement => {
+        const st = sum.keyStats[k];
+        const tries = st ? st.hits + st.misses : 0;
+        return card(h('kbd', {}, k.toUpperCase()), tries ? pct(st!.hits / tries) : '–', 'Correct');
+      };
+      root.append(
+        h(
+          'div',
+          { class: 'modal-backdrop' },
+          h(
+            'div',
+            { class: 'modal lesson-result' },
+            h('h2', {}, 'Nice practice!'),
+            h(
+              'div',
+              { class: 'lr-cards' },
+              ...keys.map(keyCard),
+              reward.warmthAdded ? card('🥚', `+${reward.warmthAdded}`, 'Egg warmth') : null,
+              ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, improvementTitle(b), 'gold')),
+            ),
+            finishBar(button('↻ Again', () => go(trickyKeys)), [button('📚 Lessons', () => go(lessons), 'btn ghost small')]),
+          ),
+        ),
+      );
+    },
+  });
+  const flight = createLessonFlight(view.session.text, activeDragon(p), seasonAt()?.sky);
+  const tick = (): void => {
+    stats.textContent = `◎ ${flight.clean}/${flight.rings} rings · ${pct(view.session.accuracy())} accuracy`;
+  };
+  timer = window.setInterval(tick, 250);
+  tick();
+  root.append(
+    topBar(() => go(lessons), 'Lessons'),
+    h(
+      'main',
+      { class: 'play-lesson' },
+      h('h1', {}, '🎯 Tricky keys'),
+      h('p', { class: 'new-keys' }, ...keys.map((k) => h('kbd', {}, k.toUpperCase()))),
+      flight.el,
+      stats,
+      view.el,
+    ),
   );
   view.focus();
   return () => {
