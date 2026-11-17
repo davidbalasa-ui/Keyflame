@@ -33,6 +33,9 @@ const SIZES = [
     { name: `${name} upright`, width: w, height: h, tablet: true },
     { name: `${name} sideways`, width: h, height: w, tablet: true },
   ]),
+  // Computers: a school laptop and a full HD screen, with a mouse instead of touch.
+  { name: 'PC 1366', width: 1366, height: 768, pc: true },
+  { name: 'PC 1920', width: 1920, height: 1080, pc: true },
 ];
 const ENGINE = process.env.BROWSER === 'webkit' ? 'webkit' : 'chromium';
 const SHOTS = process.env.SHOTS;
@@ -92,7 +95,7 @@ const failures = [];
 for (const size of SIZES) {
   const { width, height } = size;
   const label = `${size.name} (${width}x${height})`;
-  const ctx = await browser.newContext({ viewport: { width, height }, hasTouch: true, isMobile: ENGINE !== 'firefox', deviceScaleFactor: 2 });
+  const ctx = await browser.newContext({ viewport: { width, height }, hasTouch: !size.pc, isMobile: !size.pc && ENGINE !== 'firefox', deviceScaleFactor: size.pc ? 1 : 2 });
   const page = await ctx.newPage();
   await page.goto(URL);
   const check = async (name) => {
