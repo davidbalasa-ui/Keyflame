@@ -2,8 +2,9 @@
 // and how a classmate's dragon moves between the updates their device sends.
 
 import { pickFact, type Fact } from '../content/facts';
+import { buildRaceText } from '../content/lessons';
 import { COURSES } from './courses';
-import type { TribeId } from './dragons';
+import { seededRandom, type TribeId } from './dragons';
 import type { Stage } from './dragons';
 import { NAME_ADJECTIVES, NAME_NOUNS } from '../save/store';
 
@@ -100,6 +101,21 @@ export function newRace(racers: Member[], rand: () => number = Math.random): Rac
   };
 }
 
+/**
+ * What this rider types in a class race. Riders who know every letter type the race's fact
+ * (in lowercase until capitals are learned, as in their own races). Riders still learning
+ * get sentences with only their letters, about as long as the fact. The race id picks the
+ * sentences, so classmates at the same lesson type the same text.
+ */
+export function classRaceText(race: Pick<RaceStart, 'raceId' | 'text' | 'factId'>, known: Set<string>, allLetters: boolean, capitals: boolean): { text: string; factId: string | null } {
+  if (allLetters) return { text: capitals ? race.text : race.text.toLowerCase(), factId: race.factId };
+  const words = race.text.trim().split(/\s+/).length;
+  const key = `${race.raceId}:${[...known].sort().join('')}`;
+  let seed = 0;
+  for (const c of key) seed = (Math.imul(seed, 31) + c.charCodeAt(0)) >>> 0;
+  return { text: buildRaceText(known, words, seededRandom(seed)), factId: null };
+}
+
 /** Riders for a quick race: those who have waited longest, up to the limit. */
 export function quickRacers(waiting: Member[]): Member[] {
   return [...waiting].sort((a, b) => a.since - b.since || (a.id < b.id ? -1 : 1)).slice(0, MAX_QUICK_RACERS);
@@ -125,14 +141,16 @@ export interface Tick {
 }
 
 /**
- * Where to draw a classmate now. Updates arrive about once a second, so in between their
+ * Where to draw a classmate now. Updates arrive every `every` ms (once a second in small
+ * races, less often in big ones), so in between their
  * dragon keeps flying at their own average pace. It never reaches the line before they do.
  */
-export function estimateProgress(tick: Tick | null, now: number, done: boolean): number {
+export function estimateProgress(tick: Tick | null, now: number, done: boolean, every = 1000): number {
   if (done) return 1;
   if (!tick) return 0;
   const rate = tick.ms > 0 ? tick.progress / tick.ms : 0;
-  const ahead = rate * Math.min(3000, Math.max(0, now - tick.at));
+  // Keep flying a little past the next expected update, so big races (slower updates) don't freeze.
+  const ahead = rate * Math.min(Math.max(3000, every * 1.5), Math.max(0, now - tick.at));
   return Math.min(0.985, tick.progress + ahead);
 }
 

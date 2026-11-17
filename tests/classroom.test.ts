@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  CODE_LETTERS, MAX_QUICK_RACERS, classRiderName, estimateProgress, isClassCode, newRace, normalizeCode, placeFor, quickRacers, raceHost, spacedCode,
+  CODE_LETTERS, MAX_QUICK_RACERS, classRaceText, classRiderName, estimateProgress, isClassCode, newRace, normalizeCode, placeFor, quickRacers, raceHost, spacedCode,
   teacherRacers, tickEvery, waitingRiders, type Member,
 } from '../src/game/classroom';
 import { isSafeText } from '../src/content/safety';
@@ -84,5 +84,30 @@ describe('places and progress', () => {
   it('sends less often in big races', () => {
     expect(tickEvery(2)).toBe(1000);
     expect(tickEvery(25)).toBeGreaterThan(5000);
+  });
+});
+
+describe('class race text for each rider', () => {
+  const race = { raceId: 'abc123', text: 'Komodo dragons are the biggest lizards in the world. They smell with their tongues.', factId: 'f1' };
+  const homeRow = new Set('asdfghjkl;'.split(''));
+
+  it('gives riders who know every letter the fact, in lowercase until capitals are learned', () => {
+    expect(classRaceText(race, new Set(), true, true)).toEqual({ text: race.text, factId: 'f1' });
+    expect(classRaceText(race, new Set(), true, false).text).toBe(race.text.toLowerCase());
+  });
+
+  it('gives beginners only their letters, the same text for classmates at the same lesson', () => {
+    const a = classRaceText(race, homeRow, false, false);
+    expect(a.factId).toBeNull();
+    expect([...a.text].every((c) => c === ' ' || homeRow.has(c))).toBe(true);
+    expect(classRaceText(race, new Set(homeRow), false, false).text).toBe(a.text);
+    expect(classRaceText({ ...race, raceId: 'zzz999' }, homeRow, false, false).text).not.toBe(a.text);
+  });
+
+  it('keeps a classmate flying until just past their next update in a big race', () => {
+    const tick = { progress: 0.2, ms: 10000, at: 0 };
+    // 30 racers send about every 15 s; the dragon keeps moving instead of stopping at 3 s.
+    expect(estimateProgress(tick, 12000, false, tickEvery(30))).toBeGreaterThan(estimateProgress(tick, 3000, false, tickEvery(30)));
+    expect(estimateProgress(tick, 12000, false, 1000)).toBeCloseTo(estimateProgress(tick, 3000, false, 1000));
   });
 });

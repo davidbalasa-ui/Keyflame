@@ -80,8 +80,9 @@ export const grownUps = (root: HTMLElement): (() => void) => {
         'ul',
         { class: 'gu-facts' },
         h('li', {}, 'Progress stays on this device.'),
-        h('li', {}, 'No names, emails or accounts.'),
-        h('li', {}, 'Names come from preset words.'),
+        h('li', {}, 'No emails or accounts.'),
+        h('li', {}, 'Rider names come from preset words.'),
+        h('li', {}, 'Class lists stay locked with the teacher.'),
       ),
     ),
   );
