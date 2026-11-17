@@ -36,3 +36,6 @@ export function button(label: Child, onClick: () => void, cls = 'btn', extra: At
 export function pct(n: number): string {
   return `${Math.round(n * 100)}%`;
 }
+
+/** A finger that taps again and again, pointing at what to press next. */
+export const tapHand = (): HTMLElement => h('span', { class: 'tap-hand', 'aria-hidden': 'true' }, '👆');

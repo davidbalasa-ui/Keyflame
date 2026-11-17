@@ -41,6 +41,7 @@ export class ParticleField {
   private w = 0;
   private h = 0;
   private dpr = 1;
+  private clear = true;
   /** Turned off for players who asked for less motion. */
   enabled = true;
 
@@ -61,6 +62,7 @@ export class ParticleField {
     this.dpr = dpr;
     this.canvas.width = this.w * dpr;
     this.canvas.height = this.h * dpr;
+    this.clear = true;
   }
 
   get size(): { w: number; h: number } {
@@ -94,9 +96,15 @@ export class ParticleField {
     const ctx = this.ctx;
     if (!ctx) return;
     const s = Math.min(dt, 50) / 1000;
+    // An empty field that is already clear draws nothing, so an idle screen costs nothing.
+    // (Clearing a full-screen canvas every frame kept slow phones at about 20 frames a second.)
+    if (!this.list.length && this.clear) return;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     ctx.clearRect(0, 0, this.w, this.h);
-    if (!this.list.length) return;
+    this.clear = !this.list.length;
+    // An empty canvas still costs a full-screen layer to draw over the page, so hide it.
+    this.canvas.style.visibility = this.clear ? 'hidden' : '';
+    if (this.clear) return;
     const next: Particle[] = [];
     for (const p of this.list) {
       p.life -= s;
@@ -188,7 +196,8 @@ export function attachField(host: HTMLElement, tick?: (field: ParticleField, dt:
     } else {
       seen = true;
       const dt = now - last;
-      field.resize();
+      // Measuring the canvas forces a layout, so only do it while something is drawing.
+      if (field.count || tick) field.resize();
       tick?.(field, dt);
       field.step(dt);
     }

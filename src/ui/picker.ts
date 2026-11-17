@@ -52,6 +52,8 @@ export function wordPicker(opts: { words: string[]; value: string; label: string
   });
 
   function openSheet(): void {
+    // A double tap (or a ghost click on touch screens) must not stack a second sheet.
+    if (document.querySelector('.picker-backdrop:not(.closing)')) return;
     sfx.click();
     const head = h('p', { class: 'ps-preview', 'aria-live': 'polite' });
     const showPreview = (v: string): void => {

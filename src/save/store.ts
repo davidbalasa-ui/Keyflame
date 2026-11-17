@@ -354,13 +354,26 @@ const STORE = 'saves';
 const KEY = 'main';
 export const LS_KEY = 'keyflame-save';
 
+// One connection for the whole visit. Opening a new one on every save (and never closing
+// it) piled up connections, which Safari handles badly.
+let dbOpen: Promise<IDBDatabase> | null = null;
 function openDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
+  dbOpen ??= new Promise<IDBDatabase>((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, 1);
     req.onupgradeneeded = () => req.result.createObjectStore(STORE);
-    req.onsuccess = () => resolve(req.result);
+    req.onsuccess = () => {
+      const db = req.result;
+      // Let the connection go if it closes or another tab upgrades the database.
+      db.onclose = () => (dbOpen = null);
+      db.onversionchange = () => (db.close(), (dbOpen = null));
+      resolve(db);
+    };
     req.onerror = () => reject(req.error);
+  }).catch((e) => {
+    dbOpen = null;
+    throw e;
   });
+  return dbOpen;
 }
 
 async function idbGet(): Promise<unknown> {
