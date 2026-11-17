@@ -44,12 +44,23 @@ export function wordPicker(opts: { words: string[]; value: string; label: string
     const i = opts.words.indexOf(value);
     pick(opts.words[(i + by + opts.words.length) % opts.words.length]);
   };
-  face.addEventListener('keydown', (e) => {
+  const onKey = (e: KeyboardEvent): void => {
     if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') step(-1);
     else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') step(1);
-    else return;
+    else if (e.key.length === 1 && /[a-z]/i.test(e.key) && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      // Typing a letter on a computer picks the next word that starts with it.
+      const i = opts.words.indexOf(value);
+      const n = opts.words.length;
+      for (let k = 1; k <= n; k++) {
+        const w = opts.words[(i + k + n) % n];
+        if (w.toLowerCase().startsWith(e.key.toLowerCase())) {
+          pick(w);
+          break;
+        }
+      }
+    } else return;
     e.preventDefault();
-  });
+  };
 
   function openSheet(): void {
     // A double tap (or a ghost click on touch screens) must not stack a second sheet.
@@ -62,11 +73,27 @@ export function wordPicker(opts: { words: string[]; value: string; label: string
     const chips = opts.words.map((w) => {
       const b = button(w, () => (pick(w), close()), 'ps-chip' + (w === value ? ' on' : ''), { role: 'radio', 'aria-checked': String(w === value) });
       b.addEventListener('pointerenter', () => showPreview(w));
+      // With a mouse, moving off a word shows the real name again, so a hover never looks picked.
+      b.addEventListener('pointerleave', () => showPreview(value));
       b.addEventListener('focus', () => showPreview(w));
       return b;
     });
     const grid = h('div', { class: 'ps-grid', role: 'radiogroup', 'aria-label': opts.label }, ...chips);
     gridKeys(grid, chips);
+    // On a computer, pressing a letter jumps to the next word that starts with it.
+    grid.addEventListener('keydown', (e) => {
+      if (e.key.length !== 1 || !/[a-z]/i.test(e.key) || e.ctrlKey || e.metaKey || e.altKey) return;
+      const from = chips.indexOf(document.activeElement as HTMLButtonElement);
+      const n = chips.length;
+      for (let k = 1; k <= n; k++) {
+        const c = chips[(from + k + n) % n];
+        if (c.textContent?.toLowerCase().startsWith(e.key.toLowerCase())) {
+          e.preventDefault();
+          c.focus();
+          return;
+        }
+      }
+    });
     showPreview(value);
     const close = sheet(h('h2', { class: 'ps-title' }, opts.label), head, grid, face);
   }
@@ -79,6 +106,8 @@ export function wordPicker(opts: { words: string[]; value: string; label: string
     face,
     button(chevron('right'), () => step(1), 'wp-arrow', { 'aria-label': `Next ${opts.label.toLowerCase()}`, tabindex: '-1' }),
   );
+  // Keys work whichever part of the picker has focus (a mouse click focuses the arrows).
+  el.addEventListener('keydown', onKey);
   return { el, set: (v) => pick(v, true) };
 }
 
