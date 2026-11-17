@@ -2,6 +2,7 @@
 // Pure functions on a Profile so they are easy to test.
 
 import { LESSONS, UNITS, lessonsInUnit, type Lesson } from '../content/lessons';
+import type { Challenge } from '../content/challenges';
 import { mergeKeyStats, type SessionSummary } from '../engine/typing';
 import { MARKINGS, NAME_ENDS, NAME_STARTS, TRIBES, rollMarking, rollPalette, stageFor, type Stage, type TribeId } from './dragons';
 import { LESSON_LOG_MAX, isStarglint, today, type InputMode, type OwnedDragon, type Profile } from '../save/store';
@@ -209,6 +210,32 @@ export function recordLesson(p: Profile, lesson: Lesson, s: SessionSummary, star
   const seasonDone = noteSeasonLesson(p, s);
   const newEgg = checkUnitReward(p, lesson.unit) ?? checkMilestones(p);
   return { ...base, embers, newEgg, seasonDone, eggReady: eggProgress(p) >= 1 };
+}
+
+/**
+ * A finished word challenge. It pays like a lesson and counts toward the daily flight,
+ * but it isn't one of the 20 lessons, so it never changes lesson stars or unlocks.
+ */
+export function recordChallenge(p: Profile, c: Challenge, s: SessionSummary, stars: number, relaxed = false): TypingRewards {
+  const base = applySession(p, s);
+  const all = (p.challenges ??= {});
+  const prev = all[c.id];
+  all[c.id] = {
+    stars: Math.max(prev?.stars ?? 0, stars),
+    bestWpm: relaxed ? prev?.bestWpm ?? 0 : Math.max(prev?.bestWpm ?? 0, s.wpm),
+    bestAccuracy: Math.max(prev?.bestAccuracy ?? 0, s.accuracy),
+  };
+  const embers = stars > 0 ? 5 + stars * 5 : 2;
+  p.embers += embers;
+  p.totals.embersEarned += embers;
+  countPlayDay(p);
+  p.daily.lessons++;
+  return { ...base, embers, newEgg: checkMilestones(p), eggReady: eggProgress(p) >= 1 };
+}
+
+/** Word challenges open once every lesson is passed. */
+export function challengesOpen(p: Profile): boolean {
+  return LESSONS.every((l) => (p.lessons[l.id]?.stars ?? 0) > 0);
 }
 
 /** Awards a unit's egg the first time every lesson in it is passed. */

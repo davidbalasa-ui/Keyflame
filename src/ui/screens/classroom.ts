@@ -9,7 +9,7 @@ import {
   GATHER_MS, MAX_LANES, classRiderName, parseStudentList, classRaceText, estimateProgress, isClassCode, newRace, normalizeCode, quickRacers, raceHost, spacedCode,
   teacherRacers, tickEvery, waitingRiders, type Member, type RaceStart, type Tick,
 } from '../../game/classroom';
-import { classBoard, clearClassBoard, createClass, joinBadge, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
+import { classBoard, classRaceOk, clearClassBoard, startClassRace, createClass, joinBadge, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
 import { reportToClass, riderSeat, setRiderSeat } from '../classTrack';
 import { badgeCards, classSheet, progressPanel, readBackupFile, readRetired, readRoster, saveBackupFile, writeRetired, writeRoster, type Roster } from './teacherDashboard';
 import { classroomScene, teacherBackdropSvg } from '../teacherArt';
@@ -144,8 +144,16 @@ async function startSession(code: string): Promise<Session> {
   link.onRace((race) => {
     // A race only pulls in riders who are looking at the class lobby.
     if (s.here !== 'lobby' || !race.racers.includes(link.me.id)) return;
-    link.setStatus('racing');
-    go(liveRace(race.courseId, liveFor(s, race)));
+    const begin = (): void => {
+      if (s.here !== 'lobby' || session !== s) return;
+      link.setStatus('racing');
+      go(liveRace(race.courseId, liveFor(s, race)));
+    };
+    // A rider who tapped Race joins a classmate's race at once. Anyone else is only pulled
+    // in by the teacher, and the server must confirm the teacher really started it (KF-06).
+    if (link.me.status === 'waiting') return begin();
+    if (!race.byTeacher) return;
+    void classRaceOk(code, race.raceId, link.me.id).then((ok) => ok && begin(), () => undefined);
   });
   session = s;
   return s;
@@ -657,7 +665,13 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       const racers = teacherRacers(l.members());
       if (racers.length < 1) return;
       sfx.click();
-      l.startRace(newRace(racers));
+      const race = { ...newRace(racers), byTeacher: true };
+      raceBtn.disabled = true;
+      // Recorded on the server first, so kids' devices can check it came from the teacher.
+      void startClassRace(t, race.raceId, race.racers)
+        .then((ok) => (ok ? l.startRace(race) : alert('Can’t start the race. Check the Wi-Fi and try again.')))
+        .catch(() => alert('Can’t start the race. Check the Wi-Fi and try again.'))
+        .finally(() => (raceBtn.disabled = false));
     }, 'btn race-classmates');
     const races = h('div', { class: 'teacher-races' });
     const clearBtn = button('Clear', () => {

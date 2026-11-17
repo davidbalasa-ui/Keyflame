@@ -47,7 +47,7 @@ function trackCard(tiers: Achievement[]): HTMLElement {
       'div',
       { class: 'ach-body' },
       h('strong', {}, tiers[0].name),
-      h('span', { class: 'ach-pips', 'aria-label': `${got.length} of ${tiers.length} levels` }, ...tiers.map((a) => h('span', { class: `pip ${a.medal}` + (a.earned ? ' on' : '') }))),
+      h('span', { class: 'ach-pips', role: 'img', 'aria-label': `${got.length} of ${tiers.length} levels` }, ...tiers.map((a) => h('span', { class: `pip ${a.medal}` + (a.earned ? ' on' : '') }))),
       next
         ? h('div', { class: 'ach-next' }, h('small', {}, next.how), h('span', { class: 'bar' }, h('span', { style: `width:${pct(next.value / next.goal)}` })), h('small', { class: 'fine' }, `${next.value.toLocaleString('en-US')} / ${next.goal.toLocaleString('en-US')} · unlocks “${next.title}”`))
         : h('div', { class: 'ach-next' }, h('small', {}, 'Every level done!')),
