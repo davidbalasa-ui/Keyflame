@@ -418,6 +418,46 @@ try {
   await fresh.click('.tm-unlock >> text=Open');
   await fresh.waitForSelector('.teacher-code');
   check(true, 'on a class iPad the class opens only with the teacher password');
+
+  // Ben plays a lesson with no Wi-Fi: it waits on the iPad and reaches the class once it's back.
+  await scan.goto(`http://localhost:${PORT}/`);
+  await guestHome(scan);
+  await scan.context().setOffline(true);
+  await scan.click('.tile-lessons');
+  await scan.click('.lesson-tile >> nth=0');
+  await scan.waitForSelector('.type-text');
+  await keyType(scan, await raceText(scan), 15);
+  await scan.waitForSelector('text=Lesson passed!');
+  await scan.waitForTimeout(1500);
+  await scan.context().setOffline(false);
+  await scan.evaluate(() => window.dispatchEvent(new Event('online')));
+  let benActs = 0;
+  for (let i = 0; i < 10 && !benActs; i++) {
+    await teacher.click('.rt-row:has-text("Ben")');
+    await teacher.waitForSelector('.rider-sheet .activity-list, .rider-sheet p:has-text("Nothing played")');
+    benActs = await teacher.locator('.rider-sheet .activity-list li').count();
+    await teacher.keyboard.press('Escape');
+    if (!benActs) await teacher.waitForTimeout(1000);
+  }
+  check(benActs === 1, `a lesson played offline reached the class once Wi-Fi was back (${benActs} line)`);
+
+  // A backup file opens the class only after picking a teacher password, even on a class iPad.
+  const backup = JSON.stringify({ keyflame: 'teacher-backup', v: 1, code: newCode, key: teacherKey, roster: { 1: 'Ava R', 2: 'Ben' }, retired: [3] });
+  const kidPad = await open({ viewport: { width: 820, height: 1180 }, hasTouch: true, isMobile: true, userAgent: IPAD_UA });
+  await openClassroom(kidPad);
+  await kidPad.setInputFiles('input[aria-label="Backup file"]', { name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(backup) });
+  await kidPad.waitForSelector('text=Pick a password to lock your class');
+  check(!(await kidPad.locator('.teacher-code').count()), 'a backup file asks for a password before the class opens');
+  await kidPad.fill('.tm-unlock input[type=password]', PASSWORD);
+  await kidPad.locator('.tm-unlock').getByRole('button', { name: 'Open' }).click();
+  await kidPad.waitForSelector('.teacher-code');
+  check(true, 'with the password the backup file brings the class back');
+  await kidPad.goto(`http://localhost:${PORT}/#join=${newCode}-1-${wordFor(1)}&name=Ava`);
+  await kidPad.waitForSelector('.wing-card', { timeout: 6000 });
+  await kidPad.click('text=← Back');
+  await openClassroom(kidPad);
+  await kidPad.waitForSelector('text=Kids play on this device');
+  check(true, 'once a kid plays there, the restored class needs the password again');
 } catch (e) {
   const where = String(e.stack ?? '').split('\n').find((l) => l.includes('check-classroom')) ?? '';
   check(false, `${String(e.message ?? e).split('\n')[0]} ${where.trim()}`);

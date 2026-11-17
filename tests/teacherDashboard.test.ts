@@ -118,7 +118,7 @@ describe('classroom database functions', () => {
       p_code: code, p_badge: badge, p_rider_key: k, p_name: name, p_kind: 'lesson', p_lesson: null, p_stars: null, p_wpm: 10, p_accuracy: 0.9, p_place: null, p_racers: null, p_touch: false, ...extra,
     });
   // The 3-second flood brake: move earlier activity into the past between posts.
-  const age = () => db.exec(`update class_activity set created_at = created_at - interval '1 day'`);
+  const age = () => db.exec(`update class_activity set created_at = created_at - interval '1 day', received_at = received_at - interval '1 day'`);
 
   beforeAll(async () => {
     db = new PGlite();
@@ -231,6 +231,33 @@ describe('classroom database functions', () => {
     expect(await post(12, '8'.repeat(32), 'Brave Rider', { p_kind: 'class', p_wpm: 15, p_place: 2, p_racers: 2 })).toBe('ok');
     const board = await call<{ rider: string; wins: number }>('class_board', { p_code: code });
     expect(board.map((r) => [r.rider, r.wins])).toEqual([['Brave Rider', 1], ['Brave Rider', 0]]);
+  });
+
+  it('stores a result sent twice only once, on the day it was played', async () => {
+    const K9 = '9'.repeat(32);
+    expect(await join(13, K9, 'Calm Willow')).toBe('ok');
+    await age();
+    const send = (id: string, at: string, extra: Record<string, unknown> = {}) =>
+      post(13, K9, 'Calm Willow', { p_id: id, p_at: at, ...extra });
+    const id1 = '00000000-0000-4000-8000-000000000001';
+    const yesterday = new Date(Date.now() - 86400000).toISOString();
+    expect(await send(id1, yesterday, { p_kind: 'class', p_wpm: 12, p_place: 1, p_racers: 2 })).toBe('ok');
+    // A retry after a timeout: already there, so nothing new and no flood brake.
+    expect(await send(id1, yesterday, { p_kind: 'class', p_wpm: 12, p_place: 1, p_racers: 2 })).toBe('ok');
+    expect(await send('00000000-0000-4000-8000-000000000002', yesterday)).toBe('slow');
+    await age();
+    // A placement check, sent a week late; a time in the future is pulled back to now.
+    expect(await send('00000000-0000-4000-8000-000000000003', new Date(Date.now() - 7 * 86400000).toISOString(), { p_kind: 'placement', p_lesson: 'L12', p_wpm: 16 })).toBe('ok');
+    await age();
+    expect(await send('00000000-0000-4000-8000-000000000004', new Date(Date.now() + 86400000).toISOString(), { p_kind: 'race', p_wpm: 9, p_touch: true })).toBe('ok');
+    const riders = await call<{ badge: number; id: string; lessons_passed: number; lessons: number; races: number; class_races: number; placed: string | null; recent_wpm: number; touch: boolean }>('teacher_riders', { p_code: code, p_key: key });
+    const r = riders.find((x) => x.badge === 13)!;
+    // The check is its own line: not a lesson, not a race. Speed follows the latest input (touch).
+    expect(r).toMatchObject({ lessons_passed: 0, lessons: 0, races: 2, class_races: 1, placed: 'L12', recent_wpm: 9, touch: true });
+    const acts = await call<{ kind: string; created_at: string }>('teacher_rider_activity', { p_code: code, p_key: key, p_rider: r.id });
+    expect(acts.map((x) => x.kind)).toEqual(['race', 'class', 'placement']);
+    expect(new Date(acts[0].created_at).getTime()).toBeLessThanOrEqual(Date.now());
+    expect((await call<{ rider: string }>('class_board', { p_code: code })).filter((b) => b.rider === 'Calm Willow').length).toBe(1);
   });
 
   it('keeps the locked student list and hands it back only for the right proof', async () => {

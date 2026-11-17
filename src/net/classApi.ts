@@ -82,7 +82,8 @@ export function joinBadge(seat: ClassSeat, word: number | null): Promise<JoinSta
 }
 
 export interface ActivityPost {
-  kind: 'lesson' | 'race' | 'class';
+  /** placement is the one-minute typing check; lesson is then the last lesson it opened. */
+  kind: 'lesson' | 'race' | 'class' | 'placement';
   lesson?: string;
   stars?: number;
   /** Left out for relaxed lessons, which have no clock. */
@@ -93,8 +94,12 @@ export interface ActivityPost {
   touch: boolean;
 }
 
-/** One finished lesson or race. A class race also goes on the class board. */
-export function postClassActivity(seat: ClassSeat, a: ActivityPost): Promise<RiderStatus> {
+/**
+ * One finished lesson, race or placement check. A class race also goes on the class board.
+ * The id is made on the device, so sending the same result twice stores it once; at is when
+ * it was played, so a result sent late still lands on the right day.
+ */
+export function postClassActivity(seat: ClassSeat, a: ActivityPost, id: string, at: number): Promise<RiderStatus> {
   return rpc<RiderStatus>('post_class_activity', {
     p_code: seat.code,
     p_badge: seat.badge,
@@ -108,6 +113,8 @@ export function postClassActivity(seat: ClassSeat, a: ActivityPost): Promise<Rid
     p_place: a.place === undefined ? null : Math.min(40, a.place),
     p_racers: a.racers === undefined ? null : Math.min(40, a.racers),
     p_touch: a.touch,
+    p_id: id,
+    p_at: new Date(at).toISOString(),
   });
 }
 
@@ -128,10 +135,12 @@ export interface RiderRow {
   recent_accuracy: number | null;
   touch: boolean | null;
   active_days: number;
+  /** The last lesson a placement check opened, if the rider took one. */
+  placed: string | null;
 }
 
 export interface ActivityRow {
-  kind: 'lesson' | 'race' | 'class';
+  kind: ActivityPost['kind'];
   lesson: string | null;
   stars: number | null;
   wpm: number | null;

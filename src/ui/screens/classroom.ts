@@ -411,17 +411,20 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
   // The locked backup follows every change to the student list.
   const backupNote = h('p', { class: 'fine backup-note', role: 'status' });
   let syncTimer: number | undefined;
-  const syncNow = async (): Promise<void> => {
+  /** Backs up the locked list. True only once Keyflame has it. */
+  const syncNow = async (): Promise<boolean> => {
     const t = readTeacher();
     if (!t?.vault) {
       backupNote.textContent = 'No teacher password yet, so the student list is only on this device.';
-      return;
+      return false;
     }
     try {
       if (!(await pushVault(t, t.vault, readRoster(), readRetired()))) throw new Error('refused');
       backupNote.textContent = `✓ Student list backed up (${new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })})`;
+      return true;
     } catch {
       backupNote.textContent = 'Student list not backed up yet. It will try again after your next change. Check the Wi-Fi.';
+      return false;
     }
   };
   const syncSoon = (): void => {
@@ -441,16 +444,16 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       writeRetired([]);
       writeTeacher(t);
       writeStore(LAST_CODE_KEY, t.code);
-      await syncNow();
+      const backedUp = await syncNow();
       await show(t, 'progress');
-      main.append(readySheet(t));
+      main.append(readySheet(t, backedUp));
     } catch {
       main.replaceChildren(h('p', {}, 'Can’t reach Keyflame right now. Check the Wi-Fi.'), button('Try again', () => void makeClass(names, password)));
     }
   };
 
   /** Shown once after making a class: paper and file copies of the student list. */
-  const readySheet = (t: TeacherSave): HTMLElement => {
+  const readySheet = (t: TeacherSave, backedUp: boolean): HTMLElement => {
     const sheet = h(
       'div',
       { class: 'modal-backdrop' },
@@ -461,7 +464,9 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         h('p', { class: 'teacher-code-inline' }, spacedCode(t.code)),
         h('p', {}, fam ? 'Print a card for each kid. They scan it to join.' : 'Print a card for each student. They scan it to join.'),
         h('div', { class: 'row center' }, button('Print badge cards', () => badgeCards(t, readRoster())), button('Class sheet', () => classSheet(t, readRoster()), 'btn ghost')),
-        h('p', { class: 'fine' }, 'Your list is backed up and locked with your password. Open it on any device with the code and password.'),
+        backedUp
+          ? h('p', { class: 'fine' }, 'Your list is backed up and locked with your password. Open it on any device with the code and password.')
+          : h('p', { class: 'fine warn' }, 'Your list isn’t backed up yet, so it is only on this device. Save a backup file now. Keyflame tries again after your next change.'),
         h('div', { class: 'row center' }, button('Save backup file', () => saveBackupFile(t), 'btn ghost small'), button('Done', () => sheet.remove(), 'btn small')),
       ),
     );
@@ -509,11 +514,11 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       void f.text().then((text) => {
         const b = readBackupFile(text);
         if (!b) return void (msg2.textContent = 'That isn’t a Keyflame class backup file.');
-        writeRoster(b.roster);
-        writeRetired(b.retired);
-        writeTeacher({ code: b.code, key: b.key });
-        writeStore(LAST_CODE_KEY, b.code);
-        void show(readTeacher()!, 'progress');
+        // A backup file opens the class locked with a password, like every other way in.
+        passwordForm({ code: b.code, key: b.key, ...(fam ? { kind: 'family' as const } : {}) }, () => {
+          writeRoster(b.roster);
+          writeRetired(b.retired);
+        });
       });
     });
 
@@ -554,7 +559,44 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
     const t = readTeacher();
     if (!t) startForm();
     else if (t.vault && sharedDevice(t.code)) unlockForm(t, t.vault);
+    // Kids play here and the class has no password yet: it gets one before it opens.
+    else if (!t.vault && sharedDevice(t.code)) passwordForm(t);
     else void show(t);
+  };
+
+  /**
+   * Picks the teacher password for a class that has none on this device (an old save, or a
+   * backup file), then opens it. The locked list is backed up again with this password.
+   */
+  const passwordForm = (t: TeacherSave, before?: () => void): void => {
+    const pw = passwordInput(fam ? 'Grown-up password' : 'Teacher password', 'new-password');
+    const msg = h('p', { class: 'fine', role: 'status' });
+    let busy = false;
+    const save = async (): Promise<void> => {
+      if (busy) return;
+      if (pw.value.length < MIN_PASSWORD) return void (msg.textContent = `At least ${MIN_PASSWORD} characters.`);
+      busy = true;
+      const vault = await deriveKeys(pw.value, newSalt());
+      before?.();
+      const next: TeacherSave = { ...t, vault };
+      writeTeacher(next);
+      writeStore(LAST_CODE_KEY, next.code);
+      await show(next, 'progress');
+      void syncNow();
+    };
+    pw.addEventListener('keydown', (e) => e.key === 'Enter' && void save());
+    main.replaceChildren(
+      h(
+        'section',
+        { class: 'tm-card tm-unlock' },
+        h('h2', {}, fam ? 'Family wing' : 'Classroom'),
+        h('p', { class: 'fine' }, 'Pick a password to lock your class. Use it to open the class on any device.'),
+        field(fam ? 'Grown-up password' : 'Teacher password', pw),
+        msg,
+        h('div', { class: 'tm-actions' }, button('Open', () => void save(), 'btn tm-primary')),
+      ),
+    );
+    pw.focus();
   };
 
   /**

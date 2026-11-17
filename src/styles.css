@@ -1172,6 +1172,7 @@ body.reduced-motion .hatch-screen.opened::after, .hatch-screen.settled::after { 
 .lesson-dots small { font-size: 0.6em; color: var(--gold); min-height: 1em; }
 .lg-none { background: var(--bg-2); color: var(--muted); }
 .lg-tried { background: var(--panel-2); }
+.lg-skipped { background: var(--panel-2); color: var(--muted); border: 1px dashed var(--muted); }
 .lg-pass { background: #2c5a4a; border: 1px solid var(--good); }
 .activity-list { list-style: none; padding: 0; margin: 0; }
 .activity-list li { display: grid; grid-template-columns: 6.5em 1fr auto; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 0.9em; }
@@ -1821,3 +1822,4 @@ body.reduced-motion .aerie-back .cel-glow, body.reduced-motion .aerie-back .twin
 .dc-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .modal.rename .name-pickers { margin: 8px 0 16px; }
 body.reduced-motion .tap-hand, body.reduced-motion .ready-ring, body.reduced-motion .glow-btn, body.reduced-motion .up-arrow { animation: none; }
+.fine.warn { color: var(--gold); }
