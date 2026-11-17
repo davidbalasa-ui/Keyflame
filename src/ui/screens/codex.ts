@@ -104,7 +104,7 @@ export const codex = (root: HTMLElement): (() => void) => {
 
   const sections = (Object.keys(TRIBES) as TribeId[]).map(tribeSection).filter((s) => s !== null);
   root.append(
-    topBar(() => go(hub)),
+    topBar(() => go(hub), 'Home'),
     h(
       'main',
       { class: 'codex' },

@@ -170,7 +170,7 @@ try {
   await phone.click('.wing-join .race-classmates');
   await phone.waitForSelector('text=No wing has that code');
   check(true, 'a wrong code is turned away');
-  await phone.click('text=← Back');
+  await phone.click('header.top-bar > .btn:first-child >> nth=0');
 
   await joinClass(ipad, code, 1);
   // The phone joins from the home screen's Join class button.
@@ -284,14 +284,14 @@ try {
   check(true, 'second race finishes');
 
   // Leaving the race mid-way puts the phone back in the lobby, still in the class.
-  await phone.click('text=← Back');
+  await phone.click('header.top-bar > .btn:first-child >> nth=0');
   await phone.waitForSelector('.race-classmates');
   check(true, 'leaving a race goes back to the class lobby');
 
   // A shared iPad remembers the class for the next rider.
   await ipad.click('text=Back to class');
-  await ipad.click('text=← Back');
-  await ipad.click('text=← Back');
+  await ipad.click('header.top-bar > .btn:first-child >> nth=0');
+  await ipad.click('header.top-bar > .btn:first-child >> nth=0');
   await ipad.click('.home-avatar');
   await ipad.click('.rider-chip >> text=Guest');
   await guestHome(ipad);
@@ -326,7 +326,7 @@ try {
   await teacher.click('text=Delete student');
   await rowCount(teacher, 2, 2);
   check(true, 'teacher deleted Cara and her badge');
-  await ipad.click('text=← Back');
+  await ipad.click('header.top-bar > .btn:first-child >> nth=0');
   await ipad.click('.class-card');
   await ipad.waitForSelector('text=Scan your card again, or type it in.', { timeout: 5000 });
   check(true, 'the removed badge’s device is asked to join again');
@@ -359,7 +359,7 @@ try {
   await teacher.click('.modal >> text=Done');
   await rowCount(teacher, 3, 2);
   check(true, 'a new class code keeps every student');
-  await phone.click('text=← Back');
+  await phone.click('header.top-bar > .btn:first-child >> nth=0');
   await phone.click('.class-card');
   await phone.waitForSelector('text=That code has changed', { timeout: 5000 });
   check(true, 'a rider on the old code is asked for the new one');
@@ -378,7 +378,7 @@ try {
   await scan.waitForSelector('.wing-card', { timeout: 6000 });
   check((await scan.locator('.wing-badge strong').textContent()) === '#4' && !scan.url().includes('join='), 'a scanned QR link joins badge 4 and cleans the address');
   check((await scan.locator('.wing-name').textContent()) === 'Ben', 'the rider gets the name the teacher typed');
-  await scan.click('text=← Back');
+  await scan.click('header.top-bar > .btn:first-child >> nth=0');
   check((await scan.locator('.home-who strong').textContent()) === 'Ben', 'the home screen shows the teacher’s name for the rider');
   await scan.click('.class-chip');
   await scan.waitForTimeout(600);
@@ -406,7 +406,7 @@ try {
   // The same iPad becomes a class iPad: Ava joins on it, so the class now needs the password.
   await fresh.goto(`http://localhost:${PORT}/#join=${newCode}-1-${wordFor(1)}&name=Ava`);
   await fresh.waitForSelector('.wing-card', { timeout: 6000 });
-  await fresh.click('text=← Back');
+  await fresh.click('header.top-bar > .btn:first-child >> nth=0');
   await openClassroom(fresh);
   await fresh.waitForSelector('text=Kids play on this device');
   await fresh.waitForTimeout(400);
@@ -454,7 +454,7 @@ try {
   check(true, 'with the password the backup file brings the class back');
   await kidPad.goto(`http://localhost:${PORT}/#join=${newCode}-1-${wordFor(1)}&name=Ava`);
   await kidPad.waitForSelector('.wing-card', { timeout: 6000 });
-  await kidPad.click('text=← Back');
+  await kidPad.click('header.top-bar > .btn:first-child >> nth=0');
   await openClassroom(kidPad);
   await kidPad.waitForSelector('text=Kids play on this device');
   check(true, 'once a kid plays there, the restored class needs the password again');

@@ -3,6 +3,7 @@
 // show up only by their preset-word rider name and their dragon.
 
 import { dragonSvg, stageFor } from '../../game/dragons';
+import { withTabs } from '../tabBar';
 import { activeDragon, capitalsKnown, factsUnlocked, isTouch, knownLetters } from '../../game/progress';
 import {
   GATHER_MS, MAX_LANES, classRiderName, parseStudentList, classRaceText, estimateProgress, isClassCode, newRace, normalizeCode, quickRacers, raceHost, spacedCode,
@@ -239,7 +240,8 @@ const joinWithNote = (note: string): Screen => wingScreen({ note });
 export function classLobby(code: string) {
   return (root: HTMLElement): (() => void) => {
     const main = h('main', { class: 'class-lobby' }, h('p', { class: 'fine' }, 'Connecting…'));
-    root.append(topBar(() => go(raceMap)), main);
+    root.append(topBar(() => go(raceMap), 'Courses'), main);
+    const stopTabs = withTabs(root, 'home');
     let s: Session | null = null;
     let gather: number | undefined;
     let off: (() => void) | null = null;
@@ -335,6 +337,7 @@ export function classLobby(code: string) {
     }
 
     return () => {
+      stopTabs();
       gone = true;
       clearTimeout(gather);
       off?.();

@@ -42,7 +42,7 @@ export function wingScreen(opts: { note?: string; join?: WingSeat }): Screen {
       );
     } else main.append(h('h1', {}, '🐉 Join your wing'));
     main.append(ticket.el);
-    root.append(topBar(() => go(hub)), main);
+    root.append(topBar(() => go(hub), 'Home'), main);
     if (!ticket.el.hidden) ticket.focus();
     // After this screen is up: a join can switch screens, which mustn't happen mid-build.
     if (opts.join) queueMicrotask(() => void ticket.join());

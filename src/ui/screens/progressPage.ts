@@ -63,7 +63,7 @@ export const progressPage = (root: HTMLElement): (() => void) => {
   };
 
   root.append(
-    topBar(() => go(hub)),
+    topBar(() => go(hub), 'Home'),
     h(
       'main',
       { class: 'progress' },

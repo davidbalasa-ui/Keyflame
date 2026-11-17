@@ -62,7 +62,7 @@ export const grownUps = (root: HTMLElement): (() => void) => {
   const p = profile();
   const riders = saveData().profiles.length;
   root.append(
-    topBar(() => go(hub)),
+    topBar(() => go(hub), 'Home'),
     h(
       'main',
       { class: 'grownups' },
@@ -151,7 +151,7 @@ export const family = (root: HTMLElement): (() => void) => {
   };
   render();
   root.append(
-    topBar(() => go(grownUps)),
+    topBar(() => go(grownUps), 'Grown-ups'),
     h(
       'main',
       { class: 'family' },

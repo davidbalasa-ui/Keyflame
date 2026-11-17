@@ -62,13 +62,13 @@ export function tabBar(active: Tab | null): HTMLElement {
     h('span', { class: 'tab-dragon-in', html: DRAGON_EMBLEM }),
     () => open('dragons'),
     `tab-dragon${active === 'dragons' ? ' on' : ''}${eggReady ? ' ready' : ''}`,
-    { 'aria-label': eggReady ? 'Nest and Codex: your egg is ready' : 'Nest and Codex', 'aria-current': active === 'dragons' ? 'page' : undefined },
+    { 'aria-label': eggReady ? 'Nest: your egg is ready' : 'Nest', 'aria-current': active === 'dragons' ? 'page' : undefined },
   );
   if (eggReady) dragon.append(h('span', { class: 'tab-badge', 'aria-hidden': 'true' }, '!'));
   return h(
     'nav',
     { class: 'tab-bar', 'aria-label': 'Main' },
-    h('div', { class: 'tab-bar-in' }, tab('home', 'Home'), tab('progress', 'Progress', unseen ? String(unseen) : ''), dragon, tab('grownups', 'Grown-ups'), tab('settings', 'Settings', backupDue ? '!' : '')),
+    h('div', { class: 'tab-bar-in' }, tab('home', 'Home'), tab('progress', 'Progress', unseen ? String(unseen) : ''), h('div', { class: 'tab-mid' }, dragon, h('small', { class: `tab-mid-label${active === 'dragons' ? ' on' : ''}`, 'aria-hidden': 'true', onclick: () => open('dragons') }, 'Nest')), tab('grownups', 'Grown-ups'), tab('settings', 'Settings', backupDue ? '!' : '')),
   );
 }
 

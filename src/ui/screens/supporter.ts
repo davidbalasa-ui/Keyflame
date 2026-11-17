@@ -91,7 +91,7 @@ export const supporter = (root: HTMLElement): (() => void) => {
     );
 
   root.append(
-    topBar(() => go(grownUps)),
+    topBar(() => go(grownUps), 'Grown-ups'),
     h(
       'main',
       { class: 'supporter' },

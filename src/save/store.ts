@@ -152,6 +152,12 @@ export interface Profile {
   lessonLog?: LessonRecord[];
   /** Average of the first three races on each kind of input, and when the third one finished. */
   startSpeed?: Partial<Record<'keyboard' | 'touch', StartSpeed>>;
+  /** True once this rider has opened the nest, so home stops pointing at it. */
+  nestSeen?: boolean;
+  /** Keys this rider has mastered (fast and accurate), for the one-time mastery reward. */
+  keysMastered?: string[];
+  /** How many "faster than usual" rewards were paid today. */
+  improveDay?: { date: string; faster: number };
 }
 
 export interface StartSpeed {
@@ -311,6 +317,9 @@ export function normalizeProfile(raw: unknown): Profile | null {
     streak: r.streak && typeof r.streak.last === 'string' && Number.isInteger(r.streak.days) && r.streak.days > 0 ? { last: r.streak.last, days: r.streak.days, best: Number.isInteger(r.streak.best) ? Math.max(r.streak.best, r.streak.days) : r.streak.days } : undefined,
     startSpeed: cleanStartSpeed(r.startSpeed),
     lessonLog: Array.isArray(r.lessonLog) ? r.lessonLog.filter((x) => x && Number.isFinite(x.at) && Number.isFinite(x.accuracy) && (x.wpm === null || Number.isFinite(x.wpm))).slice(0, LESSON_LOG_MAX) : undefined,
+    nestSeen: r.nestSeen === true ? true : undefined,
+    keysMastered: Array.isArray(r.keysMastered) ? [...new Set(r.keysMastered.filter((k) => typeof k === 'string' && k.length === 1))] : undefined,
+    improveDay: r.improveDay && typeof r.improveDay.date === 'string' && Number.isInteger(r.improveDay.faster) ? { date: r.improveDay.date, faster: Math.max(0, r.improveDay.faster) } : undefined,
   } as Profile;
   return starglintDragon(p);
 }

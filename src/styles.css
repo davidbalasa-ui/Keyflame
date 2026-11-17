@@ -1388,9 +1388,12 @@ body.hub-fit { background: radial-gradient(ellipse at 50% 0%, #4b2a86 0%, #2a1d5
   padding: calc(10px + env(safe-area-inset-top)) 16px 4px;
 }
 .home-avatar {
-  flex: none; width: 58px; height: 58px; border-radius: 50%; padding: 0; border: 3px solid var(--gold); cursor: pointer; overflow: hidden;
+  position: relative; flex: none; width: 58px; height: 58px; border-radius: 50%; padding: 0; border: 3px solid var(--gold); cursor: pointer; overflow: visible;
   background: radial-gradient(circle at 50% 35%, #6a4fc2, #2a1d57); box-shadow: 0 0 0 3px rgba(255, 212, 59, 0.18), 0 4px 10px rgba(0, 0, 0, 0.4);
 }
+.home-avatar-in { display: block; width: 100%; height: 100%; border-radius: 50%; overflow: hidden; }
+/* A small swap badge: tapping the avatar switches who is playing. */
+.avatar-swap { position: absolute; right: -6px; bottom: -4px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 0.8rem; font-weight: 700; color: #2a1200; background: var(--gold); border: 2px solid #2a1d57; }
 .home-avatar-art { width: 150%; margin: 6% 0 0 -12%; }
 .home-avatar-art.egg { width: 70%; margin: 14% auto 0; }
 .home-who { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; }
@@ -1823,3 +1826,48 @@ body.reduced-motion .aerie-back .cel-glow, body.reduced-motion .aerie-back .twin
 .modal.rename .name-pickers { margin: 8px 0 16px; }
 body.reduced-motion .tap-hand, body.reduced-motion .ready-ring, body.reduced-motion .glow-btn, body.reduced-motion .up-arrow { animation: none; }
 .fine.warn { color: var(--gold); }
+
+/* Finish screens: Home and Nest are always one tap away, the big button keeps playing. */
+.finish { display: flex; flex-direction: column; gap: 10px; align-items: stretch; width: 100%; max-width: 520px; margin: 0 auto; }
+.fin-chips { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.fin-chips .btn { min-height: 40px; }
+.fin-bar { display: grid; grid-template-columns: 1fr 1fr 1.7fr; gap: 8px; align-items: stretch; }
+.fin-bar .btn { min-height: 56px; padding: 6px 8px; white-space: nowrap; }
+.fin-in { display: flex; flex-direction: column; align-items: center; line-height: 1.1; gap: 1px; }
+.fin-icon { font-size: 1.3rem; }
+.fin-note { font-size: 0.72rem; font-weight: 600; opacity: 0.85; }
+.fin-nest.lit { box-shadow: 0 0 0 2px var(--gold), 0 4px 0 #1f1745; }
+.fin-go { font-size: 1.15rem; }
+.cel-actions .finish .btn.fin-btn, .cel-actions .finish .btn.fin-go { font-size: 1rem; flex: none; }
+.cel-actions .finish .btn.fin-go { font-size: 1.1rem; }
+@media (max-width: 360px) { .fin-bar { grid-template-columns: 1fr 1fr 1.4fr; gap: 6px; } .fin-go { font-size: 1rem; } }
+
+/* Lesson results as picture cards. */
+.lesson-result .big-stars { margin: 4px 0 10px; }
+.lr-cards { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 8px; }
+.lr-card { flex: 1 1 90px; max-width: 130px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 6px; border-radius: 14px; background: var(--panel-2); border: 2px solid var(--line); line-height: 1.15; }
+.lr-card.gold { border-color: var(--gold); background: linear-gradient(180deg, rgba(255, 212, 59, 0.22), rgba(255, 212, 59, 0.04)); }
+.lr-icon { font-size: 1.6rem; height: 34px; display: grid; place-items: center; }
+.lr-icon .ach-mini { width: 34px; height: 34px; }
+.lr-card strong { font-size: 1.15rem; overflow-wrap: anywhere; }
+.lr-card small { color: var(--muted); font-size: 0.8rem; overflow-wrap: anywhere; }
+.lr-hint { margin: 2px 0 12px; }
+
+/* The middle tab says Nest, like the other tabs say what they are. */
+.tab-mid { display: flex; flex-direction: column; align-items: center; justify-self: center; margin-top: -30px; }
+.tab-mid .tab-dragon { margin-top: 0; }
+.tab-mid-label { font-size: 0.75rem; font-weight: 700; color: var(--gold); margin-top: 2px; cursor: pointer; line-height: 1; }
+@media (min-width: 700px) { .tab-mid-label { font-size: 0.85rem; } }
+@media (max-height: 600px) { .tab-mid { margin-top: -18px; } .tab-mid-label { margin-top: 1px; } }
+
+/* Home: chips that only show info lose their button look; the nest pill looks tappable. */
+.embers-chip, .name-chip { background: none; border-color: transparent; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9); }
+.egg-chip { background: linear-gradient(180deg, #fff3bf, var(--gold)); color: #2a1200; border-color: rgba(255, 255, 255, 0.6); box-shadow: 0 3px 0 #b37a00; }
+.hero-hand { position: absolute; z-index: 4; right: 8px; bottom: 36px; width: 0; height: 0; pointer-events: none; }
+.hero-hand .tap-hand { right: 0; bottom: 0; }
+.daily-card.go { font: inherit; color: inherit; cursor: pointer; }
+.daily-card.go:active { transform: translateY(2px); }
+.daily-go { flex: none; padding: 6px 14px; border-radius: 999px; font-weight: 700; color: #2a1200; background: linear-gradient(180deg, var(--ember-2), var(--ember)); box-shadow: 0 3px 0 #b34700; white-space: nowrap; }
+@media (max-height: 600px) { .daily-go { padding: 2px 10px; } }
+.warm-need { flex-basis: 100%; text-align: center; color: var(--muted); }
+.cel-actions .finish .fin-chips .btn { flex: 0 1 auto; font-size: 0.9rem; }

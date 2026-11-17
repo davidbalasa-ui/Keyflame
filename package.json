@@ -10,6 +10,7 @@
     "test": "vitest run",
     "check:overflow": "node scripts/check-overflow.mjs",
     "check:classroom": "node scripts/check-classroom.mjs",
+    "check:nav": "node scripts/check-nav.mjs",
     "codes": "vite-node scripts/supporter-codes.ts"
   },
   "devDependencies": {
