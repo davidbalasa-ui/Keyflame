@@ -19,9 +19,19 @@ export interface TeacherClass {
   key: string;
 }
 
-export async function createClass(): Promise<TeacherClass> {
-  const rows = await rpc<Array<{ class_code: string; teacher_key: string }>>('create_class');
+export async function createClass(kind: 'class' | 'family' = 'class'): Promise<TeacherClass> {
+  const rows = await rpc<Array<{ class_code: string; teacher_key: string }>>('create_class', { p_kind: kind });
   return { code: rows[0].class_code, key: rows[0].teacher_key };
+}
+
+/** Marks a wing made before the server knew family wings from classes. */
+export function setWingKind(t: TeacherClass, kind: 'class' | 'family'): Promise<boolean> {
+  return rpc<boolean>('set_wing_kind', { p_code: t.code, p_key: t.key, p_kind: kind });
+}
+
+/** Whether a code belongs to a class or a family wing, for the usage counts. Null when there's no such wing. */
+export function wingKind(code: string): Promise<'class' | 'family' | null> {
+  return rpc<'class' | 'family' | null>('wing_kind', { p_code: code });
 }
 
 export function joinClass(code: string): Promise<boolean> {

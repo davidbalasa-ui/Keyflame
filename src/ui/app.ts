@@ -3,6 +3,7 @@
 import { LS_KEY, MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, loadSave, normalizeProfile, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
 import { setSoundEnabled } from './sound';
 import { grantSupporter } from '../game/supporter';
+import { countUsage } from './usage';
 
 export type Screen = (root: HTMLElement) => (() => void) | void;
 
@@ -105,6 +106,7 @@ export function keepGuest(name?: string): Profile | null {
   writeGuest();
   persist();
   applyPendingSupporter();
+  countUsage('kept', g);
   return g;
 }
 

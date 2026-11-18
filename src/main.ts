@@ -13,6 +13,7 @@ import { hub } from './ui/screens/hub';
 import { wingScreen } from './ui/screens/wing';
 import { JOIN_PARAM, joinFromUrl, type WingSeat } from './game/wing';
 import { startArtSpeed } from './ui/artSpeed';
+import { countVisit, watchUsage } from './ui/usage';
 
 watchInstall();
 startArtSpeed();
@@ -48,6 +49,9 @@ void startApp(document.getElementById('app')!, join ? wingScreen({ join }) : hub
   joinFromHash();
   // Results from a visit without Wi-Fi reach the class now.
   void flushClassOutbox();
+  // Anonymous daily totals only: no cookies, names or ids.
+  countVisit();
+  watchUsage();
 });
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
