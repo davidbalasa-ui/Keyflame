@@ -20,15 +20,17 @@
 
 * { box-sizing: border-box; }
 /* touch-action does not pass through scrolling boxes (the hatch screen, sheets, modals), so every
-   element opts out of double-tap zoom itself. Without it, quick taps on iPad Safari zoom the
-   page and the next taps get lost, which feels like the game froze. Pinch zoom still works. */
-* { touch-action: manipulation; }
+   element opts out of zoom itself. Without it, quick taps on iPad Safari zoom the page and the
+   next taps get lost, which feels like the game froze. pan-x pan-y also stops touch-screen pinch
+   zoom (Edge/Chrome on touch PCs, Android). Grown-up dashboards keep pinch zoom (zoomLock.ts). */
+* { touch-action: pan-x pan-y; }
+body.teacher-mode, body.teacher-mode * { touch-action: manipulation; }
 button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 
 html, body { margin: 0; }
 /* No pull-to-refresh or rubber-band bounce: this is an app, not a page. */
 html { overscroll-behavior: none; }
-body { overscroll-behavior: none; touch-action: manipulation; }
+body { overscroll-behavior: none; touch-action: pan-x pan-y; }
 
 body {
   background: radial-gradient(ellipse at top, #3a2470 0%, var(--bg) 55%) fixed, var(--bg);
@@ -256,7 +258,7 @@ body.hub-fit .tiles { flex: none; width: 100%; max-width: 760px; }
 .shake { animation: shake 0.18s; }
 .finger-hint { color: var(--muted); min-height: 1.5em; margin: 8px 4px; text-align: center; }
 
-.keyboard { display: flex; flex-direction: column; gap: 6px; align-items: center; margin-top: 8px; user-select: none; touch-action: manipulation; }
+.keyboard { display: flex; flex-direction: column; gap: 6px; align-items: center; margin-top: 8px; user-select: none; touch-action: pan-x pan-y; }
 .kb-row { display: flex; gap: 6px; }
 .kb-row-1 { margin-left: 18px; }
 .kb-row-2 { margin-left: -10px; }
@@ -297,7 +299,7 @@ body.kb-pinned #app > main { flex: 1 1 auto; min-height: 0; width: 100%; box-siz
   gap: 7px; padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
   background: rgba(20, 13, 44, 0.98); border-top: 2px solid var(--line);
   box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
-  -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation;
+  -webkit-user-select: none; -webkit-touch-callout: none; touch-action: pan-x pan-y;
 }
 .keyboard.pinned .kb-row { width: 100%; max-width: 640px; gap: 4px; margin: 0; justify-content: center; }
 .keyboard.pinned .kb-row-1 { padding: 0 5%; box-sizing: border-box; }
