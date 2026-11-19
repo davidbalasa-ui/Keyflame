@@ -13,7 +13,9 @@ import { hub } from './ui/screens/hub';
 import { wingScreen } from './ui/screens/wing';
 import { JOIN_PARAM, joinFromUrl, type WingSeat } from './game/wing';
 import { startArtSpeed } from './ui/artSpeed';
+import { startZoomLock } from './ui/zoomLock';
 
+startZoomLock();
 watchInstall();
 startArtSpeed();
 // Ask the browser to keep saves through storage clean-ups. Safari can otherwise
