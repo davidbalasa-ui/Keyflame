@@ -15,6 +15,7 @@ import { medalSvg } from './achievementsPage';
 import { hub, refreshEmbers, topBar } from './hub';
 import { dragonTabs, withTabs } from '../tabBar';
 import { raceMap } from './race';
+import { countUsage, firstHatch } from '../usage';
 
 function growthText(d: OwnedDragon): string {
   const stage = stageFor(d.xp);
@@ -252,7 +253,9 @@ function hatchSequence(root: HTMLElement): void {
     const before = earnedIds(p);
     const looksBefore = foundLooks(p);
     const name = randomDragonName();
+    const first = firstHatch(p);
     const result = hatchNest(p, name)!;
+    if (first && result.dragon) countUsage('new_rider', p);
     const sets = claimSets(p);
     const fresh = claimNewAchievements(p, before);
     persist();

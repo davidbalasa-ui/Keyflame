@@ -29,6 +29,7 @@ import type { SessionSummary } from '../../engine/typing';
 import { isStarglint, type InputMode } from '../../save/store';
 import { classRaceEntry } from './classroom';
 import { reportToClass } from '../classTrack';
+import { countPlay } from '../usage';
 
 /** A race against classmates on other devices, run by the classroom screens. */
 export interface LiveRace {
@@ -355,6 +356,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     // Earlier speeds on the same kind of input, newest first, for the "faster than usual" reward.
     const prevWpms = p.races.filter((x) => isTouch(x.input) === isTouch(typedWith)).map((x) => x.wpm);
     const reward = recordRace(p, sum, placeNum, { input: typedWith, courseId: live ? 'class' : course.id, beatRival });
+    countPlay('race', p);
     const better = payImprovements(p, sum, prevWpms);
     if (live) live.finish(myMs, sum, placeNum, typedWith);
     else reportToClass(p, { kind: 'race', wpm: sum.wpm, accuracy: sum.accuracy, place: placeNum, racers: ghosts.length + 1, touch: isTouch(typedWith) });

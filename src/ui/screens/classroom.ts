@@ -9,7 +9,7 @@ import {
   GATHER_MS, MAX_LANES, classRiderName, parseStudentList, classRaceText, estimateProgress, isClassCode, newRace, normalizeCode, quickRacers, raceHost, spacedCode,
   teacherRacers, tickEvery, waitingRiders, type Member, type RaceStart, type Tick,
 } from '../../game/classroom';
-import { classBoard, classRaceOk, clearClassBoard, startClassRace, createClass, joinBadge, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
+import { classBoard, classRaceOk, clearClassBoard, startClassRace, createClass, joinBadge, setWingKind, newClassCode, type BoardRow, type TeacherClass } from '../../net/classApi';
 import { reportToClass, riderSeat, setRiderSeat } from '../classTrack';
 import { badgeCards, classSheet, progressPanel, readBackupFile, readRetired, readRoster, saveBackupFile, writeRetired, writeRoster, type Roster } from './teacherDashboard';
 import { classroomScene, teacherBackdropSvg } from '../teacherArt';
@@ -360,7 +360,7 @@ export function classLobby(code: string) {
 // ---------- Teachers ----------
 
 /** The class this device teaches, and the keys that keep its locked backup up to date. */
-type TeacherSave = TeacherClass & { vault?: VaultKeys; kind?: 'family' };
+type TeacherSave = TeacherClass & { vault?: VaultKeys; kind?: 'family'; kindMarked?: boolean };
 
 /** True when a rider on this device (or this visit's guest) rides in the class: kids play here. */
 function sharedDevice(code: string): boolean {
@@ -377,6 +377,18 @@ function readTeacher(): TeacherSave | null {
 }
 
 const writeTeacher = (t: TeacherSave): void => writeStore(TEACHER_KEY, JSON.stringify(t));
+
+/** A family wing made before the server stored wing kinds tells it once, so its riders count as family. */
+function markFamilyWing(): void {
+  const t = readTeacher();
+  if (t?.kind !== 'family' || t.kindMarked) return;
+  void setWingKind(t, 'family')
+    .then((ok) => {
+      const now = readTeacher();
+      if (ok && now?.code === t.code) writeTeacher({ ...now, kindMarked: true });
+    })
+    .catch(() => undefined);
+}
 
 /** Where the teacher screen's Back button goes: a Grown-ups screen. */
 let teacherBack: Screen | null = null;
@@ -417,6 +429,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
   let tab: 'live' | 'progress' = 'live';
   let progress: { stop: () => void } | null = null;
   const fam = (readTeacher()?.kind ?? teacherKind) === 'family';
+  markFamilyWing();
   const back = h('header', { class: 'top-bar' }, button('← Back', () => go(teacherBack ?? hub), 'btn ghost small'), h('strong', {}, fam ? 'Family wing' : 'Classroom'), h('span'));
   const main = h('main', { class: 'teacher' });
   root.append(svg(teacherBackdropSvg(), 'tm-backdrop-wrap'), back, main);
@@ -448,9 +461,9 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
   const makeClass = async (names: string[], password: string): Promise<void> => {
     main.replaceChildren(h('p', { class: 'fine' }, 'Making your class…'));
     try {
-      const made = await createClass();
+      const made = await createClass(fam ? 'family' : 'class');
       const vault = await deriveKeys(password, newSalt());
-      const t: TeacherSave = { ...made, vault, ...(fam ? { kind: 'family' as const } : {}) };
+      const t: TeacherSave = { ...made, vault, ...(fam ? { kind: 'family' as const, kindMarked: true } : {}) };
       const roster: Roster = {};
       names.forEach((n, i) => (roster[i + 1] = n));
       writeRoster(roster);

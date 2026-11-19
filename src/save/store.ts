@@ -142,6 +142,8 @@ export interface Profile {
   classBadge?: number;
   /** The badge's secret word, so this device can show the rider's own QR code. */
   classWord?: string;
+  /** Whether classCode is a class or a family wing, as the server said. Only used for the usage counts. */
+  wingKind?: 'class' | 'family';
   /** Finished lessons and races the class hasn't got yet (no Wi-Fi), oldest first. */
   classOutbox?: ClassOutboxItem[];
   /** The name the grown-up gave this rider in their wing. Shown on this device only. */

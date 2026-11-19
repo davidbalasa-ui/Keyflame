@@ -30,6 +30,7 @@ export function riderSeat(p: Profile): ClassSeat | null {
 export function setRiderSeat(p: Profile, code: string | null, badge: number | null, word?: string): void {
   const w = code ? word ?? (p.classCode === code && p.classBadge === badge ? p.classWord : undefined) : undefined;
   if ((p.classCode ?? null) === code && (p.classBadge ?? null) === badge && p.classWord === w) return;
+  if ((p.classCode ?? null) !== code) delete p.wingKind;
   p.classCode = code ?? undefined;
   p.classBadge = badge ?? undefined;
   p.classWord = w;

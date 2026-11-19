@@ -19,6 +19,7 @@ import { createLessonFlight } from '../lessonFlight';
 import { seasonAt } from '../../content/seasons';
 import { hub, refreshEmbers, topBar } from './hub';
 import { CHALLENGE_EMBERS } from '../../game/seasons';
+import { countPlay } from '../usage';
 
 const starText = (n: number): string => '★'.repeat(n) + '☆'.repeat(3 - n);
 
@@ -100,6 +101,7 @@ export function playLesson(lesson: Lesson) {
         // Earlier speeds on this lesson, newest first; relaxed runs have no clock.
         const prevWpms = relaxed ? null : (p.lessonLog ?? []).filter((x) => x.lesson === lesson.id && x.wpm !== null).map((x) => x.wpm as number);
         const reward = recordLesson(p, lesson, sum, stars, relaxed);
+        countPlay('lesson', p);
         const better = payImprovements(p, sum, prevWpms);
         reportToClass(p, { kind: 'lesson', lesson: lesson.id, stars, wpm: relaxed ? null : sum.wpm, accuracy: sum.accuracy, touch: isTouch(view.input) });
         const fresh = claimNewAchievements(p, before);
@@ -399,6 +401,7 @@ export function playChallenge(c: Challenge) {
         const stars = starsFor(asLesson(c), relaxed ? 0 : sum.wpm, sum.accuracy);
         const before = earnedIds(p);
         const reward = recordChallenge(p, c, sum, stars, relaxed);
+        countPlay('lesson', p);
         const better = payImprovements(p, sum, null);
         const fresh = claimNewAchievements(p, before);
         persist();
