@@ -125,7 +125,7 @@ export function playLesson(lesson: Lesson) {
       h(
         'main',
         { class: 'play-lesson' },
-        h('h1', {}, lesson.title, warm ? h('span', { class: 'warm-tag' }, 'Warm-up first') : null),
+        h('h1', {}, lesson.title, warm ? h('span', { class: 'warm-tag' }, 'Warm-up: keys you know') : null),
         lesson.newKeys.filter((k) => k !== ' ').length
           ? h('p', { class: 'new-keys' }, 'New keys: ', ...lesson.newKeys.filter((k) => k !== ' ').map((k) => h('kbd', {}, k.toUpperCase())), lesson.id === 'L1' ? (input === 'keyboard' ? ' Rest your pointer fingers on the bumps on F and J.' : ' Hold your device with both hands and tap with your thumbs.') : '')
           : h('p', { class: 'new-keys' }, 'Keep your eyes on the screen, not your fingers.'),
@@ -306,7 +306,7 @@ export const trickyKeys = (root: HTMLElement): (() => void) => {
               { class: 'lr-cards' },
               ...keys.map(keyCard),
               reward.warmthAdded ? card('🥚', `+${reward.warmthAdded}`, 'Egg warmth') : null,
-              ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, improvementTitle(b), 'gold')),
+              ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, b.key && !keys.includes(b.key) ? `Bonus: ${improvementTitle(b)}` : improvementTitle(b), 'gold')),
             ),
             finishBar(button('↻ Again', () => go(trickyKeys)), [button('📚 Lessons', () => go(lessons), 'btn ghost small')]),
           ),

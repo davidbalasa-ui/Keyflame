@@ -11,11 +11,12 @@ export function zoomAllowed(): boolean {
   return document.body.classList.contains('teacher-mode');
 }
 
+// The viewport tag itself stays zoomable (no maximum-scale or user-scalable=no): Safari ignores
+// those anyway, accessibility checkers flag them, and the blocks below already stop pinches.
+// touch-action: pan-x pan-y in styles.css stops touch-screen pinch in Chrome, Edge and Android.
 function syncViewport(): void {
   const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
-  if (!meta) return;
-  const want = zoomAllowed() ? VIEWPORT_BASE : `${VIEWPORT_BASE}, maximum-scale=1, user-scalable=no`;
-  if (meta.content !== want) meta.content = want;
+  if (meta && meta.content !== VIEWPORT_BASE) meta.content = VIEWPORT_BASE;
 }
 
 export function startZoomLock(): void {

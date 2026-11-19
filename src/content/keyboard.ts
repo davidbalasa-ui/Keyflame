@@ -117,6 +117,8 @@ export function touchThumb(ch: string): 'left' | 'right' | 'either' {
   if (ch === ' ') return 'either';
   const x = touchKeyCenter(ch);
   if (x === null) return fingerFor(ch).startsWith('left') ? 'left' : 'right';
+  // G sits dead centre on the tap keyboard; use the hand that types it on a real keyboard.
+  if (Math.abs(x - 5) < 0.01) return fingerFor(ch).startsWith('left') ? 'left' : 'right';
   return x < 5 ? 'left' : 'right';
 }
 

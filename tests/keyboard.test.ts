@@ -84,6 +84,13 @@ describe('phone-style tap keyboard', () => {
     expect(touchThumb('n')).toBe('right');
     expect(touchThumb(' ')).toBe('either');
   });
+
+  it('gives the dead-centre G to the left thumb, like the left pointer finger on a real keyboard', () => {
+    expect(touchKeyCenter('g')).toBe(5);
+    expect(touchThumb('g')).toBe('left');
+    expect(touchThumb('G')).toBe('left');
+    expect(touchThumb('h')).toBe('right');
+  });
 });
 
 describe('smart punctuation from phone and tablet keyboards', () => {
