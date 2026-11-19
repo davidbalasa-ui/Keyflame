@@ -89,6 +89,7 @@ export const progressPage = (root: HTMLElement): (() => void) => {
         () => (sfx.click(), go(achievementsPage)),
         'ach-link',
       ),
+      trickyButton(),
       ...progressCharts(p),
       h(
         'section',
@@ -107,7 +108,6 @@ export const progressPage = (root: HTMLElement): (() => void) => {
         'section',
         { class: 'pg-card' },
         h('h2', {}, 'Key accuracy'),
-        trickyButton(),
         h('p', { class: 'chart-key fine' }, h('span', { class: 'dot good' }), 'Solid ', h('span', { class: 'dot weak' }), 'Practice ', h('span', { class: 'dot unknown' }), 'Not sure yet'),
         h(
           'div',
