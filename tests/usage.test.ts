@@ -64,8 +64,8 @@ describe('usage counts migration', () => {
 
   it('tells family wings from classes', async () => {
     const pg = await db();
-    const [fam] = await asAnon<{ class_code: string; teacher_key: string }>(pg, `select * from create_class('family')`);
-    const [cls] = await asAnon<{ class_code: string; teacher_key: string }>(pg, 'select * from create_class()');
+    const [fam] = await asAnon<{ class_code: string; teacher_key: string }>(pg, `select * from create_wing('family')`);
+    const [cls] = await asAnon<{ class_code: string; teacher_key: string }>(pg, `select * from create_wing('class')`);
     expect((await asAnon<{ k: string }>(pg, 'select wing_kind($1) as k', [fam.class_code]))[0].k).toBe('family');
     expect((await asAnon<{ k: string }>(pg, 'select wing_kind($1) as k', [cls.class_code]))[0].k).toBe('class');
     expect((await asAnon<{ ok: boolean }>(pg, 'select set_wing_kind($1, $2, $3) as ok', [cls.class_code, 'wrong', 'family']))[0].ok).toBe(false);

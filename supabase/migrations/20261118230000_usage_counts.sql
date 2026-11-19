@@ -45,8 +45,9 @@ grant execute on function public.count_usage(date, text, text, int) to anon, aut
 -- totals tell class riders from family riders.
 alter table public.classes add column if not exists kind text not null default 'class' check (kind in ('class', 'family'));
 
-drop function if exists public.create_class();
-create or replace function public.create_class(p_kind text default 'class')
+-- Like create_class(), and remembers whether the wing is a class or a family.
+-- (create_class() stays as it is for pages still open on an older version.)
+create or replace function public.create_wing(p_kind text)
 returns table (class_code text, teacher_key text)
 language plpgsql
 security definer
@@ -85,8 +86,8 @@ begin
 end;
 $$;
 
-revoke all on function public.create_class(text) from public;
-grant execute on function public.create_class(text) to anon, authenticated;
+revoke all on function public.create_wing(text) from public;
+grant execute on function public.create_wing(text) to anon, authenticated;
 
 -- A family wing made before kinds were stored: its grown-up's device marks it once.
 create or replace function public.set_wing_kind(p_code text, p_key text, p_kind text)

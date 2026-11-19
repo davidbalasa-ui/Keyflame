@@ -20,7 +20,10 @@ export interface TeacherClass {
 }
 
 export async function createClass(kind: 'class' | 'family' = 'class'): Promise<TeacherClass> {
-  const rows = await rpc<Array<{ class_code: string; teacher_key: string }>>('create_class', { p_kind: kind });
+  // create_wing also stores the kind; create_class is the older function, kept as a fallback.
+  const rows = await rpc<Array<{ class_code: string; teacher_key: string }>>('create_wing', { p_kind: kind }).catch(() =>
+    rpc<Array<{ class_code: string; teacher_key: string }>>('create_class'),
+  );
   return { code: rows[0].class_code, key: rows[0].teacher_key };
 }
 
