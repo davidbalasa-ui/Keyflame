@@ -1,6 +1,6 @@
 // The Grown-ups tab: everything for adults in one place, behind the grown-up question.
 // Classroom (teachers), Family (each rider on this device), Ideas, the supporter pack
-// and privacy.
+// and privacy, plus a small footer with the mission, the AI note and legal links.
 
 import { dragonSvg, eggSvg, stageFor } from '../../game/dragons';
 import { riderLabel } from '../../game/wing';
@@ -83,6 +83,20 @@ export const grownUps = (root: HTMLElement): (() => void) => {
         h('li', {}, 'No emails or accounts.'),
         h('li', {}, 'Rider names come from preset words.'),
         h('li', {}, 'Class lists stay locked with the teacher.'),
+      ),
+      h(
+        'footer',
+        { class: 'gu-foot' },
+        h('p', { class: 'gu-mission' }, 'Keyflame is free and made to help kids love learning.'),
+        h('p', {}, 'Made with AI tools, including generative AI.'),
+        h(
+          'p',
+          {},
+          '© 2026 Keyflame · ',
+          h('a', { href: './terms.html', target: '_blank', rel: 'noopener', class: 'link' }, 'Terms'),
+          ' · ',
+          h('a', { href: './privacy.html', target: '_blank', rel: 'noopener', class: 'link' }, 'Privacy'),
+        ),
       ),
     ),
   );

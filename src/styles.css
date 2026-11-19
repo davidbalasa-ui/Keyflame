@@ -1561,6 +1561,10 @@ body.has-tabs:not(.hub-fit) .top-bar > .btn:first-child { visibility: visible; }
 .gu-classroom { border-color: #9775fa; }
 .gu-facts { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 6px; color: var(--muted); }
 .gu-facts li::before { content: '✓ '; color: var(--good); font-weight: 700; }
+.gu-foot { margin-top: 28px; font-size: 0.85rem; color: var(--muted); text-align: center; }
+.gu-foot p { margin: 4px 0; }
+.gu-foot .gu-mission { font-size: 0.95rem; color: var(--text); }
+.gu-foot a { display: inline-block; padding: 12px 6px; color: var(--gold); }
 
 /* Family view */
 .fam-list { display: grid; gap: 14px; }
