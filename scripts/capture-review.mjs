@@ -1,12 +1,12 @@
-// One-off: screenshots of the main navigation and every screen changed in PRs #49-#54,
-// at phone, iPad upright, iPad sideways and laptop sizes. OUT=folder.
+// Screenshots of every kid, grown-up and teacher screen for an outside review, at phone,
+// iPad upright, iPad sideways, laptop and desktop sizes. OUT=folder, SIZE=one folder name only.
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { mkdirSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 const playwright = require('playwright');
-const PORT = 4191;
+const PORT = Number(process.env.PORT ?? 4191);
 const URL = `http://localhost:${PORT}/`;
 const OUT = process.env.OUT ?? 'review-shots';
 const IPAD_UA = 'Mozilla/5.0 (iPad; CPU OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1';
@@ -16,7 +16,8 @@ const SIZES = [
   { dir: 'ipad-upright', width: 810, height: 1080, scale: 2, ua: IPAD_UA, touch: true },
   { dir: 'ipad-sideways', width: 1080, height: 810, scale: 2, ua: IPAD_UA, touch: true },
   { dir: 'pc-laptop-1366', width: 1366, height: 768, scale: 1, touch: false },
-];
+  { dir: 'pc-desktop-1920', width: 1920, height: 1080, scale: 1, touch: false },
+].filter((s) => !process.env.SIZE || s.dir === process.env.SIZE);
 
 const server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
 process.on('exit', () => server.kill());
@@ -87,10 +88,10 @@ for (const size of SIZES) {
     await page.waitForTimeout(600);
     return { ctx, page };
   };
-  const shot = async (page, name, fn) => {
+  const shot = async (page, name, fn, settle = 700) => {
     try {
       if (fn) await fn();
-      await page.waitForTimeout(700);
+      await page.waitForTimeout(settle);
       await page.screenshot({ path: `${dir}/${name}.png` });
     } catch (e) {
       problems.push(`${size.dir} ${name}: ${String(e.message).split('\n')[0]}`);
@@ -112,6 +113,8 @@ for (const size of SIZES) {
   {
     const { ctx, page } = await fresh(null);
     await shot(page, '01-home-new-rider-nest-finger');
+    await shot(page, '01b-whos-playing-guest', () => page.click('.home-avatar'));
+    await home(page);
     await shot(page, '02-lessons-new-rider', () => page.click('.tile-lessons'));
     await shot(page, '03-first-lesson-hands-picture', () => page.click('.lesson-tile >> nth=0'));
     await shot(page, '04-lesson-results-home-nest-next', async () => { await typeAll(page, '.lesson-result'); await page.waitForSelector('.lesson-result'); });
@@ -166,6 +169,17 @@ for (const size of SIZES) {
     await shot(page, '26-tricky-keys-results', async () => { await typeAll(page, '.lesson-result'); await page.waitForSelector('.lesson-result'); });
     await home(page);
     await shot(page, '27-race-results-faster-than-usual', async () => { await page.click('.tile-race'); await raceResults(page); });
+    await home(page);
+    await shot(page, '27b-whos-playing', () => page.click('.home-avatar'));
+    await home(page);
+    await shot(page, '27c-nest-aerie-shop', async () => { await page.click('.tab-dragon'); await page.evaluate(() => document.querySelector('.shop')?.scrollIntoView({ block: 'center' })); });
+    const gu = async (sel) => { await home(page); await page.click('.tab-grownups'); await gate(page); await page.click(sel); };
+    await shot(page, '27d-grown-ups-family', () => gu('.gu-family'));
+    await shot(page, '27e-grown-ups-ideas', () => gu('.gu-ideas'));
+    await shot(page, '27f-grown-ups-support', () => gu('.gu-support'));
+    await shot(page, '27g-grown-ups-classroom-start', () => gu('.gu-classroom'));
+    await shot(page, '27h-privacy-page', () => page.goto(URL + 'privacy.html'));
+    await shot(page, '27i-terms-page', () => page.goto(URL + 'terms.html'));
     await ctx.close();
   }
 
@@ -179,6 +193,15 @@ for (const size of SIZES) {
     await shot(page, '30-word-challenge-from-daily-go', () => page.click('.daily-card.go'));
     await shot(page, '31-word-challenge-results', async () => { await typeAll(page, '.lesson-result'); await page.waitForSelector('.lesson-result'); });
     await shot(page, '32-nest-egg-ready', () => page.click('.lesson-result .fin-nest'));
+    await shot(page, '33-hatch-tapping', async () => {
+      await page.getByRole('button', { name: 'Tap to open!' }).click();
+      for (let i = 0; i < 3; i++) { await page.click('.hatch-tap'); await page.waitForTimeout(250); }
+    });
+    await shot(page, '34-hatch-reveal', async () => {
+      for (let i = 0; i < 3; i++) await page.click('.hatch-tap').catch(() => null);
+      await page.waitForSelector('.hatch-reveal', { timeout: 3000 });
+    }, 300);
+    await shot(page, '35-hatch-name-card', () => page.waitForTimeout(3500));
     await ctx.close();
   }
   }
