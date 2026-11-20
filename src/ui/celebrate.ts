@@ -238,6 +238,13 @@ export function celebration(info: CelebrationInfo): HTMLElement {
     field.emit(a.left - b.left + a.width / 2, a.top - b.top + a.height / 2, { count, colors: kind === 'confetti' ? CONFETTI : TIER_COLORS[tier], kind, spread: kind === 'confetti' ? 420 : 300, vy: kind === 'confetti' ? -200 : 0, size: kind === 'confetti' ? 5 : 6, life: kind === 'confetti' ? 2.2 : 0.9 });
   };
 
+  // On short screens the sticky Home/Nest/Race again bar can sit over the last rewards:
+  // scroll just enough that a reward shows above the bar.
+  const showAboveBar = (el: Element): void => {
+    const gap = el.getBoundingClientRect().bottom + actions.offsetHeight + 8 - overlay.getBoundingClientRect().bottom;
+    if (gap > 0) overlay.scrollBy({ top: gap, behavior: calm ? 'auto' : 'smooth' });
+  };
+
   const finishAll = (): void => {
     if (finished) return;
     finished = true;
@@ -246,6 +253,8 @@ export function celebration(info: CelebrationInfo): HTMLElement {
     overlay.classList.add('done');
     dial.set(info.wpm);
     for (const c of cards) if (typeof c.reward.value === 'number') c.valueEl.textContent = `${c.reward.prefix ?? '+'}${c.reward.value}`;
+    const last = cards[cards.length - 1]?.card;
+    if (last) requestAnimationFrame(() => showAboveBar(last));
   };
 
   const start = (): void => {
@@ -276,6 +285,7 @@ export function celebration(info: CelebrationInfo): HTMLElement {
     cards.forEach((c, i) => {
       later(1100 + i * 380, () => {
         c.card.classList.add('in');
+        showAboveBar(c.card);
         sfx.coin();
         burst(c.card, 16);
         if (typeof c.reward.value === 'number') {

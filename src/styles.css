@@ -1184,6 +1184,7 @@ body.reduced-motion .hatch-screen.opened::after, .hatch-screen.settled::after { 
 @media (max-width: 600px) {
   .rt-head { display: none; }
   .seg.small { flex-wrap: wrap; overflow: visible; }
+  .seg.small .seg-btn { padding: 4px 9px; }
   .rt-row { grid-template-columns: minmax(0, 1fr) auto auto; grid-template-areas: 'name speed acc' 'name lessons seen'; row-gap: 2px; }
   .rt-name { grid-area: name; }
   .rt-speed { grid-area: speed; text-align: right; }
@@ -1192,6 +1193,9 @@ body.reduced-motion .hatch-screen.opened::after, .hatch-screen.settled::after { 
   .rt-lessons .rt-meter { display: none; }
   .rt-lessons small { white-space: nowrap; }
   .rt-lessons small::after { content: ' lessons'; }
+  .rt-acc::after { content: ' right'; color: var(--muted); font-size: 0.8em; }
+  .rt-seen::before { content: 'Active '; }
+  .rt-waiting .rt-acc::after, .rt-waiting .rt-seen::before { content: none; }
   .rt-name > small { padding-left: 0; }
   .rt-seen { grid-area: seen; text-align: right; font-size: 0.8em; }
   .activity-list li { grid-template-columns: 1fr auto; }
@@ -1940,3 +1944,6 @@ body.kb-pinned .finger-coach { width: 84px; height: 41px; }
 .fin-bar .fin-hatch-main .fin-icon { font-size: 1.4rem; }
 .fin-bar .fin-second { font-size: 1rem; }
 .egg-landed { display: inline-block; margin: 0 0 10px; padding: 6px 16px; border-radius: 999px; background: linear-gradient(180deg, #fff3bf, var(--gold)); color: #2a1200; font-weight: 700; animation: pulse 1.4s ease-in-out 2; }
+
+/* Teacher start: the two ways in sit right under the heading. */
+.tm-jump { justify-content: center; flex-wrap: wrap; margin: 4px 0 14px; }

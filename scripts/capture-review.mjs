@@ -194,7 +194,7 @@ for (const size of SIZES) {
     await shot(page, '31-word-challenge-results', async () => { await typeAll(page, '.lesson-result'); await page.waitForSelector('.lesson-result'); });
     await shot(page, '32-nest-egg-ready', () => page.click('.lesson-result .fin-nest'));
     await shot(page, '33-hatch-tapping', async () => {
-      await page.getByRole('button', { name: 'Tap to open!' }).click();
+      await page.click('.nest-egg-tap, .open-btn >> nth=0');
       for (let i = 0; i < 3; i++) { await page.click('.hatch-tap'); await page.waitForTimeout(250); }
     });
     await shot(page, '34-hatch-reveal', async () => {

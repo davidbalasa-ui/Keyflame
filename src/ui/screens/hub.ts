@@ -136,11 +136,11 @@ export const hub = (root: HTMLElement): (() => void) => {
   const dailyGo = (): void => (sfx.click(), go(nextLesson ? playLesson(nextLesson) : challenge ? playChallenge(challenge) : raceMap));
   const dailyCard = h(
     dailyDone ? 'div' : 'button',
-    dailyDone ? { class: 'daily-card done', role: 'status' } : { class: 'daily-card go', type: 'button', onclick: dailyGo, 'aria-label': `Daily flight: ${daily.races} of ${DAILY_RACES} races or 1 ${nextLesson ? 'lesson' : 'word challenge'}. Go` },
+    dailyDone ? { class: 'daily-card done', role: 'status' } : { class: 'daily-card go', type: 'button', onclick: dailyGo, 'aria-label': `Daily flight: ${daily.races} of ${DAILY_RACES} races or 1 ${nextLesson ? 'lesson' : 'word challenge'}. ${nextLesson ? 'Start a lesson' : challenge ? 'Start a word challenge' : 'Choose a race'}` },
     h('span', { class: 'daily-icon', 'aria-hidden': 'true', html: WING }),
     h('span', { class: 'daily-text' }, h('strong', {}, 'Daily flight'), h('small', {}, dailyDone ? 'Done! See you tomorrow' : `${daily.races}/${DAILY_RACES} races or 1 ${nextLesson ? 'lesson' : 'word challenge'}`)),
     h('span', { class: 'daily-track', 'aria-hidden': 'true' }, ...dots),
-    dailyDone ? h('span', { class: 'daily-end', 'aria-hidden': 'true' }, '✓') : h('span', { class: 'daily-go', 'aria-hidden': 'true' }, '▶ Go'),
+    dailyDone ? h('span', { class: 'daily-end', 'aria-hidden': 'true' }, '✓') : h('span', { class: 'daily-go', 'aria-hidden': 'true' }, nextLesson ? '▶ Lesson' : challenge ? '▶ Words' : '▶ Race'),
   );
 
   const card = (label: string, sub: string, cls: string, art: string, dragon: string, to: () => void): HTMLElement =>
