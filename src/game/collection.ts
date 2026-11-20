@@ -71,6 +71,17 @@ export function canBuyEgg(p: Profile, tribe: TribeId): 'ok' | 'unknown' | 'ember
   return 'ok';
 }
 
+/** Tribes whose next egg the rider could buy now or after earning more embers, in tribe order. */
+export function eggShop(p: Profile): TribeId[] {
+  return (Object.keys(TRIBES) as TribeId[]).filter((t) => {
+    const c = canBuyEgg(p, t);
+    return c === 'ok' || c === 'embers';
+  });
+}
+
+/** True when the nest is empty and an egg can be bought right now, so the game points at it. */
+export const eggToBuy = (p: Profile): boolean => !p.nest && eggShop(p).some((t) => canBuyEgg(p, t) === 'ok');
+
 export function buyEgg(p: Profile, tribe: TribeId): boolean {
   if (canBuyEgg(p, tribe) !== 'ok') return false;
   p.embers -= EGG_PRICE;

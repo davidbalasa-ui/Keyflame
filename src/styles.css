@@ -1920,3 +1920,17 @@ body.kb-pinned .finger-coach { width: 84px; height: 41px; }
 .pack-levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .pack-level { min-height: 64px; padding: 6px 4px; }
 .pack-level strong { font-size: 0.85rem; }
+
+/* An empty nest: one tap buys an egg of a tribe you know, straight into the nest. */
+.egg-shop { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 10px 0 6px; }
+.shop-egg {
+  font: inherit; color: var(--text); background: var(--bg-2); border: 2px solid rgba(255, 179, 71, 0.6); border-radius: 16px;
+  padding: 10px 12px 12px; min-width: 104px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer;
+}
+.shop-egg .mini-egg { width: 60px; }
+.shop-egg .shop-price { padding: 3px 12px; border-radius: 999px; background: linear-gradient(180deg, var(--gold), var(--ember)); color: #2a1200; font-weight: 700; }
+.shop-egg:disabled { opacity: 0.55; cursor: default; animation: none; }
+.shop-egg:disabled .shop-price { background: var(--line); color: var(--text); }
+.shop-egg:not(:disabled):hover, .shop-egg:focus-visible { border-color: var(--gold); transform: translateY(-2px); }
+/* A ready egg: the results' Hatch button is as bright as the main button. */
+.fin-nest.hatch-ready { background: linear-gradient(180deg, var(--gold), var(--ember)); color: #2a1200; }

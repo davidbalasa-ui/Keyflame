@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EGG_PRICE, MAX_BASKET, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, foundLooks } from '../src/game/collection';
+import { EGG_PRICE, MAX_BASKET, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, eggShop, eggToBuy, foundLooks } from '../src/game/collection';
 import { MARKINGS, dragonSvg, lookName, rollMarking } from '../src/game/dragons';
 import { hatchEgg } from '../src/game/progress';
 import { createProfile, type OwnedDragon } from '../src/save/store';
@@ -52,5 +52,21 @@ describe('codex collection', () => {
     p.embers = EGG_PRICE - 1;
     expect(canBuyEgg(p, 'emberback')).toBe('embers');
     expect(buyEgg(p, 'emberback')).toBe(false);
+  });
+});
+
+describe('getting an egg from the empty nest', () => {
+  it('offers eggs of tribes the rider has hatched, and points at them only when one is affordable', () => {
+    const p = createProfile('Brave Comet');
+    expect(eggShop(p)).toEqual([]);
+    p.dragons.push({ id: 'a', tribe: 'emberback', palette: 0, marking: 0, name: 'Ashclaw', xp: 0, hatchedAt: 0 });
+    Object.assign(p, { nest: null, embers: EGG_PRICE - 1 });
+    expect(eggShop(p)).toEqual(['emberback']);
+    expect(eggToBuy(p)).toBe(false);
+    p.embers = EGG_PRICE;
+    expect(eggToBuy(p)).toBe(true);
+    expect(buyEgg(p, 'emberback')).toBe(true);
+    expect(p.nest?.tribe).toBe('emberback');
+    expect(eggToBuy(p)).toBe(false);
   });
 });

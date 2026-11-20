@@ -1,5 +1,5 @@
 import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggCracksSvg, eggSvg, isSeasonPalette, lookName, paletteFor, stageFor, type TribeId } from '../../game/dragons';
-import { EGG_PRICE, claimSets, foundLooks, lookKey } from '../../game/collection';
+import { EGG_PRICE, buyEgg, canBuyEgg, claimSets, eggShop, foundLooks, lookKey } from '../../game/collection';
 import { codex, codexLook } from './codex';
 import { isStarglint, type OwnedDragon } from '../../save/store';
 import { kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
@@ -25,8 +25,60 @@ function growthText(d: OwnedDragon): string {
   return `${evo}${stage === 'hatchling' ? 'Hatchling' : 'Young'} · ${goal - d.xp} keys to grow`;
 }
 
+/** Set by hatchNow: the nest opens straight into the hatch. */
+let hatchOnOpen = false;
+
+/** Opens the nest and, if the egg is ready, starts cracking it at once (one tap from Home or results). */
+export function hatchNow(): void {
+  hatchOnOpen = true;
+  go(nest);
+}
+
+/** The empty nest: eggs of tribes the rider knows, bought with one tap, straight into the nest. */
+function emptyNest(): HTMLElement {
+  const p = profile();
+  const shop = eggShop(p);
+  const short = shop.length > 0 && p.embers < EGG_PRICE;
+  return h(
+    'section',
+    { class: 'nest-panel empty' },
+    h('h2', {}, shop.length ? 'Get an egg' : 'Your nest is empty'),
+    shop.length
+      ? h(
+          'div',
+          { class: 'egg-shop' },
+          ...shop.map((t) => {
+            const ok = canBuyEgg(p, t) === 'ok';
+            return h(
+              'button',
+              {
+                class: 'shop-egg' + (ok ? ' glow-btn' : ''),
+                type: 'button',
+                disabled: !ok,
+                'aria-label': `Get a ${TRIBES[t].name} egg for ${EGG_PRICE} embers`,
+                onclick: () => {
+                  if (!buyEgg(p, t)) return;
+                  sfx.coin();
+                  persist();
+                  go(nest);
+                },
+              },
+              svg(eggSvg(t, 0, 7), 'mini-egg'),
+              h('strong', {}, TRIBES[t].name),
+              h('span', { class: 'shop-price' }, `🔥 ${EGG_PRICE}`),
+            );
+          }),
+        )
+      : null,
+    short ? h('p', { class: 'nest-keys' }, `🔥 ${p.embers} / ${EGG_PRICE}`) : null,
+    !shop.length || short ? h('div', { class: 'row center' }, button('▶ Race for embers', () => go(raceMap), 'btn big glow-btn')) : null,
+  );
+}
+
 export const nest = (root: HTMLElement): (() => void) => {
   const p = profile();
+  const autoHatch = hatchOnOpen;
+  hatchOnOpen = false;
   if (!p.nestSeen) {
     // Home points at the nest with a tapping finger until the rider has found it once.
     p.nestSeen = true;
@@ -63,7 +115,7 @@ export const nest = (root: HTMLElement): (() => void) => {
               canWarmWithEmbers(p) ? null : h('small', { class: 'warm-need' }, `Need 🔥 ${WARM_PRICE}`),
             ),
       )
-    : h('section', { class: 'nest-panel empty' }, h('h2', {}, 'Your nest is empty'), h('p', {}, 'Earn your next egg from a lesson unit or a milestone below.'), p.dragons.length ? button(`Get an egg for 🔥 ${EGG_PRICE} in the Codex`, () => go(codex), 'btn ghost') : null);
+    : emptyNest();
 
   const goals = [
     ...UNITS.map((u) => ({ tribe: u.reward, label: `Finish the ${u.title} lessons`, done: p.unitsRewarded.includes(u.id) })),
@@ -185,7 +237,9 @@ export const nest = (root: HTMLElement): (() => void) => {
         : null,
     ),
   );
-  return withTabs(root, 'dragons');
+  const stopTabs = withTabs(root, 'dragons');
+  if (autoHatch && egg && prog >= 1) hatchSequence(root);
+  return stopTabs;
 };
 
 /** A clip-path that keeps one side of the seam the shell splits along. */

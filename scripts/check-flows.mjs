@@ -4,7 +4,7 @@
 //              a race to its results -> Race again -> back out
 //   grown rider (all 20 lessons passed, egg ready): Daily flight Go opens a word challenge,
 //              finish it -> next level opens, hatch the egg with taps, pick a name with
-//              the dice, Done, then rename it from the nest card
+//              the dice, Done, then rename it from the nest card, then get a new egg in one tap
 // Sizes: iPad upright, iPad sideways and a phone.
 // BROWSER=webkit runs it in Safari's engine (what iPads use); the default is Chromium.
 // Run: npm run build && npm run check:flows   SHOTS=folder saves screenshots.
@@ -175,10 +175,11 @@ for (const size of SIZES) {
       if (open < 7) throw new Error(`expected 7 open challenge levels after passing one, found ${open}`);
     });
     await step(page, 'hatch the egg with taps', async () => {
-      await page.click('.tab-dragon');
-      await must(page, '.open-btn, .nest-egg-tap', 'no ready egg to open');
-      await page.click('.open-btn');
-      await must(page, '.hatch-screen', 'the hatch screen did not open');
+      // One tap on the ready egg at home goes straight to cracking it.
+      await page.click('.tab-home');
+      await must(page, '.egg-chip.ready', 'home does not say the egg is ready');
+      await page.click('.hero-open');
+      await must(page, '.hatch-screen', 'tapping the ready egg at home did not start the hatch');
       for (let i = 0; i < 6 && (await page.locator('.hatch-tap').count()); i++) {
         await page.click('.hatch-screen', { position: { x: Math.round(size.width / 2), y: Math.round(size.height / 2) } });
         await page.waitForTimeout(250);
@@ -212,6 +213,11 @@ for (const size of SIZES) {
       await page.click('.tab-dragon');
       const kept = await page.textContent('.dc-rename .dc-name');
       if (kept !== after) throw new Error(`the new name was not saved (${kept} vs ${after})`);
+    });
+    await step(page, 'empty nest: one tap gets a new egg', async () => {
+      await must(page, '.shop-egg:not([disabled])', 'the empty nest offers no egg to get');
+      await page.click('.shop-egg:not([disabled])');
+      await must(page, '.nest-panel .warmth', 'the new egg did not land in the nest');
     });
     await ctx.close();
   }
