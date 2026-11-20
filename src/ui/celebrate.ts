@@ -182,7 +182,7 @@ export function celebration(info: CelebrationInfo): HTMLElement {
   const banner = top3
     ? h('div', { class: `cel-banner tier-${tier}` }, h('span', { class: 'cel-ord' }, ord.slice(0, -2), h('sup', {}, ord.slice(-2))), ' Place!')
     : h('div', { class: `cel-banner tier-${tier}` }, 'Great flying!');
-  const sub = h('p', { class: 'cel-sub' }, top3 ? `${ord} of ${info.racers} racers` : `You finished ${ord} of ${info.racers}. Keep practicing and you’ll climb!`);
+  const sub = h('p', { class: 'cel-sub' }, top3 ? `${ord} of ${info.racers} in this race` : `You finished ${ord} of ${info.racers} in this race. Keep practicing and you’ll climb!`);
 
   const max = Math.max(30, Math.ceil(Math.max(info.wpm, info.prevBest) / 10) * 10 + 10);
   const dial = wpmDial(max, info.prevBest);

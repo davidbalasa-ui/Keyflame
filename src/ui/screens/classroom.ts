@@ -68,7 +68,7 @@ function memberArt(m: Member, cls: string): HTMLElement {
   return svg(dragonSvg(l?.tribe ?? 'emberback', l?.palette ?? 0, l?.stage ?? 'hatchling', '', l?.skin, l?.marking ?? 0, l?.stars ?? 0), cls);
 }
 
-const STATUS_LABEL: Record<Member['status'], string> = { lobby: 'Here', waiting: 'Ready!', racing: 'Racing' };
+const STATUS_LABEL: Record<Member['status'], string> = { lobby: 'Here', waiting: 'Ready!', racing: 'In a race' };
 
 function rosterChip(m: Member, me = false): HTMLElement {
   return h(
@@ -99,7 +99,7 @@ function boardTable(rows: BoardRow[], highlight?: string): HTMLElement {
 }
 
 /** A board panel that loads itself and has a refresh button. */
-function boardPanel(code: string, highlight?: string, extra: HTMLElement | null = null, heading = '🏆 Class board'): { el: HTMLElement; refresh: () => void } {
+function boardPanel(code: string, highlight?: string, extra: HTMLElement | null = null, heading = '🏆 Best speeds this week'): { el: HTMLElement; refresh: () => void } {
   const body = h('div', {}, h('p', { class: 'fine' }, 'Loading…'));
   const refresh = (): void => {
     classBoard(code)
@@ -304,6 +304,7 @@ export function classLobby(code: string) {
         link.setStatus(me.status === 'waiting' ? 'lobby' : 'waiting');
       }, 'btn race-classmates');
       const hint = h('p', { class: 'fine lobby-hint', 'aria-live': 'polite' });
+      const status = h('p', { class: 'lobby-status', 'aria-live': 'polite' });
       const board = boardPanel(code, me.name);
 
       const render = (): void => {
@@ -312,8 +313,16 @@ export function classLobby(code: string) {
         roster.replaceChildren(rosterChip(me, true), ...riders.filter((m) => m.id !== me.id).map((m) => rosterChip(m)));
         const waiting = waitingRiders(members);
         const ready = me.status === 'waiting';
-        raceBtn.textContent = ready ? 'Not ready' : '🏁 I’m ready!';
+        // Once ready, the big button steps back to a small Cancel and a clear status says so.
+        raceBtn.textContent = ready ? 'Cancel' : '🏁 I’m ready!';
         raceBtn.classList.toggle('ghost', ready);
+        raceBtn.classList.toggle('small', ready);
+        raceBtn.setAttribute('aria-label', ready ? 'Cancel, I’m not ready' : 'I’m ready to race');
+        const inRace = riders.filter((m) => m.status === 'racing').length;
+        status.replaceChildren(
+          ready ? h('strong', { class: 'lobby-ready' }, '✓ You’re ready!') : '',
+          riders.length > 1 ? h('span', { class: 'fine' }, `${waiting.length} of ${riders.length} ready${inRace ? ` · ${inRace} in a race` : ''}`) : '',
+        );
         // Alone and ready for a while: say so, and offer a course so nobody waits forever.
         const alone = ready && waiting.length < 2;
         if (!alone) readySince = 0;
@@ -345,7 +354,7 @@ export function classLobby(code: string) {
       main.replaceChildren(
         linkBanner(link),
         h('div', { class: 'lobby-head' }, h('h1', {}, '🏫 Class race'), h('span', { class: 'lobby-chips' }, h('span', { class: 'class-code-chip' }, spacedCode(code)), h('span', { class: 'my-badge pop-in', 'aria-label': `Your badge ${profile().classBadge ?? ''}` }, `#${profile().classBadge ?? '?'}`))),
-        h('div', { class: 'lobby-race' }, raceBtn, hint),
+        h('div', { class: 'lobby-race' }, status, raceBtn, hint),
         h('h2', {}, 'Here now'),
         roster,
         board.el,
