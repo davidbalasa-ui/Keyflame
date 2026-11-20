@@ -198,7 +198,7 @@ try {
   // Riders start a race themselves.
   await ipad.click('.race-classmates');
   await phone.click('.race-classmates');
-  await phone.waitForSelector('text=Starting soon');
+  await phone.waitForSelector('text=starting soon');
   await shot(phone, '4-phone-starting-soon');
   await Promise.all([ipad.waitForSelector('.type-text', { timeout: 10000 }), phone.waitForSelector('.type-text', { timeout: 10000 })]);
   const [t1, t2] = [await raceText(ipad), await raceText(phone)];

@@ -287,7 +287,7 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
 }
 
 type SortKey = 'badge' | 'name' | 'speed' | 'active' | 'lessons';
-const SORTS: Array<[SortKey, string]> = [['badge', '#'], ['name', 'Name'], ['speed', 'Speed'], ['lessons', 'Lessons'], ['active', 'Last active']];
+const SORTS: Array<[SortKey, string]> = [['badge', '#'], ['name', 'Name'], ['speed', 'Speed'], ['lessons', 'Lessons'], ['active', 'Active']];
 
 function sortRows(rows: Row[], key: SortKey): Row[] {
   const out = [...rows];

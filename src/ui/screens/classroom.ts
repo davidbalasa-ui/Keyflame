@@ -307,9 +307,9 @@ export function classLobby(code: string) {
         roster.replaceChildren(rosterChip(me, true), ...riders.filter((m) => m.id !== me.id).map((m) => rosterChip(m)));
         const waiting = waitingRiders(members);
         const ready = me.status === 'waiting';
-        raceBtn.textContent = ready ? 'Cancel' : '🏁 Race!';
+        raceBtn.textContent = ready ? 'Not ready' : '🏁 I’m ready!';
         raceBtn.classList.toggle('ghost', ready);
-        hint.textContent = !ready ? '' : waiting.length >= 2 ? 'Starting soon…' : 'Waiting for a classmate…';
+        hint.textContent = !ready ? '' : waiting.length >= 2 ? 'Get your fingers ready, starting soon…' : 'Waiting for a classmate to be ready…';
 
         // The rider who has waited longest starts the race for everyone who is ready.
         const host = raceHost(waiting);
@@ -549,10 +549,37 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
     });
 
     const fileBtn = h('label', { class: 'btn ghost small file-btn' }, 'Open a backup file', file);
+    const newCard = h(
+      'section',
+      { class: 'tm-card' },
+      h('h2', {}, fam ? 'New family wing' : 'New class'),
+      field(fam ? 'Kids' : 'Students', list, 'You can add more later.'),
+      field(fam ? 'Grown-up password' : 'Teacher password', pw, 'Locks your list. You need it to open it on another device.'),
+      msg,
+      h('div', { class: 'tm-actions' }, button(fam ? 'Make the wing' : 'Make the class', make, 'btn tm-primary')),
+    );
+    const openCard = h(
+      'section',
+      { class: 'tm-card' },
+      h('h2', {}, 'Open an existing class'),
+      h('div', { class: 'tm-grid2' }, field('Class code', code), field('Teacher password', pw2)),
+      msg2,
+      h('div', { class: 'tm-actions' }, button('Open my class', () => void open(), 'btn ghost'), fileBtn),
+    );
+    const jump = (card: HTMLElement, first: HTMLElement): void => {
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      first.focus({ preventScroll: true });
+    };
     main.replaceChildren(
       fam
         ? teacherHero(h('h1', {}, 'Set up your family wing'), h('p', { class: 'tm-sub' }, 'Races and progress for your kids on any device, with no accounts.'))
         : teacherHero(h('h1', {}, 'Set up your class'), h('p', { class: 'tm-sub' }, 'Live races and typing progress for your class, with no student accounts.')),
+      h(
+        'div',
+        { class: 'tm-actions tm-jump' },
+        button(fam ? 'New family wing' : 'Make a new class', () => jump(newCard, list), 'btn tm-primary'),
+        button(fam ? 'I already have a wing' : 'I already have a class', () => jump(openCard, code), 'btn ghost'),
+      ),
       h(
         'ol',
         { class: 'tm-steps', 'aria-label': 'How it works' },
@@ -560,23 +587,8 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         stepCard(2, 'Print badge cards', 'One card each, with a QR code and a secret word.'),
         stepCard(3, fam ? 'Kids scan their card' : 'Students scan their card', 'The camera opens Keyflame and joins them. No accounts.'),
       ),
-      h(
-        'section',
-        { class: 'tm-card' },
-        h('h2', {}, fam ? 'New family wing' : 'New class'),
-        field(fam ? 'Kids' : 'Students', list, 'You can add more later.'),
-        field(fam ? 'Grown-up password' : 'Teacher password', pw, 'Locks your list. You need it to open it on another device.'),
-        msg,
-        h('div', { class: 'tm-actions' }, button(fam ? 'Make the wing' : 'Make the class', make, 'btn tm-primary')),
-      ),
-      h(
-        'section',
-        { class: 'tm-card' },
-        h('h2', {}, 'Open an existing class'),
-        h('div', { class: 'tm-grid2' }, field('Class code', code), field('Teacher password', pw2)),
-        msg2,
-        h('div', { class: 'tm-actions' }, button('Open my class', () => void open(), 'btn ghost'), fileBtn),
-      ),
+      newCard,
+      openCard,
       h('p', { class: 'tm-tip' }, HOME_SCREEN_TIP),
     );
   };
