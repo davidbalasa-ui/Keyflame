@@ -404,7 +404,7 @@ export function openTeacherFrom(back: Screen, kind: 'class' | 'family' = 'class'
 
 /** The illustrated banner on top of the teacher screens. */
 function teacherHero(...content: HTMLElement[]): HTMLElement {
-  return h('section', { class: 'tm-hero' }, svg(classroomScene(), 'tm-scene'), h('div', { class: 'tm-hero-body' }, ...content));
+  return h('section', { class: 'tm-hero' + (content.some((c) => c.classList.contains('teacher-code')) ? ' slim' : '') }, svg(classroomScene(), 'tm-scene'), h('div', { class: 'tm-hero-body' }, ...content));
 }
 
 function stepCard(n: number, title: string, text: string): HTMLElement {

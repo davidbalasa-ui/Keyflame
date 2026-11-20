@@ -108,7 +108,7 @@ for (const size of SIZES) {
     await page.waitForSelector('.celebrate.done', { timeout: 5000 }).catch(() => null);
   };
 
-  if (!process.env.ONLY_MID) {
+  if (!process.env.ONLY_MID && !process.env.ONLY_GROWN) {
   // New rider: first look, first lesson with the hands picture, first finish screens.
   {
     const { ctx, page } = await fresh(null);
@@ -139,7 +139,7 @@ for (const size of SIZES) {
 
   }
   // Mid rider: main navigation tabs, tricky keys, warm-up, improvement rewards.
-  {
+  if (!process.env.ONLY_GROWN) {
     const { ctx, page } = await fresh(rider({ lessonsPassed: 9 }));
     await shot(page, '12-home');
     await shot(page, '13-nest-tab', () => page.click('.tab-dragon'));
@@ -192,13 +192,13 @@ for (const size of SIZES) {
     await home(page);
     await shot(page, '30-word-challenge-from-daily-go', () => page.click('.daily-card.go'));
     await shot(page, '31-word-challenge-results', async () => { await typeAll(page, '.lesson-result'); await page.waitForSelector('.lesson-result'); });
-    await shot(page, '32-nest-egg-ready', () => page.click('.lesson-result .fin-nest'));
+    await shot(page, '32-hatch-from-results', async () => { await page.click('.lesson-result .fin-hatch-main'); await page.waitForSelector('.hatch-screen'); });
+    const mid = { x: Math.round(size.width / 2), y: Math.round(size.height / 2) };
     await shot(page, '33-hatch-tapping', async () => {
-      await page.click('.nest-egg-tap, .open-btn >> nth=0');
-      for (let i = 0; i < 3; i++) { await page.click('.hatch-tap'); await page.waitForTimeout(250); }
+      for (let i = 0; i < 3; i++) { await page.click('.hatch-screen', { position: mid }); await page.waitForTimeout(250); }
     });
     await shot(page, '34-hatch-reveal', async () => {
-      for (let i = 0; i < 3; i++) await page.click('.hatch-tap').catch(() => null);
+      for (let i = 0; i < 3; i++) await page.click('.hatch-screen', { position: mid }).catch(() => null);
       await page.waitForSelector('.hatch-reveal', { timeout: 3000 });
     }, 300);
     await shot(page, '35-hatch-name-card', () => page.waitForTimeout(3500));

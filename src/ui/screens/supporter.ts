@@ -97,6 +97,12 @@ export const supporter = (root: HTMLElement): (() => void) => {
       { class: 'supporter' },
       h('h1', {}, p.supporter ? 'Your supporter pack' : 'Support Keyflame'),
       svg(dragonSvg('emberback', 0, 'adult', 'flap bob', 'starglint'), 'supporter-dragon'),
+      p.supporter
+        ? owned()
+        : ready
+          ? h('div', { class: 'row center' }, button(`For grown-ups: get the pack (${CONFIG.supporterPrice})`, () => root.append(parentGate(() => (location.href = CONFIG.supporterCheckoutUrl)))))
+          : h('p', { class: 'reward' }, 'The supporter pack is coming soon!'),
+      p.supporter ? null : codeBox(),
       p.supporter ? null : h('p', {}, `Keyflame is made to be free and fun. There are no ads. A one-time ${CONFIG.supporterPrice} supporter pack helps pay for the website, and says thank you with:`),
       h(
         'ul',
@@ -106,12 +112,6 @@ export const supporter = (root: HTMLElement): (() => void) => {
         h('li', {}, h('strong', {}, 'A supporter code '), 'that unlocks the pack on other devices. No account needed.'),
       ),
       h('p', { class: 'fine' }, 'Starglint never flies faster. Its special is a challenge: switch off the key hints and type from memory. Everyone races on the same skill.'),
-      p.supporter
-        ? owned()
-        : ready
-          ? h('div', { class: 'row center' }, button(`For grown-ups: get the pack (${CONFIG.supporterPrice})`, () => root.append(parentGate(() => (location.href = CONFIG.supporterCheckoutUrl)))))
-          : h('p', { class: 'reward' }, 'The supporter pack is coming soon!'),
-      p.supporter ? null : codeBox(),
     ),
   );
   return withTabs(root, 'grownups');

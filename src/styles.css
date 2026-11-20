@@ -1947,3 +1947,14 @@ body.kb-pinned .finger-coach { width: 84px; height: 41px; }
 
 /* Teacher start: the two ways in sit right under the heading. */
 .tm-jump { justify-content: center; flex-wrap: wrap; margin: 4px 0 14px; }
+
+/* A brand-new rider's lessons screen: one big first step. */
+.first-lesson { display: flex; justify-content: center; margin: 4px 0 14px; }
+.first-lesson-btn { font-size: 1.25rem; }
+/* Join a wing: the badge-card scan comes first. */
+.wing-join > .wing-qr-tip { display: flex; gap: 10px; align-items: center; justify-content: center; margin: 0 0 10px; color: var(--text); text-align: left; }
+.wing-join .qr-cam { font-size: 1.8rem; line-height: 1; }
+/* An open class: a slim picture so the live board and Start button sit higher. */
+.tm-hero.slim .tm-scene { max-height: 110px; aspect-ratio: auto; height: 110px; }
+.tm-hero.slim .tm-scene svg { object-fit: cover; }
+.course-grid + .class-card { margin-top: 16px; }

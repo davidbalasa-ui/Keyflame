@@ -119,6 +119,9 @@ function readerPicker(done: () => void): HTMLElement {
   );
 }
 
+const wingCard = (): HTMLElement =>
+  button(h('span', { class: 'class-card-inner' }, h('span', { class: 'class-card-icon', 'aria-hidden': 'true' }, '🐉'), h('strong', {}, 'Wing race'), h('small', {}, 'Race your class or family')), () => (sfx.click(), go(classRaceEntry())), 'class-card');
+
 /** Campaign map: pick a course; new courses open as lesson units are finished. */
 export const raceMap = (root: HTMLElement): (() => void) => {
   const p = profile();
@@ -130,7 +133,7 @@ export const raceMap = (root: HTMLElement): (() => void) => {
       h('h1', {}, 'Choose a course'),
       h('p', { class: 'fine' }, 'Beat each course’s champion to earn a big ember bonus. Finish lesson units to open new courses.'),
       factsUnlocked(p) && !p.settings.readingLevel ? readerPicker(() => go(raceMap)) : null,
-      button(h('span', { class: 'class-card-inner' }, h('span', { class: 'class-card-icon', 'aria-hidden': 'true' }, '🐉'), h('strong', {}, 'Wing race'), h('small', {}, 'Race your class or family')), () => (sfx.click(), go(classRaceEntry())), 'class-card'),
+      p.classCode ? wingCard() : null,
       h(
         'div',
         { class: 'course-grid' },
@@ -153,6 +156,7 @@ export const raceMap = (root: HTMLElement): (() => void) => {
           );
         }),
       ),
+      p.classCode ? null : wingCard(),
     ),
   );
   return withTabs(root, 'home');

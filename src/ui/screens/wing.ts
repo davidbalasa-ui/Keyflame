@@ -195,6 +195,7 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
   const el = h(
     'section',
     { class: 'wing-join' },
+    h('p', { class: 'wing-qr-tip' }, h('span', { class: 'qr-cam', 'aria-hidden': 'true' }, '📷'), h('span', {}, h('strong', {}, 'Have a badge card? '), 'Scan it with the Camera app. Or type it below:')),
     h(
       'div',
       { class: 'join-ticket pop-in' },
@@ -205,7 +206,6 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
     msg,
     askBox,
     h('div', { class: 'row center' }, joinBtn),
-    h('small', { class: 'wing-qr-tip' }, '📷 Or scan your card with the camera.'),
   );
   const focus = (): void => (!isClassCode(input.value) ? input : !badgeInput.value ? badgeInput : wordInput).focus();
   return { el, focus, join: () => join() };
