@@ -1,0 +1,11 @@
+{
+  "class": "SIM TEST CLASS (fake server, not real data)",
+  "players": [
+    { "id": "teacher", "device": "laptop", "role": "teacher", "persona": "Ms. Rivera, a busy 3rd/4th grade teacher, okay with tech but has 5 minutes before class. Reads instructions only if stuck." },
+    { "id": "kid1", "device": "ipad", "age": 7, "reading": "early reader: knows short words, skips long sentences", "wpm": 5, "errorRate": 0.12, "personality": "impatient button-masher: taps the biggest, brightest thing; gives up on any screen with lots of words", "iq": "average" },
+    { "id": "kid2", "device": "ipad", "age": 8, "reading": "reads at grade level, slowly", "wpm": 8, "errorRate": 0.08, "personality": "careful and anxious: reads everything, worried about doing it wrong, asks 'is this right?'", "iq": "above average" },
+    { "id": "kid3", "device": "phone", "age": 10, "reading": "reads fine", "wpm": 14, "errorRate": 0.07, "personality": "competitive: only cares about winning races and getting dragons, skips lessons if possible", "iq": "average" },
+    { "id": "kid4", "device": "ipad", "age": 9, "reading": "struggling reader (dyslexia): long words and paragraphs are hard", "wpm": 6, "errorRate": 0.15, "personality": "easily stuck and easily discouraged: if unsure, does nothing or taps Back", "iq": "below average" },
+    { "id": "kid5", "device": "laptop", "age": 12, "reading": "strong reader", "wpm": 28, "errorRate": 0.04, "personality": "curious explorer: pokes every menu and setting, tries to break things", "iq": "high" }
+  ]
+}

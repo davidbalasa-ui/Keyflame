@@ -27,6 +27,9 @@ import { wing, wingScreen } from './wing';
 export const LAST_CODE_KEY = 'keyflame-class-code';
 const TEACHER_KEY = 'keyflame-teacher-class';
 
+/** How long a ready rider waits alone in the class lobby before being offered a course. */
+const ALONE_MS = 12000;
+
 export function readStore(key: string): string | null {
   try {
     return localStorage.getItem(key);
@@ -290,6 +293,8 @@ export function classLobby(code: string) {
         if (!gone) main.replaceChildren(h('p', {}, 'Can’t reach the class. Check the Wi-Fi.'), button('Try again', () => go(classLobby(code))));
       });
 
+    let readySince = 0;
+    let aloneTimer: number | undefined;
     function build(sess: Session): void {
       const link = sess.link;
       const me = link.me;
@@ -309,7 +314,19 @@ export function classLobby(code: string) {
         const ready = me.status === 'waiting';
         raceBtn.textContent = ready ? 'Not ready' : '🏁 I’m ready!';
         raceBtn.classList.toggle('ghost', ready);
-        hint.textContent = !ready ? '' : waiting.length >= 2 ? 'Get your fingers ready, starting soon…' : 'Waiting for a classmate to be ready…';
+        // Alone and ready for a while: say so, and offer a course so nobody waits forever.
+        const alone = ready && waiting.length < 2;
+        if (!alone) readySince = 0;
+        else if (!readySince) {
+          readySince = Date.now();
+          clearTimeout(aloneTimer);
+          aloneTimer = window.setTimeout(render, ALONE_MS + 50);
+        }
+        const longAlone = alone && Date.now() - readySince >= ALONE_MS;
+        hint.replaceChildren(
+          !ready ? '' : waiting.length >= 2 ? 'Get your fingers ready, starting soon…' : longAlone ? 'Nobody else is ready yet. ' : 'Waiting for a classmate to be ready…',
+          longAlone ? button('Race a course while you wait', () => (sfx.click(), go(raceMap)), 'link') : '',
+        );
 
         // The rider who has waited longest starts the race for everyone who is ready.
         const host = raceHost(waiting);
@@ -348,6 +365,7 @@ export function classLobby(code: string) {
       stopTabs();
       gone = true;
       clearTimeout(gather);
+      clearTimeout(aloneTimer);
       off?.();
       if (s) {
         if (s.link.me.status === 'waiting') s.link.setStatus('lobby');
