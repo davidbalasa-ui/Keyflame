@@ -165,6 +165,7 @@ for (const size of SIZES) {
       await must(page, '.type-text', 'Daily flight Go did not start anything');
       await typeAll(page, '.lesson-result');
       await must(page, '.lesson-result', 'no challenge results');
+      await must(page, '.lesson-result .fin-hatch-main', 'a ready egg did not make Hatch! the main results button');
       await page.click('.lesson-result .fin-home');
       await must(page, '.play-cards', 'Home on challenge results did not go home');
     });
@@ -218,6 +219,7 @@ for (const size of SIZES) {
       await must(page, '.shop-egg:not([disabled])', 'the empty nest offers no egg to get');
       await page.click('.shop-egg:not([disabled])');
       await must(page, '.nest-panel .warmth', 'the new egg did not land in the nest');
+      await must(page, '.egg-landed', 'the nest did not say the egg landed');
     });
     await ctx.close();
   }

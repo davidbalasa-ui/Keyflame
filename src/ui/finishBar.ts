@@ -11,7 +11,7 @@ import { eggToBuy } from '../game/collection';
  * are always one tap away, and the big orange button keeps playing. Smaller extras, like
  * the course map or Try again, sit as chips above it.
  */
-export function finishBar(primary: HTMLElement, extras: Array<HTMLElement | null> = [], opts: { nestGlow?: boolean } = {}): HTMLElement {
+export function finishBar(primary: HTMLElement, extras: Array<HTMLElement | null> = [], opts: { nestGlow?: boolean; keepPrimary?: boolean } = {}): HTMLElement {
   const p = profile();
   const prog = p.nest ? eggProgress(p) : 0;
   const ready = !!p.nest && prog >= 1;
@@ -27,7 +27,17 @@ export function finishBar(primary: HTMLElement, extras: Array<HTMLElement | null
     { 'aria-label': ready ? 'Hatch your egg' : buyNow ? 'Nest: get an egg' : p.nest ? `Nest: egg ${pct(prog)} warm` : 'Nest' },
   );
   primary.classList.add('fin-go');
+  // A ready egg is the main thing to do next: Hatch! takes the big slot, the usual button steps aside.
+  if (ready && !opts.keepPrimary) {
+    primary.classList.add('ghost', 'fin-second');
+    nestBtn.classList.add('fin-hatch-main');
+    return h('div', { class: 'finish' }, chipsRow(extras), h('div', { class: 'fin-bar hatch-first' }, home, primary, nestBtn));
+  }
+  return h('div', { class: 'finish' }, chipsRow(extras), h('div', { class: 'fin-bar' }, home, nestBtn, primary));
+}
+
+function chipsRow(extras: Array<HTMLElement | null>): HTMLElement | null {
   const chips = extras.filter((e): e is HTMLElement => !!e);
   chips.forEach((c) => c.classList.add('fin-chip'));
-  return h('div', { class: 'finish' }, chips.length ? h('div', { class: 'fin-chips' }, ...chips) : null, h('div', { class: 'fin-bar' }, home, nestBtn, primary));
+  return chips.length ? h('div', { class: 'fin-chips' }, ...chips) : null;
 }

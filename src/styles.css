@@ -1934,3 +1934,9 @@ body.kb-pinned .finger-coach { width: 84px; height: 41px; }
 .shop-egg:not(:disabled):hover, .shop-egg:focus-visible { border-color: var(--gold); transform: translateY(-2px); }
 /* A ready egg: the results' Hatch button is as bright as the main button. */
 .fin-nest.hatch-ready { background: linear-gradient(180deg, var(--gold), var(--ember)); color: #2a1200; }
+/* A ready egg on results: Hatch! takes the big slot. */
+.fin-bar.hatch-first { grid-template-columns: 1fr 1.2fr 1.5fr; }
+.fin-bar .fin-hatch-main { font-size: 1.15rem; }
+.fin-bar .fin-hatch-main .fin-icon { font-size: 1.4rem; }
+.fin-bar .fin-second { font-size: 1rem; }
+.egg-landed { display: inline-block; margin: 0 0 10px; padding: 6px 16px; border-radius: 999px; background: linear-gradient(180deg, #fff3bf, var(--gold)); color: #2a1200; font-weight: 700; animation: pulse 1.4s ease-in-out 2; }

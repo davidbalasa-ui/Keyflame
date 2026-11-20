@@ -440,7 +440,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       extra: live ? h('div', {}, live.results(), factCard) : factCard,
       reducedMotion: p.settings.reducedMotion,
       actions: live
-        ? finishBar(button('🐉 Back to class', () => live.back()), [], { nestGlow: !!reward.newEgg })
+        ? finishBar(button('🐉 Back to class', () => live.back()), [], { nestGlow: !!reward.newEgg, keepPrimary: true })
         : finishBar(button('▶ Race again', () => go(race(course.id))), [
             button('🗺 Courses', () => go(raceMap), 'btn ghost small'),
             fact ? button('📖 Fact Book', () => go(codex), 'btn ghost small') : null,
