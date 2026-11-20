@@ -3,6 +3,7 @@
 
 import { achievements } from '../game/achievements';
 import { eggProgress } from '../game/progress';
+import { eggToBuy } from '../game/collection';
 import { go, profile } from './app';
 import { leaveGrownUps, openGrownUps } from './screens/grownUps';
 import { hub } from './screens/hub';
@@ -44,6 +45,8 @@ export function tabBar(active: Tab | null): HTMLElement {
   const unseen = p.achievements ? all.filter((a) => a.earned && !p.achievements!.includes(a.id)).length : 0;
   const backupDue = p.dragons.length > 0 && Date.now() - p.lastBackupAt > BACKUP_REMIND_DAYS * 864e5;
   const eggReady = !!p.nest && eggProgress(p) >= 1;
+  // The dragon button also lights up when the nest is empty and an egg is ready to buy.
+  const eggCall = eggReady || eggToBuy(p);
   const open = (tab: Tab): void => {
     sfx.click();
     if (tab === 'grownups') return openGrownUps();
@@ -61,10 +64,10 @@ export function tabBar(active: Tab | null): HTMLElement {
   const dragon = button(
     h('span', { class: 'tab-dragon-in', html: DRAGON_EMBLEM }),
     () => open('dragons'),
-    `tab-dragon${active === 'dragons' ? ' on' : ''}${eggReady ? ' ready' : ''}`,
-    { 'aria-label': eggReady ? 'Nest: your egg is ready' : 'Nest', 'aria-current': active === 'dragons' ? 'page' : undefined },
+    `tab-dragon${active === 'dragons' ? ' on' : ''}${eggCall ? ' ready' : ''}`,
+    { 'aria-label': eggReady ? 'Nest: your egg is ready' : eggCall ? 'Nest: get an egg' : 'Nest', 'aria-current': active === 'dragons' ? 'page' : undefined },
   );
-  if (eggReady) dragon.append(h('span', { class: 'tab-badge', 'aria-hidden': 'true' }, '!'));
+  if (eggCall) dragon.append(h('span', { class: 'tab-badge', 'aria-hidden': 'true' }, '!'));
   return h(
     'nav',
     { class: 'tab-bar', 'aria-label': 'Main' },

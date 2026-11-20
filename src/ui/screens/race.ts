@@ -402,7 +402,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     if (reward.rivalFirstWin) rewards.push({ art: crownSvg(), title: `${r.name} beaten!`, value: 'Champion!', note: `+${RIVAL_BONUS} bonus embers`, tone: 'gold' });
     if (reward.warmthAdded && p.nest) {
       const ready = eggProgress(p) >= 1;
-      rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Visit your nest' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
+      rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Tap 🐣 Hatch! below' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
     }
     for (const c of reward.seasonDone ?? []) rewards.push({ art: medalSvg('gold', '🌟'), title: 'Season challenge', value: `+${CHALLENGE_EMBERS}`, note: c.text, tone: 'gold' });
     for (const b of better) rewards.push({ art: improvementArt(b), title: improvementTitle(b), value: b.embers, note: 'bonus embers', tone: 'gold' });
@@ -440,7 +440,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       extra: live ? h('div', {}, live.results(), factCard) : factCard,
       reducedMotion: p.settings.reducedMotion,
       actions: live
-        ? finishBar(button('🐉 Back to class', () => live.back()), [], { nestGlow: !!reward.newEgg })
+        ? finishBar(button('🐉 Back to class', () => live.back()), [], { nestGlow: !!reward.newEgg, keepPrimary: true })
         : finishBar(button('▶ Race again', () => go(race(course.id))), [
             button('🗺 Courses', () => go(raceMap), 'btn ghost small'),
             fact ? button('📖 Fact Book', () => go(codex), 'btn ghost small') : null,

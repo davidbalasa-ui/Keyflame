@@ -11,7 +11,8 @@ import { button, h, pct, svg, tapHand } from '../dom';
 import { sfx } from '../sound';
 import { aerieScene } from './aerie';
 import { lessons, nextChallenge, playChallenge, playLesson } from './lessons';
-import { nest } from './nest';
+import { hatchNow, nest } from './nest';
+import { eggToBuy } from '../../game/collection';
 import { raceMap } from './race';
 import { seasonButton } from './seasonPage';
 import { wing } from './wing';
@@ -81,6 +82,7 @@ export const hub = (root: HTMLElement): (() => void) => {
   const streak = currentStreak(p);
   const prog = eggProgress(p);
   const eggReady = !!p.nest && prog >= 1;
+  const buyNow = eggToBuy(p);
 
   const avatarArt = d ? svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), '', d.skin, d.marking, d.stars), 'home-avatar-art') : svg(eggSvg(p.nest?.tribe ?? 'emberback', prog, p.nest?.seed ?? 1), 'home-avatar-art egg');
   const top = h(
@@ -114,15 +116,16 @@ export const hub = (root: HTMLElement): (() => void) => {
     h(
       'div',
       { class: 'hero-frame' + (d ? '' : ' egg-only') },
-      button(scene, () => (sfx.click(), go(nest)), 'hero-open', { 'aria-label': `${heroLabel}. Open the nest` }),
+      // A ready egg cracks open straight away; otherwise the cave opens the nest.
+      button(scene, () => (sfx.click(), eggReady ? hatchNow() : go(nest)), 'hero-open', { 'aria-label': eggReady ? `${heroLabel}. Hatch your egg` : buyNow ? `${heroLabel}. Get an egg` : `${heroLabel}. Open the nest` }),
       // A class or family: the wing page has the badge, its QR code and wing races.
       button(p.classBadge ? `🐉 Wing #${p.classBadge}` : '🐉 Join a wing', () => (sfx.click(), go(wing)), 'hero-chip class-chip'),
       h('span', { class: 'hero-chip embers-chip', 'aria-label': `${p.embers} embers` }, h('span', { 'aria-hidden': 'true' }, '🔥'), h('span', { class: 'ember-count' }, String(p.embers))),
       h('span', { class: 'hero-chip name-chip', 'aria-hidden': 'true' }, d ? d.name : heroLabel),
       // Says out loud that the cave opens the nest. Taps fall through to the cave button.
-      h('span', { class: 'hero-chip egg-chip' + (eggReady ? ' ready pulse' : ''), 'aria-hidden': 'true' }, eggReady ? 'Tap to hatch!' : p.nest ? `🥚 Nest · ${pct(prog)} ›` : '🥚 Nest ›'),
+      h('span', { class: 'hero-chip egg-chip' + (eggReady || buyNow ? ' ready pulse' : ''), 'aria-hidden': 'true' }, eggReady ? '🐣 Tap to hatch!' : p.nest ? `🥚 Nest · ${pct(prog)} ›` : buyNow ? '🥚 Get an egg ›' : '🥚 Nest ›'),
       // A tapping finger until this rider has found the nest once.
-      !p.nestSeen && !eggReady ? h('span', { class: 'hero-hand' }, tapHand()) : null,
+      (!p.nestSeen || eggReady || buyNow) ? h('span', { class: 'hero-hand' }, tapHand()) : null,
     ),
   );
 
