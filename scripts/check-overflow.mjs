@@ -130,9 +130,11 @@ for (const size of SIZES) {
     await page.goto(URL);
     await page.waitForSelector('.play-cards');
     try {
-      for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 3000 }));
-    } catch {
-      failures.push(`${label} ${name}: could not open the screen`);
+      // WebKit on a busy CI runner can take a few seconds before the home tiles settle
+      // (seen at phone 320 and iPad mini), so give each tap 10 s and say what went wrong.
+      for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 10000 }));
+    } catch (e) {
+      failures.push(`${label} ${name}: could not open the screen (${String(e?.message ?? e).split('\n')[0]})`);
       continue;
     }
     await page.waitForTimeout(150);
