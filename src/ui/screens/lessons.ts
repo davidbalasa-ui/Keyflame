@@ -31,8 +31,11 @@ export const lessons = (root: HTMLElement): (() => void) => {
       'main',
       { class: 'lessons' },
       h('h1', {}, 'Lessons'),
+      Object.keys(p.lessons).length === 0
+        ? h('div', { class: 'first-lesson' }, button(`▶ Start ${LESSONS[0].title}`, () => go(playLesson(LESSONS[0])), 'btn big glow-btn first-lesson-btn'))
+        : null,
       Object.keys(p.lessons).length < 3
-        ? h('div', { class: 'placement-cta' }, h('span', {}, 'Already know some typing? '), button('Take the 1-minute check', () => go(placement), 'btn small'))
+        ? h('div', { class: 'placement-cta' }, h('span', {}, 'Already know some typing? '), button('Take the 1-minute check', () => go(placement), 'btn small ghost'))
         : null,
       trickyButton(),
       ...UNITS.map((u) => {
