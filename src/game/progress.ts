@@ -156,6 +156,9 @@ export function raceEmbers(correct: number, accuracy: number, place: number): nu
   return Math.max(3, Math.round(correct / 12 * accuracy + placeBonus));
 }
 
+/** Extra embers the first time a course's champion is beaten. */
+export const RIVAL_BONUS = 25;
+
 export interface RaceInfo {
   input: InputMode;
   courseId: string;
@@ -178,7 +181,7 @@ export function recordRace(p: Profile, s: SessionSummary, place: number, info: R
   if (info.beatRival && !p.rivalsBeaten.includes(info.courseId)) {
     p.rivalsBeaten.push(info.courseId);
     rivalFirstWin = true;
-    embers += 25;
+    embers += RIVAL_BONUS;
   }
   if (place === 1) p.totals.wins++;
   if (s.accuracy >= 0.98) p.totals.cleanRaces++;
