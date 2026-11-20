@@ -2,7 +2,7 @@ import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg
 import { EGG_PRICE, buyEgg, canBuyEgg, claimSets, eggShop, foundLooks, lookKey } from '../../game/collection';
 import { codex, codexLook } from './codex';
 import { isStarglint, type OwnedDragon } from '../../save/store';
-import { kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
+import { courseUnlocked, kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor, decorThumb } from './aerie';
@@ -14,7 +14,8 @@ import { claimNewAchievements, earnedIds } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
 import { hub, refreshEmbers, topBar } from './hub';
 import { dragonTabs, withTabs } from '../tabBar';
-import { raceMap } from './race';
+import { race, raceMap } from './race';
+import { COURSES } from '../../game/courses';
 import { countUsage, firstHatch } from '../usage';
 
 function growthText(d: OwnedDragon): string {
@@ -80,6 +81,13 @@ function emptyNest(): HTMLElement {
   );
 }
 
+/** "Race to hatch" starts a race right away, on the newest course this rider has opened. */
+function nextHatchRace() {
+  const p = profile();
+  const open = COURSES.filter((c) => courseUnlocked(p, c.id));
+  return open.length ? race(open[open.length - 1].id) : raceMap;
+}
+
 export const nest = (root: HTMLElement): (() => void) => {
   const p = profile();
   const autoHatch = hatchOnOpen;
@@ -113,14 +121,14 @@ export const nest = (root: HTMLElement): (() => void) => {
           : h(
               'div',
               { class: 'row center' },
-              button('▶ Race to hatch', () => go(raceMap), 'btn big glow-btn'),
-              button(`Warm with 🔥 ${WARM_PRICE}`, () => {
+              button('▶ Race to hatch', () => go(nextHatchRace()), 'btn big glow-btn'),
+              button(`🔥 Use ${WARM_PRICE} embers`, () => {
                 if (!warmWithEmbers(p)) return;
                 sfx.coin();
                 persist();
                 go(nest);
               }, 'btn ghost', canWarmWithEmbers(p) ? { title: `Adds ${Math.round(WARM_SHARE * 100)}% warmth` } : { disabled: true, title: `Costs ${WARM_PRICE} embers` }),
-              canWarmWithEmbers(p) ? null : h('small', { class: 'warm-need' }, `Need 🔥 ${WARM_PRICE}`),
+              canWarmWithEmbers(p) ? null : h('small', { class: 'warm-need' }, `Need ${Math.max(1, WARM_PRICE - p.embers)} more 🔥`),
             ),
       )
     : emptyNest();
