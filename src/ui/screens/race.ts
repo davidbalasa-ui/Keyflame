@@ -212,6 +212,12 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   // The month's season paints the sky; the course keeps its own hills and peaks.
   const skyColors = seasonAt()?.sky ?? course.sky;
   sky.style.background = `linear-gradient(180deg, ${skyColors[0]} 0%, ${skyColors[1]} 45%, ${skyColors[2]} 100%)`;
+  // The scrolling sky only touches the layers that use it. Setting it on the whole sky made the
+  // browser restyle every dragon in the race, every frame (about a third of a CPU core).
+  const movers = [...sky.querySelectorAll<HTMLElement>('.clouds, .clouds-near, .mountains, .hills, .speed-lines')];
+  const speedLines = sky.querySelector('.speed-lines') as HTMLElement;
+  let shownSpeed = '';
+  let shownFlap = '';
   (sky.querySelector('.mountains') as HTMLElement).style.backgroundImage = mountainsUri(course.ground, course.peak);
   (sky.querySelector('.hills') as HTMLElement).style.backgroundImage = hillsUri(course.ground);
   const countdown = h('div', { class: 'countdown' }, h('div', {}, h('small', { class: 'taunt' }, live ? 'Class race!' : `${r.name}: “${r.taunt}”`), h('div', { class: 'count' }, '3')));
@@ -301,12 +307,16 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       place(meEl, myProgress(), dt);
       live?.report(myProgress(), t);
       // Wings beat faster the faster you type.
-      meEl.style.setProperty('--flap', `${Math.max(0.36, 0.75 - view.session.rollingWpm(now) / 90).toFixed(2)}s`);
-      stats.textContent = `${Math.round(view.session.wpm())} WPM · ${pct(view.session.accuracy())} accuracy`;
+      const flap = `${Math.max(0.36, 0.75 - view.session.rollingWpm(now) / 90).toFixed(2)}s`;
+      if (flap !== shownFlap) meEl.style.setProperty('--flap', (shownFlap = flap));
+      const line = `${Math.round(view.session.wpm())} WPM · ${pct(view.session.accuracy())} accuracy`;
+      if (stats.textContent !== line) stats.textContent = line;
       bgOffset += (0.02 + view.session.rollingWpm(now) / 600) * dt;
-      sky.style.setProperty('--bg', `${-bgOffset}px`);
+      const bg = `${(-bgOffset).toFixed(1)}px`;
+      for (const m of movers) m.style.setProperty('--bg', bg);
       const wpmNow = view.session.rollingWpm(now);
-      sky.style.setProperty('--speed', Math.min(1, wpmNow / 40).toFixed(2));
+      const speed = Math.min(1, wpmNow / 40).toFixed(2);
+      if (speed !== shownSpeed) speedLines.style.setProperty('--speed', (shownSpeed = speed));
       trail(meEl, 12 + Math.min(40, wpmNow) * 0.9, dt, 4 + Math.min(3, wpmNow / 15), 80 + Math.min(60, wpmNow) * 3);
       for (const g of ghosts) trail(g.el, 7, dt, 3.5, 60);
       for (const c of classmates) trail(c.el, 7, dt, 3.5, 60);
