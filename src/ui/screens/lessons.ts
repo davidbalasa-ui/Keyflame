@@ -154,7 +154,8 @@ function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accur
     wpm === null ? null : card('⚡', String(Math.round(wpm)), 'WPM'),
     newEgg ? card('🥚', 'New egg!', newEgg, 'gold') : null,
     eggReady ? card('🐣', 'Ready!', 'Egg can hatch', 'gold') : null,
-    ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, improvementTitle(b), 'gold')),
+    // A key mastered from earlier typing, not one this lesson teaches, says so.
+    ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, b.key && !lesson.keys.includes(b.key) ? `Bonus: ${improvementTitle(b)}` : improvementTitle(b), 'gold')),
     ...seasonDone.map((t) => card('🌟', `+${CHALLENGE_EMBERS}`, t, 'gold')),
     fresh.length === 1 ? card(svg(medalSvg(fresh[0].medal, fresh[0].icon), 'ach-mini'), `“${fresh[0].title}”`, 'New title', 'gold') : null,
     fresh.length > 1 ? card(svg(medalSvg(fresh[0].medal, fresh[0].icon), 'ach-mini'), `+${fresh.length}`, 'Achievements', 'gold') : null,

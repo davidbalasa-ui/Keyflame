@@ -2,9 +2,9 @@ import { buildRaceText } from '../../content/lessons';
 import { playLaunch } from '../launch';
 import { COURSES, courseById, type Course } from '../../game/courses';
 import { TRIBES, dragonSvg, eggSvg, stageFor, type Stage, type TribeId } from '../../game/dragons';
-import { activeDragon, capitalsKnown, hidesHints, perkText, perkTribe, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
+import { RIVAL_BONUS, activeDragon, capitalsKnown, hidesHints, perkText, perkTribe, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
 import { FACTS, READING_LEVEL_LABEL, TOPIC_LABEL, factById, pickFact, type ReadingLevel } from '../../content/facts';
-import { weakKeys } from '../../engine/typing';
+import { computeWpm, weakKeys } from '../../engine/typing';
 import { applyRaceKey, finishTime, newRaceState, perkTuning } from '../../game/raceRules';
 import { UNITS } from '../../content/lessons';
 import { go, inputMode, persist, profile } from '../app';
@@ -58,6 +58,8 @@ interface Racer {
   /** Small per-racer wobble so ghosts don't move like robots. */
   phase: number;
   rival?: boolean;
+  /** The "Your best" ghost: a pacer to chase, not a racer, so it never takes a place. */
+  pacer?: boolean;
 }
 
 const GHOST_NAMES: Array<{ name: string; tribe: TribeId; palette: number }> = [
@@ -202,7 +204,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     el: makeLane(c.name, c.look?.tribe ?? 'emberback', c.look?.palette ?? 0, c.look?.stage ?? 'young', 'classmate', c.look?.skin, c.look?.marking ?? 0, c.look?.stars ?? 0),
   }));
   if (best > 0 && !live) {
-    ghosts.push({ name: 'Your best', wpm: best, phase: 4.2, el: makeLane('Your best', me?.tribe ?? 'emberback', me?.palette ?? 0, 'adult', 'ghost-best', me?.skin, me?.marking) });
+    ghosts.push({ name: 'Your best', wpm: best, phase: 4.2, pacer: true, el: makeLane('Your best', me?.tribe ?? 'emberback', me?.palette ?? 0, 'adult', 'ghost-best', me?.skin, me?.marking) });
   }
   const meEl = makeLane(me ? me.name : 'You', me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'you', me?.skin, me?.marking, me?.stars);
 
@@ -212,6 +214,12 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   // The month's season paints the sky; the course keeps its own hills and peaks.
   const skyColors = seasonAt()?.sky ?? course.sky;
   sky.style.background = `linear-gradient(180deg, ${skyColors[0]} 0%, ${skyColors[1]} 45%, ${skyColors[2]} 100%)`;
+  // The scrolling sky only touches the layers that use it. Setting it on the whole sky made the
+  // browser restyle every dragon in the race, every frame (about a third of a CPU core).
+  const movers = [...sky.querySelectorAll<HTMLElement>('.clouds, .clouds-near, .mountains, .hills, .speed-lines')];
+  const speedLines = sky.querySelector('.speed-lines') as HTMLElement;
+  let shownSpeed = '';
+  let shownFlap = '';
   (sky.querySelector('.mountains') as HTMLElement).style.backgroundImage = mountainsUri(course.ground, course.peak);
   (sky.querySelector('.hills') as HTMLElement).style.backgroundImage = hillsUri(course.ground);
   const countdown = h('div', { class: 'countdown' }, h('div', {}, h('small', { class: 'taunt' }, live ? 'Class race!' : `${r.name}: “${r.taunt}”`), h('div', { class: 'count' }, '3')));
@@ -223,6 +231,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   let started = false;
   let finished = false;
   let raceStart = 0;
+  let finishMs = 0;
   const st = newRaceState();
   let raf = 0;
   let bgOffset = 0;
@@ -245,6 +254,10 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     fx.emit(t.x, t.y, { count: n, colors: trailOf.get(el) ?? CONFETTI, kind: 'ember', vx: -speed * k, vy: -6, spread: 36 * k, size: size * k, life: 0.75 });
   };
 
+  // Race speed runs on the race clock, from "Fly!" to the finish line, the same clock that
+  // decides places. Timing from the first key left out the pause before it and showed kids
+  // a faster speed than they really raced.
+  const raceWpm = (now: number): number => (started ? computeWpm(view.session.correct, now - raceStart) : 0);
   const myProgress = (): number => Math.max(0, Math.min(1, (view.session.correct + st.bonus) / len));
 
   const view = createTypingView({
@@ -301,17 +314,24 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       place(meEl, myProgress(), dt);
       live?.report(myProgress(), t);
       // Wings beat faster the faster you type.
-      meEl.style.setProperty('--flap', `${Math.max(0.36, 0.75 - view.session.rollingWpm(now) / 90).toFixed(2)}s`);
-      stats.textContent = `${Math.round(view.session.wpm())} WPM · ${pct(view.session.accuracy())} accuracy`;
+      const flap = `${Math.max(0.36, 0.75 - view.session.rollingWpm(now) / 90).toFixed(2)}s`;
+      if (flap !== shownFlap) meEl.style.setProperty('--flap', (shownFlap = flap));
+      const line = `${Math.round(raceWpm(now))} WPM · ${pct(view.session.accuracy())} accuracy`;
+      if (stats.textContent !== line) stats.textContent = line;
       bgOffset += (0.02 + view.session.rollingWpm(now) / 600) * dt;
-      sky.style.setProperty('--bg', `${-bgOffset}px`);
+      const bg = `${(-bgOffset).toFixed(1)}px`;
+      for (const m of movers) m.style.setProperty('--bg', bg);
       const wpmNow = view.session.rollingWpm(now);
-      sky.style.setProperty('--speed', Math.min(1, wpmNow / 40).toFixed(2));
+      const speed = Math.min(1, wpmNow / 40).toFixed(2);
+      if (speed !== shownSpeed) speedLines.style.setProperty('--speed', (shownSpeed = speed));
       trail(meEl, 12 + Math.min(40, wpmNow) * 0.9, dt, 4 + Math.min(3, wpmNow / 15), 80 + Math.min(60, wpmNow) * 3);
       for (const g of ghosts) trail(g.el, 7, dt, 3.5, 60);
       for (const c of classmates) trail(c.el, 7, dt, 3.5, 60);
     } else if (finished) {
       place(meEl, 1, dt);
+      // Ghosts settle where they were when you crossed the line, so anyone who beat you
+      // is shown past it and the track agrees with the place on the results.
+      for (const g of ghosts) place(g.el, ghostProgress(g.wpm, finishMs, len), dt);
       for (const c of classmates) place(c.el, live!.progress(c.id, now), dt);
     }
     fx.step(dt);
@@ -343,10 +363,14 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     if (finished) return;
     finished = true;
     place(meEl, 1, 120);
-    const myMs = performance.now() - raceStart;
-    const sum = view.session.summary();
-    // A ghost beats you only if it would have crossed the line first.
-    const ahead = ghosts.filter((g) => finishTime(g.wpm, len) < myMs);
+    const endAt = performance.now();
+    const myMs = endAt - raceStart;
+    finishMs = myMs;
+    const sum: SessionSummary = { ...view.session.summary(endAt), wpm: raceWpm(endAt), durationMs: myMs };
+    // A ghost beats you only if it would have crossed the line first. "Your best" is only a
+    // pacer: losing to your own best never costs a place.
+    const racers = ghosts.filter((g) => !g.pacer);
+    const ahead = racers.filter((g) => finishTime(g.wpm, len) < myMs);
     const placeNum = live ? live.place(myMs) : ahead.length + 1;
     const beatRival = !live && !ahead.some((g) => g.rival);
     // A tap keyboard race switches to 'keyboard' if real keys were used, so records stay fair.
@@ -359,7 +383,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     countPlay('race', p);
     const better = payImprovements(p, sum, prevWpms);
     if (live) live.finish(myMs, sum, placeNum, typedWith);
-    else reportToClass(p, { kind: 'race', wpm: sum.wpm, accuracy: sum.accuracy, place: placeNum, racers: ghosts.length + 1, touch: isTouch(typedWith) });
+    else reportToClass(p, { kind: 'race', wpm: sum.wpm, accuracy: sum.accuracy, place: placeNum, racers: racers.length + 1, touch: isTouch(typedWith) });
     const newFact = fact ? recordFact(p, fact.id) : false;
     const fresh = claimNewAchievements(p, before);
     persist();
@@ -372,8 +396,10 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       if (placeNum === 1) for (let i = 0; i < 6; i++) fx.emit((w * (i + 0.5)) / 6, -6, { count: 24, colors: CONFETTI, kind: 'confetti', vy: 40, spread: 220, size: 5, life: 2.4 });
     }
 
-    const rewards: RewardCard[] = [{ art: flameSvg(), title: 'Embers', value: reward.embers, tone: 'ember' }];
-    if (reward.rivalFirstWin) rewards.push({ art: crownSvg(), title: `${r.name} beaten!`, value: 'Champion!', note: '+25 bonus embers', tone: 'gold' });
+    // Each ember is shown once: the champion bonus has its own card, so the Embers card leaves it out.
+    const rivalBonus = reward.rivalFirstWin ? RIVAL_BONUS : 0;
+    const rewards: RewardCard[] = [{ art: flameSvg(), title: 'Embers', value: reward.embers - rivalBonus, tone: 'ember' }];
+    if (reward.rivalFirstWin) rewards.push({ art: crownSvg(), title: `${r.name} beaten!`, value: 'Champion!', note: `+${RIVAL_BONUS} bonus embers`, tone: 'gold' });
     if (reward.warmthAdded && p.nest) {
       const ready = eggProgress(p) >= 1;
       rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Tap 🐣 Hatch! below' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
@@ -402,7 +428,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
 
     const celebrate = celebration({
       place: placeNum,
-      racers: live ? live.racers : ghosts.length + 1,
+      racers: live ? live.racers : racers.length + 1,
       wpm: sum.wpm,
       accuracy: sum.accuracy,
       prevBest,

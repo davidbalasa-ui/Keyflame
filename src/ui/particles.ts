@@ -190,9 +190,11 @@ export function attachField(host: HTMLElement, tick?: (field: ParticleField, dt:
   host.append(field.canvas);
   let last = performance.now();
   let seen = false;
+  const born = last;
   const loop = (now: number): void => {
     if (!host.isConnected) {
-      if (seen) return;
+      // Gone from the page, or never put on it: stop, so no loop runs on forever unseen.
+      if (seen || now - born > 3000) return;
     } else {
       seen = true;
       const dt = now - last;
