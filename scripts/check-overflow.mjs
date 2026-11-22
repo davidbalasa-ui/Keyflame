@@ -36,6 +36,9 @@ const SIZES = [
   // Computers: a school laptop and a full HD screen, with a mouse instead of touch.
   { name: 'PC 1366', width: 1366, height: 768, pc: true },
   { name: 'PC 1920', width: 1920, height: 1080, pc: true },
+  // Laptops with the browser's tab and bookmark bars showing: races and lessons must fit, keyboard and all.
+  { name: 'PC 1366 browser', width: 1366, height: 625, pc: true, fit: true },
+  { name: 'PC 1280 browser', width: 1280, height: 600, pc: true, fit: true },
 ];
 const ENGINE = process.env.BROWSER === 'webkit' ? 'webkit' : 'chromium';
 const SHOTS = process.env.SHOTS;
@@ -137,6 +140,14 @@ for (const size of SIZES) {
     }
     await page.waitForTimeout(150);
     await check(name);
+    if (size.fit && (name === 'race' || name === 'lesson')) {
+      // The whole guide keyboard (space bar included) is on screen without scrolling.
+      const cut = await page.evaluate(() => {
+        const kb = document.querySelector('.typing-view .keyboard');
+        return !kb || kb.getBoundingClientRect().bottom > innerHeight || document.documentElement.scrollHeight > innerHeight + 1;
+      });
+      if (cut) failures.push(`${label} ${name}: the race or lesson needs scrolling, so the keyboard is cut off`);
+    }
   }
   if (size.tablet) {
     // A touch screen starts with the tap keyboard; one real key press should put it away.
@@ -158,4 +169,4 @@ if (failures.length) {
   console.error('Sideways scrolling found:\n  ' + failures.join('\n  '));
   process.exit(1);
 }
-console.log(`${ENGINE}: no sideways scrolling on ${SCREENS.length + 4} screens at ${SIZES.length} sizes, the home screen fits without scrolling, and a real key press puts the tap keyboard away on tablets.`);
+console.log(`${ENGINE}: no sideways scrolling on ${SCREENS.length + 4} screens at ${SIZES.length} sizes, the home screen fits without scrolling, races and lessons fit short laptop screens, and a real key press puts the tap keyboard away on tablets.`);

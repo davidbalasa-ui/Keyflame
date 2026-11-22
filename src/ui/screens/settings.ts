@@ -16,7 +16,7 @@ type BoolSetting = { [K in keyof Settings]: Settings[K] extends boolean ? K : ne
 
 const TOGGLES: Array<[BoolSetting, string]> = [
   ['sound', 'Sound effects'],
-  ['showKeyboard', 'Show the full on-screen keyboard'],
+  ['showKeyboard', 'Show the on-screen keyboard (computers)'],
   ['largeText', 'Bigger text'],
   ['dyslexiaFont', 'Easier-to-read font'],
   ['reducedMotion', 'Less motion'],
