@@ -40,6 +40,7 @@ function thumbFor(ch: string): string {
 }
 
 const SHIFT_MAP = SHIFT_SYMBOL;
+let guideIds = 0;
 
 export function createTypingView(opts: TypingViewOptions): TypingView {
   // Last safety net: nothing rude reaches the screen, whatever made the text.
@@ -153,13 +154,16 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   // On a computer the guide keyboard can be put away (some players don't want it).
   // The choice is saved, so it stays hidden in every race and lesson until shown again.
   let kbShown = opts.showKeyboard;
-  const kbToggle = h('button', { type: 'button', class: 'btn ghost small kb-toggle', tabindex: '-1' });
+  keyboard.id = `guide-kb-${++guideIds}`;
+  const kbToggle = h('button', { type: 'button', class: 'btn ghost small kb-toggle', 'aria-controls': keyboard.id });
   const syncKbToggle = (): void => {
     keyboard.hidden = !pinned && !kbShown;
     kbToggle.textContent = kbShown ? 'Hide keyboard' : 'Show keyboard';
-    kbToggle.setAttribute('aria-pressed', String(kbShown));
+    kbToggle.setAttribute('aria-expanded', String(kbShown));
   };
-  // Keep focus off the button, so Enter or Space while typing never presses it.
+  // A mouse click doesn't leave focus on the button, and the button lets go of focus after it
+  // is used, so Enter or Space while typing never presses it by accident. Tab still reaches it,
+  // and while it has focus Enter and Space press it instead of typing (see onKeyDown).
   kbToggle.addEventListener('mousedown', (e) => e.preventDefault());
   kbToggle.addEventListener('click', () => {
     kbShown = !kbShown;
@@ -334,6 +338,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   };
   const onKeyDown = (e: KeyboardEvent): void => {
     if (e.target === deviceInput) return;
+    if (e.target === kbToggle && (e.key === ' ' || e.key === 'Enter')) return;
     if (pinned && isHardwareKey(e)) {
       noteHardwareKey();
       if (inputMode() === 'keyboard') unpin();

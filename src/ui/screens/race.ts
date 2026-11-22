@@ -211,8 +211,6 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     ghosts.push({ name: 'Your best', wpm: best, phase: 4.2, pacer: true, el: makeLane('Your best', me?.tribe ?? 'emberback', me?.palette ?? 0, 'adult', 'ghost-best', me?.skin, me?.marking) });
   }
   const meEl = makeLane(me ? me.name : 'You', me?.tribe ?? 'emberback', me?.palette ?? 0, me ? stageFor(me.xp) : 'hatchling', 'you', me?.skin, me?.marking, me?.stars);
-  // Short laptop screens share a fixed track height between the lanes (class races can have many).
-  lanes.style.setProperty('--lanes', String(lanes.children.length));
 
   const fx = new ParticleField();
   fx.enabled = !p.settings.reducedMotion;
@@ -233,6 +231,8 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   const meter = h('div', { class: 'flame-meter' }, h('span', {}));
   const stats = h('div', { class: 'live-stats' });
   const track = h('div', { class: 'track' }, sky, countdown);
+  // On computers the track takes the height the typing panel leaves and shares it between the lanes (class races can have many).
+  track.style.setProperty('--lanes', String(lanes.children.length));
 
   let started = false;
   let finished = false;

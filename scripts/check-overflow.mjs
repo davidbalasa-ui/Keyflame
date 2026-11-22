@@ -39,7 +39,14 @@ const SIZES = [
   // Laptops with the browser's tab and bookmark bars showing: races and lessons must fit, keyboard and all.
   { name: 'PC 1366 browser', width: 1366, height: 625, pc: true, fit: true },
   { name: 'PC 1280 browser', width: 1280, height: 600, pc: true, fit: true },
+  // The same laptop with Windows display scaling at 125% and 150%, and both sides of 800px tall.
+  { name: 'PC 125%', width: 1093, height: 500, pc: true, fit: true },
+  { name: 'PC 150%', width: 911, height: 417, pc: true, fit: true },
+  { name: 'PC 800 tall', width: 1366, height: 800, pc: true, fit: true },
+  { name: 'PC 801 tall', width: 1366, height: 801, pc: true, fit: true },
 ];
+// ONLY=text runs just the sizes whose name contains it (for example ONLY=PC).
+if (process.env.ONLY) SIZES.splice(0, SIZES.length, ...SIZES.filter((s) => s.name.includes(process.env.ONLY)));
 const ENGINE = process.env.BROWSER === 'webkit' ? 'webkit' : 'chromium';
 const SHOTS = process.env.SHOTS;
 if (SHOTS) (await import('node:fs')).mkdirSync(SHOTS, { recursive: true });
@@ -143,8 +150,9 @@ for (const size of SIZES) {
     if (size.fit && (name === 'race' || name === 'lesson')) {
       // The whole guide keyboard (space bar included) is on screen without scrolling.
       const cut = await page.evaluate(() => {
-        const kb = document.querySelector('.typing-view .keyboard');
-        return !kb || kb.getBoundingClientRect().bottom > innerHeight || document.documentElement.scrollHeight > innerHeight + 1;
+        const space = document.querySelector('.typing-view .keyboard .key-space')?.getBoundingClientRect();
+        const main = document.querySelector('main');
+        return !space || space.height < 20 || space.bottom > innerHeight || document.documentElement.scrollHeight > innerHeight + 1 || (main && main.scrollHeight > main.clientHeight + 1);
       });
       if (cut) failures.push(`${label} ${name}: the race or lesson needs scrolling, so the keyboard is cut off`);
     }
