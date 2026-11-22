@@ -4,7 +4,7 @@ import { FINGER_LABEL, ROWS, SHIFT_SYMBOL, TOUCH_ROWS, baseKey, fingerFor, keyLa
 import { TypingSession, type KeystrokeResult } from '../engine/typing';
 import type { InputMode } from '../save/store';
 import { safeText } from '../content/safety';
-import { inputMode, isHardwareKey, noteHardwareKey } from './app';
+import { inputMode, isHardwareKey, noteHardwareKey, persist, profile } from './app';
 import { h } from './dom';
 import { handsSvg } from './fingerCoach';
 import { sfx } from './sound';
@@ -150,7 +150,29 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     flash(el);
     actions.get(el)?.();
   });
-  if (!opts.showKeyboard && !pinned) keyboard.classList.add('mini');
+  // On a computer the guide keyboard can be put away (some players don't want it).
+  // The choice is saved, so it stays hidden in every race and lesson until shown again.
+  let kbShown = opts.showKeyboard;
+  const kbToggle = h('button', { type: 'button', class: 'btn ghost small kb-toggle', tabindex: '-1' });
+  const syncKbToggle = (): void => {
+    keyboard.hidden = !pinned && !kbShown;
+    kbToggle.textContent = kbShown ? 'Hide keyboard' : 'Show keyboard';
+    kbToggle.setAttribute('aria-pressed', String(kbShown));
+  };
+  // Keep focus off the button, so Enter or Space while typing never presses it.
+  kbToggle.addEventListener('mousedown', (e) => e.preventDefault());
+  kbToggle.addEventListener('click', () => {
+    kbShown = !kbShown;
+    syncKbToggle();
+    kbToggle.blur();
+    try {
+      profile().settings.showKeyboard = kbShown;
+      persist();
+    } catch {
+      // No rider to save it for; the choice still holds for this screen.
+    }
+  });
+  syncKbToggle();
   // Phone browsers are unreliable with position: fixed (toolbars that slide away,
   // transformed ancestors, rubber-band scrolling). Instead the whole app becomes a
   // column exactly as tall as the visible screen: the page scrolls inside, and the
@@ -335,7 +357,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   if (!pinned) requestAnimationFrame(keepTextVisible);
 
   const device = opts.input === 'device';
-  const el = h('div', { class: `typing-view input-${opts.input}` }, textEl, device ? tapPrompt : null, device ? deviceInput : null, h('div', { class: 'hint-row' }, coachEl, hint), device || pinned ? null : keyboard);
+  const el = h('div', { class: `typing-view input-${opts.input}` }, textEl, device ? tapPrompt : null, device ? deviceInput : null, h('div', { class: 'hint-row' }, coachEl, hint, device || pinned ? null : kbToggle), device || pinned ? null : keyboard);
   return {
     el,
     session,

@@ -281,8 +281,6 @@ body.hub-fit .tiles { flex: none; width: 100%; max-width: 760px; }
 .f-right-middle { background: #b197fc; }
 .f-right-ring { background: #f783ac; }
 .f-right-pinky { background: #ffa94d; }
-.keyboard.mini .key { height: 30px; font-size: 13px; }
-@media (hover: none) { .keyboard.mini .key { height: clamp(40px, 9vw, 52px); } }
 
 /* Touch keyboard pinned to the bottom of the screen, sized so ten keys always fit */
 /* Touch keyboard: the app becomes a full-height column and the keyboard is its last row */
@@ -334,7 +332,32 @@ body.kb-pinned .type-text { --type-size: 22px; padding: 10px 14px; max-height: c
 @media (min-width: 601px) and (max-height: 860px) {
   body:not(.kb-pinned) .lane { height: 60px; }
   body:not(.kb-pinned) .racer { --rw: 112px; }
-  body:not(.kb-pinned) .keyboard:not(.mini) .key { height: 44px; }
+  body:not(.kb-pinned) .keyboard .key { height: 44px; }
+}
+/* Short computer screens (a laptop with the browser's tab and bookmark bars showing leaves
+   about 600px): shrink the track, text and guide keys so a race or lesson fits one screen,
+   whole keyboard included. Mouse-and-keyboard only; tablets and phones keep their layouts. */
+.kb-toggle { flex: none; }
+@media (min-width: 601px) and (max-height: 800px) and (hover: hover) and (pointer: fine) {
+  #app:has(.typing-view.input-keyboard) > .top-bar { padding: 4px 12px; }
+  #app:has(.typing-view.input-keyboard) > .top-bar :is(.rank, .bar) { display: none; }
+  #app:has(.typing-view.input-keyboard) > main { padding-top: 6px; padding-bottom: 8px; }
+  #app:has(.typing-view.input-keyboard) > main > h1, #app:has(.typing-view.input-keyboard) .race-head h1 { font-size: 1.3rem; margin: 0; }
+  #app:has(.typing-view.input-keyboard) .race-head .live-stats { margin: 0; }
+  #app:has(.typing-view.input-keyboard) .track { margin-top: 4px; }
+  #app:has(.typing-view.input-keyboard) .sky { padding: 6px 0; }
+  #app:has(.typing-view.input-keyboard) .lane { --lh: max(24px, min(60px, calc((100vh - 420px) / var(--lanes, 4)))); height: var(--lh); }
+  #app:has(.typing-view.input-keyboard) .racer { --rw: calc(var(--lh) * 1.75); top: -8px; }
+  #app:has(.typing-view.input-keyboard) .racer-name { font-size: 9px; }
+  #app:has(.typing-view.input-keyboard) .perk-line { margin: 2px 0 0; font-size: 0.85em; }
+  #app:has(.typing-view.input-keyboard) .flight { height: clamp(110px, 22vh, 200px); margin: 4px 0; }
+  #app:has(.typing-view.input-keyboard) .typing-view { margin-top: 6px; }
+  #app:has(.typing-view.input-keyboard) .type-text { --type-size: clamp(22px, 3.6vh, 28px); padding: 8px 14px; max-height: calc(var(--type-size) * 1.6 * 2 + 16px); }
+  #app:has(.typing-view.input-keyboard) .finger-hint { margin: 4px; }
+  #app:has(.typing-view.input-keyboard) .finger-coach { width: 84px; height: 41px; }
+  #app:has(.typing-view.input-keyboard) .keyboard { margin-top: 2px; gap: 4px; }
+  #app:has(.typing-view.input-keyboard) .kb-row { gap: 5px; }
+  #app:has(.typing-view.input-keyboard) .keyboard .key { height: clamp(34px, 5.4vh, 44px); font-size: 16px; }
 }
 
 /* Race */
