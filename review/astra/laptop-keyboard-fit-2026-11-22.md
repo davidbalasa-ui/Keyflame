@@ -9,4 +9,10 @@ The guide keyboard fits the two requested laptop viewports (1366 × 625 and 1280
 
 Clicking Hide set the keyboard's hidden state and Show restored it. The preference survived reloading and reopening the lesson both as a guest and as a saved rider. The toggle uses the existing per-rider save path. An older saved false value now hides the guide, as specified.
 
-Verification used PR head `ae02bb8`, Chromium 153 with CSS viewport sizes and emulated input capabilities, and a fixture with five displayed classmates plus the player out of 30 total riders. The build and all 280 unit tests passed. Windows display scaling, physical Safari/iPad hardware and real children were outside the test setup. The 125% and 150% results use equivalent viewport dimensions.
+Verification used PR head `ae02bb8`, Chromium 153 with CSS viewport sizes and emulated input capabilities, and a fixture with five displayed classmates plus the player out of 30 total riders. The build, all 280 unit tests, and the repository’s Chromium overflow check (20 screens at 15 sizes) passed. Windows display scaling, physical Safari/iPad hardware and real children were outside the test setup. The 125% and 150% results use equivalent viewport dimensions.
+
+## Tablet checks
+
+- Touch-only Chromium emulation covered the iPad mini, 10.2-inch iPad, iPad Air, 12.9-inch iPad Pro, and an Android tablet at 800 × 1280 CSS px, each in portrait and landscape. The race and first lesson kept the tap keyboard pinned to the viewport in all ten cases, with zero horizontal overflow. The desktop compact rules and toggle stayed inactive. A saved Hide preference for the desktop guide still allowed the pinned touch keyboard when returning to touch mode.
+- In Auto mode, a physical key press removed the pinned keyboard without adding the guide or its toggle to the active lesson. On reopening, the guide and toggle appeared at every size. The iPad mini landscape was the only one where the reopened guide needed scrolling (keyboard bottom y=764 on a 744px viewport).
+- A fine-pointer desktop proxy at 1133 × 744 and 640 × 744 matched compact mode. Its race and lesson guides fit and Hide worked. This shows what happens when the query reports a fine hovering primary pointer. It does not establish how iPadOS Safari reports a Magic Keyboard or an external trackpad.
