@@ -181,10 +181,22 @@ for (const size of SIZES) {
       await must(page, '.egg-chip.ready', 'home does not say the egg is ready');
       await page.click('.hero-open');
       await must(page, '.hatch-screen', 'tapping the ready egg at home did not start the hatch');
+      // The egg sits down inside its nest: centered, its bottom tucked behind the front bowl.
+      const fit = await page.evaluate(() => {
+        const egg = document.querySelector('.hatch-tap .hatch-shell')?.getBoundingClientRect();
+        const front = document.querySelector('.hatch-tap .nest-layer.front')?.getBoundingClientRect();
+        if (!egg || !front || !egg.width) return 'no egg or nest on the hatch screen';
+        if (egg.bottom <= front.top || egg.top >= front.top) return 'the egg does not sit inside the nest';
+        if (Math.abs(egg.left + egg.width / 2 - (front.left + front.width / 2)) > 4) return 'the egg is not centered in the nest';
+        if (egg.width > window.innerWidth || egg.height > window.innerHeight * 0.75) return 'the egg is too big for the screen';
+        return '';
+      });
+      if (fit) throw new Error(fit);
       for (let i = 0; i < 6 && (await page.locator('.hatch-tap').count()); i++) {
         await page.click('.hatch-screen', { position: { x: Math.round(size.width / 2), y: Math.round(size.height / 2) } });
         await page.waitForTimeout(250);
       }
+      await must(page, '.reveal-title', 'the big reveal did not show the new dragon', 4000);
       await must(page, '.hatch-details', 'the dragon card did not show after hatching', 8000);
     });
     let picked = '';

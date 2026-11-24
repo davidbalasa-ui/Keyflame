@@ -1,3 +1,4 @@
+import { EGG_PATH } from '../../game/art/eggs';
 import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggCracksSvg, eggSvg, isSeasonPalette, lookName, paletteFor, stageFor, type TribeId } from '../../game/dragons';
 import { EGG_PRICE, buyEgg, canBuyEgg, claimSets, eggShop, foundLooks, lookKey } from '../../game/collection';
 import { codex, codexLook } from './codex';
@@ -7,6 +8,7 @@ import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor, decorThumb } from './aerie';
 import { button, h, pct, svg, tapHand } from '../dom';
+import { nestStage } from '../eggNest';
 import { diceButton, randomOf, wordPicker } from '../picker';
 import { sfx } from '../sound';
 import { CONFETTI, TRAIL_COLORS, attachField } from '../particles';
@@ -106,13 +108,13 @@ export const nest = (root: HTMLElement): (() => void) => {
   const nestPanel = egg
     ? h(
         'section',
-        { class: 'nest-panel' },
+        { class: 'nest-panel nest-hero', style: `--egg-glow:${TRIBES[egg.tribe].palettes[0].accent}` },
         prog >= 1
-          ? h('button', { class: 'nest-egg-tap', type: 'button', 'aria-label': `Tap to open the ${TRIBES[egg.tribe].name} egg`, onclick: () => hatchSequence(root) }, h('span', { class: 'ready-ring', 'aria-hidden': 'true' }), svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg ready'), tapHand())
-          : svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg wobble'),
+          ? h('button', { class: 'nest-egg-tap', type: 'button', 'aria-label': `Tap to open the ${TRIBES[egg.tribe].name} egg`, onclick: () => hatchSequence(root) }, h('span', { class: 'ready-ring', 'aria-hidden': 'true' }), nestStage(svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg ready'), { seed: egg.seed, warm: prog }), tapHand())
+          : nestStage(svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg wobble'), { seed: egg.seed, warm: prog }),
         bought ? h('p', { class: 'egg-landed', role: 'status' }, '🥚 Egg in your nest!') : null,
         h('h2', {}, `${TRIBES[egg.tribe].name} egg`),
-        h('div', { class: 'warmth' }, h('span', { style: `width:${pct(prog)}` })),
+        h('div', { class: 'warmth' + (prog >= 1 ? ' full' : ''), role: 'img', 'aria-label': `${pct(prog)} warm` }, h('span', { class: 'warmth-fill', style: `width:${pct(prog)}` }), h('b', { class: 'warmth-label', 'aria-hidden': 'true' }, prog >= 1 ? 'Ready!' : `🔥 ${pct(prog)}`)),
         prog >= 1
           ? button('Tap to open!', () => hatchSequence(root), 'btn big glow-btn open-btn')
           : h('p', { class: 'nest-keys' }, `${TRIBES[egg.tribe].hatchKeys - egg.warmth} keys to hatch`),
@@ -284,11 +286,16 @@ function hatchSequence(root: HTMLElement): void {
   const cracks = h('div', { class: 'art egg-crack-layer' });
   const shell = (): HTMLElement => h('div', { class: 'hatch-shell' }, svg(eggSvg(egg.tribe, 1, egg.seed, false)), cracks);
   const eggArt = shell();
-  const eggBtn = h('button', { class: 'hatch-tap', type: 'button', 'aria-label': 'Tap to open the egg' }, eggArt);
+  // Light building up inside the shell: an egg-shaped white layer that brightens on the last tap.
+  eggArt.append(h('div', { class: 'shell-light', 'aria-hidden': 'true', html: `<svg viewBox="0 0 100 120"><path d="${EGG_PATH}" fill="#fff8dc"/></svg>` }));
+  // The holder trembles harder as the cracks grow; the shell inside it jolts on each tap.
+  const holder = h('div', { class: 'egg-holder' }, eggArt);
+  const eggBtn = h('button', { class: 'hatch-tap', type: 'button', 'aria-label': 'Tap to open the egg' });
   const hint = h('p', { class: 'tap-hint big', 'aria-live': 'polite' }, 'Tap to open');
   const pips = h('div', { class: 'tap-pips', 'aria-hidden': 'true' }, ...Array.from({ length: HATCH_TAPS }, () => h('span')));
   const hand = tapHand();
-  eggBtn.append(hand);
+  const stage = nestStage(holder, { seed: egg.seed, warm: 1, cls: 'hatch-nest' });
+  eggBtn.replaceChildren(stage, hand);
   const center = h('div', { class: 'hatch-center' }, eggBtn, hint, pips);
   const screen = h('div', { class: 'hatch-screen', style: `--glow:${glow}`, role: 'dialog', 'aria-modal': 'true', 'aria-label': `${TRIBES[egg.tribe].name} egg` }, h('div', { class: 'hatch-rays' }), center);
   // Keyboard and screen readers stay inside the hatch screen until it closes.
@@ -315,7 +322,11 @@ function hatchSequence(root: HTMLElement): void {
     sfx.tap(taps);
     if (taps > 2) hand.remove();
     hint.textContent = taps === HATCH_TAPS - 1 ? 'One more tap!' : taps < HATCH_TAPS ? `${HATCH_TAPS - taps} more taps` : '';
-    if (taps >= HATCH_TAPS) setTimeout(open, calm ? 0 : 180);
+    // The last tap charges up: the egg shakes hard and glows from inside, then bursts.
+    if (taps >= HATCH_TAPS) {
+      holder.classList.add('charging');
+      setTimeout(open, calm ? 0 : 560);
+    }
   };
   screen.addEventListener('click', crack);
   crack();
@@ -343,11 +354,16 @@ function hatchSequence(root: HTMLElement): void {
     top.classList.add('fly-top');
     bottom.classList.add('fly-bottom');
     const halves = h('div', { class: 'hatch-halves' }, top, bottom);
-    eggBtn.replaceWith(halves);
+    eggArt.replaceWith(halves);
+    holder.classList.remove('charging');
+    stage.classList.add('opened');
     hint.remove();
     pips.remove();
     screen.classList.add('opened');
-    fx.emit(x, y, { count: 120, colors: [...colors, glow, '#ffffff'], kind: 'spark', spread: 760, size: 8, life: 1.5 });
+    // A ring of light sweeps out from the egg, with crisp streaks instead of big soft blobs.
+    screen.append(h('div', { class: 'hatch-ring', 'aria-hidden': 'true', style: `left:${x}px;top:${y}px` }));
+    fx.emit(x, y, { count: 46, colors: [...colors, glow, '#ffffff'], kind: 'streak', spread: 1100, size: 5, life: 0.9 });
+    fx.emit(x, y, { count: 40, colors: [glow, '#ffffff'], kind: 'spark', spread: 620, size: 4, life: 1.3 });
     fx.emit(x, y, { count: 60, colors: CONFETTI, kind: 'confetti', vy: -260, spread: 520, size: 6, life: 2.4 });
     sfx.hatch();
 
@@ -355,7 +371,9 @@ function hatchSequence(root: HTMLElement): void {
     const extras = (): HTMLElement[] => {
       const pills = [
         ...sets.map((x) => h('span', { class: 'reward-pill', title: `${TRIBES[x.tribe].name} ${x.label.toLowerCase()}` }, `Set done +${x.embers} 🔥`)),
-        ...fresh.map((a) => h('span', { class: 'reward-pill', title: a.how }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `New title: ${a.title}`)),
+        // Two titles at most, then one pill for the rest, so the card never turns into a long list.
+        ...fresh.slice(0, fresh.length > 3 ? 2 : 3).map((a) => h('span', { class: 'reward-pill', title: a.how }, svg(medalSvg(a.medal, a.icon), 'ach-mini'), `New title: ${a.title}`)),
+        ...(fresh.length > 3 ? [h('span', { class: 'reward-pill', title: fresh.slice(2).map((a) => a.title).join(', ') }, `+${fresh.length - 2} more titles 🏆`)] : []),
       ];
       return pills.length ? [h('div', { class: 'reward-pills' }, ...pills)] : [];
     };
@@ -373,9 +391,9 @@ function hatchSequence(root: HTMLElement): void {
         : `${/^[AEIOU]/.test(TRIBES[d.tribe].name) ? 'An' : 'A'} ${TRIBES[d.tribe].name}!`;
     const sub = !d ? 'A warm handful of embers' : `${lookName(d.tribe, d.palette, d.marking)}${season ? ' · a season color' : palette?.rare ? ' · a rare color' : ''}`;
     const revealTitle = h('h2', { class: 'reveal-title', tabindex: '-1' }, headline);
-    const reveal = h('div', { class: 'hatch-reveal' }, art, revealTitle, h('p', { class: 'reveal-sub' }, sub));
+    const reveal = h('div', { class: 'hatch-reveal' }, h('div', { class: 'reveal-stage' }, h('div', { class: 'reveal-glow', 'aria-hidden': 'true' }), art), revealTitle, h('p', { class: 'reveal-sub' }, sub));
     setTimeout(() => {
-      halves.remove();
+      eggBtn.remove();
       center.append(reveal);
       revealTitle.focus();
     }, calm ? 0 : 220);
