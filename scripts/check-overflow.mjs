@@ -152,8 +152,19 @@ for (const size of SIZES) {
       for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 3000 }));
     } catch (e) {
       // Say why (covered, moving, gone), and keep a picture, so a failure here can be fixed, not re-run.
-      const why = String(e?.message ?? e).split('\n').filter((l) => /waiting|intercepts|not stable|detached|navigat|visible|Timeout/i.test(l)).slice(-3).join(' / ');
-      failures.push(`${label} ${name}: could not open the screen (${why || 'no reason given'})`);
+      const why = String(e?.message ?? e).split('\n').map((l) => l.trim()).filter(Boolean).slice(-8).join(' / ');
+      // Where the thing to tap was, and what sat on top of its middle.
+      const where = await page
+        .evaluate((sel) => {
+          const el = document.querySelector(sel.split(' >> ')[0]);
+          if (!el) return 'not on the page';
+          const r = el.getBoundingClientRect();
+          const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          const tag = (n) => (n ? `${n.tagName.toLowerCase()}.${[...n.classList].join('.')}` : 'nothing');
+          return `at y ${Math.round(r.top)}-${Math.round(r.bottom)} of ${innerHeight} (page ${document.documentElement.scrollHeight}), on top: ${tag(top)}, body: ${document.body.className}`;
+        }, clicks.find((c) => c !== GATE) ?? 'body')
+        .catch((err) => `page gone: ${String(err.message).split('\n')[0]}`);
+      failures.push(`${label} ${name}: could not open the screen (${why || 'no reason given'}) [${where}]`);
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/FAILED-${size.name.replace(/\W+/g, '-')}-${name.replace(/\W+/g, '-')}.png` }).catch(() => undefined);
       continue;
     }
