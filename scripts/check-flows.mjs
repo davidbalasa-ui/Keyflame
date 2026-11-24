@@ -103,6 +103,17 @@ for (const size of SIZES) {
   const fresh = async (seed) => {
     const ctx = await browser.newContext({ viewport: { width: size.width, height: size.height }, hasTouch: true, isMobile: ENGINE !== 'firefox', userAgent: size.ua, serviceWorkers: 'block' });
     if (seed) await ctx.addInitScript((s) => localStorage.getItem('keyflame-save') || localStorage.setItem('keyflame-save', s), seed);
+    // Count sounds that really play (audio woken up by a tap, not left locked).
+    await ctx.addInitScript(() => {
+      window.__kfSounds = 0;
+      const Node = window.AudioScheduledSourceNode;
+      if (!Node) return;
+      const start = Node.prototype.start;
+      Node.prototype.start = function (...a) {
+        if (this.context.state === 'running') window.__kfSounds++;
+        return start.apply(this, a);
+      };
+    });
     const page = await ctx.newPage();
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('dialog', (d) => d.dismiss());
@@ -149,6 +160,9 @@ for (const size of SIZES) {
       await page.waitForTimeout(3500);
       await typeAll(page, '.celebrate');
       await must(page, '.celebrate', 'no race results', 10000);
+      await page.waitForTimeout(800);
+      const sounds = await page.evaluate(() => window.__kfSounds);
+      if (!(sounds > 40)) throw new Error(`only ${sounds} sounds played in a whole race (audio stayed locked?)`);
       await page.mouse.click(5, 5);
       await must(page, '.celebrate .fin-go', 'no Race again button');
       await page.waitForTimeout(500);
