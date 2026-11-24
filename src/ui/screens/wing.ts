@@ -138,6 +138,30 @@ function wingCard(p: Profile, code: string, badge: number): HTMLElement {
     a.click();
     a.remove();
   };
+  // The word and QR code let someone play as this badge anywhere, which the word exists to
+  // stop on a shared iPad. So they wait behind the grown-up question; swapping riders here
+  // stays one tap.
+  const wordCell = p.classWord ? h('div', { hidden: true }, h('small', {}, 'Word'), h('strong', {}, p.classWord)) : null;
+  const secret = link
+    ? h(
+        'div',
+        { class: 'wing-secret', hidden: true },
+        badgeQr(link, `QR code to play as badge ${badge}`, 'wing-qr'),
+        h('small', { class: 'wing-qr-tip' }, '📷 Scan to play as you on another device'),
+        h('div', { class: 'row center' }, button('Save QR', saveQr, 'btn ghost')),
+      )
+    : null;
+  const reveal = link
+    ? button('Grown-ups: show word and QR', () => {
+        (document.getElementById('app') ?? document.body).append(
+          parentGate(() => {
+            secret!.hidden = false;
+            if (wordCell) wordCell.hidden = false;
+            reveal!.remove();
+          }),
+        );
+      }, 'link wing-reveal')
+    : null;
   return h(
     'section',
     { class: 'wing-card pop-in' },
@@ -147,12 +171,12 @@ function wingCard(p: Profile, code: string, badge: number): HTMLElement {
       { class: 'wing-ids' },
       h('div', {}, h('small', {}, 'Code'), h('strong', {}, spacedCode(code))),
       h('div', { class: 'wing-badge' }, h('small', {}, 'Badge'), h('strong', {}, `#${badge}`)),
-      p.classWord ? h('div', {}, h('small', {}, 'Word'), h('strong', {}, p.classWord)) : null,
+      wordCell,
     ),
-    link ? badgeQr(link, `QR code to play as badge ${badge}`, 'wing-qr') : null,
-    link ? h('small', { class: 'wing-qr-tip' }, '📷 Scan to play as you on another device') : null,
     isGuest() && !roomForRider() ? h('small', { class: 'wing-qr-tip' }, 'This device is full, so your dragons stay for this visit.') : null,
-    h('div', { class: 'row center' }, button('🏁 Wing race', () => (sfx.click(), go(classLobby(code))), 'btn race-classmates'), link ? button('Save QR', saveQr, 'btn ghost') : null),
+    h('div', { class: 'row center' }, button('🏁 Wing race', () => (sfx.click(), go(classLobby(code))), 'btn race-classmates')),
+    secret,
+    reveal ? h('p', { class: 'fine center' }, reveal) : null,
   );
 }
 
