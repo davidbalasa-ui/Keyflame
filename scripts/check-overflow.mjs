@@ -108,6 +108,7 @@ process.on('uncaughtException', (e) => {
 });
 const browser = await playwright[ENGINE].launch();
 const failures = [];
+const slow = [];
 for (const size of SIZES) {
   const { width, height } = size;
   const label = `${size.name} (${width}x${height})`;
@@ -148,8 +149,14 @@ for (const size of SIZES) {
     at = `${label} opening ${name}`;
     await page.goto(URL);
     await page.waitForSelector('.play-cards');
+    const opened = Date.now();
     try {
-      for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 3000 }));
+      // CI's WebKit paints in software, so a click on a heavy screen (the race map's five dragons)
+      // can take several seconds to be acknowledged even though the screen opens. Allow 15 s,
+      // and say when opening was slow, so a real slowdown still shows.
+      for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 15000 }));
+      const took = Date.now() - opened;
+      if (took > 3000) slow.push(`${label} ${name}: took ${(took / 1000).toFixed(1)} s to open`);
     } catch (e) {
       // Say why (covered, moving, gone), and keep a picture, so a failure here can be fixed, not re-run.
       const why = String(e?.message ?? e).split('\n').map((l) => l.trim()).filter(Boolean).slice(-8).join(' / ');
@@ -196,6 +203,7 @@ for (const size of SIZES) {
 await browser.close();
 stop();
 
+if (slow.length) console.log(`Slow to open (not a failure):\n  ${slow.join("\n  ")}`);
 if (failures.length) {
   console.error('Sideways scrolling found:\n  ' + failures.join('\n  '));
   process.exit(1);
