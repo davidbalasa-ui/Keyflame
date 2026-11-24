@@ -5,7 +5,7 @@ import { TypingSession, type KeystrokeResult } from '../engine/typing';
 import type { InputMode } from '../save/store';
 import { safeText } from '../content/safety';
 import { inputMode, isHardwareKey, noteHardwareKey, persist, profile } from './app';
-import { h } from './dom';
+import { h, replay } from './dom';
 import { handsSvg } from './fingerCoach';
 import { sfx } from './sound';
 
@@ -40,6 +40,19 @@ function thumbFor(ch: string): string {
 }
 
 const SHIFT_MAP = SHIFT_SYMBOL;
+
+/**
+ * Marks the app while a race or lesson is typed on a real keyboard, for the compact
+ * computer layout in styles.css. That used to be a :has() rule on #app, which made the
+ * browser restyle the whole page after every change inside it (every key, every frame of
+ * a race), a big part of why typing stuttered on slower computers.
+ */
+export function markKeyboardTyping(view: HTMLElement | null): void {
+  const app = document.getElementById('app');
+  if (!app) return;
+  const on = !!view && view.isConnected && !!view.closest('#app > main') && view.classList.contains('input-keyboard');
+  if (app.classList.contains('kb-typing') !== on) app.classList.toggle('kb-typing', on);
+}
 let guideIds = 0;
 
 export function createTypingView(opts: TypingViewOptions): TypingView {
@@ -64,9 +77,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     if (r.correct) sfx.key();
     else {
       sfx.miss();
-      textEl.classList.remove('shake');
-      void textEl.offsetWidth;
-      textEl.classList.add('shake');
+      replay(textEl, 'shake');
     }
     render();
     opts.onKey?.(r, session);
@@ -86,11 +97,7 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     showShifted(on);
   };
   // preventDefault on pointerdown stops :active from showing, so pressed keys get a class instead.
-  const flash = (el: HTMLElement): void => {
-    el.classList.remove('down');
-    void el.offsetWidth;
-    el.classList.add('down');
-  };
+  const flash = (el: HTMLElement): void => replay(el, 'down');
   // What each key does when tapped. Taps are matched to keys by the keyboard itself (below).
   const actions = new Map<HTMLElement, () => void>();
   actions.set(shiftKey, () => setShift(!shiftOn));
@@ -217,13 +224,21 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
   }
 
   let lastTop = -1;
+  let shownAt = -1;
+  let coachShown = '';
   function render(): void {
     const i = session.index;
-    chars.forEach((el, j) => {
+    // Only the letters between the last spot and this one can change. Touching every letter
+    // on every key made long texts slower to type the further you got.
+    const from = Math.max(0, Math.min(shownAt, i) - 1);
+    const to = shownAt < 0 ? chars.length - 1 : Math.min(chars.length - 1, Math.max(shownAt, i) + 1);
+    for (let j = from; j <= to; j++) {
+      const el = chars[j];
       el.classList.toggle('done', j < i);
       el.classList.toggle('current', j === i);
       el.classList.toggle('missed', session.missedAt.has(j) && j < i);
-    });
+    }
+    shownAt = i;
     // Keep the current line at the top of the text box. Scrolling only the box (not the page)
     // stops the page from sliding the text under a pinned keyboard.
     const cur = chars[i];
@@ -239,7 +254,12 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     coachEl.hidden = !coachOn;
     if (coachOn && next) {
       const finger = fingerFor(next);
-      coachEl.innerHTML = touch ? handsSvg(null, touchThumb(next)) : handsSvg(finger === 'thumb' ? null : finger, finger === 'thumb' ? 'either' : null);
+      // Redraw the hands picture only when it shows a different finger.
+      const want = touch ? `t:${touchThumb(next)}` : `k:${finger}`;
+      if (want !== coachShown) {
+        coachShown = want;
+        coachEl.innerHTML = touch ? handsSvg(null, touchThumb(next)) : handsSvg(finger === 'thumb' ? null : finger, finger === 'thumb' ? 'either' : null);
+      }
     }
     if (next && opts.hideHints) {
       shiftKey.classList.remove('next');
@@ -333,7 +353,9 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
     window.removeEventListener('resize', fitViewport);
     window.removeEventListener('orientationchange', fitViewport);
     el.classList.replace('input-touch', 'input-keyboard');
+    markKeyboardTyping(el);
     lastTop = -1;
+    coachShown = '';
     render();
   };
   const onKeyDown = (e: KeyboardEvent): void => {
@@ -363,6 +385,14 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
 
   const device = opts.input === 'device';
   const el = h('div', { class: `typing-view input-${opts.input}` }, textEl, device ? tapPrompt : null, device ? deviceInput : null, h('div', { class: 'hint-row' }, coachEl, hint, device || pinned ? null : kbToggle), device || pinned ? null : keyboard);
+  // Mark the app as soon as the view is on the page (screens append it right after this).
+  let markTimer = 0;
+  let markTries = 0;
+  const markWhenShown = (): void => {
+    if (el.isConnected || ++markTries > 30) markKeyboardTyping(el);
+    else markTimer = requestAnimationFrame(markWhenShown);
+  };
+  queueMicrotask(markWhenShown);
   return {
     el,
     session,
@@ -371,6 +401,8 @@ export function createTypingView(opts: TypingViewOptions): TypingView {
       return input;
     },
     destroy: () => {
+      cancelAnimationFrame(markTimer);
+      markKeyboardTyping(null);
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('keyup', onShift);
       window.visualViewport?.removeEventListener('resize', syncPrompt);

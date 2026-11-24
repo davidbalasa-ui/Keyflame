@@ -39,3 +39,38 @@ export function pct(n: number): string {
 
 /** A finger that taps again and again, pointing at what to press next. */
 export const tapHand = (): HTMLElement => h('span', { class: 'tap-hand', 'aria-hidden': 'true' }, '👆');
+
+const replays = new WeakMap<Element, number>();
+const play = (el: Element, cls: string): void => {
+  el.classList.add(cls);
+  // Take the class off when it has played, so the next time can start at once.
+  el.addEventListener('animationend', () => replays.has(el) || el.classList.remove(cls), { once: true });
+};
+/**
+ * Plays a one-shot CSS animation class again. The usual trick (remove the class, read
+ * offsetWidth, add it back) forces the browser to lay out the whole page right then, on
+ * every mistyped key, which made typing stutter on slower computers. Instead the class
+ * comes off now and goes back on a frame later, after the browser has drawn without it.
+ */
+export function replay(el: Element, cls: string): void {
+  const pending = replays.get(el);
+  if (pending === undefined && !el.classList.contains(cls)) {
+    // Not playing: it can start right away.
+    play(el, cls);
+    return;
+  }
+  cancelAnimationFrame(pending ?? 0);
+  el.classList.remove(cls);
+  replays.set(
+    el,
+    requestAnimationFrame(() =>
+      replays.set(
+        el,
+        requestAnimationFrame(() => {
+          replays.delete(el);
+          play(el, cls);
+        }),
+      ),
+    ),
+  );
+}

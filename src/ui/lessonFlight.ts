@@ -7,7 +7,7 @@
 import type { OwnedDragon } from '../save/store';
 import type { TypingSession } from '../engine/typing';
 import { dragonSvg, stageFor } from '../game/dragons';
-import { h, svg } from './dom';
+import { h, replay, svg } from './dom';
 import { CONFETTI, TRAIL_COLORS, attachField } from './particles';
 
 export interface LessonFlight {
@@ -91,34 +91,52 @@ export function createLessonFlight(text: string, dragon: OwnedDragon | null, sky
   let drift = 0;
   let index = 0;
 
+  // The last value written to each style, so a frame only writes what really changed.
+  const written = new WeakMap<HTMLElement, Record<string, string>>();
+  const write = (node: HTMLElement, prop: 'opacity' | 'visibility' | 'transform' | 'zIndex' | 'width' | 'height', value: string): void => {
+    let seen = written.get(node);
+    if (!seen) written.set(node, (seen = {}));
+    if (seen[prop] === value) return;
+    seen[prop] = value;
+    node.style[prop] = value;
+  };
+
   const field = attachField(el, (f, dt) => {
     const { w, h: ht } = f.size;
     if (!w) return;
     const k = 1 - Math.exp(-dt / 160);
     cam += (target - cam) * k;
-    drift += dt / 4000;
+    // Clouds drift on their own only while you fly. A scene that keeps moving when nobody is
+    // typing kept the browser redrawing it every frame for nothing.
+    const moving = Math.abs(target - cam) > 0.004;
+    if (moving) drift += dt / 4000;
     const horizon = ht * 0.34;
     const place = (node: HTMLElement, d: number, x: number, y: number, size: number): number => {
       const s = scaleAt(d);
       const show = d > -0.5 && d < VIEW;
-      node.style.opacity = show ? String(Math.min(1, (VIEW - d) / 1.5, d < 0 ? 1 + d * 2 : 1)) : '0';
+      // Only touch what changed. Rewriting every ring's style each frame (most of them far
+      // off and invisible) made the browser restyle and re-layer the whole scene every frame.
+      write(node, 'opacity', show ? Math.min(1, (VIEW - d) / 1.5, d < 0 ? 1 + d * 2 : 1).toFixed(2) : '0');
+      write(node, 'visibility', show ? '' : 'hidden');
       if (!show) return s;
       const px = w / 2 + x * w * s;
       const py = horizon + (y * ht - horizon) * s;
-      node.style.transform = `translate3d(${(px - size / 2).toFixed(1)}px, ${(py - size / 2).toFixed(1)}px, 0) scale(${(s * 1).toFixed(3)})`;
-      node.style.zIndex = String(1000 - Math.round(d * 10));
+      write(node, 'transform', `translate3d(${(px - size / 2).toFixed(1)}px, ${(py - size / 2).toFixed(1)}px, 0) scale(${s.toFixed(3)})`);
+      write(node, 'zIndex', String(1000 - Math.round(d * 10)));
       return s;
     };
-    const ringSize = Math.min(w * 0.42, ht * 0.8);
+    const ringSize = `${Math.round(Math.min(w * 0.42, ht * 0.8))}px`;
+    const ringPx = parseFloat(ringSize);
     rings.forEach((r, n) => {
-      r.style.width = r.style.height = `${ringSize}px`;
-      place(r, n - cam, sway(n), 0.6, ringSize);
+      write(r, 'width', ringSize);
+      write(r, 'height', ringSize);
+      place(r, n - cam, sway(n), 0.6, ringPx);
     });
+    const cloudW = `${Math.round(w * 0.3)}px`;
     for (const c of clouds) {
-      // Clouds drift slowly on their own, and faster as you fly.
       let d = c.z - cam - drift;
       d = ((d % VIEW) + VIEW) % VIEW;
-      c.el.style.width = `${w * 0.3}px`;
+      write(c.el, 'width', cloudW);
       place(c.el, d, c.side * 0.7, c.y, w * 0.3);
     }
     for (const t of tufts) {
@@ -129,8 +147,8 @@ export function createLessonFlight(text: string, dragon: OwnedDragon | null, sky
     // The dragon steers toward the next ring.
     const next = Math.min(passed, gateAt);
     steer += (sway(next) + 0.2 - steer) * k;
-    rider.style.transform = `translate3d(${(steer * w * 0.35).toFixed(1)}px, 0, 0) rotate(${(-steer * 20).toFixed(1)}deg)`;
-    if (f.enabled && index > 0) f.emit(w * 0.12 + steer * w * 0.35, ht * 0.9, { count: dt > 40 ? 1 : Math.random() < 0.35 ? 1 : 0, colors: trail, kind: 'ember', vy: 40, spread: 18, size: 4, life: 0.6 });
+    write(rider, 'transform', `translate3d(${(steer * w * 0.35).toFixed(1)}px, 0, 0) rotate(${(-steer * 20).toFixed(1)}deg)`);
+    if (f.enabled && index > 0 && moving) f.emit(w * 0.12 + steer * w * 0.35, ht * 0.9, { count: dt > 40 ? 1 : Math.random() < 0.35 ? 1 : 0, colors: trail, kind: 'ember', vy: 40, spread: 18, size: 4, life: 0.6 });
   });
 
   const burst = (n: number, ok: boolean): void => {
@@ -167,9 +185,7 @@ export function createLessonFlight(text: string, dragon: OwnedDragon | null, sky
       if (passed < stops.length) rings[passed].classList.toggle('dim', !cleanWord(text, missed, stops, passed));
       rings.forEach((r, n) => r.classList.toggle('next', n === passed));
       if (!correct) {
-        rider.classList.remove('wobble-once');
-        void rider.offsetWidth;
-        rider.classList.add('wobble-once');
+        replay(rider, 'wobble-once');
       }
     },
   };

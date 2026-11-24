@@ -7,7 +7,8 @@ import { isClassCode, normalizeCode, spacedCode } from '../../game/classroom';
 import { BADGE_WORDS, normalizeWord, wordIndex } from '../../game/badgeWord';
 import { BADGE_MAX, joinLink, leaveWing, planJoin, riderLabel, type WingSeat } from '../../game/wing';
 import { createProfile, type Profile } from '../../save/store';
-import { joinBadge } from '../../net/classApi';
+import { isDemoWing, joinBadge } from '../../net/classApi';
+import { unlockEverything } from '../../game/demo';
 import { riderSeat, seatFor, setRiderSeat } from '../classTrack';
 import { go, isGuest, keepGuest, persist, playAsGuest, profile, randomRiderName, roomForRider, saveData, switchRider, type Screen } from '../app';
 import { button, h } from '../dom';
@@ -236,6 +237,8 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
     const rider = profile();
     if (name) rider.wingName = name;
     setRiderSeat(rider, code, badge, word);
+    // A demo wing opens everything, so a grown-up can look at every part of the game.
+    if (!rider.demo && (await isDemoWing(seatFor(rider, code, badge)).catch(() => false))) unlockEverything(rider);
     persist();
     writeStore(LAST_CODE_KEY, code);
     sfx.coin();
