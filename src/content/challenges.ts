@@ -97,7 +97,6 @@ export const CHALLENGES: Challenge[] = PACKS.flatMap((p) =>
 );
 
 export const packById = (id: PackId): Pack => PACKS.find((p) => p.id === id)!;
-export const challengeById = (id: string): Challenge | undefined => CHALLENGES.find((c) => c.id === id);
 export const levelName = (level: 1 | 2 | 3): string => LEVEL_NAMES[level - 1];
 
 /** About 16 words from the pack's level, no word twice in a row and each word at most twice. */

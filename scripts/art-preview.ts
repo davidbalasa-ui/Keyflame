@@ -2,7 +2,7 @@
 // measure frame rate at iPad size with a 4x CPU slowdown.
 // Run: npx vite-node scripts/art-preview.ts -- [tribe,...] [--out dir] [--fps]
 // Writes <out>/sheet.html and sheet.png (default out: art-preview/).
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { dragonSvg, eggSvg, TRIBES, MARKINGS, type TribeId, type Stage } from '../src/game/dragons';
@@ -30,7 +30,7 @@ for (const t of tribes) {
   cells += [0, 0.5, 1].map((w) => `<div class="cell egg">${eggSvg(t, w, 3)}<span>egg ${w * 100}%</span></div>`).join('');
   cells += '</div>';
 }
-const css = readFileSync('src/styles.css', 'utf8');
+const css = readdirSync('src/styles').sort().map((f) => readFileSync(`src/styles/${f}`, 'utf8')).join('\n');
 const html = `<!doctype html><meta charset="utf-8"><style>${css}
 body{background:#2a2150;color:#fff;font:14px sans-serif;padding:12px;overflow:visible;height:auto}
 h2{margin:14px 0 4px;font-size:18px} h2 small{font-size:11px;opacity:.7}

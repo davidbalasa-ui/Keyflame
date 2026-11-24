@@ -204,10 +204,6 @@ export function seasonRun(now: Date = new Date()): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
-export function seasonById(id: string): Season | undefined {
-  return SEASONS.find((s) => s.id === id);
-}
-
 /** Seasons that have already had their first month, newest first. */
 export function pastSeasons(now: Date = new Date()): Season[] {
   const i = monthIndex(now);

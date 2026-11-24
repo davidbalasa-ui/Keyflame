@@ -445,6 +445,19 @@ const stampOf = (raw: unknown): number => {
   return typeof t === 'number' ? t : 0;
 };
 
+/** The writtenAt stamp of the copy loadSave picked last (0 for a fresh save). */
+let loadedStamp = 0;
+export const loadedSaveStamp = (): number => loadedStamp;
+
+/** The writtenAt stamp inside a save as stored in localStorage (0 if unreadable). */
+export function saveStampOf(json: string | null): number {
+  try {
+    return json ? stampOf(JSON.parse(json)) : 0;
+  } catch {
+    return 0;
+  }
+}
+
 export async function loadSave(): Promise<SaveData> {
   let fromDb: unknown = null;
   let fromLs: unknown = null;
@@ -462,9 +475,9 @@ export async function loadSave(): Promise<SaveData> {
   // localStorage is written first and at once, so after a quick reload it can be newer than
   // IndexedDB (whose write may not have finished). The newer copy wins; on a tie,
   // localStorage, since every save writes it first.
-  if (fromDb && fromLs) return migrate(stampOf(fromLs) >= stampOf(fromDb) ? fromLs : fromDb);
-  if (fromDb || fromLs) return migrate(fromDb ?? fromLs);
-  return emptySave();
+  const picked = fromDb && fromLs ? (stampOf(fromLs) >= stampOf(fromDb) ? fromLs : fromDb) : (fromDb ?? fromLs);
+  loadedStamp = stampOf(picked);
+  return picked ? migrate(picked) : emptySave();
 }
 
 export async function writeSave(data: SaveData): Promise<void> {
