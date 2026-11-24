@@ -14,9 +14,23 @@ export async function startFakeSupabase(port = 54329) {
   const dir = new URL('../supabase/migrations/', import.meta.url);
   for (const f of readdirSync(dir).sort()) await db.exec(readFileSync(new URL(f, dir), 'utf8'));
 
+  /** Ideas and bug reports sent from the game, newest last. */
+  const feedback = [];
   const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
   const http = createServer(async (req, res) => {
     if (req.method === 'OPTIONS') return res.writeHead(204, cors).end();
+    // The Ideas / bug form posts here. Kept in memory only, so test runs can check it arrived.
+    if (req.method === 'POST' && (req.url ?? '').split('?')[0] === '/rest/v1/feedback') {
+      let text = '';
+      for await (const chunk of req) text += chunk;
+      try {
+        feedback.push(JSON.parse(text));
+      } catch {
+        return res.writeHead(400, cors).end();
+      }
+      console.log(`[fake-supabase] feedback received (${feedback.length})`);
+      return res.writeHead(201, cors).end();
+    }
     const m = /^\/rest\/v1\/rpc\/(\w+)$/.exec(req.url ?? '');
     if (!m || req.method !== 'POST') return res.writeHead(404, cors).end();
     let body = '';
@@ -132,7 +146,7 @@ export async function startFakeSupabase(port = 54329) {
   });
 
   await new Promise((r) => http.listen(port, r));
-  return { url: `http://localhost:${port}`, db, close: () => (wss.close(), http.close()) };
+  return { url: `http://localhost:${port}`, db, feedback, close: () => (wss.close(), http.close()) };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

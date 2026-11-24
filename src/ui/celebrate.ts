@@ -2,7 +2,7 @@
 // a WPM dial and reward cards that count up. Everything shown is already earned;
 // there is nothing to claim, sign up for, or open.
 
-import { h } from './dom';
+import { h, pct } from './dom';
 import { CONFETTI, attachField, type ParticleField } from './particles';
 import { sfx } from './sound';
 
@@ -186,7 +186,7 @@ export function celebration(info: CelebrationInfo): HTMLElement {
 
   const max = Math.max(30, Math.ceil(Math.max(info.wpm, info.prevBest) / 10) * 10 + 10);
   const dial = wpmDial(max, info.prevBest);
-  const dialWrap = h('div', { class: 'cel-dial-wrap' }, dial.el, h('div', { class: 'cel-acc' }, `${Math.round(info.accuracy * 100)}% accuracy`), info.newBest ? h('div', { class: 'cel-best' }, 'New best!') : null);
+  const dialWrap = h('div', { class: 'cel-dial-wrap' }, dial.el, h('div', { class: 'cel-acc' }, `${pct(info.accuracy)} accuracy`), info.newBest ? h('div', { class: 'cel-best' }, 'New best!') : null);
 
   const trophy = h('div', { class: `cel-trophy tier-${tier}` });
   trophy.innerHTML = trophySvg(tier);

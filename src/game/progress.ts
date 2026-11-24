@@ -522,3 +522,24 @@ export function placedThrough(units: number): string | null {
 export function ghostProgress(wpm: number, ms: number, length: number): number {
   return Math.min(1, ((wpm * 5) / 60000) * ms / length);
 }
+
+/**
+ * The free egg the rider is closest to earning, with how far along they are: the next unit of
+ * lessons, or three accurate races. Null once both are done.
+ */
+export function nearestFreeEgg(p: Profile): { tribe: TribeId; text: string; done: number; need: number; lessons: boolean } | null {
+  const options: Array<{ tribe: TribeId; text: string; done: number; need: number; lessons: boolean }> = [];
+  const unit = UNITS.find((u) => !p.unitsRewarded.includes(u.id));
+  if (unit) {
+    const list = lessonsInUnit(unit.id);
+    const done = list.filter((l) => (p.lessons[l.id]?.stars ?? 0) > 0).length;
+    options.push({ tribe: unit.reward, text: `${done} of ${list.length} ${unit.title} lessons passed`, done, need: list.length, lessons: true });
+  }
+  if (!p.milestones.includes('accuracy')) {
+    const done = Math.min(3, p.races.filter((r) => r.accuracy >= 0.95).length);
+    options.push({ tribe: 'frostspine', text: `${done} of 3 races with 95% correct`, done, need: 3, lessons: false });
+  }
+  // Furthest along first; on a tie, lessons (they teach the keys).
+  options.sort((a, b) => b.done / b.need - a.done / a.need);
+  return options[0] ?? null;
+}
