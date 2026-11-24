@@ -150,8 +150,11 @@ for (const size of SIZES) {
     await page.waitForSelector('.play-cards');
     try {
       for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 3000 }));
-    } catch {
-      failures.push(`${label} ${name}: could not open the screen`);
+    } catch (e) {
+      // Say why (covered, moving, gone), and keep a picture, so a failure here can be fixed, not re-run.
+      const why = String(e?.message ?? e).split('\n').filter((l) => /waiting|intercepts|not stable|detached|navigat|visible|Timeout/i.test(l)).slice(-3).join(' / ');
+      failures.push(`${label} ${name}: could not open the screen (${why || 'no reason given'})`);
+      if (SHOTS) await page.screenshot({ path: `${SHOTS}/FAILED-${size.name.replace(/\W+/g, '-')}-${name.replace(/\W+/g, '-')}.png` }).catch(() => undefined);
       continue;
     }
     await page.waitForTimeout(150);

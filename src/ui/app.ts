@@ -1,6 +1,6 @@
 // App state and screen switching.
 
-import { LS_KEY, MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, loadSave, normalizeProfile, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
+import { LS_KEY, MAX_PROFILES, loadedSaveStamp, saveStampOf, NAME_ADJECTIVES, NAME_NOUNS, createProfile, loadSave, normalizeProfile, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
 import { setSoundEnabled, wireAudioUnlock } from './sound';
 import { grantSupporter } from '../game/supporter';
 import { countUsage } from './usage';
@@ -155,6 +155,9 @@ const reloadIfStale = (): void => {
 };
 window.addEventListener('storage', (e) => {
   if (e.key !== LS_KEY || e.newValue === null || !state) return;
+  // Safari can deliver the last page's own save (written as it was left) to the page that
+  // replaced it, after that page has already loaded it. Only a newer save means another tab.
+  if (saveStampOf(e.newValue) <= loadedSaveStamp()) return;
   stale = true;
   clearTimeout(pending);
   reloadIfStale();
