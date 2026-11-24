@@ -27,7 +27,7 @@ export function eggMeter(p: Profile | null): EggMeter {
     const left = need - warm;
     label.textContent = left > 0 ? `${left} to hatch` : 'Ready!';
     el.classList.toggle('ready', left === 0);
-    el.setAttribute('aria-label', left > 0 ? `Egg: ${left} keys to hatch` : 'Egg ready to hatch');
+    el.setAttribute('aria-label', left > 0 ? `Egg: ${left} ${left === 1 ? 'key' : 'keys'} to hatch` : 'Egg ready to hatch');
   };
   update(0);
   return { el, update };

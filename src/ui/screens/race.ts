@@ -425,7 +425,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     if (reward.rivalFirstWin) rewards.push({ art: crownSvg(), title: `${r.name} beaten!`, value: 'Champion!', note: `+${RIVAL_BONUS} bonus embers`, tone: 'gold' });
     if (reward.warmthAdded && p.nest) {
       const ready = eggProgress(p) >= 1;
-      rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Tap 🐣 Hatch! below' : `${keysToHatch(p)} more keys to hatch`, tone: 'warm' });
+      rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Tap 🐣 Hatch! below' : `${keysToHatch(p)} more ${keysToHatch(p) === 1 ? 'key' : 'keys'} to hatch`, tone: 'warm' });
     }
     for (const c of reward.seasonDone ?? []) rewards.push({ art: medalSvg('gold', '🌟'), title: 'Season challenge', value: `+${CHALLENGE_EMBERS}`, note: c.text, tone: 'gold' });
     for (const b of better) rewards.push({ art: improvementArt(b), title: improvementTitle(b), value: b.embers, note: 'bonus embers', tone: 'gold' });
