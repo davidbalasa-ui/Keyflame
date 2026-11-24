@@ -207,7 +207,23 @@ export const placement = (root: HTMLElement): (() => void) => {
   const LIMIT = 60000;
   const stats = h('div', { class: 'live-stats' }, 'The clock starts on your first key.');
   let done = false;
-  const view = createTypingView({ text, input: inputMode(), showKeyboard: p.settings.showKeyboard, onFinish: () => finish() });
+  // Time is up the moment the minute ends, even between ticks of the clock below.
+  const timeUp = (): boolean => view.session.startedAt !== null && view.session.elapsedMs() >= LIMIT;
+  const view = createTypingView({
+    text,
+    input: inputMode(),
+    showKeyboard: p.settings.showKeyboard,
+    // Keys stop counting once the check is over, or once the minute is up.
+    enabled: () => {
+      if (done) return false;
+      if (timeUp()) {
+        finish();
+        return false;
+      }
+      return true;
+    },
+    onFinish: () => finish(),
+  });
   const timer = window.setInterval(() => {
     const s = view.session;
     if (s.startedAt === null) return;
@@ -220,7 +236,9 @@ export const placement = (root: HTMLElement): (() => void) => {
     if (done) return;
     done = true;
     clearInterval(timer);
-    const sum = view.session.summary();
+    stats.textContent = 'Time’s up!';
+    // Count no more than the minute, however late the clock noticed.
+    const sum = view.session.summary(Math.min(performance.now(), (view.session.startedAt ?? performance.now()) + LIMIT));
     recordPractice(p, sum);
     const units = applyPlacement(p, sum.wpm, sum.accuracy);
     // The class sees the check as its own line, never as lessons played.

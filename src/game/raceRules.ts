@@ -72,3 +72,14 @@ export function applyRaceKey(st: RaceState, r: KeystrokeResult, tune: PerkTuning
 export function finishTime(wpm: number, length: number): number {
   return length / ((Math.max(wpm, 0.1) * 5) / 60000);
 }
+
+/**
+ * How long one wingbeat takes at this typing speed, in a few fixed steps. Wings beat
+ * faster the faster you type. Each new value restyles every shape of the dragon, so it
+ * only changes when the speed crosses a step, not on every frame.
+ */
+export function flapFor(wpm: number): string {
+  const steps = [0.75, 0.63, 0.52, 0.43, 0.36];
+  const i = Math.max(0, Math.min(steps.length - 1, Math.floor(Math.max(0, wpm) / 9)));
+  return `${steps[i]}s`;
+}

@@ -163,6 +163,8 @@ export function go(screen: Screen): void {
   state.cleanup?.();
   state.cleanup = null;
   state.root.replaceChildren();
+  // A screen that forgot to clean up its typing panel must not leave the typing layout on.
+  state.root.classList.remove('kb-typing');
   window.scrollTo(0, 0);
   state.cleanup = screen(state.root) ?? null;
   guardBack();
