@@ -100,15 +100,23 @@ const overflow = (page) =>
     return { scrollW: document.documentElement.scrollWidth, vw, wide };
   });
 
+// If the browser dies (WebKit can crash a page), say which size and screen it was on.
+let at = 'starting';
+process.on('uncaughtException', (e) => {
+  console.error(`check:overflow crashed at ${at}: ${String(e.message).split('\n')[0]}`);
+  process.exit(1);
+});
 const browser = await playwright[ENGINE].launch();
 const failures = [];
 for (const size of SIZES) {
   const { width, height } = size;
   const label = `${size.name} (${width}x${height})`;
+  if (process.env.CI) console.log(`checking ${label}`);
   const ctx = await browser.newContext({ viewport: { width, height }, hasTouch: !size.pc, isMobile: !size.pc && ENGINE !== 'firefox', deviceScaleFactor: size.pc ? 1 : 2 });
   const page = await ctx.newPage();
   await page.goto(URL);
   const check = async (name) => {
+    at = `${label} ${name}`;
     const o = await overflow(page);
     if (o.scrollW > o.vw) failures.push(`${label} ${name}: page is ${o.scrollW}px wide (${o.wide.join(', ') || 'unknown element'})`);
     if (name === 'hub') {
@@ -137,6 +145,7 @@ for (const size of SIZES) {
   await page.click('.modal .btn:not(.ghost)');
   await page.waitForTimeout(600); // let the save land before reloading
   for (const [name, clicks] of SCREENS) {
+    at = `${label} opening ${name}`;
     await page.goto(URL);
     await page.waitForSelector('.play-cards');
     try {
