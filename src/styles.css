@@ -1788,6 +1788,7 @@ body.kb-pinned .flight { height: clamp(96px, 19vh, 190px); margin: 4px 0; }
 .wing-riders { margin: 0 0 12px; }
 .wing-riders h2 { margin: 0 0 6px; font-size: 1rem; }
 .rider-chip-badge { color: var(--gold); font-weight: 700; }
+.rider-chip-now { color: var(--gold); font-weight: 800; font-size: 1.1rem; }
 .wing-join { margin-top: 4px; }
 .rider-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .rider-chip {

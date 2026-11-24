@@ -58,6 +58,11 @@ export function hasProfile(): boolean {
   return isGuest() || state.save.profiles.some((x) => x.id === state.save.activeId);
 }
 
+/** This visit's guest, playing or not. */
+export function guestRider(): Profile | null {
+  return state.guest;
+}
+
 /** True while the guest is playing: progress lasts for this visit only. */
 export function isGuest(): boolean {
   return !!state.guest && state.save.activeId === state.guest.id;
