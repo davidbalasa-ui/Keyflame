@@ -469,7 +469,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       extra: live ? h('div', {}, live.results(), factCard) : factCard,
       reducedMotion: p.settings.reducedMotion,
       actions: live
-        ? finishBar(button('🐉 Back to class', () => live.back()), [], { nestGlow: !!reward.newEgg, keepPrimary: true })
+        ? finishBar(button('🐉 Back to wing', () => live.back()), [], { nestGlow: !!reward.newEgg, keepPrimary: true })
         : finishBar(harder && placeNum === 1 ? button(`▶ ${harder.name}`, () => go(race(harder.id))) : button('▶ Race again', () => go(race(course.id))), [
             // A harder course is open: after a win it is the main button, otherwise it sits beside Race again.
             harder ? (placeNum === 1 ? button('↻ Race again', () => go(race(course.id)), 'btn ghost small') : button(`▶ ${harder.name}`, () => go(race(harder.id)), 'btn ghost small')) : null,

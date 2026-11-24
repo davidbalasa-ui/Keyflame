@@ -15,7 +15,7 @@ import { button, h } from '../dom';
 import { badgeQr, qrDataUrl } from '../qr';
 import { sfx } from '../sound';
 import { withTabs } from '../tabBar';
-import { LAST_CODE_KEY, classLobby, readStore, writeStore } from './classroom';
+import { LAST_CODE_KEY, classLobby, localRosterName, readStore, writeStore } from './classroom';
 import { hub, topBar } from './hub';
 import { parentGate } from './supporter';
 import { riderAvatar } from './riders';
@@ -174,7 +174,7 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
     wordInput.value = word;
     if (!isClassCode(code)) return fail(code.length === CODE_LENGTH ? 'That isn’t a wing code. Check your card.' : 'The code is 6 letters.', input);
     if (!Number.isInteger(badge) || badge < 1 || badge > BADGE_MAX) return fail('Type your badge number.', badgeInput);
-    const name = prefill && prefill.code === code && prefill.badge === badge ? prefill.name : undefined;
+    const name = (prefill && prefill.code === code && prefill.badge === badge ? prefill.name : undefined) ?? localRosterName(code, badge);
     const now = profile();
     const plan = planJoin(saveData().profiles, now, isGuest(), { code, badge });
     if (plan.kind === 'switch' || plan.kind === 'same') {

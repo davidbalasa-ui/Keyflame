@@ -445,7 +445,11 @@ export function raceLetters(p: Profile, input: InputMode): Set<string> {
   const keys = knownLetters(p);
   const form = raceForm(p, input) / (isTouch(input) ? TOUCH_SPEED_FACTOR : 1);
   if (form >= RACE_STEP_WPM.top) [...TOP_ROW].forEach((k) => keys.add(k));
-  if (form >= RACE_STEP_WPM.all) [...BOTTOM_ROW].forEach((k) => keys.add(k));
+  // One lucky race opens the top row at most; every letter takes two fast, accurate races,
+  // so riders see the top-row step first instead of jumping straight to facts.
+  const touch = isTouch(input);
+  const fastRaces = p.races.filter((r) => isTouch(r.input) === touch && r.accuracy >= 0.92).length;
+  if (form >= RACE_STEP_WPM.all && fastRaces >= 2) [...BOTTOM_ROW].forEach((k) => keys.add(k));
   return keys;
 }
 

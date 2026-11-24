@@ -211,7 +211,7 @@ export const nest = (root: HTMLElement): (() => void) => {
                   svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking, d.stars), 'card-dragon'),
                   isStarglint(d)
                     ? h('strong', {}, d.name)
-                    : button(h('span', { class: 'dc-name' }, d.name, d.stars ? h('span', { class: 'stars', 'aria-label': `${d.stars} evolution stars` }, ' ' + '★'.repeat(d.stars)) : null), () => (sfx.click(), renameSheet(d)), 'dc-rename', { 'aria-label': `Rename ${d.name}` }),
+                    : button(h('span', { class: 'dc-name-wrap' }, h('span', { class: 'dc-name' }, d.name), d.stars ? h('span', { class: 'stars dc-stars', 'aria-label': `${d.stars} evolution stars` }, '★'.repeat(d.stars)) : null), () => (sfx.click(), renameSheet(d)), 'dc-rename', { 'aria-label': `Rename ${d.name}` }),
                   h('small', {}, isStarglint(d) ? 'Supporter dragon' : `${paletteFor(d.tribe, d.palette).name} ${kindName(d)}`),
                   h('small', {}, growthText(d)),
                   h('small', { class: 'perk' }, perkText(d)),

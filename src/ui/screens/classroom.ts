@@ -82,7 +82,7 @@ function rosterChip(m: Member, me = false): HTMLElement {
 }
 
 function boardTable(rows: BoardRow[], highlight?: string): HTMLElement {
-  if (!rows.length) return h('p', { class: 'fine board-empty' }, 'No class races yet.');
+  if (!rows.length) return h('p', { class: 'fine board-empty' }, 'No wing races yet.');
   return h(
     'ol',
     { class: 'class-board' },
@@ -100,7 +100,7 @@ function boardTable(rows: BoardRow[], highlight?: string): HTMLElement {
 }
 
 /** A board panel that loads itself and has a refresh button. */
-function boardPanel(code: string, highlight?: string, extra: HTMLElement | null = null, heading = '🏆 Class board'): { el: HTMLElement; refresh: () => void } {
+function boardPanel(code: string, highlight?: string, extra: HTMLElement | null = null, heading = '🏆 Wing board'): { el: HTMLElement; refresh: () => void } {
   const body = h('div', {}, h('p', { class: 'fine' }, 'Loading…'));
   const refresh = (): void => {
     classBoard(code)
@@ -231,7 +231,7 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
       renderResults();
       reportToClass(profile(), { kind: 'class', wpm: sum.wpm, accuracy: sum.accuracy, place, racers: race.racers.length, touch: isTouch(input) });
     },
-    results: () => (renderResults(), h('div', { class: 'live-results-card' }, h('strong', {}, 'Class race'), list)),
+    results: () => (renderResults(), h('div', { class: 'live-results-card' }, h('strong', {}, 'Wing race'), list)),
     back: () => go(classLobby(s.code)),
     leave() {
       offMembers();
@@ -309,6 +309,7 @@ export function classLobby(code: string) {
       }, 'btn race-classmates');
       const hint = h('p', { class: 'fine lobby-hint', 'aria-live': 'polite' });
       const board = boardPanel(code, me.name);
+      let boardSeen = new Set<string>();
 
       const render = (): void => {
         const members = link.members();
@@ -316,7 +317,11 @@ export function classLobby(code: string) {
         roster.replaceChildren(rosterChip(me, true), ...riders.filter((m) => m.id !== me.id).map((m) => rosterChip(m)));
         const waiting = waitingRiders(members);
         const ready = me.status === 'waiting';
-        raceBtn.textContent = ready ? 'Not ready' : '🏁 I’m ready!';
+        raceBtn.textContent = ready ? '✓ Ready! Tap to cancel' : '🏁 I’m ready!';
+        // A classmate just crossed the line: their new result is on its way to the board.
+        const finishedNow = members.filter((m) => m.status === 'done').map((m) => m.id);
+        if (finishedNow.some((id) => !boardSeen.has(id))) window.setTimeout(board.refresh, 2500);
+        boardSeen = new Set(finishedNow);
         raceBtn.classList.toggle('ghost', ready);
         // Alone and ready for a while: say so, and offer a course so nobody waits forever.
         const alone = ready && waiting.length < 2;
@@ -348,13 +353,13 @@ export function classLobby(code: string) {
 
       main.replaceChildren(
         linkBanner(link),
-        h('div', { class: 'lobby-head' }, h('h1', {}, '🏫 Class race'), h('span', { class: 'lobby-chips' }, h('span', { class: 'class-code-chip' }, spacedCode(code)), h('span', { class: 'my-badge pop-in', 'aria-label': `Your badge ${profile().classBadge ?? ''}` }, `#${profile().classBadge ?? '?'}`))),
+        h('div', { class: 'lobby-head' }, h('h1', {}, '🏁 Wing race'), h('span', { class: 'lobby-chips' }, h('span', { class: 'class-code-chip' }, spacedCode(code)), h('span', { class: 'my-badge pop-in', 'aria-label': `Your badge ${profile().classBadge ?? ''}` }, `#${profile().classBadge ?? '?'}`))),
         h('div', { class: 'lobby-race' }, raceBtn, hint),
         h('h2', {}, 'Here now'),
         roster,
         board.el,
-        h('p', { class: 'fine center' }, button('Leave class', () => {
-          if (!confirm('Leave this class? You’ll need your badge card to join again.')) return;
+        h('p', { class: 'fine center' }, button('Leave wing', () => {
+          if (!confirm('Leave this wing? You’ll need your badge card to join again.')) return;
           writeStore(LAST_CODE_KEY, null);
           setRiderSeat(profile(), null, null);
           endSession();
@@ -399,6 +404,11 @@ function readTeacher(): TeacherSave | null {
 }
 
 const writeTeacher = (t: TeacherSave): void => writeStore(TEACHER_KEY, JSON.stringify(t));
+
+/** The name a grown-up gave this badge, when their wing's list is on this device (a family iPad). */
+export function localRosterName(code: string, badge: number): string | undefined {
+  return readTeacher()?.code === code ? readRoster()[badge] || undefined : undefined;
+}
 
 /** A family wing made before the server stored wing kinds tells it once, so its riders count as family. */
 function markFamilyWing(): void {
@@ -536,7 +546,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
   };
 
   const startForm = (): void => {
-    const list = h('textarea', { class: 'student-list', rows: 6, placeholder: 'Ava\nBen\nCara\n…', 'aria-label': 'Your students, one per line' });
+    const list = h('textarea', { class: 'student-list', rows: 6, placeholder: 'Ava\nBen\nCara\n…', 'aria-label': fam ? 'Your kids, one per line' : 'Your students, one per line' });
     const pw = passwordInput('Teacher password', 'new-password');
     const msg = h('p', { class: 'fine', role: 'status' });
     const make = (): void => {
@@ -597,10 +607,10 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
     const openCard = h(
       'section',
       { class: 'tm-card' },
-      h('h2', {}, 'Open an existing class'),
-      h('div', { class: 'tm-grid2' }, field('Class code', code), field('Teacher password', pw2)),
+      h('h2', {}, fam ? 'Open an existing wing' : 'Open an existing class'),
+      h('div', { class: 'tm-grid2' }, field(fam ? 'Wing code' : 'Class code', code), field(fam ? 'Grown-up password' : 'Teacher password', pw2)),
       msg2,
-      h('div', { class: 'tm-actions' }, button('Open my class', () => void open(), 'btn ghost'), fileBtn),
+      h('div', { class: 'tm-actions' }, button(fam ? 'Open my wing' : 'Open my class', () => void open(), 'btn ghost'), fileBtn),
     );
     const jump = (card: HTMLElement, first: HTMLElement): void => {
       card.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -701,7 +711,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         'section',
         { class: 'tm-card tm-unlock' },
         h('h2', {}, fam ? 'Family wing' : 'Classroom'),
-        h('p', { class: 'fine' }, 'Kids play on this device, so the class needs your password.'),
+        h('p', { class: 'fine' }, fam ? 'Kids play on this device, so the wing needs your password.' : 'Kids play on this device, so the class needs your password.'),
         field(fam ? 'Grown-up password' : 'Teacher password', pw),
         msg,
         h('div', { class: 'tm-actions' }, button('Open', () => void tryIt(), 'btn tm-primary')),
@@ -739,7 +749,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       if (!confirm('Clear every race from the class board?')) return;
       void clearClassBoard(t).then(() => board.refresh());
     }, 'btn ghost small');
-    const board = boardPanel(t.code, undefined, clearBtn, 'Class board');
+    const board = boardPanel(t.code, undefined, clearBtn, fam ? 'Wing board' : 'Class board');
 
     const render = (): void => {
       const riders = l.members().filter((m) => m.role === 'rider');
@@ -761,7 +771,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       const note = h('div', { class: 'modal-backdrop' });
       note.append(
         h('div', { class: 'modal' },
-          h('h2', {}, 'New class code'),
+          h('h2', {}, fam ? 'New wing code' : 'New class code'),
           h('p', { class: 'teacher-code-inline' }, spacedCode(code)),
           h('p', {}, 'Print new badge cards with the new code. Badge numbers and words stay the same.'),
           h('div', { class: 'row center' }, button('Print badge cards', () => badgeCards(next, readRoster())), button('Done', () => note.remove(), 'btn ghost')),
@@ -783,14 +793,14 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
             t.vault = vault;
             writeTeacher(t);
             box.remove();
-            void syncNow().then(() => passwordBtn.replaceChildren('Change teacher password'));
+            void syncNow().then(() => passwordBtn.replaceChildren(fam ? 'Change grown-up password' : 'Change teacher password'));
           });
         })),
       ));
       main.append(box);
       pw.focus();
     };
-    const passwordBtn = button(t.vault ? 'Change teacher password' : 'Set a teacher password', setPassword, 'btn ghost small');
+    const passwordBtn = button(t.vault ? (fam ? 'Change grown-up password' : 'Change teacher password') : fam ? 'Set a grown-up password' : 'Set a teacher password', setPassword, 'btn ghost small');
 
     progress?.stop();
     const prog = progressPanel(t, syncSoon);
@@ -814,10 +824,10 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         button('Save backup file', () => saveBackupFile(t), 'btn ghost small'),
         passwordBtn,
       ),
-      h('div', { class: 'row center' }, button('New class code', () => void newCode(), 'btn ghost small'), button('Clear class board', () => clearBtn.click(), 'btn ghost small')),
+      h('div', { class: 'row center' }, button(fam ? 'New wing code' : 'New class code', () => void newCode(), 'btn ghost small'), button(fam ? 'Clear wing board' : 'Clear class board', () => clearBtn.click(), 'btn ghost small')),
       h('p', { class: 'fine' }, 'A new code keeps every student, badge number and their progress. Use it if the code got out.'),
       h('p', { class: 'fine' }, HOME_SCREEN_TIP),
-      h('p', { class: 'fine center' }, button('Make a new class', () => {
+      h('p', { class: 'fine center' }, button(fam ? 'Make a new wing' : 'Make a new class', () => {
         if (confirm('Make a brand new class? To come back to this one later, use its code and your teacher password.')) {
           progress?.stop();
           link?.close();
@@ -902,11 +912,17 @@ function watchRace(link: ClassLink, race: RaceStart, finished: () => void): HTML
       checkOver();
     },
   });
-  // The race is over when every rider finished or left the class (closed the app, lost the Wi-Fi).
+  // The race is over when every rider finished, left the class (closed the app, lost the
+  // Wi-Fi), or tapped Back out of the race (seen racing, now back in the lobby).
   let over = false;
+  const seenRacing = new Set<string>();
   const checkOver = (): void => {
-    const here = new Set(link.members().map((m) => m.id));
-    if (over || !race.racers.every((id) => done.has(id) || !here.has(id))) return;
+    const members = link.members();
+    const here = new Set(members.map((m) => m.id));
+    for (const m of members) if (m.status === 'racing') seenRacing.add(m.id);
+    const quit = (id: string): boolean => seenRacing.has(id) && members.some((m) => m.id === id && (m.status === 'lobby' || m.status === 'waiting'));
+    for (const id of race.racers) if (!done.has(id) && quit(id) && rows.get(id)) rows.get(id)!.tag.textContent = 'Left';
+    if (over || !race.racers.every((id) => done.has(id) || !here.has(id) || quit(id))) return;
     over = true;
     offMembers();
     list.append(...[...done.keys()].map((who) => rows.get(who)!.tag.closest('li')!));

@@ -78,6 +78,9 @@ describe('race letters grow with speed', () => {
     expect(top.has('e') && top.has('t') && top.has('o')).toBe(true);
     expect(top.has('m')).toBe(false);
     expect(factsUnlocked(p, top)).toBe(false);
+    // One very fast race only opens the top row.
+    p.races = [race(RACE_STEP_WPM.all + 5)];
+    expect(raceLetters(p, 'keyboard').has('m')).toBe(false);
     p.races = [race(RACE_STEP_WPM.all + 5), race(RACE_STEP_WPM.all + 5)];
     const all = raceLetters(p, 'keyboard');
     expect(factsUnlocked(p, all)).toBe(true);

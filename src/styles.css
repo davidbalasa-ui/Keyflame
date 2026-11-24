@@ -1856,7 +1856,7 @@ body.reduced-motion .aerie-back .cel-glow, body.reduced-motion .aerie-back .twin
 @keyframes tapHand { 0%, 100% { transform: translate(0, 0) scale(1); } 45% { transform: translate(-8px, -14px) scale(1); } 60% { transform: translate(-8px, -14px) scale(0.86); } }
 .egg-nest .tap-hand { right: -12%; bottom: 20%; font-size: clamp(1.6rem, 6vw, 2.6rem); }
 .hatch-tap { position: relative; }
-.hatch-tap .tap-hand { right: -6%; bottom: 8%; font-size: clamp(2.6rem, 11vw, 4rem); }
+.hatch-tap .tap-hand { right: 4%; bottom: 10%; font-size: clamp(2.6rem, 11vw, 4rem); }
 .nest-egg-tap { position: relative; padding: 18px 26px; }
 .ready-ring {
   position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
@@ -1885,7 +1885,10 @@ body.reduced-motion .aerie-back .cel-glow, body.reduced-motion .aerie-back .twin
 }
 .dc-rename::after { content: '✏️'; font-size: 0.9em; }
 .dc-rename:hover, .dc-rename:focus-visible { border-color: var(--ember-2); }
-.dc-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dc-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+/* Stars never get cut off: the name shortens first. */
+.dc-name-wrap { display: inline-flex; align-items: center; gap: 4px; min-width: 0; }
+.dc-stars { flex-shrink: 0; white-space: nowrap; letter-spacing: -0.08em; }
 .modal.rename .name-pickers { margin: 8px 0 16px; }
 body.reduced-motion .tap-hand, body.reduced-motion .ready-ring, body.reduced-motion .glow-btn, body.reduced-motion .up-arrow { animation: none; }
 .fine.warn { color: var(--gold); }
