@@ -440,33 +440,45 @@ async function idbPut(value: SaveData): Promise<void> {
   });
 }
 
+const stampOf = (raw: unknown): number => {
+  const t = raw && typeof raw === 'object' ? (raw as { writtenAt?: unknown }).writtenAt : undefined;
+  return typeof t === 'number' ? t : 0;
+};
+
 export async function loadSave(): Promise<SaveData> {
+  let fromDb: unknown = null;
+  let fromLs: unknown = null;
   try {
-    const fromDb = await idbGet();
-    if (fromDb) return migrate(fromDb);
+    fromDb = await idbGet();
   } catch {
     // IndexedDB unavailable (private mode in some browsers); fall through.
   }
   try {
     const ls = localStorage.getItem(LS_KEY);
-    if (ls) return migrate(JSON.parse(ls));
+    if (ls) fromLs = JSON.parse(ls);
   } catch {
     // Corrupt or blocked; start fresh rather than crash.
   }
+  // localStorage is written first and at once, so after a quick reload it can be newer than
+  // IndexedDB (whose write may not have finished). The newer copy wins.
+  if (fromDb && fromLs) return migrate(stampOf(fromLs) > stampOf(fromDb) ? fromLs : fromDb);
+  if (fromDb || fromLs) return migrate(fromDb ?? fromLs);
   return emptySave();
 }
 
 export async function writeSave(data: SaveData): Promise<void> {
-  const copy = JSON.parse(JSON.stringify(data)) as SaveData;
-  try {
-    await idbPut(copy);
-  } catch {
-    // ignore, localStorage below still keeps a copy
-  }
+  const copy = { ...(JSON.parse(JSON.stringify(data)) as SaveData), writtenAt: Date.now() };
+  // localStorage first: it is written before this returns, so a reload right after a save
+  // (say, just after "Keep me") can't lose it.
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(copy));
   } catch {
-    // Storage full or blocked. Nothing more we can do on this device.
+    // Storage full or blocked; IndexedDB below may still work.
+  }
+  try {
+    await idbPut(copy);
+  } catch {
+    // ignore, localStorage above still keeps a copy
   }
 }
 

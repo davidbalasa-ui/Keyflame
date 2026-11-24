@@ -1,4 +1,5 @@
 import { TRIBES, dragonSvg, eggSvg, stageFor } from '../../game/dragons';
+import { nestStage } from '../eggNest';
 import { currentTitle } from '../../game/achievements';
 import { activeDragon, eggProgress, kindName, lessonUnlocked } from '../../game/progress';
 import { LESSONS } from '../../content/lessons';
@@ -49,19 +50,12 @@ export function refreshEmbers(): void {
 const DAILY_RACES = 3;
 const WING = '<svg viewBox="0 0 32 32"><path d="M4 26c2-9 8-16 18-20 3-1 6 0 6 2-5 1-9 4-11 7 4-1 8 0 10 2-4 0-8 1-10 3 3 0 6 1 7 3-6 0-11 1-15 4-2 1-4 1-5-1z" fill="#ffd8a8"/><path d="M8 24c3-6 8-11 15-14" stroke="#e8590c" stroke-width="1.4" fill="none" opacity="0.6"/></svg>';
 
-const NEST_SVG =
-  '<svg viewBox="0 0 120 52" aria-hidden="true"><ellipse cx="60" cy="34" rx="57" ry="17" fill="#4a2e16"/><ellipse cx="60" cy="27" rx="47" ry="11" fill="#24150a"/>' +
-  '<g fill="none" stroke-linecap="round" stroke-width="3.2"><path d="M6 31 Q40 50 114 30" stroke="#8d5b3a"/><path d="M9 38 Q60 54 110 36" stroke="#a87445"/><path d="M14 26 Q34 42 70 44" stroke="#6b4425"/><path d="M48 46 Q86 44 112 26" stroke="#6b4425"/><path d="M4 33 Q30 22 52 24" stroke="#a87445" stroke-width="2.4"/><path d="M70 23 Q98 21 116 32" stroke="#8d5b3a" stroke-width="2.4"/></g>' +
-  '<g fill="#69db7c"><ellipse cx="16" cy="40" rx="6" ry="3" transform="rotate(-25 16 40)"/><ellipse cx="104" cy="41" rx="6" ry="3" transform="rotate(20 104 41)"/><ellipse cx="62" cy="49" rx="5" ry="2.5"/></g><g fill="#b197fc"><circle cx="22" cy="44" r="2.4"/><circle cx="98" cy="45" r="2.4"/></g></svg>';
-
 /** The egg sitting in its twig nest, glowing as it warms. */
 function eggInNest(egg: NonNullable<Profile['nest']>, prog: number, cls: string): HTMLElement {
   return h(
     'div',
     { class: `egg-nest ${cls}${prog >= 1 ? ' ready' : ''}`, style: `--warm:${prog.toFixed(2)}` },
-    h('div', { class: 'egg-glow', 'aria-hidden': 'true' }),
-    svg(eggSvg(egg.tribe, prog, egg.seed), 'egg-nest-egg' + (prog >= 1 ? ' wobble' : '')),
-    svg(NEST_SVG, 'egg-nest-twigs'),
+    nestStage(svg(eggSvg(egg.tribe, prog, egg.seed), 'egg-nest-egg' + (prog >= 1 ? ' wobble' : '')), { seed: egg.seed, warm: prog }),
     prog >= 1 ? tapHand() : null,
   );
 }

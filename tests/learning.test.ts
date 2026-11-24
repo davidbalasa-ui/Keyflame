@@ -19,6 +19,18 @@ describe('tricky keys drill (KF-25)', () => {
       }
     }
   });
+  it('uses every named tricky key a few times, not just one of them', () => {
+    for (const idx of [6, 12, LESSONS.length - 1]) {
+      const known = new Set(LESSONS[idx].keys.filter((k) => k !== ' '));
+      for (const weak of [['j', 'f'], ['q', 'z'], ['x', 'j']].map((w) => w.filter((k) => known.has(k)))) {
+        for (let s = 1; s < 15; s++) {
+          const t = buildTrickyText(known, weak, seeded(s));
+          for (const k of weak) expect(t.split(k).length - 1).toBeGreaterThanOrEqual(3);
+          expect([...t].every((c) => c === ' ' || known.has(c))).toBe(true);
+        }
+      }
+    }
+  });
   it('falls back to key patterns when few sentences fit', () => {
     const t = buildTrickyText(new Set(['f', 'j']), ['f', 'j'], seeded(3));
     expect(t).toMatch(/^[fj ]+$/);

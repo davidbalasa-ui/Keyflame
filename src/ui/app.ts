@@ -104,9 +104,10 @@ export function keepGuest(name?: string): Profile | null {
   state.save.profiles.push(g);
   state.guest = null;
   state.save.activeId = g.id;
-  writeGuest();
-  persist();
   applyPendingSupporter();
+  // Saved at once, not after the usual short wait: the guest copy is gone now, so a reload
+  // right away must find the new rider.
+  void persistNow();
   countUsage('kept', g);
   return g;
 }
@@ -131,12 +132,16 @@ export function persist(): void {
   writeGuest();
   clearTimeout(pending);
   if (stale) return;
-  pending = window.setTimeout(() => void writeSave(state.save), 150);
+  pending = window.setTimeout(() => {
+    pending = undefined;
+    void writeSave(state.save);
+  }, 150);
 }
 
 export function persistNow(): Promise<void> {
   writeGuest();
   clearTimeout(pending);
+  pending = undefined;
   return stale ? Promise.resolve() : writeSave(state.save);
 }
 
@@ -150,6 +155,10 @@ window.addEventListener('storage', (e) => {
   reloadIfStale();
 });
 document.addEventListener('visibilitychange', reloadIfStale);
+// Leaving or reloading the page: write any save still waiting for its short delay.
+window.addEventListener('pagehide', () => {
+  if (pending !== undefined && state && !stale) void persistNow();
+});
 
 export function applySettings(): void {
   const s = hasProfile() ? profile().settings : null;
