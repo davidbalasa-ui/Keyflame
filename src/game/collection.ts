@@ -10,8 +10,6 @@ export const LOOKS_PER_TRIBE = 4 * MARKINGS.length;
 export const TOTAL_LOOKS = Object.keys(TRIBES).length * LOOKS_PER_TRIBE;
 
 export const EGG_PRICE = 150;
-/** Bought eggs wait in the basket; this keeps it from filling up. */
-export const MAX_BASKET = 3;
 
 export const lookKey = (tribe: TribeId, palette: number, marking = 0): string => `${tribe}:${palette}:${marking}`;
 
@@ -62,11 +60,13 @@ export function claimSets(p: Profile): CodexSet[] {
   return fresh;
 }
 
-/** Tribes whose eggs can be bought: ones the player has already hatched. */
-export function canBuyEgg(p: Profile, tribe: TribeId): 'ok' | 'unknown' | 'embers' | 'full' | 'maxed' {
+/**
+ * Tribes whose eggs can be bought: ones the player has already hatched. The basket
+ * has no limit, so embers a kid typed for can always become an egg.
+ */
+export function canBuyEgg(p: Profile, tribe: TribeId): 'ok' | 'unknown' | 'embers' | 'maxed' {
   if (!p.dragons.some((d) => d.tribe === tribe && !isStarglint(d))) return 'unknown';
   if (tribeMaxed(p, tribe)) return 'maxed';
-  if (p.nest && p.basket.length >= MAX_BASKET) return 'full';
   if (p.embers < EGG_PRICE) return 'embers';
   return 'ok';
 }
