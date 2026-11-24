@@ -98,10 +98,14 @@ export class TypingSession {
       if (this.done) this.finishedAt = now;
       return { correct: true, expected, typed: key, finished: this.done, streak: this.streak };
     }
-    if (!this.missedCurrent) stat.misses++;
+    // Accuracy counts at most one miss per letter: pressing a wrong key again on the
+    // same letter doesn't lower it further (the race still slows you for each one).
+    if (!this.missedCurrent) {
+      stat.misses++;
+      this.errors++;
+    }
     this.missedCurrent = true;
     this.missedAt.add(this.index);
-    this.errors++;
     this.streak = 0;
     if (this.advanceOnError) {
       this.index++;

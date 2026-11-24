@@ -118,9 +118,23 @@ export function activeDragon(p: Profile): OwnedDragon | null {
   return p.dragons.find((d) => d.id === p.activeDragonId) ?? p.dragons[0] ?? null;
 }
 
+/** The very first dragon hatches fast, so a new rider meets one after about a lesson and a race. */
+export const FIRST_HATCH_KEYS = 120;
+
+/** Correct keys an egg of this tribe needs in this rider's nest. */
+export function hatchNeed(p: Profile, tribe: TribeId): number {
+  const first = !p.dragons.some((d) => !isStarglint(d));
+  return first ? Math.min(FIRST_HATCH_KEYS, TRIBES[tribe].hatchKeys) : TRIBES[tribe].hatchKeys;
+}
+
+/** Correct keys the egg in the nest still needs. */
+export function keysToHatch(p: Profile): number {
+  return p.nest ? Math.max(0, hatchNeed(p, p.nest.tribe) - p.nest.warmth) : 0;
+}
+
 export function eggProgress(p: Profile): number {
   if (!p.nest) return 0;
-  return Math.min(1, p.nest.warmth / TRIBES[p.nest.tribe].hatchKeys);
+  return Math.min(1, p.nest.warmth / hatchNeed(p, p.nest.tribe));
 }
 
 /** Shared bookkeeping for any finished typing session. */
@@ -132,7 +146,7 @@ function applySession(p: Profile, s: SessionSummary): Omit<TypingRewards, 'ember
 
   let warmthAdded = 0;
   if (p.nest) {
-    const need = TRIBES[p.nest.tribe].hatchKeys;
+    const need = hatchNeed(p, p.nest.tribe);
     warmthAdded = Math.min(s.correct, Math.max(0, need - p.nest.warmth));
     p.nest.warmth += warmthAdded;
   }
@@ -353,7 +367,7 @@ export function swapNestEgg(p: Profile, index: number, rand: () => number = Math
   if (!p.nest || !next) return false;
   const share = eggProgress(p);
   p.basket[index] = p.nest.tribe;
-  p.nest = { tribe: next, warmth: Math.ceil(share * TRIBES[next].hatchKeys), seed: Math.floor(rand() * 1e9) };
+  p.nest = { tribe: next, warmth: Math.ceil(share * hatchNeed(p, next)), seed: Math.floor(rand() * 1e9) };
   return true;
 }
 
@@ -384,7 +398,7 @@ export function canWarmWithEmbers(p: Profile): boolean {
 
 export function warmWithEmbers(p: Profile): boolean {
   if (!canWarmWithEmbers(p) || !p.nest) return false;
-  const need = TRIBES[p.nest.tribe].hatchKeys;
+  const need = hatchNeed(p, p.nest.tribe);
   p.embers -= WARM_PRICE;
   p.nest.warmth = Math.min(need, p.nest.warmth + Math.ceil(need * WARM_SHARE));
   return true;
@@ -405,9 +419,44 @@ export function knownLetters(p: Profile): Set<string> {
   return keys;
 }
 
-/** Races switch from practice sentences to real facts once every letter is learned. */
-export function factsUnlocked(p: Profile): boolean {
-  const known = knownLetters(p);
+/** Letters of the top row and the bottom row, which race text adds for fast typists. */
+const TOP_ROW = 'qwertyuiop';
+const BOTTOM_ROW = 'zxcvbnm,./';
+/** Keyboard WPM (at 92%+ accuracy) at which races add the top row, then every letter. Touch uses TOUCH_SPEED_FACTOR of these. */
+export const RACE_STEP_WPM = { top: 20, all: 28 };
+
+/**
+ * The rider's recent race speed on this kind of input: the average of their last three
+ * races with 92% accuracy or more. 0 before any such race.
+ */
+export function raceForm(p: Profile, input: InputMode): number {
+  const touch = isTouch(input);
+  const recent = p.races.filter((r) => isTouch(r.input) === touch && r.accuracy >= 0.92).slice(0, 3).map((r) => r.wpm);
+  return recent.length ? recent.reduce((a, b) => a + b, 0) / recent.length : 0;
+}
+
+/**
+ * Letters race text may use. Starts from the lessons the rider has reached, and grows
+ * with their speed: a rider who already types fast and accurately gets the top row, then
+ * every letter, so races stop repeating the few home-row sentences. Lessons still
+ * teach the letters in order.
+ */
+export function raceLetters(p: Profile, input: InputMode): Set<string> {
+  const keys = knownLetters(p);
+  const form = raceForm(p, input) / (isTouch(input) ? TOUCH_SPEED_FACTOR : 1);
+  if (form >= RACE_STEP_WPM.top) [...TOP_ROW].forEach((k) => keys.add(k));
+  if (form >= RACE_STEP_WPM.all) [...BOTTOM_ROW].forEach((k) => keys.add(k));
+  return keys;
+}
+
+/** True when the rider's speed has opened letters their lessons haven't reached yet. */
+export function speedOpenedLetters(p: Profile, input: InputMode): boolean {
+  return raceLetters(p, input).size > knownLetters(p).size;
+}
+
+/** Races switch from practice sentences to real facts once every letter is learned (or opened by speed). */
+export function factsUnlocked(p: Profile, letters?: Set<string>): boolean {
+  const known = letters ?? knownLetters(p);
   return [...'abcdefghijklmnopqrstuvwxyz'].every((c) => known.has(c));
 }
 

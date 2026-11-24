@@ -2012,6 +2012,26 @@ body.kb-pinned .finger-coach { width: 84px; height: 41px; }
 .tm-hero.slim .tm-scene svg { object-fit: cover; }
 .course-grid + .class-card { margin-top: 16px; }
 
+/* Live egg meter in races and lessons: fills as the rider types */
+.egg-meter { display: inline-flex; align-items: center; gap: 6px; font-variant-numeric: tabular-nums; }
+.egg-meter-icon { font-size: 1.1rem; line-height: 1; }
+.egg-meter-bar { position: relative; width: 72px; height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.14); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255, 212, 59, 0.35); }
+.egg-meter-bar > span { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, #ffa94d, #ffd43b); border-radius: inherit; transition: width 0.25s ease-out; }
+.egg-meter-label { color: var(--muted); white-space: nowrap; }
+.egg-meter.ready .egg-meter-label { color: var(--gold); font-weight: 700; }
+.egg-meter.ready .egg-meter-icon { animation: egg-meter-bounce 0.9s ease-in-out infinite; }
+@keyframes egg-meter-bounce { 50% { transform: translateY(-3px) rotate(-8deg); } }
+.lesson-stats-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px 16px; }
+.lesson-stats-row .live-stats { margin: 6px 0 10px; }
+body.kb-pinned .egg-meter-bar { width: 52px; }
+@media (prefers-reduced-motion: reduce) { .egg-meter.ready .egg-meter-icon { animation: none; } }
+body.reduced-motion .egg-meter.ready .egg-meter-icon { animation: none; }
+.race-meters { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 18px; }
+@media (max-width: 480px) {
+  .race-meters { gap: 6px 12px; }
+  .race-meters .flame-meter { width: 90px; }
+  .race-meters .egg-meter-bar { width: 52px; }
+}
 /* ===== Nest polish (2026-11-24): the egg sits down inside a cel twig nest (src/ui/eggNest.ts) ===== */
 .nest-stage { --e: 0.5; position: relative; width: 100%; }
 .nest-stage::before { content: ''; display: block; padding-top: calc((1.12 * var(--e) + 0.15) * 100%); }
