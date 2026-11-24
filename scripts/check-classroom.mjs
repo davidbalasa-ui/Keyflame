@@ -277,8 +277,8 @@ try {
   await teacher.getByRole('tab', { name: 'Live' }).click();
 
   // Back to the lobby, then the teacher starts a race for everyone.
-  await ipad.click('text=Back to class');
-  await phone.click('text=Back to class');
+  await ipad.click('text=Back to wing');
+  await phone.click('text=Back to wing');
   await ipad.waitForSelector('.race-classmates');
   await phone.waitForSelector('.race-classmates');
   await teacher.waitForFunction(() => [...document.querySelectorAll('.teacher .roster-status')].every((e) => e.textContent === 'Here'), null, { timeout: 5000 });
@@ -296,7 +296,7 @@ try {
   check(true, 'leaving a race goes back to the class lobby');
 
   // A shared iPad remembers the class for the next rider.
-  await ipad.click('text=Back to class');
+  await ipad.click('text=Back to wing');
   await ipad.click('header.top-bar > .btn:first-child >> nth=0');
   await ipad.click('header.top-bar > .btn:first-child >> nth=0');
   await ipad.click('.home-avatar');

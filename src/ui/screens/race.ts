@@ -438,6 +438,9 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     // The next course this rider has opened, if this isn't already the newest one.
     const harder = live ? null : COURSES.slice(COURSES.indexOf(course) + 1).find((c) => courseUnlocked(p, c.id)) ?? null;
     const lines: string[] = [];
+    // Clean words and flame dashes push a racer ahead of the letters, so a race can end with
+    // a few words left. Say why, so it doesn't look like the game stopped taking keys.
+    if (!view.session.done) lines.push('🔥 Your flame dash flew you over the line early!');
     if (!live && raceLetters(p, typedWith).size > lettersBefore) lines.push('You type fast! Your next races use more letters.');
     if (!reward.rivalFirstWin && !beatRival && !live) lines.push(`${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`);
 
@@ -466,7 +469,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       extra: live ? h('div', {}, live.results(), factCard) : factCard,
       reducedMotion: p.settings.reducedMotion,
       actions: live
-        ? finishBar(button('🐉 Back to class', () => live.back()), [], { nestGlow: !!reward.newEgg, keepPrimary: true })
+        ? finishBar(button('🐉 Back to wing', () => live.back()), [], { nestGlow: !!reward.newEgg, keepPrimary: true })
         : finishBar(harder && placeNum === 1 ? button(`▶ ${harder.name}`, () => go(race(harder.id))) : button('▶ Race again', () => go(race(course.id))), [
             // A harder course is open: after a win it is the main button, otherwise it sits beside Race again.
             harder ? (placeNum === 1 ? button('↻ Race again', () => go(race(course.id)), 'btn ghost small') : button(`▶ ${harder.name}`, () => go(race(harder.id)), 'btn ghost small')) : null,

@@ -120,11 +120,17 @@ export function activeDragon(p: Profile): OwnedDragon | null {
 
 /** The very first dragon hatches fast, so a new rider meets one after about a lesson and a race. */
 export const FIRST_HATCH_KEYS = 120;
+/** Keys the second egg needs at most, so the step after the first dragon is gentle. */
+export const SECOND_HATCH_KEYS = 600;
 
 /** Correct keys an egg of this tribe needs in this rider's nest. */
 export function hatchNeed(p: Profile, tribe: TribeId): number {
-  const first = !p.dragons.some((d) => !isStarglint(d));
-  return first ? Math.min(FIRST_HATCH_KEYS, TRIBES[tribe].hatchKeys) : TRIBES[tribe].hatchKeys;
+  const hatched = p.dragons.filter((d) => !isStarglint(d)).length;
+  if (hatched === 0) return Math.min(FIRST_HATCH_KEYS, TRIBES[tribe].hatchKeys);
+  // The second egg is a step, not a cliff: from 120 keys straight to a 1500-key tribe egg
+  // felt like a wall to new kids in the 2026-11-24 playtest.
+  if (hatched === 1) return Math.min(SECOND_HATCH_KEYS, TRIBES[tribe].hatchKeys);
+  return TRIBES[tribe].hatchKeys;
 }
 
 /** Correct keys the egg in the nest still needs. */
@@ -445,7 +451,11 @@ export function raceLetters(p: Profile, input: InputMode): Set<string> {
   const keys = knownLetters(p);
   const form = raceForm(p, input) / (isTouch(input) ? TOUCH_SPEED_FACTOR : 1);
   if (form >= RACE_STEP_WPM.top) [...TOP_ROW].forEach((k) => keys.add(k));
-  if (form >= RACE_STEP_WPM.all) [...BOTTOM_ROW].forEach((k) => keys.add(k));
+  // One lucky race opens the top row at most; every letter takes two fast, accurate races,
+  // so riders see the top-row step first instead of jumping straight to facts.
+  const touch = isTouch(input);
+  const fastRaces = p.races.filter((r) => isTouch(r.input) === touch && r.accuracy >= 0.92).length;
+  if (form >= RACE_STEP_WPM.all && fastRaces >= 2) [...BOTTOM_ROW].forEach((k) => keys.add(k));
   return keys;
 }
 
