@@ -2012,7 +2012,7 @@ body.kb-pinned .finger-coach { width: 84px; height: 41px; }
 .nest-stage > .nest-layer.front { z-index: 2; }
 .nest-stage > .nest-stage-egg { position: absolute !important; z-index: 1; top: 0; left: calc((1 - var(--e)) * 50%); width: calc(var(--e) * 100%); margin: 0; transform-origin: 50% 93%; }
 .nest-stage-egg svg { display: block; width: 100%; }
-.nest-stage-glow { position: absolute; left: 8%; right: 8%; top: -6%; bottom: 18%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, color-mix(in srgb, var(--egg-glow, var(--gold)) calc(25% + var(--warm) * 55%), transparent) 0%, transparent 100%); opacity: calc(0.35 + var(--warm) * 0.65); }
+.nest-stage-glow { position: absolute; left: 8%; right: 8%; top: -6%; bottom: 18%; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, color-mix(in srgb, var(--egg-glow, var(--gold)) 70%, transparent) 0%, transparent 100%); opacity: calc(0.3 + var(--warm) * 0.7); }
 .nest-stage.ready .nest-stage-glow { animation: pulse 1.4s ease-in-out infinite; }
 body.reduced-motion .nest-stage.ready .nest-stage-glow { animation: none; }
 
@@ -2056,7 +2056,7 @@ body.reduced-motion .nest-stage.ready .nest-stage-glow { animation: none; }
 .nest-panel .warmth::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, transparent calc(25% - 1px), rgba(0, 0, 0, 0.3) 0 calc(25% + 1px), transparent 0 calc(50% - 1px), rgba(0, 0, 0, 0.3) 0 calc(50% + 1px), transparent 0 calc(75% - 1px), rgba(0, 0, 0, 0.3) 0 calc(75% + 1px), transparent 0); }
 .warmth-label { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; font-size: 0.95rem; color: #fff; text-shadow: 0 1px 0 #000, 0 0 4px rgba(0, 0, 0, 0.8); }
 .nest-panel .warmth.full .warmth-fill { animation: warmFull 1.4s ease-in-out infinite; }
-@keyframes warmFull { 50% { filter: brightness(1.15); } }
+@keyframes warmFull { 50% { opacity: 0.8; } }
 body.reduced-motion .nest-panel .warmth.full .warmth-fill { animation: none; }
 .nest-panel .nest-keys { margin: 0 0 8px; background: rgba(14, 10, 32, 0.6); border: 2px solid rgba(255, 255, 255, 0.08); }
 
@@ -2088,7 +2088,7 @@ body.reduced-motion .nest-panel .warmth.full .warmth-fill { animation: none; }
 /* Hatch screen: the egg in its nest, trembling more with every crack. */
 .hatch-tap .nest-stage.hatch-nest { --e: 0.56; width: min(96vw, 66vh, 520px); }
 .hatch-nest .nest-stage-glow { opacity: calc(0.4 + var(--heat) * 0.6); top: -10%; bottom: 10%; left: 0; right: 0; }
-.egg-holder { animation: rattle calc(1.1s - var(--heat) * 0.6s) ease-in-out infinite; transform-origin: 50% 93%; }
+.egg-holder { animation: rattle 0.8s ease-in-out infinite; transform-origin: 50% 93%; }
 .egg-holder.charging { animation: charge 0.09s linear infinite; }
 .shell-light { position: absolute; inset: 0; opacity: calc(var(--heat) * 0.12); pointer-events: none; transition: opacity 0.4s; }
 .shell-light svg { display: block; width: 100%; }
