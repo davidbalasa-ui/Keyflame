@@ -10,7 +10,7 @@ import { createProfile, type Profile } from '../../save/store';
 import { isDemoWing, joinBadge } from '../../net/classApi';
 import { unlockEverything } from '../../game/demo';
 import { riderSeat, seatFor, setRiderSeat } from '../classTrack';
-import { go, isGuest, keepGuest, persist, playAsGuest, profile, randomRiderName, roomForRider, saveData, switchRider, type Screen } from '../app';
+import { allRiders, go, guestRider, isGuest, keepGuest, persist, playAsGuest, profile, randomRiderName, roomForRider, saveData, switchRider, type Screen } from '../app';
 import { button, h } from '../dom';
 import { badgeQr, qrDataUrl } from '../qr';
 import { sfx } from '../sound';
@@ -22,11 +22,14 @@ import { riderAvatar } from './riders';
 
 export const wing: Screen = (root) => wingScreen({})(root);
 
+/** True while a join is waiting on the wing, so a second tap (or rider swap) can't race it. */
+let joinBusy = false;
+
 /**
  * The wing page. `note` explains why a rider is back here (their class code changed),
  * and `join` comes from a scanned QR code: it fills in the card and joins right away.
  */
-export function wingScreen(opts: { note?: string; join?: WingSeat }): Screen {
+export function wingScreen(opts: { note?: string; join?: WingSeat; quiet?: boolean }): Screen {
   return (root) => {
     const p = profile();
     const seat = riderSeat(p);
@@ -46,10 +49,11 @@ export function wingScreen(opts: { note?: string; join?: WingSeat }): Screen {
           leaveWing(p);
           persist();
           sfx.click();
-          go(wingScreen({ note: 'Left the wing. The dragons are safe.' }));
+          go(wingScreen({ note: 'Left the wing. The dragons are safe.', quiet: true }));
         }, 'btn danger leave-yes'),
         button('Stay', () => {
           leaveBox.hidden = true;
+          main.querySelector<HTMLButtonElement>('.leave-wing')?.focus();
         }, 'btn ghost leave-no'),
       ),
     );
@@ -75,7 +79,8 @@ export function wingScreen(opts: { note?: string; join?: WingSeat }): Screen {
     } else main.append(h('h1', {}, '🐉 Join your wing'), others ?? '');
     main.append(ticket.el);
     root.append(topBar(() => go(hub), 'Home'), main);
-    if (!ticket.el.hidden) ticket.focus();
+    // Quiet after leaving: focusing the form would pop up the iPad keyboard over the note.
+    if (!ticket.el.hidden && !opts.quiet) ticket.focus();
     // After this screen is up: a join can switch screens, which mustn't happen mid-build.
     if (opts.join) queueMicrotask(() => void ticket.join());
     return withTabs(root, null);
@@ -89,17 +94,20 @@ export function wingScreen(opts: { note?: string; join?: WingSeat }): Screen {
  */
 function riderSwitcher(onNew: () => void, addNew: boolean): HTMLElement | null {
   const me = profile();
-  const riders = [...saveData().profiles, ...(isGuest() ? [me] : [])];
+  // This visit's guest stays listed after someone else takes a turn, so they can tap back.
+  const riders = allRiders();
   if (riders.length < 2 && !addNew) return null;
   const chip = (r: Profile): HTMLElement => {
     const on = r.id === me.id;
     const tag = r.classCode && r.classBadge ? h('small', { class: 'rider-chip-badge' }, `#${r.classBadge}`) : null;
     return button(
-      h('span', { class: 'rider-chip-in' }, riderAvatar(r, 'rider-chip-art'), h('span', {}, riderLabel(r)), tag ?? ''),
+      h('span', { class: 'rider-chip-in' }, on ? h('span', { class: 'rider-chip-now', 'aria-hidden': 'true' }, '✓') : '', riderAvatar(r, 'rider-chip-art'), h('span', {}, riderLabel(r)), tag ?? ''),
       () => {
-        if (on) return;
+        // Never mid-join: the badge being joined belongs to whoever started it.
+        if (on || joinBusy) return;
         sfx.click();
-        switchRider(r);
+        if (r === guestRider()) playAsGuest();
+        else switchRider(r);
         go(wing);
       },
       `rider-chip${on ? ' on' : ''}`,
@@ -167,6 +175,15 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
 
   /** `keep` answers "are these your dragons?" when a saved rider with no wing is playing. */
   const join = async (keep?: boolean): Promise<void> => {
+    if (joinBusy) return;
+    joinBusy = true;
+    try {
+      await joinNow(keep);
+    } finally {
+      joinBusy = false;
+    }
+  };
+  const joinNow = async (keep?: boolean): Promise<void> => {
     const code = normalizeCode(input.value);
     input.value = code;
     const badge = Number(badgeInput.value);
@@ -220,13 +237,20 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
     } catch {
       return fail('Can’t reach your wing. Check the Wi-Fi.');
     }
+    // Someone else started playing, or this page closed, while the wing answered: this
+    // join was for the rider who started it, so it never lands on whoever is playing now.
+    if (profile().id !== now.id || !el.isConnected) {
+      joinBtn.disabled = false;
+      return;
+    }
     if (status === 'none') return fail('No wing has that code. Check each letter.', input);
     if (status === 'wrong') return fail(`That word doesn’t match badge #${badge}. Check your card.`, wordInput);
     if (status === 'locked') return fail('Too many tries. Ask your grown-up, or try again in 15 minutes.');
     if (status === 'removed') return fail(`Badge #${badge} isn’t in this wing anymore. Ask your grown-up.`, badgeInput);
     if (status !== 'ok') return fail('Check your card and try again.');
     joinBtn.disabled = false;
-    if (plan.kind === 'guest') keepGuest();
+    let rider = target;
+    if (plan.kind === 'guest') rider = keepGuest() ?? now;
     else if (target !== now) {
       // A new rider is saved if there's room, or rides as this visit's guest.
       if (roomForRider()) {
@@ -234,13 +258,13 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
         switchRider(target);
       } else playAsGuest(target);
     }
-    const rider = profile();
     if (name) rider.wingName = name;
     setRiderSeat(rider, code, badge, word);
     // A demo wing opens everything, so a grown-up can look at every part of the game.
     if (!rider.demo && (await isDemoWing(seatFor(rider, code, badge)).catch(() => false))) unlockEverything(rider);
     persist();
     writeStore(LAST_CODE_KEY, code);
+    if (!el.isConnected) return;
     sfx.coin();
     go(wing);
   };
