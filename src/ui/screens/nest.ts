@@ -2,7 +2,7 @@ import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg
 import { EGG_PRICE, buyEgg, canBuyEgg, claimSets, eggShop, foundLooks, lookKey } from '../../game/collection';
 import { codex, codexLook } from './codex';
 import { isStarglint, type OwnedDragon } from '../../save/store';
-import { courseUnlocked, kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
+import { courseUnlocked, kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers, keysToHatch } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor, decorThumb } from './aerie';
@@ -115,7 +115,7 @@ export const nest = (root: HTMLElement): (() => void) => {
         h('div', { class: 'warmth' }, h('span', { style: `width:${pct(prog)}` })),
         prog >= 1
           ? button('Tap to open!', () => hatchSequence(root), 'btn big glow-btn open-btn')
-          : h('p', { class: 'nest-keys' }, `${TRIBES[egg.tribe].hatchKeys - egg.warmth} keys to hatch`),
+          : h('p', { class: 'nest-keys' }, `${keysToHatch(p)} keys to hatch`),
         prog >= 1
           ? null
           : h(

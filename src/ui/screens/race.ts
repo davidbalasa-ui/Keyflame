@@ -1,8 +1,9 @@
 import { buildRaceText } from '../../content/lessons';
+import { eggMeter } from '../eggMeter';
 import { playLaunch } from '../launch';
 import { COURSES, courseById, type Course } from '../../game/courses';
 import { TRIBES, dragonSvg, eggSvg, stageFor, type Stage, type TribeId } from '../../game/dragons';
-import { RIVAL_BONUS, activeDragon, capitalsKnown, hidesHints, perkText, perkTribe, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
+import { RIVAL_BONUS, activeDragon, capitalsKnown, hidesHints, perkText, perkTribe, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, keysToHatch, raceLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
 import { FACTS, READING_LEVEL_LABEL, TOPIC_LABEL, factById, pickFact, type ReadingLevel } from '../../content/facts';
 import { computeWpm, weakKeys } from '../../engine/typing';
 import { applyRaceKey, finishTime, newRaceState, perkTuning } from '../../game/raceRules';
@@ -179,9 +180,10 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   const tune = perkTuning(perkTribe(me));
   const best = touch ? p.totals.bestTouchWpm : p.totals.bestWpm;
   const words = best < (touch ? 14 : 20) ? 14 : 22;
-  const known = knownLetters(p);
+  // Race letters grow with the rider's speed, so fast typists don't keep seeing the same home-row lines.
+  const known = raceLetters(p, input);
   // Once every letter is learned, races are real facts instead of practice sentences.
-  const fact = live ? (live.factId ? factById(live.factId) ?? null : null) : factsUnlocked(p) ? pickFact(p.settings.readingLevel ?? 'younger', p.factsSeen, weakKeys(p.keyStats, [...known]), Math.random, touch) : null;
+  const fact = live ? (live.factId ? factById(live.factId) ?? null : null) : factsUnlocked(p, known) ? pickFact(p.settings.readingLevel ?? 'younger', p.factsSeen, weakKeys(p.keyStats, [...known]), Math.random, touch) : null;
   const text = live ? live.text : fact ? (capitalsKnown(p) ? fact.text : fact.text.toLowerCase()) : buildRaceText(known, words, Math.random, weakKeys(p.keyStats, [...known]));
   const len = text.length;
 
@@ -229,6 +231,8 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   const countdown = h('div', { class: 'countdown' }, h('div', {}, h('small', { class: 'taunt' }, live ? 'Class race!' : `${r.name}: “${r.taunt}”`), h('div', { class: 'count' }, '3')));
   const countEl = countdown.querySelector('.count') as HTMLElement;
   const meter = h('div', { class: 'flame-meter' }, h('span', {}));
+  // Class races leave the egg out: the class track already crowds the head.
+  const egg = live ? eggMeter(null) : eggMeter(p);
   const stats = h('div', { class: 'live-stats' });
   const track = h('div', { class: 'track' }, sky, countdown);
   // On computers the track takes the height the typing panel leaves and shares it between the lanes (class races can have many).
@@ -322,6 +326,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       // Wings beat faster the faster you type.
       const flap = `${Math.max(0.36, 0.75 - view.session.rollingWpm(now) / 90).toFixed(2)}s`;
       if (flap !== shownFlap) meEl.style.setProperty('--flap', (shownFlap = flap));
+      egg.update(view.session.correct);
       const line = `${Math.round(raceWpm(now))} WPM · ${pct(view.session.accuracy())} accuracy`;
       if (stats.textContent !== line) stats.textContent = line;
       bgOffset += (0.02 + view.session.rollingWpm(now) / 600) * dt;
@@ -385,6 +390,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     const before = earnedIds(p);
     // Earlier speeds on the same kind of input, newest first, for the "faster than usual" reward.
     const prevWpms = p.races.filter((x) => isTouch(x.input) === isTouch(typedWith)).map((x) => x.wpm);
+    const lettersBefore = raceLetters(p, typedWith).size;
     const reward = recordRace(p, sum, placeNum, { input: typedWith, courseId: live ? 'class' : course.id, beatRival });
     countPlay('race', p);
     const better = payImprovements(p, sum, prevWpms);
@@ -408,7 +414,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     if (reward.rivalFirstWin) rewards.push({ art: crownSvg(), title: `${r.name} beaten!`, value: 'Champion!', note: `+${RIVAL_BONUS} bonus embers`, tone: 'gold' });
     if (reward.warmthAdded && p.nest) {
       const ready = eggProgress(p) >= 1;
-      rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Tap 🐣 Hatch! below' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
+      rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Tap 🐣 Hatch! below' : `${keysToHatch(p)} more keys to hatch`, tone: 'warm' });
     }
     for (const c of reward.seasonDone ?? []) rewards.push({ art: medalSvg('gold', '🌟'), title: 'Season challenge', value: `+${CHALLENGE_EMBERS}`, note: c.text, tone: 'gold' });
     for (const b of better) rewards.push({ art: improvementArt(b), title: improvementTitle(b), value: b.embers, note: 'bonus embers', tone: 'gold' });
@@ -419,6 +425,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     if (reward.grewTo && me) rewards.push({ art: dragonSvg(me.tribe, me.palette, reward.grewTo, '', me.skin, me.marking), title: `${me.name} grew!`, value: 'Grew up!', note: `Now a ${reward.grewTo} dragon`, tone: 'grow' });
 
     const lines: string[] = [];
+    if (!live && raceLetters(p, typedWith).size > lettersBefore) lines.push('You type fast! Your next races use more letters.');
     if (!reward.rivalFirstWin && !beatRival && !live) lines.push(`${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`);
 
     const factCard = fact
@@ -463,7 +470,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     h(
       'main',
       { class: 'race' },
-      h('div', { class: 'race-head' }, h('h1', {}, course.name), stats, h('div', { class: 'meter-wrap' }, h('small', {}, 'Flame dash'), meter)),
+      h('div', { class: 'race-head' }, h('h1', {}, course.name), stats, h('div', { class: 'race-meters' }, egg.el, h('div', { class: 'meter-wrap' }, h('small', {}, 'Flame dash'), meter))),
       track,
       me ? h('p', { class: 'fine perk-line' }, isStarglint(me) ? (hidesHints(me) ? 'Starglint’s special is on: no key hints!' : 'Starglint’s special is off. Turn it on in the nest.') : `${me.name}’s perk: ${perkText(me)}`) : null,
       view.el,
