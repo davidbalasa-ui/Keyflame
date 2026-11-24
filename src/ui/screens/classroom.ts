@@ -523,7 +523,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
         h('p', {}, fam ? 'Print a card for each kid. They scan it to join.' : 'Print a card for each student. They scan it to join.'),
         // Families often share one device: each kid can join right here, no card needed.
         fam ? playHereRow(t) : null,
-        h('div', { class: 'row center' }, button('Print badge cards', () => badgeCards(t, readRoster())), button('Class sheet', () => classSheet(t, readRoster()), 'btn ghost')),
+        h('div', { class: 'row center' }, button('Print badge cards', () => badgeCards(t, readRoster())), button(fam ? 'Kids sheet' : 'Class sheet', () => classSheet(t, readRoster()), 'btn ghost')),
         backedUp
           ? h('p', { class: 'fine' }, 'Your list is backed up and locked with your password. Open it on any device with the code and password.')
           : h('p', { class: 'fine warn' }, 'Your list isn’t backed up yet, so it is only on this device. Save a backup file now. Keyflame tries again after your next change.'),
@@ -547,7 +547,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
 
   const startForm = (): void => {
     const list = h('textarea', { class: 'student-list', rows: 6, placeholder: 'Ava\nBen\nCara\n…', 'aria-label': fam ? 'Your kids, one per line' : 'Your students, one per line' });
-    const pw = passwordInput('Teacher password', 'new-password');
+    const pw = passwordInput(fam ? 'Grown-up password' : 'Teacher password', 'new-password');
     const msg = h('p', { class: 'fine', role: 'status' });
     const make = (): void => {
       if (pw.value.length < MIN_PASSWORD) {
@@ -557,8 +557,8 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       void makeClass(parseStudentList(list.value), pw.value);
     };
 
-    const code = h('input', { type: 'text', class: 'label-input code-field', maxlength: 8, autocapitalize: 'characters', autocomplete: 'off', 'aria-label': 'Class code', placeholder: 'ABCDEF' });
-    const pw2 = passwordInput('Teacher password', 'current-password');
+    const code = h('input', { type: 'text', class: 'label-input code-field', maxlength: 8, autocapitalize: 'characters', autocomplete: 'off', 'aria-label': fam ? 'Wing code' : 'Class code', placeholder: 'ABCDEF' });
+    const pw2 = passwordInput(fam ? 'Grown-up password' : 'Teacher password', 'current-password');
     const msg2 = h('p', { class: 'fine', role: 'status' });
     const open = async (): Promise<void> => {
       const c = normalizeCode(code.value);
@@ -820,7 +820,7 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       backupNote,
       h('div', { class: 'row center' },
         button('Badge cards', () => badgeCards(t, readRoster()), 'btn ghost small'),
-        button('Class sheet', () => classSheet(t, readRoster()), 'btn ghost small'),
+        button(fam ? 'Kids sheet' : 'Class sheet', () => classSheet(t, readRoster()), 'btn ghost small'),
         button('Save backup file', () => saveBackupFile(t), 'btn ghost small'),
         passwordBtn,
       ),
