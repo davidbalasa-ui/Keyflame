@@ -158,13 +158,14 @@ export function buildTrickyText(known: Set<string>, weak: string[], rand: () => 
         lines.splice(Math.floor(rand() * (lines.length + 1)), 0, line);
       }
       // No sentence has it (rare): a few short groups of that key instead.
-      if (times(k) < TRICKY_MIN && /[a-z]/.test(k)) extra.push(`${k}${k} ${k}${k}${k} ${k}${k}`);
+      if (times(k) < TRICKY_MIN && k.trim()) extra.push(`${k}${k} ${k}${k}${k} ${k}${k}`);
     }
     return [joinLines(lines, known), ...extra].join(' ');
   }
   const use = keys.length ? keys : ['f', 'j'];
   const pickKey = (): string => use[Math.floor(rand() * use.length)];
-  return Array.from({ length: 16 }, () => Array.from({ length: 2 + Math.floor(rand() * 2) }, pickKey).join('')).join(' ');
+  // Each group starts with the keys in turn, so every named key comes up several times.
+  return Array.from({ length: 16 }, (_, i) => use[i % use.length] + Array.from({ length: 1 + Math.floor(rand() * 2) }, pickKey).join('')).join(' ');
 }
 
 /**
