@@ -7,8 +7,9 @@ describe('typing stays smooth', () => {
     // The computer layout uses the kb-typing class that typingView sets instead.
     // Read as plain text: Vitest empties CSS imports.
     const mod = 'node:fs';
-    const fs = (await import(/* @vite-ignore */ mod)) as { readFileSync: (path: string, enc: 'utf8') => string };
-    const css = fs.readFileSync('src/styles.css', 'utf8');
+    const fs = (await import(/* @vite-ignore */ mod)) as { readFileSync: (path: string, enc: 'utf8') => string; readdirSync: (path: string) => string[] };
+    // styles.css only @imports the parts in src/styles/, so read every part.
+    const css = fs.readdirSync('src/styles').sort().map((f) => fs.readFileSync(`src/styles/${f}`, 'utf8')).join('\n');
     expect(css.length).toBeGreaterThan(1000);
     expect(css).not.toMatch(/#app:has\(/);
     expect(css).toMatch(/#app\.kb-typing/);

@@ -449,11 +449,6 @@ export function raceLetters(p: Profile, input: InputMode): Set<string> {
   return keys;
 }
 
-/** True when the rider's speed has opened letters their lessons haven't reached yet. */
-export function speedOpenedLetters(p: Profile, input: InputMode): boolean {
-  return raceLetters(p, input).size > knownLetters(p).size;
-}
-
 /** Races switch from practice sentences to real facts once every letter is learned (or opened by speed). */
 export function factsUnlocked(p: Profile, letters?: Set<string>): boolean {
   const known = letters ?? knownLetters(p);

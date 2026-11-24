@@ -41,8 +41,3 @@ export const PASSAGES: string[] = [
   'Practice makes a racer strong. Fast claws are good, but steady claws win the long race.',
   'When the moon rose, the young dragons gathered at the nest to tell stories about the great sky race.',
 ];
-
-/** Words that only use the given letters (lowercase). */
-export function wordsFrom(allowed: Set<string>, minLen = 2): string[] {
-  return WORDS.filter((w) => w.length >= minLen && [...w].every((c) => allowed.has(c)));
-}
