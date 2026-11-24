@@ -6,5 +6,5 @@ art-preview/
 .claude/
 webkit-shots/
 review-shots/
-sim-out/
+sim-out*/
 dist-sim/

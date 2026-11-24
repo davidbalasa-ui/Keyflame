@@ -53,7 +53,8 @@ export interface Look {
   skin?: 'starglint';
 }
 
-export type MemberStatus = 'lobby' | 'waiting' | 'racing';
+/** 'done': crossed the line and looking at the results, not racing any more. */
+export type MemberStatus = 'lobby' | 'waiting' | 'racing' | 'done';
 
 export interface Member {
   /** Random per visit; never a device or save id. */
@@ -123,9 +124,9 @@ export function quickRacers(waiting: Member[]): Member[] {
   return [...waiting].sort((a, b) => a.since - b.since || (a.id < b.id ? -1 : 1)).slice(0, MAX_QUICK_RACERS);
 }
 
-/** Every rider who isn't already racing joins a race the teacher starts. */
+/** Every rider who isn't already racing (or still looking at a race's results) joins a race the teacher starts. */
 export function teacherRacers(members: Member[]): Member[] {
-  return members.filter((m) => m.role === 'rider' && m.status !== 'racing');
+  return members.filter((m) => m.role === 'rider' && m.status !== 'racing' && m.status !== 'done');
 }
 
 /** Your place: one more than the classmates who finished in less time. */

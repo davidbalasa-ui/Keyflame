@@ -240,6 +240,14 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
         cardQr(t, row.badge, row.student),
         h('div', { class: 'rs-word' }, h('small', { class: 'fine' }, 'Secret word'), h('strong', {}, badgeWord(t.key, row.badge)), h('small', { class: 'fine' }, 'On the card. A new device needs it to join as this badge.')),
       ),
+      // Family wings often share one device: join this badge here without typing the card.
+      (t as { kind?: string }).kind === 'family'
+        ? h('div', { class: 'row center' }, button(`▶ ${row.student || `Badge ${row.badge}`} plays on this device`, () => {
+            sheet.remove();
+            // Loaded on tap: this file is also used by tests that run without a browser.
+            void Promise.all([import('../app'), import('./wing')]).then(([{ go }, { wingScreen }]) => go(wingScreen({ join: { code: t.code, badge: row.badge, word: badgeWord(t.key, row.badge), name: row.student || undefined } })));
+          }, 'btn ghost small'))
+        : null,
       r
         ? h(
             'div',

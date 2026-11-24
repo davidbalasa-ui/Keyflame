@@ -133,7 +133,7 @@ export const nest = (root: HTMLElement): (() => void) => {
         h('div', { class: 'warmth' + (prog >= 1 ? ' full' : ''), role: 'img', 'aria-label': `${pct(prog)} warm` }, h('span', { class: 'warmth-fill', style: `width:${pct(prog)}` }), h('b', { class: 'warmth-label', 'aria-hidden': 'true' }, prog >= 1 ? 'Ready!' : `🔥 ${pct(prog)}`)),
         prog >= 1
           ? button('Tap to open!', () => hatchSequence(root), 'btn big glow-btn open-btn')
-          : h('p', { class: 'nest-keys' }, `${keysToHatch(p)} keys to hatch`),
+          : h('p', { class: 'nest-keys' }, `${keysToHatch(p)} ${keysToHatch(p) === 1 ? 'key' : 'keys'} to hatch`),
         prog >= 1
           ? null
           : h(
@@ -211,7 +211,7 @@ export const nest = (root: HTMLElement): (() => void) => {
                   svg(dragonSvg(d.tribe, d.palette, stageFor(d.xp), 'flap', d.skin, d.marking, d.stars), 'card-dragon'),
                   isStarglint(d)
                     ? h('strong', {}, d.name)
-                    : button(h('span', { class: 'dc-name' }, d.name, d.stars ? h('span', { class: 'stars', 'aria-label': `${d.stars} evolution stars` }, ' ' + '★'.repeat(d.stars)) : null), () => (sfx.click(), renameSheet(d)), 'dc-rename', { 'aria-label': `Rename ${d.name}` }),
+                    : button(h('span', { class: 'dc-name-wrap' }, h('span', { class: 'dc-name' }, d.name), d.stars ? h('span', { class: 'stars dc-stars', 'aria-label': `${d.stars} evolution stars` }, '★'.repeat(d.stars)) : null), () => (sfx.click(), renameSheet(d)), 'dc-rename', { 'aria-label': `Rename ${d.name}` }),
                   h('small', {}, isStarglint(d) ? 'Supporter dragon' : `${paletteFor(d.tribe, d.palette).name} ${kindName(d)}`),
                   h('small', {}, growthText(d)),
                   h('small', { class: 'perk' }, perkText(d)),
