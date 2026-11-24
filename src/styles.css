@@ -778,6 +778,11 @@ body.reduced-motion *, body.reduced-motion *::before { animation: none !importan
 .egg-goals li .mini-egg { width: 30px; margin: 0; flex: none; }
 .egg-goals li.done { box-shadow: inset 0 0 0 2px rgba(94, 230, 168, 0.55); }
 .egg-goals .check { margin-left: auto; color: var(--good); font-weight: 700; }
+/* Empty nest: the free egg the rider is closest to, before the shop. */
+.free-egg-next { display: flex; align-items: center; gap: 10px; background: var(--panel); border-radius: 12px; padding: 8px 12px; margin: 0 auto 12px; max-width: 420px; text-align: left; }
+.free-egg-next .mini-egg { width: 34px; margin: 0; flex: none; }
+.free-egg-next > span { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.free-egg-next .btn { flex: none; }
 .toggle.small { font-size: 0.9em; padding: 4px 0; }
 
 /* Ads */
