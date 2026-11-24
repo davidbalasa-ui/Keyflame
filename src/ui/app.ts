@@ -1,7 +1,7 @@
 // App state and screen switching.
 
 import { LS_KEY, MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, loadSave, normalizeProfile, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
-import { setSoundEnabled } from './sound';
+import { setSoundEnabled, wireAudioUnlock } from './sound';
 import { grantSupporter } from '../game/supporter';
 import { countUsage } from './usage';
 
@@ -32,6 +32,7 @@ export async function startApp(root: HTMLElement, first: Screen): Promise<void> 
   else if (!state.save.profiles.some((x) => x.id === state.save.activeId)) playAsGuest();
   claimSupporterReturn();
   applySettings();
+  wireAudioUnlock();
   watchHardwareKeyboard();
   go(first);
 }

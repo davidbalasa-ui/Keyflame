@@ -35,6 +35,7 @@ jobs:
       - run: npm run check:a11y
       - run: npm run check:flows
       - run: npm run check:typing
+      - run: npm run check:sounds
       - run: npm run check:classroom
   # The same checks in Safari's engine, since the classrooms use iPads.
   webkit:
@@ -58,6 +59,8 @@ jobs:
         run: npm run check:nav
       - if: ${{ !cancelled() }}
         run: npm run check:flows
+      - if: ${{ !cancelled() }}
+        run: npm run check:sounds
       - if: ${{ !cancelled() }}
         run: npm run check:a11y
       - if: ${{ !cancelled() }}

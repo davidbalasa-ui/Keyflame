@@ -5,9 +5,10 @@
 
 import { isClassCode, normalizeCode, spacedCode } from '../../game/classroom';
 import { BADGE_WORDS, normalizeWord, wordIndex } from '../../game/badgeWord';
-import { BADGE_MAX, joinLink, planJoin, riderLabel, type WingSeat } from '../../game/wing';
+import { BADGE_MAX, joinLink, leaveWing, planJoin, riderLabel, type WingSeat } from '../../game/wing';
 import { createProfile, type Profile } from '../../save/store';
-import { joinBadge } from '../../net/classApi';
+import { isDemoWing, joinBadge } from '../../net/classApi';
+import { unlockEverything } from '../../game/demo';
 import { riderSeat, seatFor, setRiderSeat } from '../classTrack';
 import { go, isGuest, keepGuest, persist, playAsGuest, profile, randomRiderName, roomForRider, saveData, switchRider, type Screen } from '../app';
 import { button, h } from '../dom';
@@ -16,6 +17,7 @@ import { sfx } from '../sound';
 import { withTabs } from '../tabBar';
 import { LAST_CODE_KEY, classLobby, readStore, writeStore } from './classroom';
 import { hub, topBar } from './hub';
+import { parentGate } from './supporter';
 import { riderAvatar } from './riders';
 
 export const wing: Screen = (root) => wingScreen({})(root);
@@ -30,17 +32,47 @@ export function wingScreen(opts: { note?: string; join?: WingSeat }): Screen {
     const seat = riderSeat(p);
     const ticket = joinTicket(opts.note ?? '', opts.join);
     const main = h('main', { class: 'wing' });
+    // Leaving is a grown-up's job: it sits behind the grown-up question, and only takes this
+    // rider out of the wing. Their dragons and progress stay on the device.
+    const leaveBox = h(
+      'div',
+      { class: 'badge-confirm leave-confirm pop-in', hidden: true, role: 'group', 'aria-label': 'Leave wing', tabindex: -1 },
+      h('p', {}, h('strong', {}, `Take ${riderLabel(p)} out of this wing?`)),
+      h('p', { class: 'fine' }, 'Their dragons stay on this device.'),
+      h(
+        'div',
+        { class: 'row center' },
+        button('Leave wing', () => {
+          leaveWing(p);
+          persist();
+          sfx.click();
+          go(wingScreen({ note: 'Left the wing. The dragons are safe.' }));
+        }, 'btn danger leave-yes'),
+        button('Stay', () => {
+          leaveBox.hidden = true;
+        }, 'btn ghost leave-no'),
+      ),
+    );
+    const others = riderSwitcher(() => {
+      leaveBox.hidden = true;
+      ticket.el.hidden = false;
+      ticket.focus();
+    }, !!seat && !opts.join);
     if (seat && !opts.join) {
       ticket.el.hidden = true;
+      main.append(h('h1', {}, '🐉 My wing'), others ?? '', wingCard(p, seat.code, seat.badge), leaveBox);
       main.append(
-        h('h1', {}, '🐉 My wing'),
-        wingCard(p, seat.code, seat.badge),
-        h('p', { class: 'fine center' }, button('Join a different wing', () => {
-          ticket.el.hidden = false;
-          ticket.focus();
-        }, 'link')),
+        h('p', { class: 'fine center wing-links' }, button('Grown-ups: leave wing', () => {
+          root.append(parentGate(() => {
+            ticket.el.hidden = true;
+            leaveBox.hidden = false;
+            // The box, not a button: the Enter that passed the gate would press a focused button.
+            leaveBox.focus();
+            leaveBox.scrollIntoView({ block: 'center' });
+          }));
+        }, 'link leave-wing')),
       );
-    } else main.append(h('h1', {}, '🐉 Join your wing'));
+    } else main.append(h('h1', {}, '🐉 Join your wing'), others ?? '');
     main.append(ticket.el);
     root.append(topBar(() => go(hub), 'Home'), main);
     if (!ticket.el.hidden) ticket.focus();
@@ -48,6 +80,43 @@ export function wingScreen(opts: { note?: string; join?: WingSeat }): Screen {
     if (opts.join) queueMicrotask(() => void ticket.join());
     return withTabs(root, null);
   };
+}
+
+/**
+ * Every rider saved on this device (and this visit's guest), so a kid taps their own rider
+ * instead of typing their card again. Only shown when there's someone to swap to. With
+ * `addNew`, a "New rider" chip opens the card form for a badge not on this device yet.
+ */
+function riderSwitcher(onNew: () => void, addNew: boolean): HTMLElement | null {
+  const me = profile();
+  const riders = [...saveData().profiles, ...(isGuest() ? [me] : [])];
+  if (riders.length < 2 && !addNew) return null;
+  const chip = (r: Profile): HTMLElement => {
+    const on = r.id === me.id;
+    const tag = r.classCode && r.classBadge ? h('small', { class: 'rider-chip-badge' }, `#${r.classBadge}`) : null;
+    return button(
+      h('span', { class: 'rider-chip-in' }, riderAvatar(r, 'rider-chip-art'), h('span', {}, riderLabel(r)), tag ?? ''),
+      () => {
+        if (on) return;
+        sfx.click();
+        switchRider(r);
+        go(wing);
+      },
+      `rider-chip${on ? ' on' : ''}`,
+      { 'aria-pressed': on ? 'true' : 'false' },
+    );
+  };
+  return h(
+    'section',
+    { class: 'wing-riders', 'aria-label': 'Who’s playing?' },
+    h('h2', {}, 'Who’s playing?'),
+    h(
+      'div',
+      { class: 'rider-chips' },
+      ...riders.map(chip),
+      addNew ? button(h('span', { class: 'rider-chip-in' }, h('span', { class: 'rider-chip-plus', 'aria-hidden': 'true' }, '+'), h('span', {}, 'New rider')), () => (sfx.click(), onNew()), 'rider-chip new') : null,
+    ),
+  );
 }
 
 /** The rider's wing: their name, badge, a QR code to save, and the way into wing races. */
@@ -168,6 +237,8 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
     const rider = profile();
     if (name) rider.wingName = name;
     setRiderSeat(rider, code, badge, word);
+    // A demo wing opens everything, so a grown-up can look at every part of the game.
+    if (!rider.demo && (await isDemoWing(seatFor(rider, code, badge)).catch(() => false))) unlockEverything(rider);
     persist();
     writeStore(LAST_CODE_KEY, code);
     sfx.coin();

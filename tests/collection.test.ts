@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EGG_PRICE, MAX_BASKET, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, eggShop, eggToBuy, foundLooks } from '../src/game/collection';
+import { EGG_PRICE, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, eggShop, eggToBuy, foundLooks } from '../src/game/collection';
 import { MARKINGS, dragonSvg, lookName, rollMarking } from '../src/game/dragons';
 import { hatchEgg } from '../src/game/progress';
 import { createProfile, type OwnedDragon } from '../src/save/store';
@@ -40,14 +40,16 @@ describe('codex collection', () => {
 
   it('eggs can be bought with embers only for tribes you have met', () => {
     const p = createProfile('Quiet Seeker');
-    p.embers = EGG_PRICE * 10;
+    p.embers = EGG_PRICE * 20;
     expect(canBuyEgg(p, 'emberback')).toBe('unknown');
     p.dragons = [dragon(0, 0)];
     p.nest = null;
     expect(buyEgg(p, 'emberback')).toBe(true);
     expect(p.nest!.tribe as string).toBe('emberback');
-    for (let i = 0; i < MAX_BASKET; i++) expect(buyEgg(p, 'emberback')).toBe(true);
-    expect(canBuyEgg(p, 'emberback')).toBe('full');
+    // The basket never fills up: ten more eggs all wait their turn.
+    for (let i = 0; i < 10; i++) expect(buyEgg(p, 'emberback')).toBe(true);
+    expect(p.basket).toHaveLength(10);
+    expect(p.embers).toBe(EGG_PRICE * 9);
     p.basket = [];
     p.embers = EGG_PRICE - 1;
     expect(canBuyEgg(p, 'emberback')).toBe('embers');

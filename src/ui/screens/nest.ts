@@ -2,7 +2,7 @@ import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg
 import { EGG_PRICE, buyEgg, canBuyEgg, claimSets, eggShop, foundLooks, lookKey } from '../../game/collection';
 import { codex, codexLook } from './codex';
 import { isStarglint, type OwnedDragon } from '../../save/store';
-import { courseUnlocked, kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, swapNestEgg, warmWithEmbers } from '../../game/progress';
+import { courseUnlocked, kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, basketGroups, swapNestEgg, warmWithEmbers } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor, decorThumb } from './aerie';
@@ -151,17 +151,17 @@ export const nest = (root: HTMLElement): (() => void) => {
         ? h(
             'section',
             {},
-            h('h2', {}, 'Eggs waiting'),
+            h('h2', {}, `Eggs waiting (${p.basket.length})`),
             h(
               'div',
               { class: 'basket' },
-              ...p.basket.map((t, i) =>
+              ...basketGroups(p).map(({ tribe: t, index: i, count }) =>
                 h(
                   'button',
                   {
                     class: 'basket-egg',
                     type: 'button',
-                    'aria-label': `Put the ${TRIBES[t].name} egg in the nest`,
+                    'aria-label': `Put ${count > 1 ? `one of your ${count} ${TRIBES[t].name} eggs` : `the ${TRIBES[t].name} egg`} in the nest`,
                     onclick: () => {
                       if (!swapNestEgg(p, i)) return;
                       sfx.click();
@@ -170,6 +170,7 @@ export const nest = (root: HTMLElement): (() => void) => {
                     },
                   },
                   svg(eggSvg(t, 0, i + 11), 'mini-egg'),
+                  count > 1 ? h('span', { class: 'egg-count', 'aria-hidden': 'true' }, `×${count}`) : null,
                   h('strong', {}, TRIBES[t].name),
                   h('small', {}, h('span', { class: 'up-arrow', 'aria-hidden': 'true' }, '⬆'), ' Put in nest'),
                 ),
@@ -255,8 +256,22 @@ export const nest = (root: HTMLElement): (() => void) => {
   );
   const stopTabs = withTabs(root, 'dragons');
   if (autoHatch && egg && prog >= 1) hatchSequence(root);
-  return stopTabs;
+  const stopNap = napOffscreen(root.querySelectorAll('.dragon-card'));
+  return () => (stopNap(), stopTabs());
 };
+
+/**
+ * Dragons scrolled out of view stop flapping until they come back, so a big nest
+ * (a long-time rider can own over a hundred dragons) stays light on tablets.
+ */
+function napOffscreen(cards: NodeListOf<Element>): () => void {
+  if (cards.length < 9 || typeof IntersectionObserver === 'undefined') return () => {};
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) e.target.classList.toggle('asleep', !e.isIntersecting);
+  }, { rootMargin: '200px 0px' });
+  cards.forEach((c) => io.observe(c));
+  return () => io.disconnect();
+}
 
 /** A clip-path that keeps one side of the seam the shell splits along. */
 function shellClip(top: boolean): string {
