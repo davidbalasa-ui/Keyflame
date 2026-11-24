@@ -120,11 +120,17 @@ export function activeDragon(p: Profile): OwnedDragon | null {
 
 /** The very first dragon hatches fast, so a new rider meets one after about a lesson and a race. */
 export const FIRST_HATCH_KEYS = 120;
+/** Keys the second egg needs at most, so the step after the first dragon is gentle. */
+export const SECOND_HATCH_KEYS = 600;
 
 /** Correct keys an egg of this tribe needs in this rider's nest. */
 export function hatchNeed(p: Profile, tribe: TribeId): number {
-  const first = !p.dragons.some((d) => !isStarglint(d));
-  return first ? Math.min(FIRST_HATCH_KEYS, TRIBES[tribe].hatchKeys) : TRIBES[tribe].hatchKeys;
+  const hatched = p.dragons.filter((d) => !isStarglint(d)).length;
+  if (hatched === 0) return Math.min(FIRST_HATCH_KEYS, TRIBES[tribe].hatchKeys);
+  // The second egg is a step, not a cliff: from 120 keys straight to a 1500-key tribe egg
+  // felt like a wall to new kids in the 2026-11-24 playtest.
+  if (hatched === 1) return Math.min(SECOND_HATCH_KEYS, TRIBES[tribe].hatchKeys);
+  return TRIBES[tribe].hatchKeys;
 }
 
 /** Correct keys the egg in the nest still needs. */

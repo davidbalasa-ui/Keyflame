@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { TypingSession } from '../src/engine/typing';
 import { buildRaceText } from '../src/content/lessons';
-import { FIRST_HATCH_KEYS, RACE_STEP_WPM, TOUCH_SPEED_FACTOR, eggProgress, factsUnlocked, hatchNeed, keysToHatch, knownLetters, raceLetters, recordRace } from '../src/game/progress';
+import { FIRST_HATCH_KEYS, SECOND_HATCH_KEYS, RACE_STEP_WPM, TOUCH_SPEED_FACTOR, eggProgress, factsUnlocked, hatchNeed, keysToHatch, knownLetters, raceLetters, recordRace } from '../src/game/progress';
 import { TRIBES, seededRandom } from '../src/game/dragons';
 import { createProfile, STARGLINT_ID, type RaceRecord } from '../src/save/store';
 import { typableOnTouch } from '../src/content/keyboard';
@@ -53,6 +53,15 @@ describe('first egg hatches fast', () => {
     const p = createProfile('Brave Comet');
     p.dragons.push({ id: 'd1', tribe: 'emberback', palette: 0, name: 'Ash', xp: 0, hatchedAt: 0 });
     expect(hatchNeed(p, 'emberback')).toBe(TRIBES.emberback.hatchKeys);
+  });
+
+  it('caps the second egg so it is a step, not a wall', () => {
+    const p = createProfile('Brave Comet');
+    p.dragons.push({ id: 'd1', tribe: 'emberback', palette: 0, name: 'Ash', xp: 0, hatchedAt: 0 });
+    expect(hatchNeed(p, 'tidefin')).toBe(SECOND_HATCH_KEYS);
+    expect(SECOND_HATCH_KEYS).toBeLessThan(TRIBES.tidefin.hatchKeys);
+    p.dragons.push({ id: 'd2', tribe: 'tidefin', palette: 0, name: 'Wave', xp: 0, hatchedAt: 0 });
+    expect(hatchNeed(p, 'tidefin')).toBe(TRIBES.tidefin.hatchKeys);
   });
 
   it('a first race and lesson can hatch it', () => {
