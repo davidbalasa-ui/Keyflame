@@ -3,7 +3,7 @@ import { weakKeys, type KeyStats } from '../../engine/typing';
 import { TRIBES, eggSvg } from '../../game/dragons';
 import { claimNewAchievements, earnedIds, type Achievement } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
-import { challengesOpen, recordChallenge, knownLetters, activeDragon, applyPlacement, isTouch, placedThrough, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
+import { challengesOpen, recordChallenge, knownLetters, activeDragon, applyPlacement, isTouch, placedThrough, keysToHatch, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
 import { reportToClass } from '../classTrack';
 import { PASSAGES } from '../../content/words';
 import { go, inputMode, persist, profile } from '../app';
@@ -16,6 +16,7 @@ import { withTabs } from '../tabBar';
 import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
 import { createLessonFlight } from '../lessonFlight';
+import { eggMeter } from '../eggMeter';
 import { seasonAt } from '../../content/seasons';
 import { hub, refreshEmbers, topBar } from './hub';
 import { CHALLENGE_EMBERS } from '../../game/seasons';
@@ -84,6 +85,7 @@ export function playLesson(lesson: Lesson) {
     const text = warm ? `${warm} ${main}` : main;
     const warmRings = warm ? warm.split(' ').length : 0;
     const stats = h('div', { class: 'live-stats' });
+    const egg = eggMeter(p);
     let timer = 0;
     const relaxed = p.settings.relaxed;
     const input = inputMode();
@@ -97,6 +99,7 @@ export function playLesson(lesson: Lesson) {
       onKey: (r, s) => flight.update(s, r.correct),
       onFinish: (s) => {
         clearInterval(timer);
+        egg.update(s.correct);
         // Show the last key's ring too: the counter refreshes only every 250 ms.
         tick();
         const sum = s.summary();
@@ -122,6 +125,7 @@ export function playLesson(lesson: Lesson) {
       const s = view.session;
       // No speed on screen during a lesson: accuracy is what counts here.
       stats.textContent = `◎ ${flight.clean}/${flight.rings} rings · ${pct(s.accuracy())} accuracy${relaxed ? ' · Relaxed' : ''}`;
+      egg.update(s.correct);
     };
     timer = window.setInterval(tick, 250);
     tick();
@@ -135,7 +139,7 @@ export function playLesson(lesson: Lesson) {
           ? h('p', { class: 'new-keys' }, 'New keys: ', ...lesson.newKeys.filter((k) => k !== ' ').map((k) => h('kbd', {}, k.toUpperCase())), lesson.id === 'L1' ? (input === 'keyboard' ? ' Rest your pointer fingers on the bumps on F and J.' : ' Hold your device with both hands and tap with your thumbs.') : '')
           : h('p', { class: 'new-keys' }, 'Keep your eyes on the screen, not your fingers.'),
         flight.el,
-        stats,
+        egg.el ? h('div', { class: 'lesson-stats-row' }, stats, egg.el) : stats,
         view.el,
       ),
     );
@@ -159,6 +163,7 @@ function missedKeys(stats: KeyStats, known: Set<string>): string[] {
 function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = [], seasonDone: string[] = [], better: Improvement[] = [], missed: string[] = []): void {
   const idx = LESSONS.indexOf(lesson);
   const next = LESSONS[idx + 1];
+  const eggLeft = keysToHatch(profile());
   // Picture cards instead of sentences: one card per thing earned.
   const card = (icon: Child, value: string, label: string, cls = ''): HTMLElement =>
     h('div', { class: `lr-card ${cls}` }, h('span', { class: 'lr-icon', 'aria-hidden': 'true' }, icon), h('strong', {}, value), h('small', {}, label));
@@ -167,7 +172,7 @@ function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accur
     card('🎯', pct(accuracy), 'Correct'),
     wpm === null ? null : card('⚡', String(Math.round(wpm)), 'WPM'),
     newEgg ? card('🥚', 'New egg!', newEgg, 'gold') : null,
-    eggReady ? card('🐣', 'Ready!', 'Egg can hatch', 'gold') : null,
+    eggReady ? card('🐣', 'Ready!', 'Egg can hatch', 'gold') : eggLeft > 0 ? card('🥚', String(eggLeft), 'Keys to hatch') : null,
     // A key mastered from earlier typing, not one this lesson teaches, says so.
     ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, b.key && !lesson.keys.includes(b.key) ? `Bonus: ${improvementTitle(b)}` : improvementTitle(b), 'gold')),
     ...seasonDone.map((t) => card('🌟', `+${CHALLENGE_EMBERS}`, t, 'gold')),
