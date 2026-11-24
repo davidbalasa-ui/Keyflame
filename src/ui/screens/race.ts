@@ -351,18 +351,18 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     n--;
     if (n > 0) {
       countEl.textContent = String(n);
-      sfx.click();
+      sfx.count();
     } else {
       clearInterval(cd);
       countEl.textContent = 'Fly!';
-      sfx.dash();
+      sfx.fly();
       stopLaunch();
       started = true;
       raceStart = performance.now();
       setTimeout(() => countdown.remove(), 600);
     }
   }, 900);
-  sfx.click();
+  sfx.count();
   view.focus();
 
   function finish(): void {
@@ -394,7 +394,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     const fresh = claimNewAchievements(p, before);
     persist();
     refreshEmbers();
-    if (placeNum === 1) sfx.win();
+    sfx.finish();
     {
       const { w } = fx.size;
       const t = tailOf(meEl);
