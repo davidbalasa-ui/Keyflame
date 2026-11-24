@@ -130,7 +130,7 @@ export const nest = (root: HTMLElement): (() => void) => {
           : nestStage(svg(eggSvg(egg.tribe, prog, egg.seed), 'nest-egg wobble'), { seed: egg.seed, warm: prog }),
         bought ? h('p', { class: 'egg-landed', role: 'status' }, '🥚 Egg in your nest!') : null,
         h('h2', {}, `${TRIBES[egg.tribe].name} egg`),
-        h('div', { class: 'warmth' + (prog >= 1 ? ' full' : ''), role: 'img', 'aria-label': `${pct(prog)} warm` }, h('span', { class: 'warmth-fill', style: `width:${pct(prog)}` }), h('b', { class: 'warmth-label', 'aria-hidden': 'true' }, prog >= 1 ? 'Ready!' : `🔥 ${pct(prog)}`)),
+        h('div', { class: 'warmth' + (prog >= 1 ? ' full' : ''), role: 'img', 'aria-label': `${pct(prog)} warm` }, h('span', { class: 'warmth-fill', style: `width:${pct(prog)}` }), h('b', { class: 'warmth-label', 'aria-hidden': 'true' }, prog >= 1 ? 'Ready!' : pct(prog))),
         prog >= 1
           ? button('Tap to open!', () => hatchSequence(root), 'btn big glow-btn open-btn')
           : h('p', { class: 'nest-keys' }, `${keysToHatch(p)} keys to hatch`),
@@ -392,10 +392,13 @@ function hatchSequence(root: HTMLElement): void {
     pips.remove();
     screen.classList.add('opened');
     // A ring of light sweeps out from the egg, with crisp streaks instead of big soft blobs.
-    screen.append(h('div', { class: 'hatch-ring', 'aria-hidden': 'true', style: `left:${x}px;top:${y}px` }));
-    fx.emit(x, y, { count: 46, colors: [...colors, glow, '#ffffff'], kind: 'streak', spread: 1100, size: 5, life: 0.9 });
-    fx.emit(x, y, { count: 40, colors: [glow, '#ffffff'], kind: 'spark', spread: 620, size: 4, life: 1.3 });
-    fx.emit(x, y, { count: 60, colors: CONFETTI, kind: 'confetti', vy: -260, spread: 520, size: 6, life: 2.4 });
+    // Reduced motion skips the big bursts. Confetti comes a beat later so the dragon reads first.
+    if (!calm) {
+      screen.append(h('div', { class: 'hatch-ring', 'aria-hidden': 'true', style: `left:${x}px;top:${y}px` }));
+      fx.emit(x, y, { count: 46, colors: [...colors, glow, '#ffffff'], kind: 'streak', spread: 1100, size: 5, life: 0.9 });
+      fx.emit(x, y, { count: 40, colors: [glow, '#ffffff'], kind: 'spark', spread: 620, size: 4, life: 1.3 });
+      setTimeout(() => fx.emit(x, y, { count: 60, colors: CONFETTI, kind: 'confetti', vy: -260, spread: 520, size: 6, life: 2.4 }), 220);
+    }
     sfx.hatch();
 
     // Rewards are short pills; the Codex and the trophy room hold the longer story.
@@ -424,7 +427,11 @@ function hatchSequence(root: HTMLElement): void {
     const revealTitle = h('h2', { class: 'reveal-title', tabindex: '-1' }, headline);
     const reveal = h('div', { class: 'hatch-reveal' }, h('div', { class: 'reveal-stage' }, h('div', { class: 'reveal-glow', 'aria-hidden': 'true' }), art), revealTitle, h('p', { class: 'reveal-sub' }, sub));
     setTimeout(() => {
-      eggBtn.remove();
+      // The shell halves and the nest keep flying off in place while the dragon appears,
+      // so their animations finish instead of being cut short.
+      const r = eggBtn.getBoundingClientRect();
+      Object.assign(eggBtn.style, { position: 'fixed', left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, margin: '0', pointerEvents: 'none', zIndex: '1' });
+      setTimeout(() => eggBtn.remove(), 650);
       center.append(reveal);
       revealTitle.focus();
     }, calm ? 0 : 220);
