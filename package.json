@@ -13,6 +13,7 @@
     "check:nav": "node scripts/check-nav.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
     "check:flows": "node scripts/check-flows.mjs",
+    "check:typing": "node scripts/check-typing.mjs",
     "check:sounds": "node scripts/check-sounds.mjs",
     "codes": "vite-node scripts/supporter-codes.ts"
   },
