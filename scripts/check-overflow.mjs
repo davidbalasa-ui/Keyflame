@@ -108,6 +108,7 @@ process.on('uncaughtException', (e) => {
 });
 const browser = await playwright[ENGINE].launch();
 const failures = [];
+const slow = [];
 for (const size of SIZES) {
   const { width, height } = size;
   const label = `${size.name} (${width}x${height})`;
@@ -148,12 +149,29 @@ for (const size of SIZES) {
     at = `${label} opening ${name}`;
     await page.goto(URL);
     await page.waitForSelector('.play-cards');
+    const opened = Date.now();
     try {
-      for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 3000 }));
+      // CI's WebKit paints in software, so a click on a heavy screen (the race map's five dragons)
+      // can take several seconds to be acknowledged even though the screen opens. Allow 15 s,
+      // and say when opening was slow, so a real slowdown still shows.
+      for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 15000 }));
+      const took = Date.now() - opened;
+      if (took > 3000) slow.push(`${label} ${name}: took ${(took / 1000).toFixed(1)} s to open`);
     } catch (e) {
       // Say why (covered, moving, gone), and keep a picture, so a failure here can be fixed, not re-run.
-      const why = String(e?.message ?? e).split('\n').filter((l) => /waiting|intercepts|not stable|detached|navigat|visible|Timeout/i.test(l)).slice(-3).join(' / ');
-      failures.push(`${label} ${name}: could not open the screen (${why || 'no reason given'})`);
+      const why = String(e?.message ?? e).split('\n').map((l) => l.trim()).filter(Boolean).slice(-8).join(' / ');
+      // Where the thing to tap was, and what sat on top of its middle.
+      const where = await page
+        .evaluate((sel) => {
+          const el = document.querySelector(sel.split(' >> ')[0]);
+          if (!el) return 'not on the page';
+          const r = el.getBoundingClientRect();
+          const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          const tag = (n) => (n ? `${n.tagName.toLowerCase()}.${[...n.classList].join('.')}` : 'nothing');
+          return `at y ${Math.round(r.top)}-${Math.round(r.bottom)} of ${innerHeight} (page ${document.documentElement.scrollHeight}), on top: ${tag(top)}, body: ${document.body.className}`;
+        }, clicks.find((c) => c !== GATE) ?? 'body')
+        .catch((err) => `page gone: ${String(err.message).split('\n')[0]}`);
+      failures.push(`${label} ${name}: could not open the screen (${why || 'no reason given'}) [${where}]`);
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/FAILED-${size.name.replace(/\W+/g, '-')}-${name.replace(/\W+/g, '-')}.png` }).catch(() => undefined);
       continue;
     }
@@ -185,6 +203,7 @@ for (const size of SIZES) {
 await browser.close();
 stop();
 
+if (slow.length) console.log(`Slow to open (not a failure):\n  ${slow.join("\n  ")}`);
 if (failures.length) {
   console.error('Sideways scrolling found:\n  ' + failures.join('\n  '));
   process.exit(1);

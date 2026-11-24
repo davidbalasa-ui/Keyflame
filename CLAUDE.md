@@ -29,7 +29,8 @@ Classroom/feedback/usage use Supabase (`supabase/migrations/`, applied on push t
   - classroom: `check:classroom`; sounds: `check:sounds`; a11y: `check:a11y` (needs `npm i --no-save playwright axe-core`)
   - CI runs all of them in Chromium and WebKit on every PR, so a local run of the one that matters is enough.
 - Screenshots: take only the screens the change touches, at the sizes it affects, at deviceScaleFactor 1 when only you look at them. Don't view a full capture set. Keep shots out of git (`review-shots/` is ignored); put files for David or Astra in project files.
-- The WebKit 320 px race-map check is a known flake: rerun that job once, don't debug it.
+- Astra (Agent Bridge) review: only for new screens or features, with 3 to 6 screenshots of what changed. Batch small fixes into one review; don't queue one per fix.
+- A red check is a real bug until shown otherwise. `check:overflow` prints why a screen would not open and saves `FAILED-*.png` with the CI screenshots.
 
 ## Product rules (don't break)
 
