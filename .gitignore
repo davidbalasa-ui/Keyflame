@@ -5,5 +5,5 @@ dist-classroom
 art-preview/
 .claude/
 webkit-shots/
-sim-out/
+sim-out*/
 dist-sim/
