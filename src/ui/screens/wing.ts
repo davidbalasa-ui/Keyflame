@@ -3,7 +3,7 @@
 // Joining picks the badge's own rider on this device, never whoever happened to be playing,
 // so a shared iPad can't mix up classmates' nests.
 
-import { isClassCode, normalizeCode, spacedCode } from '../../game/classroom';
+import { CODE_LENGTH, isClassCode, normalizeCode, spacedCode } from '../../game/classroom';
 import { BADGE_WORDS, normalizeWord, wordIndex } from '../../game/badgeWord';
 import { BADGE_MAX, joinLink, leaveWing, planJoin, riderLabel, type WingSeat } from '../../game/wing';
 import { createProfile, type Profile } from '../../save/store';
@@ -172,7 +172,7 @@ function joinTicket(note: string, prefill?: WingSeat): { el: HTMLElement; focus:
     const badge = Number(badgeInput.value);
     const word = normalizeWord(wordInput.value);
     wordInput.value = word;
-    if (!isClassCode(code)) return fail('The code is 6 letters.', input);
+    if (!isClassCode(code)) return fail(code.length === CODE_LENGTH ? 'That isn’t a wing code. Check your card.' : 'The code is 6 letters.', input);
     if (!Number.isInteger(badge) || badge < 1 || badge > BADGE_MAX) return fail('Type your badge number.', badgeInput);
     const name = prefill && prefill.code === code && prefill.badge === badge ? prefill.name : undefined;
     const now = profile();

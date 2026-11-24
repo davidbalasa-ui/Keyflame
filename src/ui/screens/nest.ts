@@ -115,7 +115,7 @@ export const nest = (root: HTMLElement): (() => void) => {
         h('div', { class: 'warmth' }, h('span', { style: `width:${pct(prog)}` })),
         prog >= 1
           ? button('Tap to open!', () => hatchSequence(root), 'btn big glow-btn open-btn')
-          : h('p', { class: 'nest-keys' }, `${TRIBES[egg.tribe].hatchKeys - egg.warmth} keys to hatch`),
+          : h('p', { class: 'nest-keys' }, `${TRIBES[egg.tribe].hatchKeys - egg.warmth} ${TRIBES[egg.tribe].hatchKeys - egg.warmth === 1 ? 'key' : 'keys'} to hatch`),
         prog >= 1
           ? null
           : h(

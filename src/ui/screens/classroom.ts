@@ -23,6 +23,7 @@ import { sfx } from '../sound';
 import { hub, topBar } from './hub';
 import { liveRace, raceMap, type LiveRace } from './race';
 import { wing, wingScreen } from './wing';
+import { badgeWord } from '../../game/badgeWord';
 
 export const LAST_CODE_KEY = 'keyflame-class-code';
 const TEACHER_KEY = 'keyflame-teacher-class';
@@ -68,7 +69,7 @@ function memberArt(m: Member, cls: string): HTMLElement {
   return svg(dragonSvg(l?.tribe ?? 'emberback', l?.palette ?? 0, l?.stage ?? 'hatchling', '', l?.skin, l?.marking ?? 0, l?.stars ?? 0), cls);
 }
 
-const STATUS_LABEL: Record<Member['status'], string> = { lobby: 'Here', waiting: 'Ready!', racing: 'Racing' };
+const STATUS_LABEL: Record<Member['status'], string> = { lobby: 'Here', waiting: 'Ready!', racing: 'Racing', done: 'Finished' };
 
 function rosterChip(m: Member, me = false): HTMLElement {
   return h(
@@ -186,8 +187,9 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
   const renderResults = (): void => {
     const rows = order.map((id) => (id === me.id ? { id, name: me.name, ...mine! } : { id, name: byId.get(id)?.name ?? 'Classmate', ...done.get(id)! }));
     // Classmates who left the class (closed the app, lost the Wi-Fi) aren't waited for.
-    const here = new Set(link.members().map((m) => m.id));
-    const flying = others.filter((id) => !done.has(id) && here.has(id)).length;
+    // Nor are those who tapped Back out of the race: they are in the lobby, not flying.
+    const stillRacing = new Set(link.members().filter((m) => m.status === 'racing').map((m) => m.id));
+    const flying = others.filter((id) => !done.has(id) && stillRacing.has(id)).length;
     list.replaceChildren(...rows.map((r, i) => h('li', { class: r.id === me.id ? 'me' : '' }, h('span', {}, `${i + 1}. ${r.name}`), h('strong', {}, `${Math.round(r.wpm)} WPM`))));
     if (flying) list.append(h('li', { class: 'flying' }, `${flying} still flying…`));
   };
@@ -224,6 +226,8 @@ function liveFor(s: Session, race: RaceStart): LiveRace {
       mine = { ms, wpm: sum.wpm };
       if (!order.includes(me.id)) order.push(me.id);
       room.sendDone(ms, sum.wpm, sum.accuracy);
+      // Over the line: classmates and the teacher see this rider as finished, not still racing.
+      link.setStatus('done');
       renderResults();
       reportToClass(profile(), { kind: 'class', wpm: sum.wpm, accuracy: sum.accuracy, place, racers: race.racers.length, touch: isTouch(input) });
     },
@@ -504,9 +508,11 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       h(
         'div',
         { class: 'modal' },
-        h('h2', {}, 'Your class is ready'),
+        h('h2', {}, fam ? 'Your family wing is ready' : 'Your class is ready'),
         h('p', { class: 'teacher-code-inline' }, spacedCode(t.code)),
         h('p', {}, fam ? 'Print a card for each kid. They scan it to join.' : 'Print a card for each student. They scan it to join.'),
+        // Families often share one device: each kid can join right here, no card needed.
+        fam ? playHereRow(t) : null,
         h('div', { class: 'row center' }, button('Print badge cards', () => badgeCards(t, readRoster())), button('Class sheet', () => classSheet(t, readRoster()), 'btn ghost')),
         backedUp
           ? h('p', { class: 'fine' }, 'Your list is backed up and locked with your password. Open it on any device with the code and password.')
@@ -517,13 +523,25 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
     return sheet;
   };
 
+  /** Family wings: one button per kid that joins their badge as a rider on this device. */
+  const playHereRow = (t: TeacherSave): HTMLElement | null => {
+    const roster = readRoster();
+    const kids = Object.entries(roster).map(([b, name]) => ({ badge: Number(b), name })).filter((k) => k.name);
+    if (!kids.length) return null;
+    return h(
+      'div',
+      { class: 'row center play-here' },
+      ...kids.map((k) => button(`▶ ${k.name} plays here`, () => go(wingScreen({ join: { code: t.code, badge: k.badge, word: badgeWord(t.key, k.badge), name: k.name } })), 'btn ghost small')),
+    );
+  };
+
   const startForm = (): void => {
     const list = h('textarea', { class: 'student-list', rows: 6, placeholder: 'Ava\nBen\nCara\n…', 'aria-label': 'Your students, one per line' });
     const pw = passwordInput('Teacher password', 'new-password');
     const msg = h('p', { class: 'fine', role: 'status' });
     const make = (): void => {
       if (pw.value.length < MIN_PASSWORD) {
-        msg.textContent = `Pick a teacher password of at least ${MIN_PASSWORD} characters.`;
+        msg.textContent = `Pick a ${fam ? 'grown-up' : 'teacher'} password of at least ${MIN_PASSWORD} characters.`;
         return pw.focus();
       }
       void makeClass(parseStudentList(list.value), pw.value);

@@ -430,6 +430,9 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     if (reward.grewTo && me) rewards.push({ art: dragonSvg(me.tribe, me.palette, reward.grewTo, '', me.skin, me.marking), title: `${me.name} grew!`, value: 'Grew up!', note: `Now a ${reward.grewTo} dragon`, tone: 'grow' });
 
     const lines: string[] = [];
+    // Clean words and flame dashes push a racer ahead of the letters, so a race can end with
+    // a few words left. Say why, so it doesn't look like the game stopped taking keys.
+    if (!view.session.done) lines.push('🔥 Your flame dash flew you over the line early!');
     if (!reward.rivalFirstWin && !beatRival && !live) lines.push(`${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`);
 
     const factCard = fact
