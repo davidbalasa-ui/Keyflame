@@ -58,13 +58,22 @@ export function nestFrontSvg(seed = 1): string {
   s += `<path d="${BOWL}" fill="${WOOD}"/>`;
   s += `<path d="${BOWL_SHADOW}" fill="${WOOD_DARK}"/>`;
   s += `<path d="${BOWL_LIGHT}" fill="${WOOD_LIGHT}"/>`;
-  // Woven twigs wrapping around the bowl, crossing each other.
-  for (let i = 0; i < 9; i++) {
-    const y = 50 + i * 3.6 + r() * 2;
-    const left = 10 + (y - 46) * 0.55 + r() * 6;
-    const sag = 8 + r() * 6;
-    const dir = i % 2 ? 1 : -1;
-    s += twig(left, y + dir * 3, 100 + dir * 18, y + sag, 200 - left, y - dir * 3, 2.6 + r() * 0.8, [WOOD_LIGHT, WOOD, '#a3703f'][i % 3]);
+  // Woven twigs: short arcs of different lengths, so the bowl looks gathered, not built from slats.
+  const tones = [WOOD_LIGHT, WOOD, '#a3703f'];
+  for (let i = 0; i < 12; i++) {
+    const y = 50 + (i % 6) * 5.4 + r() * 3;
+    const edge = 10 + (y - 46) * 0.6;
+    const span = 70 + r() * 60;
+    const start = edge + r() * Math.max(4, 200 - 2 * edge - span);
+    const end = Math.min(200 - edge, start + span);
+    const tilt = (r() - 0.5) * 10;
+    s += twig(start, y + tilt, (start + end) / 2, y + 6 + r() * 6, end, y - tilt, 2.2 + r() * 1.4, tones[i % 3]);
+  }
+  // Diagonal branches crossing the weave, with thicker knobbly ends.
+  const diag: Array<[number, number, number, number]> = [[30, 50, 86, 82], [170, 50, 112, 82], [62, 82, 128, 54], [92, 52, 150, 80]];
+  for (const [x1, y1, x2, y2] of diag) {
+    s += twig(x1, y1, (x1 + x2) / 2 + (r() - 0.5) * 10, (y1 + y2) / 2 + 4, x2, y2, 3 + r(), tones[Math.floor(r() * 3)]);
+    s += `<circle cx="${f(x1)}" cy="${f(y1)}" r="2.4" fill="${WOOD_LIGHT}" stroke="${INK}" stroke-width="1"/>`;
   }
   // Loose twig ends sticking out at the sides.
   s += twig(4, 44, -2, 36, -6, 30, 2.4, WOOD_LIGHT);
