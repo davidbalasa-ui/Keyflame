@@ -91,3 +91,17 @@ export function planJoin(saved: Profile[], active: Profile, guest: boolean, seat
   if (!active.classCode || !active.classBadge) return { kind: 'ask' };
   return { kind: 'new' };
 }
+
+/**
+ * Takes a rider out of their wing on this device. Only the wing's code, badge, word and the
+ * grown-up's name for them go; every dragon, ember, lesson and race result stays with the
+ * rider. Results still waiting to reach the wing keep their own seat and are still sent, and
+ * the rider's device key stays so rejoining the same badge later works as before.
+ */
+export function leaveWing(p: Profile): void {
+  delete p.classCode;
+  delete p.classBadge;
+  delete p.classWord;
+  delete p.wingKind;
+  delete p.wingName;
+}

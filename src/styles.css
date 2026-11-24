@@ -1780,6 +1780,10 @@ body.kb-pinned .flight { height: clamp(96px, 19vh, 190px); margin: 4px 0; }
 .wing-qr, .badge-qr { display: block; width: 168px; height: 168px; image-rendering: pixelated; border-radius: 12px; background: #fff; -webkit-touch-callout: default; }
 .wing-qr-tip { display: block; color: var(--muted); margin-top: 4px; }
 .wing-card .row { gap: 10px; flex-wrap: wrap; }
+.wing-links { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+.wing-riders { margin: 0 0 12px; }
+.wing-riders h2 { margin: 0 0 6px; font-size: 1rem; }
+.rider-chip-badge { color: var(--gold); font-weight: 700; }
 .wing-join { margin-top: 4px; }
 .rider-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
 .rider-chip {
@@ -1862,6 +1866,7 @@ body.reduced-motion .aerie-back .cel-glow, body.reduced-motion .aerie-back .twin
 .open-btn { margin-top: 10px; }
 .basket-egg { position: relative; border-color: rgba(255, 179, 71, 0.55); }
 .basket-egg .mini-egg { width: 52px; }
+.egg-count { position: absolute; top: 6px; right: 8px; background: var(--gold); color: #3a1d00; font-weight: 700; font-size: 0.85rem; border-radius: 999px; padding: 1px 7px; }
 .up-arrow { display: inline-block; animation: upArrow 1.2s ease-in-out infinite; }
 @keyframes upArrow { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 /* Name pickers: a pencil, the two words stacked, and the dice. */

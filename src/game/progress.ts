@@ -30,7 +30,10 @@ export function isTouch(input: InputMode | undefined): boolean {
   return input === 'touch' || input === 'device';
 }
 
-/** Puts an egg in the nest, or in the basket if the nest is busy. */
+/**
+ * Puts an egg in the nest, or in the basket if the nest is busy. The basket never
+ * fills up: waiting eggs move into the nest one at a time as each egg hatches.
+ */
 export function giveEgg(p: Profile, tribe: TribeId): void {
   if (p.nest) p.basket.push(tribe);
   else p.nest = { tribe, warmth: 0, seed: Math.floor(Math.random() * 1e9) };
@@ -366,6 +369,17 @@ export function swapNestEgg(p: Profile, index: number, rand: () => number = Math
   p.basket[index] = p.nest.tribe;
   p.nest = { tribe: next, warmth: Math.ceil(share * hatchNeed(p, next)), seed: Math.floor(rand() * 1e9) };
   return true;
+}
+
+/** Waiting eggs grouped by tribe, in basket order, so a big basket stays one short row. */
+export function basketGroups(p: Profile): { tribe: TribeId; index: number; count: number }[] {
+  const groups: { tribe: TribeId; index: number; count: number }[] = [];
+  p.basket.forEach((tribe, index) => {
+    const g = groups.find((x) => x.tribe === tribe);
+    if (g) g.count++;
+    else groups.push({ tribe, index, count: 1 });
+  });
+  return groups;
 }
 
 /** Hatches and returns the dragon, new or evolved. */
