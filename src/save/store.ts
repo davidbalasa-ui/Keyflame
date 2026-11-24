@@ -460,8 +460,9 @@ export async function loadSave(): Promise<SaveData> {
     // Corrupt or blocked; start fresh rather than crash.
   }
   // localStorage is written first and at once, so after a quick reload it can be newer than
-  // IndexedDB (whose write may not have finished). The newer copy wins.
-  if (fromDb && fromLs) return migrate(stampOf(fromLs) > stampOf(fromDb) ? fromLs : fromDb);
+  // IndexedDB (whose write may not have finished). The newer copy wins; on a tie,
+  // localStorage, since every save writes it first.
+  if (fromDb && fromLs) return migrate(stampOf(fromLs) >= stampOf(fromDb) ? fromLs : fromDb);
   if (fromDb || fromLs) return migrate(fromDb ?? fromLs);
   return emptySave();
 }

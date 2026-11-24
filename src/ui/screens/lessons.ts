@@ -154,7 +154,7 @@ export function playLesson(lesson: Lesson) {
 /** The (up to two) letters missed most in this run, for a short practice after a missed lesson. */
 function missedKeys(stats: KeyStats, known: Set<string>): string[] {
   return Object.entries(stats)
-    .filter(([k, st]) => st.misses > 0 && known.has(k) && /^[a-z]$/.test(k))
+    .filter(([k, st]) => st.misses > 0 && known.has(k) && /^[a-z;,./]$/.test(k))
     .sort((a, b) => b[1].misses - a[1].misses)
     .slice(0, 2)
     .map(([k]) => k);
