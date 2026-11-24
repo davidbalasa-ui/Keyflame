@@ -5,6 +5,8 @@
 //   grown rider (all 20 lessons passed, egg ready): Daily flight Go opens a word challenge,
 //              finish it -> next level opens, hatch the egg with taps, pick a name with
 //              the dice, Done, then rename it from the nest card, then get a new egg in one tap
+//   full basket (egg in the nest, 3 waiting): the Codex still sells eggs, the 4th waits too,
+//              and waiting eggs of one tribe show as one egg with a count
 // Sizes: iPad upright, iPad sideways and a phone.
 // BROWSER=webkit runs it in Safari's engine (what iPads use); the default is Chromium.
 // Run: npm run build && npm run check:flows   SHOTS=folder saves screenshots.
@@ -46,7 +48,7 @@ for (let i = 0; i < 50; i++) {
 }
 
 /** A rider who has passed all 20 lessons and has an egg ready to hatch. */
-function grownSave() {
+function grownSave(extra = {}) {
   const lessons = {};
   for (let i = 1; i <= 20; i++) lessons[`L${i}`] = { stars: 2, bestWpm: 15, bestAccuracy: 0.96 };
   const p = {
@@ -76,6 +78,7 @@ function grownSave() {
     setsClaimed: [],
     achievements: [],
     nestSeen: true,
+    ...extra,
   };
   return JSON.stringify({ version: 99, activeId: p.id, profiles: [p] });
 }
@@ -232,6 +235,32 @@ for (const size of SIZES) {
       await page.click('.shop-egg:not([disabled])');
       await must(page, '.nest-panel .warmth', 'the new egg did not land in the nest');
       await must(page, '.egg-landed', 'the nest did not say the egg landed');
+    });
+    await ctx.close();
+  }
+  {
+    const tidefin = { id: 'tide1', tribe: 'tidefin', palette: 0, marking: 0, name: 'Wave', xp: 0, hatchedAt: Date.now() - 864e5 };
+    const { ctx, page } = await fresh(grownSave({ embers: 1000, nest: { tribe: 'tidefin', warmth: 10, seed: 7 }, basket: ['tidefin', 'tidefin', 'tidefin'], dragons: [tidefin], activeDragonId: 'tide1' }));
+    await step(page, 'with 3 eggs waiting the Codex still sells eggs', async () => {
+      await page.click('.tab-dragon');
+      await must(page, '.basket-egg .egg-count', 'three waiting eggs of one tribe do not show as one egg with a count');
+      await page.click('.seg-tabs .seg:not(.on)');
+      await must(page, '#tribe-tidefin .codex-buy', 'the Codex shows no egg to buy');
+      const buy = page.locator('#tribe-tidefin .codex-buy button');
+      if (await buy.isDisabled()) throw new Error('the egg button is disabled with 3 eggs waiting');
+      if (/full/i.test((await page.textContent('#tribe-tidefin .codex-buy')) ?? '')) throw new Error('the Codex still says the basket is full');
+      await buy.click();
+      await must(page, '.modal-backdrop', 'buying a 4th egg showed nothing');
+    });
+    await step(page, 'the 4th egg waits in the nest too', async () => {
+      await page.click('.modal-backdrop .row button:last-child');
+      await must(page, '.basket-egg', 'the nest shows no waiting eggs');
+      const count = await page.textContent('.basket-egg .egg-count');
+      if (count !== '×4') throw new Error(`the waiting eggs say "${count}", expected ×4`);
+      await page.click('.basket-egg');
+      await page.waitForTimeout(300);
+      const left = await page.textContent('.basket-egg .egg-count');
+      if (left !== '×4') throw new Error(`after a swap the waiting eggs say "${left}"`);
     });
     await ctx.close();
   }

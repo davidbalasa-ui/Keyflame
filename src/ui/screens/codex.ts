@@ -1,5 +1,5 @@
 import { MARKINGS, TRIBES, dragonSvg, eggSvg, lookName, stageFor, type TribeId } from '../../game/dragons';
-import { EGG_PRICE, MAX_BASKET, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, foundLooks, lookKey } from '../../game/collection';
+import { EGG_PRICE, TOTAL_LOOKS, buyEgg, canBuyEgg, claimSets, codexSets, foundLooks, lookKey } from '../../game/collection';
 import { MAX_STARS, MILESTONES, eggProgress, lookHolder, milestoneText } from '../../game/progress';
 import { isStarglint, type Profile } from '../../save/store';
 import { UNITS } from '../../content/lessons';
@@ -84,7 +84,7 @@ export const codex = (root: HTMLElement): (() => void) => {
             'div',
             { class: 'codex-buy' },
             svg(eggSvg(tribe, 0, 3), 'codex-egg'),
-            h('div', {}, h('strong', {}, `${t.name} egg`), h('small', { class: 'fine' }, buy === 'full' ? `Your basket is full (${MAX_BASKET} eggs). Hatch one first.` : buy === 'embers' ? `Costs ${EGG_PRICE} embers. You have ${p.embers}. Race to earn more!` : `${EGG_PRICE} embers. Every egg could be a new look.`)),
+            h('div', {}, h('strong', {}, `${t.name} egg`), h('small', { class: 'fine' }, buy === 'embers' ? `Costs ${EGG_PRICE} embers. You have ${p.embers}. Race to earn more!` : `${EGG_PRICE} embers. Every egg could be a new look.`)),
             button(`🔥 ${EGG_PRICE}`, () => {
               if (!buyEgg(p, tribe)) return;
               sfx.coin();
