@@ -130,6 +130,21 @@ describe('classroom database functions', () => {
     key = c.teacher_key;
   }, 30000);
 
+  it('marks demo wings only for devices that joined the badge, and leaves them out of the totals', async () => {
+    expect(await join(40, K1, 'Brave Comet')).toBe('ok');
+    expect(await one('demo_wing', { p_code: code, p_badge: 40, p_rider_key: K1 })).toBe(false);
+    const before = (await db.query<{ classes: number }>('select classes from stats.wings')).rows[0].classes;
+    await db.query('insert into demo_wings (class_code) values ($1)', [code]);
+    expect(await one('demo_wing', { p_code: code.toLowerCase(), p_badge: 40, p_rider_key: K1 })).toBe(true);
+    // Knowing the code and badge isn't enough: the device has to have joined with the word.
+    expect(await one('demo_wing', { p_code: code, p_badge: 40, p_rider_key: K2 })).toBe(false);
+    expect(await one('demo_wing', { p_code: code, p_badge: 41, p_rider_key: K1 })).toBe(false);
+    expect(Number((await db.query<{ classes: number }>('select classes from stats.wings')).rows[0].classes)).toBe(Number(before) - 1);
+    // Anyone can't read which wings are demos.
+    await expect(db.transaction(async (tx) => { await tx.exec('set local role anon'); await tx.query('select * from demo_wings'); })).rejects.toThrow();
+    await db.query('delete from demo_wings');
+  });
+
   it('lets a device ride as a badge only with the badge word', async () => {
     expect(await join(3, K1, 'Brave Comet')).toBe('ok');
     // A device that already rides as the badge never needs the word again.

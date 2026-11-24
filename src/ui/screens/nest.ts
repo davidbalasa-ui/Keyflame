@@ -255,8 +255,22 @@ export const nest = (root: HTMLElement): (() => void) => {
   );
   const stopTabs = withTabs(root, 'dragons');
   if (autoHatch && egg && prog >= 1) hatchSequence(root);
-  return stopTabs;
+  const stopNap = napOffscreen(root.querySelectorAll('.dragon-card'));
+  return () => (stopNap(), stopTabs());
 };
+
+/**
+ * Dragons scrolled out of view stop flapping until they come back, so a big nest
+ * (a long-time rider can own over a hundred dragons) stays light on tablets.
+ */
+function napOffscreen(cards: NodeListOf<Element>): () => void {
+  if (cards.length < 9 || typeof IntersectionObserver === 'undefined') return () => {};
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) e.target.classList.toggle('asleep', !e.isIntersecting);
+  }, { rootMargin: '200px 0px' });
+  cards.forEach((c) => io.observe(c));
+  return () => io.disconnect();
+}
 
 /** A clip-path that keeps one side of the seam the shell splits along. */
 function shellClip(top: boolean): string {
