@@ -104,6 +104,11 @@ export function joinBadge(seat: ClassSeat, word: number | null): Promise<JoinSta
   return rpc<JoinStatus>('join_badge', { p_code: seat.code, p_badge: seat.badge, p_word: word, p_rider_key: seat.key, p_name: seat.name });
 }
 
+/** True when this device rides as a badge of a demo wing (one that unlocks everything to look around). */
+export function isDemoWing(seat: ClassSeat): Promise<boolean> {
+  return rpc<boolean>('demo_wing', { p_code: seat.code, p_badge: seat.badge, p_rider_key: seat.key });
+}
+
 export interface ActivityPost {
   /** placement is the one-minute typing check; lesson is then the last lesson it opened. */
   kind: 'lesson' | 'race' | 'class' | 'placement';

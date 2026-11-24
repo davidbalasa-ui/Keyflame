@@ -56,7 +56,7 @@ function lookUpWing(p: Profile): void {
 
 /** Counts one event for the rider playing now (or the given one). Never throws. */
 export function countUsage(event: UsageEvent, p: Profile = profile()): void {
-  if (!counted()) return;
+  if (!counted() || p.demo) return;
   try {
     const s = read();
     if (addUsage(s, event, usageKind(p), event === 'active' ? p.id : undefined)) {
