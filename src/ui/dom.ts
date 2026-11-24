@@ -33,8 +33,9 @@ export function button(label: Child, onClick: () => void, cls = 'btn', extra: At
   return h('button', { class: cls, type: 'button', onclick: () => onClick(), ...extra }, label);
 }
 
+/** Rounds down, so a score just under a star line (94.8%) never shows as reaching it (95%). */
 export function pct(n: number): string {
-  return `${Math.round(n * 100)}%`;
+  return `${Math.floor(n * 100 + 1e-9)}%`;
 }
 
 /** A finger that taps again and again, pointing at what to press next. */

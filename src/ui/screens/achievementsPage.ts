@@ -17,6 +17,9 @@ const MEDAL_COLORS: Record<Medal, [string, string, string]> = {
 
 let medalId = 0;
 
+/** Whole numbers, rounded like speeds elsewhere, but never showing a goal not yet reached. */
+const progressShown = (value: number, goal: number): number => Math.min(Math.round(value), Math.ceil(goal) - 1);
+
 /** A round medal with a ribbon and the track's icon. Locked medals are grey. */
 export function medalSvg(medal: Medal, icon: string, locked = false): string {
   const [hi, mid, lo] = locked ? ['#5b5285', '#3d3466', '#2a2350'] : MEDAL_COLORS[medal];
@@ -49,7 +52,7 @@ function trackCard(tiers: Achievement[]): HTMLElement {
       h('strong', {}, tiers[0].name),
       h('span', { class: 'ach-pips', role: 'img', 'aria-label': `${got.length} of ${tiers.length} levels` }, ...tiers.map((a) => h('span', { class: `pip ${a.medal}` + (a.earned ? ' on' : '') }))),
       next
-        ? h('div', { class: 'ach-next' }, h('small', {}, next.how), h('span', { class: 'bar' }, h('span', { style: `width:${pct(next.value / next.goal)}` })), h('small', { class: 'fine' }, `${next.value.toLocaleString('en-US')} / ${next.goal.toLocaleString('en-US')} · unlocks “${next.title}”`))
+        ? h('div', { class: 'ach-next' }, h('small', {}, next.how), h('span', { class: 'bar' }, h('span', { style: `width:${pct(next.value / next.goal)}` })), h('small', { class: 'fine' }, `${progressShown(next.value, next.goal).toLocaleString('en-US')} / ${next.goal.toLocaleString('en-US')}${next.track === 'speed' ? ' WPM' : ''} · unlocks “${next.title}”`))
         : h('div', { class: 'ach-next' }, h('small', {}, 'Every level done!')),
       h(
         'details',

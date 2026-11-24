@@ -2,9 +2,10 @@ import { EGG_PATH } from '../../game/art/eggs';
 import { EGG_SEAM, GROWTH, HATCH_TAPS, NAME_ENDS, NAME_STARTS, TRIBES, dragonSvg, eggCracksSvg, eggSvg, isSeasonPalette, lookName, paletteFor, stageFor, type TribeId } from '../../game/dragons';
 import { EGG_PRICE, buyEgg, canBuyEgg, claimSets, eggShop, foundLooks, lookKey } from '../../game/collection';
 import { codex, codexLook } from './codex';
-import { isStarglint, type OwnedDragon } from '../../save/store';
-import { courseUnlocked, kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, basketGroups, swapNestEgg, warmWithEmbers } from '../../game/progress';
+import { isStarglint, type OwnedDragon, type Profile } from '../../save/store';
+import { courseUnlocked, kindName, perkText, EVOLVE_XP, MAXED_EMBERS, MAX_STARS, MILESTONES, STAR_NAMES, milestoneText, WARM_PRICE, WARM_SHARE, activeDragon, canWarmWithEmbers, eggProgress, hatchNest, randomDragonName, basketGroups, swapNestEgg, warmWithEmbers, nearestFreeEgg } from '../../game/progress';
 import { UNITS } from '../../content/lessons';
+import { lessons } from './lessons';
 import { go, persist, profile } from '../app';
 import { DECOR, aerieScene, buyDecor, decorThumb } from './aerie';
 import { button, h, pct, svg, tapHand } from '../dom';
@@ -39,6 +40,19 @@ export function hatchNow(): void {
   go(nest);
 }
 
+/** "Free egg next" with its progress and one button to go work on it. */
+function freeEggCard(p: Profile): HTMLElement | null {
+  const next = nearestFreeEgg(p);
+  if (!next) return null;
+  return h(
+    'div',
+    { class: 'free-egg-next' },
+    svg(eggSvg(next.tribe, next.done / next.need, 9), 'mini-egg'),
+    h('span', {}, h('strong', {}, `Free ${TRIBES[next.tribe].name} egg`), h('small', {}, next.text)),
+    button(next.lessons ? '▶ Lessons' : '▶ Race', () => go(next.lessons ? lessons : nextHatchRace()), 'btn small glow-btn'),
+  );
+}
+
 /** The empty nest: eggs of tribes the rider knows, bought with one tap, straight into the nest. */
 function emptyNest(): HTMLElement {
   const p = profile();
@@ -48,6 +62,8 @@ function emptyNest(): HTMLElement {
     'section',
     { class: 'nest-panel empty' },
     h('h2', {}, shop.length ? 'Get an egg' : 'Your nest is empty'),
+    // The nearest free egg comes first, before anything that costs embers.
+    freeEggCard(p),
     shop.length
       ? h(
           'div',
@@ -124,12 +140,12 @@ export const nest = (root: HTMLElement): (() => void) => {
               'div',
               { class: 'row center' },
               button('▶ Race to hatch', () => go(nextHatchRace()), 'btn big glow-btn'),
-              button(`🔥 Use ${WARM_PRICE} embers`, () => {
+              button(`🔥 +${Math.round(WARM_SHARE * 100)}% warmth · ${WARM_PRICE}`, () => {
                 if (!warmWithEmbers(p)) return;
                 sfx.coin();
                 persist();
                 go(nest);
-              }, 'btn ghost', canWarmWithEmbers(p) ? { title: `Adds ${Math.round(WARM_SHARE * 100)}% warmth` } : { disabled: true, title: `Costs ${WARM_PRICE} embers` }),
+              }, 'btn ghost', canWarmWithEmbers(p) ? { title: `Use ${WARM_PRICE} embers to add ${Math.round(WARM_SHARE * 100)}% warmth` } : { disabled: true, title: `Costs ${WARM_PRICE} embers` }),
               canWarmWithEmbers(p) ? null : h('small', { class: 'warm-need' }, `Need ${Math.max(1, WARM_PRICE - p.embers)} more 🔥`),
             ),
       )
@@ -212,7 +228,7 @@ export const nest = (root: HTMLElement): (() => void) => {
                 ),
               ),
             )
-          : h('p', { class: 'fine' }, 'No dragons yet. Your first egg is almost ready!'),
+          : h('p', { class: 'fine' }, egg && prog >= 0.75 ? 'No dragons yet. Your first egg is almost ready!' : 'No dragons yet. Type in lessons and races to warm your egg!'),
       ),
       h(
         'section',
