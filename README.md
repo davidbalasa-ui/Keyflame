@@ -49,15 +49,6 @@ The supporter unlock is an honor system, since there are no accounts to check a 
 
 ## Layout
 
-| Path | What it holds |
-| --- | --- |
-| `src/engine/typing.ts` | Typing session: keystrokes, WPM, accuracy, per-key stats |
-| `src/content/` | Keyboard layout, lessons, curated word list, story passages |
-| `src/game/` | Dragon tribes and art, reward rules (warmth, embers, growth, eggs) |
-| `src/save/store.ts` | Device saves (IndexedDB with localStorage fallback), backup codes |
-| `src/game/raceRules.ts` | Race scoring and tribe perks |
-| `src/config.ts` | Checkout settings from the build environment |
-| `src/ui/` | Screens, typing panel, sounds |
-| `public/` | Privacy policy, app manifest, offline worker, icons |
+See `CLAUDE.md` for a map of the code and which check to run for which change.
 
 All dragon tribes, names, and art are original to Keyflame.

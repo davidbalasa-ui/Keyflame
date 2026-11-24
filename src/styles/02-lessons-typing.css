@@ -1,0 +1,170 @@
+/* Lessons */
+.tricky kbd, .new-keys kbd, kbd {
+  display: inline-block; min-width: 1.8em; text-align: center; padding: 2px 6px; margin: 0 3px;
+  background: var(--panel-2); border: 1px solid var(--line); border-bottom-width: 3px; border-radius: 6px; font-family: var(--type-font);
+}
+.unit { background: var(--panel); border-radius: var(--radius); padding: 18px; }
+.unit-head { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+.unit-head p { color: var(--muted); margin: 0; }
+.unit-reward { text-align: center; max-width: 130px; opacity: 0.85; }
+.unit-reward.earned { opacity: 1; }
+.mini-egg { width: 44px; margin: 0 auto; }
+.lesson-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 12px; }
+.lesson-tile { background: var(--panel-2); border-radius: 12px; padding: 14px 10px; text-align: center; }
+.lesson-tile strong, .lesson-tile small { display: block; }
+.lesson-tile .stars { color: var(--gold); letter-spacing: 2px; }
+.lesson-tile.passed { outline: 2px solid var(--good); }
+.lesson-tile.locked { opacity: 0.45; cursor: not-allowed; }
+.lesson-tile.locked .stars { color: var(--muted); letter-spacing: 0; }
+.play-lesson h1 { margin-bottom: 4px; }
+.live-stats { color: var(--muted); font-variant-numeric: tabular-nums; margin: 6px 0 10px; }
+.big-stars { font-size: 2.4rem; color: var(--gold); letter-spacing: 4px; margin: 0; }
+.reward { color: var(--gold); font-weight: 600; }
+
+/* Typing */
+.typing-view { margin-top: 12px; }
+.type-text {
+  font-family: var(--type-font);
+  font-size: var(--type-size);
+  line-height: 1.6;
+  background: #fffaf0;
+  color: #9a8fb8;
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  max-height: calc(var(--type-size) * 1.6 * 3 + 32px);
+  overflow: hidden;
+  position: relative;
+  font-variant-ligatures: none;
+  word-break: break-word;
+}
+.ch { border-radius: 4px; }
+.ch.done { color: #2a7a3a; }
+.ch.missed { color: #d9480f; }
+.ch.current { background: var(--gold); color: #1b1536; box-shadow: 0 3px 0 var(--ember); }
+.ch.space.current { background: #ffe8a3; }
+.shake { animation: shake 0.18s; }
+.finger-hint { color: var(--muted); min-height: 1.5em; margin: 8px 4px; text-align: center; }
+
+.keyboard { display: flex; flex-direction: column; gap: 6px; align-items: center; margin-top: 8px; user-select: none; touch-action: pan-x pan-y; }
+.kb-row { display: flex; gap: 6px; }
+.kb-row-1 { margin-left: 18px; }
+.kb-row-2 { margin-left: -10px; }
+.key {
+  width: clamp(28px, 8vw, 52px); height: clamp(40px, 9vw, 52px);
+  border-radius: 10px; border: none; font: inherit; font-weight: 600; font-size: clamp(14px, 3.4vw, 20px);
+  color: #1b1536; cursor: pointer; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35); opacity: 0.8;
+}
+.key.bump { text-decoration: underline; text-underline-offset: 4px; }
+.key-space { width: min(60vw, 320px); }
+.key-shift { background: #cfc6ee; width: clamp(40px, 10vw, 64px); }
+.key-shift.on { background: var(--gold); }
+.key.next { opacity: 1; outline: 4px solid #fff; transform: translateY(-2px); box-shadow: 0 0 18px var(--gold); }
+.f-left-pinky { background: #ff9eb5; }
+.f-left-ring { background: #ffc078; }
+.f-left-middle { background: #ffe066; }
+.f-left-index { background: #8ce99a; }
+.f-thumb { background: #e5dbff; }
+.f-right-index { background: #74c0fc; }
+.f-right-middle { background: #b197fc; }
+.f-right-ring { background: #f783ac; }
+.f-right-pinky { background: #ffa94d; }
+
+/* Touch keyboard pinned to the bottom of the screen, sized so ten keys always fit */
+/* Touch keyboard: the app becomes a full-height column and the keyboard is its last row */
+html:has(body.kb-pinned), body.kb-pinned { height: 100%; overflow: hidden; overscroll-behavior: none; }
+body.kb-pinned #app {
+  display: flex; flex-direction: column;
+  height: 100vh; height: 100dvh; height: var(--vvh, 100dvh);
+  overflow: hidden;
+}
+body.kb-pinned #app > .top-bar { position: static; flex: none; }
+body.kb-pinned #app > main { flex: 1 1 auto; min-height: 0; width: 100%; box-sizing: border-box; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; padding-bottom: 8px; }
+.keyboard.pinned {
+  flex: none; margin: 0; width: 100%; box-sizing: border-box;
+  gap: 7px; padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+  background: rgba(20, 13, 44, 0.98); border-top: 2px solid var(--line);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+  -webkit-user-select: none; -webkit-touch-callout: none; touch-action: pan-x pan-y;
+}
+.keyboard.pinned .kb-row { width: 100%; max-width: 640px; gap: 4px; margin: 0; justify-content: center; }
+.keyboard.pinned .kb-row-1 { padding: 0 5%; box-sizing: border-box; }
+.keyboard.pinned .key { flex: 1 1 0; width: auto; min-width: 0; padding: 0; height: clamp(40px, 6.2vh, 54px); font-size: clamp(16px, 4.6vw, 22px); opacity: 0.92; -webkit-tap-highlight-color: transparent; }
+.keyboard.pinned .key-shift { width: auto; }
+body.kb-pinned .finger-hint { margin: 4px; font-size: 0.9em; }
+/* Compact layout while the pinned keyboard is up, so the text stays visible above it */
+body.kb-pinned .top-bar { padding: 4px 12px; }
+body.kb-pinned .top-bar .rank, body.kb-pinned .top-bar .bar, body.kb-pinned .top-bar .rider-title { display: none; }
+body.kb-pinned main { padding-top: 8px; }
+body.kb-pinned main > h1, body.kb-pinned .race-head h1 { font-size: 1.15rem; margin: 0; }
+body.kb-pinned .race-head { gap: 4px 12px; }
+body.kb-pinned .race-head .live-stats, body.kb-pinned .race-head .stats { margin: 0; font-size: 0.9em; }
+body.kb-pinned .perk-line, body.kb-pinned .new-keys { display: none; }
+body.kb-pinned .lane { height: 44px; }
+body.kb-pinned .racer { --rw: 78px; top: -8px; }
+body.kb-pinned .racer-name { font-size: 9px; }
+body.kb-pinned .sky { padding: 6px 0; }
+body.kb-pinned .typing-view { margin-top: 8px; }
+body.kb-pinned .type-text { --type-size: 22px; padding: 10px 14px; max-height: calc(var(--type-size) * 1.6 * 2 + 20px); }
+/* Phones turned sideways and other short screens: smaller keys leave room for the text */
+@media (max-height: 520px) {
+  .keyboard.pinned { gap: 4px; padding-top: 4px; padding-bottom: calc(4px + env(safe-area-inset-bottom)); }
+  .keyboard.pinned .key { height: clamp(30px, 8.5vh, 40px); font-size: 16px; }
+  body.kb-pinned main { padding-top: 4px; }
+  body.kb-pinned .type-text { --type-size: 20px; padding: 6px 12px; }
+}
+/* Pressed state for tapped keys (pointerdown is cancelled, so :active doesn't show) */
+.key.down { animation: key-down 0.12s; }
+@keyframes key-down { 0% { transform: translateY(3px) scale(0.94); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.35); filter: brightness(1.15); } }
+/* Laptop screens: shrink the race track and keys so the whole keyboard fits under the text */
+@media (min-width: 601px) and (max-height: 860px) {
+  body:not(.kb-pinned) .lane { height: 60px; }
+  body:not(.kb-pinned) .racer { --rw: 112px; }
+  body:not(.kb-pinned) .keyboard .key { height: 44px; }
+}
+/* Typing with a real keyboard on a computer or tablet-sized screen: the race or lesson is one
+   screen tall, whatever the window height (a laptop with the browser's bars showing leaves about
+   600px). The typing panel keeps its size and the track or flight scene takes the space left, so
+   the whole guide keyboard always shows. Tap keyboards (iPads, phones) keep their own layouts. */
+.kb-toggle { flex: none; }
+@media (min-width: 601px) {
+  #app.kb-typing { display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+  #app.kb-typing > .top-bar { position: static; flex: none; }
+  #app.kb-typing > main { flex: 1 1 auto; min-height: 0; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; overflow-y: auto; padding-top: 8px; padding-bottom: 8px; }
+  #app.kb-typing > main > * { flex: none; }
+  #app.kb-typing .track { flex: 1 1 auto; min-height: 44px; max-height: calc(var(--lanes, 4) * 80px + 24px); margin-top: 6px; display: flex; flex-direction: column; }
+  #app.kb-typing .sky { flex: 1 1 auto; min-height: 0; container-type: size; padding: 6px 0; }
+  /* Big class races on short screens: lanes stop shrinking at 16px and the furthest ones slide out
+     of view at the top, so the player's own lane (always last) stays visible. */
+  #app.kb-typing .lanes { height: 100cqh; justify-content: flex-end; }
+  #app.kb-typing .lane { flex: 1 1 0; min-height: 16px; height: auto; }
+  #app.kb-typing .racer { --rw: clamp(30px, calc(1.75 * 100cqh / var(--lanes, 4)), 140px); top: -8px; }
+  #app.kb-typing .flight { flex: 1 1 auto; min-height: 60px; max-height: 320px; height: auto; margin: 6px 0; }
+  #app.kb-typing .typing-view { margin-top: 6px; }
+  #app.kb-typing .type-text { --type-size: clamp(20px, 3.6vh, 30px); padding: 8px 14px; max-height: calc(var(--type-size) * 1.6 * 2 + 16px); }
+  body.large-text #app.kb-typing .type-text { --type-size: clamp(26px, 5vh, 38px); }
+  #app.kb-typing .finger-hint { margin: 4px; }
+  #app.kb-typing .keyboard { margin-top: 2px; gap: 4px; }
+  #app.kb-typing .kb-row { gap: 5px; }
+  #app.kb-typing .keyboard .key { height: clamp(26px, 5.4vh, 52px); font-size: clamp(13px, 2.6vh, 20px); }
+}
+/* Short windows: a slimmer header leaves more room for the dragons. */
+@media (min-width: 601px) and (max-height: 800px) {
+  #app.kb-typing > .top-bar { padding: 4px 12px; }
+  #app.kb-typing > .top-bar :is(.rank, .bar) { display: none; }
+  #app.kb-typing > main > h1, #app.kb-typing .race-head h1 { font-size: 1.3rem; margin: 0; }
+  #app.kb-typing .race-head .live-stats { margin: 0; }
+  #app.kb-typing .racer-name { font-size: 9px; }
+  #app.kb-typing .perk-line { margin: 2px 0 0; font-size: 0.85em; }
+  #app.kb-typing .finger-coach { width: 84px; height: 41px; }
+}
+@media (min-width: 601px) and (max-height: 480px) {
+  #app.kb-typing .perk-line, #app.kb-typing .racer-name { display: none; }
+  #app.kb-typing .race-head { gap: 2px 12px; }
+  #app.kb-typing .new-keys { margin: 0 0 2px; }
+  #app.kb-typing .live-stats { margin: 0; }
+  #app.kb-typing .flight { min-height: 44px; margin: 2px 0; }
+  #app.kb-typing .typing-view { margin-top: 2px; }
+  #app.kb-typing .kb-toggle { padding-top: 3px; padding-bottom: 3px; min-height: 0; }
+}
+
+

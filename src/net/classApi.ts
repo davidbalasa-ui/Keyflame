@@ -54,18 +54,6 @@ export function classBoard(code: string): Promise<BoardRow[]> {
   return rpc<BoardRow[]>('class_board', { p_code: code });
 }
 
-export function postClassRace(code: string, r: { rider: string; wpm: number; accuracy: number; place: number; racers: number; touch: boolean }): Promise<boolean> {
-  return rpc<boolean>('post_class_race', {
-    p_code: code,
-    p_rider: r.rider,
-    p_wpm: Math.min(250, Math.max(0, r.wpm)),
-    p_accuracy: Math.min(1, Math.max(0, r.accuracy)),
-    p_place: Math.min(40, r.place),
-    p_racers: Math.min(40, r.racers),
-    p_touch: r.touch,
-  });
-}
-
 export function clearClassBoard(t: TeacherClass): Promise<boolean> {
   return rpc<boolean>('clear_class_board', { p_code: t.code, p_key: t.key });
 }

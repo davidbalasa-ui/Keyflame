@@ -18,7 +18,9 @@ describe('choosing the next egg', () => {
 
   it('keeps the warmth, so switching never loses typing', () => {
     const p = createProfile('Brave Comet');
+    // Two dragons hatched, so eggs need their full tribe count (the first two are capped).
     p.dragons.push({ id: 'd1', tribe: 'emberback', palette: 0, name: 'Ash', xp: 0, hatchedAt: 0 });
+    p.dragons.push({ id: 'd2', tribe: 'emberback', palette: 1, name: 'Cinder', xp: 0, hatchedAt: 0 });
     p.nest = { tribe: 'duneskimmer', warmth: TRIBES.duneskimmer.hatchKeys / 2, seed: 1 };
     p.basket = ['tidefin'];
     swapNestEgg(p, 0);

@@ -1,0 +1,14 @@
+{
+  "class": "SIM TEST (fake server) - Sonnet pass 2026-11-24",
+  "players": [
+    { "id": "newkid", "device": "phone", "age": 8, "wpm": 10, "errorRate": 0.08, "personality": "brand-new player at home" },
+    { "id": "fam", "device": "ipad", "age": 38, "wpm": 10, "errorRate": 0.08, "personality": "parent setting up a family iPad" },
+    { "id": "teach", "device": "laptop", "role": "teacher" },
+    { "id": "k1", "device": "ipad", "age": 8, "wpm": 9, "errorRate": 0.1 },
+    { "id": "k2", "device": "phone", "age": 10, "wpm": 14, "errorRate": 0.07 },
+    { "id": "k3", "device": "laptop", "age": 11, "wpm": 22, "errorRate": 0.05 },
+    { "id": "fast", "device": "laptop", "age": 13, "wpm": 38, "errorRate": 0.03 },
+    { "id": "kb", "device": "ipad", "hardwareKeyboard": true, "age": 12, "wpm": 26, "errorRate": 0.04 },
+    { "id": "demo", "device": "laptop", "age": 40, "wpm": 35, "errorRate": 0.03 }
+  ]
+}

@@ -324,10 +324,6 @@ export function setSoundEnabled(on: boolean): void {
   if (!on && ctx?.state === 'running') void ctx.suspend().catch(() => {});
 }
 
-export function soundEnabled(): boolean {
-  return enabled;
-}
-
 type AudioCtor = typeof AudioContext;
 
 function liveCtx(): AudioContext | null {

@@ -97,12 +97,3 @@ export function safeText(text: string, fallback: () => string = () => ''): strin
     .filter(Boolean)
     .join(' ');
 }
-
-/** Calls `make` until it returns a safe token (or gives up and returns `fallback`). */
-export function safeRoll(make: () => string, fallback: string): string {
-  for (let i = 0; i < 50; i++) {
-    const t = make();
-    if (isSafeToken(t)) return t;
-  }
-  return fallback;
-}

@@ -183,8 +183,14 @@ try {
   check(true, 'joining without the badge word asks for it');
   await phone.fill('.word-input', wordFor(2));
   await phone.click('.wing-join .race-classmates');
+  await phone.waitForSelector('.wing-card');
+  check((await phone.locator('.wing-badge strong').textContent()) === '#2', 'the wing page shows badge #2');
+  check(!(await phone.locator('.wing-card .wing-qr').isVisible()), 'the word and QR code wait behind the grown-up question');
+  await phone.click('.wing-reveal');
+  await phone.fill('.gate-input', '1985');
+  await phone.keyboard.press('Enter');
   await phone.waitForSelector('.wing-card .wing-qr');
-  check((await phone.locator('.wing-badge strong').textContent()) === '#2', 'the wing page shows badge #2 and its QR code');
+  check(true, 'a grown-up can show the word and QR code');
   await phone.waitForTimeout(600);
   await shot(phone, '2c-phone-wing');
   await toLobby(phone);
@@ -271,8 +277,8 @@ try {
   await teacher.getByRole('tab', { name: 'Live' }).click();
 
   // Back to the lobby, then the teacher starts a race for everyone.
-  await ipad.click('text=Back to class');
-  await phone.click('text=Back to class');
+  await ipad.click('text=Back to wing');
+  await phone.click('text=Back to wing');
   await ipad.waitForSelector('.race-classmates');
   await phone.waitForSelector('.race-classmates');
   await teacher.waitForFunction(() => [...document.querySelectorAll('.teacher .roster-status')].every((e) => e.textContent === 'Here'), null, { timeout: 5000 });
@@ -290,7 +296,7 @@ try {
   check(true, 'leaving a race goes back to the class lobby');
 
   // A shared iPad remembers the class for the next rider.
-  await ipad.click('text=Back to class');
+  await ipad.click('text=Back to wing');
   await ipad.click('header.top-bar > .btn:first-child >> nth=0');
   await ipad.click('header.top-bar > .btn:first-child >> nth=0');
   await ipad.click('.home-avatar');
