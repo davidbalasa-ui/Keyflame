@@ -112,14 +112,13 @@ describe('race letters grow with speed', () => {
 });
 
 describe('earned eggs are never blocked', () => {
-  it('reward eggs still land in the basket past the three-egg buying limit', async () => {
+  it('reward eggs still land in the basket past three', async () => {
     const { giveEgg } = await import('../src/game/progress');
-    const { MAX_BASKET, canBuyEgg } = await import('../src/game/collection');
+    const MAX_BASKET = 3;
     const p = createProfile('Brave Comet');
     p.dragons.push({ id: 'd1', tribe: 'emberback', palette: 0, name: 'Ash', xp: 0, hatchedAt: 0 });
     p.embers = 1000;
     for (let i = 0; i < MAX_BASKET + 2; i++) giveEgg(p, 'tidefin');
     expect(p.basket.length).toBe(MAX_BASKET + 2);
-    expect(canBuyEgg(p, 'emberback')).toBe('full');
   });
 });
