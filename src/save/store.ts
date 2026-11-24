@@ -473,8 +473,9 @@ export async function loadSave(): Promise<SaveData> {
     // Corrupt or blocked; start fresh rather than crash.
   }
   // localStorage is written first and at once, so after a quick reload it can be newer than
-  // IndexedDB (whose write may not have finished). The newer copy wins.
-  const picked = fromDb && fromLs ? (stampOf(fromLs) > stampOf(fromDb) ? fromLs : fromDb) : (fromDb ?? fromLs);
+  // IndexedDB (whose write may not have finished). The newer copy wins; on a tie,
+  // localStorage, since every save writes it first.
+  const picked = fromDb && fromLs ? (stampOf(fromLs) >= stampOf(fromDb) ? fromLs : fromDb) : (fromDb ?? fromLs);
   loadedStamp = stampOf(picked);
   return picked ? migrate(picked) : emptySave();
 }

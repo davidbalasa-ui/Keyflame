@@ -31,6 +31,12 @@ describe('tricky keys drill (KF-25)', () => {
       }
     }
   });
+  it('uses every key in the key-pattern fallback too, whatever the dice say', () => {
+    for (const rand of [() => 0, () => 0.999, seeded(5)]) {
+      const t = buildTrickyText(new Set(['f', 'j', 'd']), ['f', 'j', 'd'], rand);
+      for (const k of ['f', 'j', 'd']) expect(t.split(k).length - 1).toBeGreaterThanOrEqual(3);
+    }
+  });
   it('falls back to key patterns when few sentences fit', () => {
     const t = buildTrickyText(new Set(['f', 'j']), ['f', 'j'], seeded(3));
     expect(t).toMatch(/^[fj ]+$/);

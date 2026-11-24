@@ -183,8 +183,14 @@ try {
   check(true, 'joining without the badge word asks for it');
   await phone.fill('.word-input', wordFor(2));
   await phone.click('.wing-join .race-classmates');
+  await phone.waitForSelector('.wing-card');
+  check((await phone.locator('.wing-badge strong').textContent()) === '#2', 'the wing page shows badge #2');
+  check(!(await phone.locator('.wing-card .wing-qr').isVisible()), 'the word and QR code wait behind the grown-up question');
+  await phone.click('.wing-reveal');
+  await phone.fill('.gate-input', '1985');
+  await phone.keyboard.press('Enter');
   await phone.waitForSelector('.wing-card .wing-qr');
-  check((await phone.locator('.wing-badge strong').textContent()) === '#2', 'the wing page shows badge #2 and its QR code');
+  check(true, 'a grown-up can show the word and QR code');
   await phone.waitForTimeout(600);
   await shot(phone, '2c-phone-wing');
   await toLobby(phone);
