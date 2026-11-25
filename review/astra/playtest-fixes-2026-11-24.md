@@ -1,18 +1,14 @@
-## Partial verification of PR #95
-No gameplay completed. I built main with the local fake Supabase and ran the repository tests. Chromium failed during startup with socket() EPERM and the separate browser could not reach the local preview. No production traffic was used for gameplay.
+Retested local main 8e8be05 with Chromium and the fake database. All 324 repository tests passed. Browser evidence and code checks below.
 
-| Requested fix | Evidence from this run | Still to verify |
-|---|---|---|
-| Keep me and immediate reload | Save tests passed for synchronous localStorage and save timestamps. | Repeat actual Keep me and reload at 0 and 50 ms with progress, including IndexedDB. |
-| 94.8% display | pct floors the percentage to 94. | Render a borderline lesson result. |
-| Failed lesson practice | Code creates a drill from missed lesson keys and routes back to that lesson. | Exercise both sides of 85%, including phone layout. |
-| Free egg card | Tests passed for lesson progress, race progress and exhaustion of free eggs. | Reach empty nest and use the card on a phone. |
-| Named drill keys | Learning test for repeated appearances passed. | Complete the offered drill using touch. |
-| Next race course | Solo results search for the next unlocked course after the current one. | Win with a harder course available and follow the primary button. |
-| Almost ready | Nest copy checks progress >= 0.75. | Inspect either side of the boundary. |
-| Warm button | Button text includes warmth percent and ember cost. | Purchase in the UI and check feedback. |
-| Speed medal | Progress UI uses progressShown and appends WPM for speed. | Inspect the display just below a goal. |
-| Fake feedback | Posted a test message to the running local fake endpoint. Received 201 and verified the exact message in its in-memory array. | Form-to-endpoint submission remains unplayed. |
-| Final ring | Lesson code explicitly refreshes stats on completion. | Observe the final key before the result transition. |
+1. Fixed in the original reproduction. On six fresh phone-sized contexts I used the final Keep me button and reloaded in the same JS turn three times, then at 50 ms three times. All six reloaded with the chosen named rider active.
+2. Fixed by inspection: pct floors with a floating-point epsilon, including 94.8 → 94.
+3. Fixed in a 390×844 run. Missed F/J repeatedly, finished at 61%, tapped Practice F and J, completed the drill and got the F and J return action. Below 85% practice occupies the primary slot. At 85–89% Try again takes it in the code. A ready hatch can intentionally take priority over either.
+4. Fixed in the free-egg selector tests for partial lessons, races nearer than lessons and exhausted rewards. The responsive flow suite also passed the new-egg path. The exact empty-state card at 150% text was not exercised.
+5. Fixed in the drill played: both F and J appeared well over three times.
+6. Fixed in results action selection by inspection. First place with a newly opened course promotes it; other places retain Race again. The end-to-end suite finished actual races at all three viewports.
+7–8. Fixed by inspection in nest.ts: the first-egg message switches at 75%, and the warmth purchase includes the percentage and price.
+9. Fixed by inspection in achievementsPage.ts: the incomplete speed medal caps the rounded value below the target and adds WPM.
+10. Fixed in a direct local POST: 201, with the submitted JSON present in the fake server’s feedback array.
+11. Final ring refresh is present in the lesson finish handler. The UI test completes the lesson; it did not assert the final painted ring before the result overlay.
 
-The fake-feedback endpoint is independently verified. The other rows retain their browser acceptance checks.
+The browser suite passed 33 flows across 820×1180, 1180×820 and 390×844, including lesson and race results, hatching, naming and egg stacking.
