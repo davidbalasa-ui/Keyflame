@@ -2,7 +2,7 @@
 // a WPM dial and reward cards that count up. Everything shown is already earned;
 // there is nothing to claim, sign up for, or open.
 
-import { h, pct } from './dom';
+import { button, h, pct } from './dom';
 import { CONFETTI, attachField, type ParticleField } from './particles';
 import { sfx } from './sound';
 
@@ -254,7 +254,32 @@ export function celebration(info: CelebrationInfo): HTMLElement {
     dial.set(info.wpm);
     for (const c of cards) if (typeof c.reward.value === 'number') c.valueEl.textContent = `${c.reward.prefix ?? '+'}${c.reward.value}`;
     const last = cards[cards.length - 1]?.card;
-    if (last) requestAnimationFrame(() => showAboveBar(last));
+    requestAnimationFrame(() => {
+      if (last) showAboveBar(last);
+      peekFact();
+    });
+  };
+
+  // Short screens (a 1366x768 laptop, phones): the "Did you know?" card can sit hidden under
+  // the button bar. Then a 💡 Fact chip takes the Fact Book chip's place and scrolls the card
+  // into view; once the card shows, the Fact Book chip comes back.
+  const peekFact = (): void => {
+    const fact = panel.querySelector<HTMLElement>('.fact-card');
+    if (!fact || actions.querySelector('.cel-fact-peek')) return;
+    const hidden = (): boolean => fact.getBoundingClientRect().top + 24 > actions.getBoundingClientRect().top;
+    if (!hidden()) return;
+    const chip = button('💡 Fact', () => showAboveBar(fact), 'btn ghost small fin-chip cel-fact-peek', { 'aria-label': 'Did you know? Show the fact' });
+    const book = actions.querySelector('.fin-factbook');
+    const ownRow = book ? null : h('div', { class: 'fin-chips' }, chip);
+    if (book) book.replaceWith(chip);
+    else actions.prepend(ownRow!);
+    const onScroll = (): void => {
+      if (hidden()) return;
+      if (book) chip.replaceWith(book);
+      else ownRow!.remove();
+      overlay.removeEventListener('scroll', onScroll);
+    };
+    overlay.addEventListener('scroll', onScroll, { passive: true });
   };
 
   const start = (): void => {

@@ -474,7 +474,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
             // A harder course is open: after a win it is the main button, otherwise it sits beside Race again.
             harder ? (placeNum === 1 ? button('↻ Race again', () => go(race(course.id)), 'btn ghost small') : button(`▶ ${harder.name}`, () => go(race(harder.id)), 'btn ghost small')) : null,
             button('🗺 Courses', () => go(raceMap), 'btn ghost small'),
-            fact ? button('📖 Fact Book', () => go(codex), 'btn ghost small') : null,
+            fact ? button('📖 Fact Book', () => go(codex), 'btn ghost small fin-factbook') : null,
           ], { nestGlow: !!reward.newEgg }),
     });
     // Let the finish burst on the track play for a moment first.

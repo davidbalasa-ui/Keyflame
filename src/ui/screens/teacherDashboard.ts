@@ -244,8 +244,8 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
         h('div', { class: 'rs-word' }, h('small', { class: 'fine' }, 'Secret word'), h('strong', {}, badgeWord(t.key, row.badge)), h('small', { class: 'fine' }, 'On the card. A new device needs it to join as this badge.')),
       ),
       // Family wings often share one device: join this badge here without typing the card.
-      (t as { kind?: string }).kind === 'family'
-        ? h('div', { class: 'row center' }, button(`▶ ${row.student || `Badge ${row.badge}`} plays on this device`, () => {
+      isFamily(t)
+        ? h('div', { class: 'row center' }, button(`▶ ${row.student || `Badge ${row.badge}`} plays here`, () => {
             sheet.remove();
             // Loaded on tap: this file is also used by tests that run without a browser.
             void Promise.all([import('../app'), import('./wing')]).then(([{ go }, { wingScreen }]) => go(wingScreen({ join: { code: t.code, badge: row.badge, word: badgeWord(t.key, row.badge), name: row.student || undefined } })));
@@ -265,9 +265,9 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
       h(
         'p',
         { class: 'center' },
-        button('Delete student', () => {
+        button(isFamily(t) ? 'Remove kid' : 'Delete student', () => {
           const who = nameOf(row);
-          if (!confirm(`Delete ${who} (badge ${row.badge})? ${r ? 'Their lessons and races in this class are deleted for good. ' : ''}Badge ${row.badge} won’t be given out again.`)) return;
+          if (!confirm(`${isFamily(t) ? 'Remove' : 'Delete'} ${who} (badge ${row.badge})? ${r ? `Their lessons and races in this ${isFamily(t) ? 'wing' : 'class'} are deleted for good. ` : ''}Badge ${row.badge} won’t be given out again.`)) return;
           const done = (): void => {
             setStudent(row.badge, '');
             writeRetired([...readRetired(), row.badge]);
@@ -529,7 +529,7 @@ export function progressPanel(t: TeacherClass, rosterChanged: () => void): { el:
       table,
       h('div', { class: 'add-student' }, addInput, button(isFamily(t) ? 'Add a kid' : 'Add student', add, 'btn small')),
       addMsg,
-      h('p', { class: 'fine' }, isFamily(t) ? 'Tap a kid to see their lessons and speed over time, edit their name or badge number, or delete them. Speed is the average of their last five timed lessons and races.' : 'Tap a student to see their lessons and speed over time, edit their name or badge number, or delete them. Speed is the average of their last five timed lessons and races.'),
+      h('p', { class: 'fine' }, isFamily(t) ? 'Tap a kid to see their lessons and speed over time, edit their name or badge number, or remove them. Speed is the average of their last five timed lessons and races.' : 'Tap a student to see their lessons and speed over time, edit their name or badge number, or delete them. Speed is the average of their last five timed lessons and races.'),
     ),
   );
   refresh();
