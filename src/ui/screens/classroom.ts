@@ -69,7 +69,7 @@ function memberArt(m: Member, cls: string): HTMLElement {
   return svg(dragonSvg(l?.tribe ?? 'emberback', l?.palette ?? 0, l?.stage ?? 'hatchling', '', l?.skin, l?.marking ?? 0, l?.stars ?? 0), cls);
 }
 
-const STATUS_LABEL: Record<Member['status'], string> = { lobby: 'Here', waiting: 'Ready!', racing: 'Racing', done: 'Finished' };
+const STATUS_LABEL: Record<Member['status'], string> = { lobby: 'Here', waiting: 'Ready!', racing: 'In a wing race', done: 'Finished' };
 
 function rosterChip(m: Member, me = false): HTMLElement {
   return h(
@@ -83,7 +83,7 @@ function rosterChip(m: Member, me = false): HTMLElement {
 
 function boardTable(rows: BoardRow[], highlight?: string): HTMLElement {
   if (!rows.length) return h('p', { class: 'fine board-empty' }, 'No wing races yet.');
-  return h(
+  const list = h(
     'ol',
     { class: 'class-board' },
     ...rows.map((r, i) =>
@@ -97,6 +97,7 @@ function boardTable(rows: BoardRow[], highlight?: string): HTMLElement {
       ),
     ),
   );
+  return h('div', {}, list, h('p', { class: 'cb-key fine' }, '📱 touch · ⌨️ keyboard · 🏆 wins'));
 }
 
 /** A board panel that loads itself and has a refresh button. */
@@ -308,6 +309,7 @@ export function classLobby(code: string) {
         link.setStatus(me.status === 'waiting' ? 'lobby' : 'waiting');
       }, 'btn race-classmates');
       const hint = h('p', { class: 'fine lobby-hint', 'aria-live': 'polite' });
+      const status = h('p', { class: 'lobby-status', 'aria-live': 'polite' });
       const board = boardPanel(code, me.name);
       let boardSeen = new Set<string>();
 
@@ -317,7 +319,15 @@ export function classLobby(code: string) {
         roster.replaceChildren(rosterChip(me, true), ...riders.filter((m) => m.id !== me.id).map((m) => rosterChip(m)));
         const waiting = waitingRiders(members);
         const ready = me.status === 'waiting';
-        raceBtn.textContent = ready ? '✓ Ready! Tap to cancel' : '🏁 I’m ready!';
+        // Once ready, a clear status says so and the big button steps back to a small Cancel.
+        raceBtn.textContent = ready ? 'Cancel ready' : '🏁 I’m ready!';
+        raceBtn.classList.toggle('small', ready);
+        // Only riders who could join count: classmates mid-race or just finished can't yet.
+        const eligible = riders.filter((m) => m.status === 'lobby' || m.status === 'waiting');
+        status.replaceChildren(
+          ready ? h('strong', { class: 'lobby-ready' }, '✓ You’re ready!') : '',
+          eligible.length > 1 ? h('span', { class: 'fine' }, `${waiting.length} of ${eligible.length} ready`) : '',
+        );
         // A classmate just crossed the line: their new result is on its way to the board.
         const finishedNow = members.filter((m) => m.status === 'done').map((m) => m.id);
         if (finishedNow.some((id) => !boardSeen.has(id))) window.setTimeout(board.refresh, 2500);
@@ -354,7 +364,7 @@ export function classLobby(code: string) {
       main.replaceChildren(
         linkBanner(link),
         h('div', { class: 'lobby-head' }, h('h1', {}, '🏁 Wing race'), h('span', { class: 'lobby-chips' }, h('span', { class: 'class-code-chip' }, spacedCode(code)), h('span', { class: 'my-badge pop-in', 'aria-label': `Your badge ${profile().classBadge ?? ''}` }, `#${profile().classBadge ?? '?'}`))),
-        h('div', { class: 'lobby-race' }, raceBtn, hint),
+        h('div', { class: 'lobby-race' }, status, raceBtn, hint),
         h('h2', {}, 'Here now'),
         roster,
         board.el,
@@ -556,6 +566,23 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       }
       void makeClass(parseStudentList(list.value), pw.value);
     };
+    // A live count, so a list pasted on one line ("Ava, Ben, Cara") is caught before the class is made.
+    const count = h('p', { class: 'fine list-count', 'aria-live': 'polite' });
+    const recount = (): void => {
+      const names = parseStudentList(list.value);
+      const oneLineCommas = names.length === 1 && names[0].includes(',');
+      count.replaceChildren(
+        names.length ? `${names.length} ${fam ? (names.length === 1 ? 'kid' : 'kids') : names.length === 1 ? 'student' : 'students'}` : '',
+        oneLineCommas ? ' · One line with commas. ' : '',
+        oneLineCommas
+          ? button('Split at commas', () => {
+              list.value = list.value.split(',').map((n) => n.trim()).filter(Boolean).join('\n');
+              recount();
+            }, 'link')
+          : '',
+      );
+    };
+    list.addEventListener('input', recount);
 
     const code = h('input', { type: 'text', class: 'label-input code-field', maxlength: 8, autocapitalize: 'characters', autocomplete: 'off', 'aria-label': fam ? 'Wing code' : 'Class code', placeholder: 'ABCDEF' });
     const pw2 = passwordInput(fam ? 'Grown-up password' : 'Teacher password', 'current-password');
@@ -599,7 +626,8 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       'section',
       { class: 'tm-card' },
       h('h2', {}, fam ? 'New family wing' : 'New class'),
-      field(fam ? 'Kids' : 'Students', list, 'You can add more later.'),
+      field(fam ? 'Kids' : 'Students', list, 'One name per line. You can add more later.'),
+      count,
       field(fam ? 'Grown-up password' : 'Teacher password', pw, 'Locks your list. You need it to open it on another device.'),
       msg,
       h('div', { class: 'tm-actions' }, button(fam ? 'Make the wing' : 'Make the class', make, 'btn tm-primary')),

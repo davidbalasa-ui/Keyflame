@@ -24,6 +24,9 @@
 .lobby-race { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 16px 0 8px; }
 .race-classmates { font-size: 1.5rem; padding: 16px 44px; min-width: 220px; }
 .lobby-hint { min-height: 1.4em; margin: 0; }
+.lobby-status { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 0; min-height: 1.4em; }
+.lobby-ready { font-size: 1.4rem; color: var(--good); }
+.race-classmates.small { font-size: 1rem; padding: 10px 24px; min-width: 120px; min-height: 44px; }
 .link-banner { background: #5c1f33; border: 1px solid var(--bad); border-radius: 12px; padding: 8px 12px; text-align: center; }
 .roster { list-style: none; padding: 0; margin: 0 0 8px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
 .roster-chip { background: var(--panel); border: 2px solid var(--line); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
@@ -107,7 +110,12 @@
 .rt-name small { color: var(--muted); font-size: 0.78em; }
 .rt-name .rt-note { color: var(--ember-2); }
 .rt-lessons small, .rt-speed small { color: var(--muted); }
-.rt-seen { color: var(--muted); font-size: 0.9em; }
+.rt-seen { color: var(--muted); font-size: 0.9em; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+.needs-hand { border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; margin: 0 0 10px; }
+.needs-hand h3 { margin: 0 0 4px; font-size: 1rem; }
+.needs-hand ul { margin: 0; padding-left: 18px; }
+.rt-key, .cb-key { margin: 6px 0 0; color: var(--muted); }
+.list-count { margin: 4px 0 0; min-height: 1.2em; }
 .trend { font-size: 0.8em; margin-left: 2px; }
 .trend-up { color: var(--good); }
 .trend-down { color: var(--bad); }

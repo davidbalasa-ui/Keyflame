@@ -82,7 +82,7 @@ export const MILESTONES: Array<{ id: string; tribe: TribeId; label: string; goal
       const start = p.startSpeed?.[kind];
       if (!start) return null;
       const wpm = Math.min(SPEED_GOAL[kind], start.wpm + START_GAIN);
-      return `Race at ${wpm} WPM${kind === 'touch' ? ' on touch' : ''}`;
+      return `Race at ${wpm} WPM${kind === 'touch' ? ' on touch' : ''}${wpm < SPEED_GOAL[kind] ? ` (${START_GAIN} faster than your start)` : ''}`;
     },
     done: (p) => p.totals.bestWpm >= SPEED_GOAL.keyboard || p.totals.bestTouchWpm >= SPEED_GOAL.touch || beatStartSpeed(p),
   },
@@ -482,9 +482,12 @@ export function recordFact(p: Profile, id: string): boolean {
 export function ghostSpeeds(p: Profile, input: InputMode = 'keyboard'): number[] {
   const touch = isTouch(input);
   const recent = p.races.filter((r) => isTouch(r.input) === touch).slice(0, 5).map((r) => r.wpm);
-  const start = touch ? 8 : 12;
+  // Before any race, a slow typist's lessons tell us their speed, so the first rivals
+  // aren't out of reach. The floor lets 2-3 WPM beginners still catch someone.
+  const lessonBest = Math.max(0, ...Object.values(p.lessons).map((l) => l.bestWpm || 0));
+  const start = Math.min(touch ? 8 : 12, lessonBest > 0 ? lessonBest : Infinity);
   const form = recent.length ? recent.reduce((a, b) => a + b, 0) / recent.length : start;
-  const f = Math.max(5, form);
+  const f = Math.max(3, form);
   return [f * 0.8, f * 1.1];
 }
 

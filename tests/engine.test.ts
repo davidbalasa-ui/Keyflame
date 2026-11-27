@@ -50,11 +50,17 @@ describe('lessons', () => {
   });
 
   it('awards stars by accuracy and speed', () => {
-    const l = LESSONS[0];
+    const l = LESSONS[1];
     expect(starsFor(l, 30, 0.85)).toBe(0);
     expect(starsFor(l, 5, 0.92)).toBe(1);
     expect(starsFor(l, 5, 0.96)).toBe(2);
     expect(starsFor(l, l.starWpm, 0.96)).toBe(3);
+  });
+
+  it('the very first lesson passes at 85%, later lessons at 90%', () => {
+    expect(starsFor(LESSONS[0], 5, 0.86)).toBe(1);
+    expect(starsFor(LESSONS[0], 5, 0.84)).toBe(0);
+    expect(starsFor(LESSONS[1], 5, 0.86)).toBe(0);
   });
 });
 
@@ -224,6 +230,16 @@ describe('campaign and milestones', () => {
     expect(ghostSpeeds(p, 'keyboard')[0]).toBeCloseTo(12 * 0.8);
   });
 
+  it('slow beginners get rivals they can catch', () => {
+    const p = createProfile('Gentle Glider');
+    p.lessons.f = { stars: 1, bestWpm: 4, bestAccuracy: 0.9 };
+    expect(ghostSpeeds(p, 'touch')[0]).toBeCloseTo(4 * 0.8);
+    const s = { wpm: 2, accuracy: 0.9, correct: 20, errors: 2, durationMs: 60000, keyStats: {} };
+    recordRace(p, s, 2, { input: 'touch', courseId: 'volcano', beatRival: false });
+    expect(ghostSpeeds(p, 'touch')[0]).toBeCloseTo(3 * 0.8);
+    expect(ghostSpeeds(createProfile('x'), 'touch')[0]).toBeCloseTo(8 * 0.8);
+  });
+
   it('the placement check skips units for fluent typists', () => {
     const p = createProfile('Mighty Comet');
     expect(applyPlacement(p, 30, 0.95)).toBe(3);
@@ -258,7 +274,7 @@ describe('Duneskimmer by beating your starting speed', () => {
     recordRace(p, race(12), 3, touch);
     expect(p.startSpeed?.touch?.wpm).toBe(10);
     expect(p.startSpeed?.keyboard).toBeUndefined();
-    expect(milestoneText(MILESTONES.find((m) => m.id === 'speed')!, p)).toBe('Race at 15 WPM on touch');
+    expect(milestoneText(MILESTONES.find((m) => m.id === 'speed')!, p)).toBe('Race at 15 WPM on touch (5 faster than your start)');
   });
 
   it('a fast starting race never counts as beating the start', () => {

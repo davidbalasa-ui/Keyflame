@@ -67,7 +67,7 @@ async function player(who) {
   if (!profile) throw new Error(`no player "${who}" in the roster`);
   const ctx = await browser.newContext({ serviceWorkers: 'block', ...DEVICES[profile.device ?? 'laptop'] });
   const page = await ctx.newPage();
-  const p = { profile, page, errors: [], stats: { typed: 0, mistakes: 0, typingSeconds: 0, actions: 0 } };
+  const p = { profile, page, errors: [], stats: { typed: 0, mistakes: 0, typingSeconds: 0, actions: 0 }, notes: 0 };
   page.on('pageerror', (e) => (p.errors.push(e.message), log(who, { pageerror: e.message })));
   page.on('dialog', (d) => (log(who, { dialog: d.message() }), d.accept()));
   await page.goto(`http://localhost:${GAME_PORT}/`);
@@ -285,9 +285,13 @@ async function run(who, cmd, args) {
       await page.waitForTimeout(1200);
       note = 'Opened the link.';
       break;
-    case 'note':
-      log(who, { note: args.join(' ') });
+    case 'note': {
+      // Every note also keeps a picture of the screen, so reviewers can see what the kid saw.
+      const path = `${OUT}/shots/${who}-note-${String(++p.notes).padStart(2, '0')}.png`;
+      await page.screenshot({ path }).catch(() => {});
+      log(who, { note: args.join(' '), shot: path });
       return 'Noted.';
+    }
     case 'stats':
       return JSON.stringify({ ...p.stats, pageErrors: p.errors.length, profile: p.profile });
     default:
