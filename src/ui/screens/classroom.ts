@@ -83,7 +83,7 @@ function rosterChip(m: Member, me = false): HTMLElement {
 
 function boardTable(rows: BoardRow[], highlight?: string): HTMLElement {
   if (!rows.length) return h('p', { class: 'fine board-empty' }, 'No wing races yet.');
-  return h(
+  const list = h(
     'ol',
     { class: 'class-board' },
     ...rows.map((r, i) =>
@@ -97,6 +97,7 @@ function boardTable(rows: BoardRow[], highlight?: string): HTMLElement {
       ),
     ),
   );
+  return h('div', {}, list, h('p', { class: 'cb-key fine' }, '📱 touch · ⌨️ keyboard · 🏆 wins'));
 }
 
 /** A board panel that loads itself and has a refresh button. */
@@ -565,6 +566,23 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       }
       void makeClass(parseStudentList(list.value), pw.value);
     };
+    // A live count, so a list pasted on one line ("Ava, Ben, Cara") is caught before the class is made.
+    const count = h('p', { class: 'fine list-count', 'aria-live': 'polite' });
+    const recount = (): void => {
+      const names = parseStudentList(list.value);
+      const oneLineCommas = names.length === 1 && names[0].includes(',');
+      count.replaceChildren(
+        names.length ? `${names.length} ${fam ? (names.length === 1 ? 'kid' : 'kids') : names.length === 1 ? 'student' : 'students'}` : '',
+        oneLineCommas ? ' · One line with commas. ' : '',
+        oneLineCommas
+          ? button('Split at commas', () => {
+              list.value = list.value.split(',').map((n) => n.trim()).filter(Boolean).join('\n');
+              recount();
+            }, 'link')
+          : '',
+      );
+    };
+    list.addEventListener('input', recount);
 
     const code = h('input', { type: 'text', class: 'label-input code-field', maxlength: 8, autocapitalize: 'characters', autocomplete: 'off', 'aria-label': fam ? 'Wing code' : 'Class code', placeholder: 'ABCDEF' });
     const pw2 = passwordInput(fam ? 'Grown-up password' : 'Teacher password', 'current-password');
@@ -608,7 +626,8 @@ export const teacherScreen = (root: HTMLElement): (() => void) => {
       'section',
       { class: 'tm-card' },
       h('h2', {}, fam ? 'New family wing' : 'New class'),
-      field(fam ? 'Kids' : 'Students', list, 'You can add more later.'),
+      field(fam ? 'Kids' : 'Students', list, 'One name per line. You can add more later.'),
+      count,
       field(fam ? 'Grown-up password' : 'Teacher password', pw, 'Locks your list. You need it to open it on another device.'),
       msg,
       h('div', { class: 'tm-actions' }, button(fam ? 'Make the wing' : 'Make the class', make, 'btn tm-primary')),

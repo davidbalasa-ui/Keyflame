@@ -314,7 +314,7 @@ function riderTable(rows: Row[], sort: SortKey, open: (r: Row) => void, fam = fa
   return h(
     'ul',
     { class: 'rider-table' },
-    h('li', { class: 'rt-head', 'aria-hidden': 'true' }, h('span', {}, fam ? 'Kid' : 'Student'), h('span', {}, 'Lessons'), h('span', {}, 'Speed'), h('span', {}, 'Accuracy'), h('span', {}, 'Last active')),
+    h('li', { class: 'rt-head', 'aria-hidden': 'true' }, h('span', {}, fam ? 'Kid' : 'Student'), h('span', {}, 'Lessons passed'), h('span', {}, 'Speed'), h('span', {}, 'Accuracy'), h('span', {}, 'Last active')),
     ...sortRows(rows, sort).map((row) => {
       const r = row.rider;
       const notes = r ? riderNotes(r) : [];
@@ -458,16 +458,27 @@ export function progressPanel(t: TeacherClass, rosterChanged: () => void): { el:
     sortBar.replaceChildren(
       ...SORTS.map(([k, label]) => button(label, () => ((sort = k), drawTable()), `seg-btn${k === sort ? ' on' : ''}`, { 'aria-pressed': String(k === sort), 'aria-label': k === 'badge' ? 'Badge' : label })),
     );
+    const openRow = (r: Row): void => {
+      el.append(
+        riderSheet(t, r, () => {
+          rosterChanged();
+          refresh();
+        }),
+      );
+    };
+    // Who may need a hand comes first, so the teacher doesn't have to scan the table.
+    const needs = rows().filter((r) => r.rider && riderNotes(r.rider).length);
     table.replaceChildren(
-      riderTable(rows(), sort, (r) =>
-        el.append(
-          riderSheet(t, r, () => {
-            rosterChanged();
-            refresh();
-          }),
-        ),
-        isFamily(t),
-      ),
+      needs.length
+        ? h(
+            'section',
+            { class: 'needs-hand' },
+            h('h3', {}, 'May need a hand'),
+            h('ul', {}, ...needs.map((r) => h('li', {}, button(`#${r.badge} ${r.student || r.rider?.name || ''}`, () => openRow(r), 'link'), ` · ${riderNotes(r.rider!).join(' · ')}`))),
+          )
+        : '',
+      riderTable(rows(), sort, openRow, isFamily(t)),
+      rows().some((r) => r.rider) ? h('p', { class: 'fine rt-key' }, `Speed: ${TREND_MARK.up.icon} ${TREND_MARK.up.label} · ${TREND_MARK.down.icon} ${TREND_MARK.down.label} · ${TREND_MARK.flat.icon} ${TREND_MARK.flat.label}`) : '',
     );
   };
 
