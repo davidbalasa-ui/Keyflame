@@ -184,9 +184,15 @@ export function warmUpDue(lessonIndex: number, lessonsPlayed: number, kind: Less
   return lessonIndex >= 3 && kind !== 'passage' && lessonsPlayed % 3 === 2;
 }
 
+/** Accuracy needed to pass. The very first lesson asks 85% (brand-new typists slip
+ * more); every other lesson asks 90%. */
+export function passMark(lesson: Lesson): number {
+  return lesson === LESSONS[0] ? 0.85 : 0.9;
+}
+
 /** Stars earned: 1 for passing, 2 for 95% accuracy, 3 for 95% accuracy and the WPM goal. */
 export function starsFor(lesson: Lesson, wpm: number, accuracy: number): number {
-  if (accuracy < 0.9) return 0;
+  if (accuracy < passMark(lesson)) return 0;
   if (accuracy >= 0.95 && wpm >= lesson.starWpm) return 3;
   if (accuracy >= 0.95) return 2;
   return 1;

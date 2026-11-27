@@ -1,4 +1,4 @@
-import { LESSONS, UNITS, buildLessonText, buildTrickyText, buildWarmUp, warmUpDue, lessonsInUnit, starsFor, type Lesson } from '../../content/lessons';
+import { LESSONS, UNITS, buildLessonText, buildTrickyText, buildWarmUp, warmUpDue, lessonsInUnit, starsFor, passMark, type Lesson } from '../../content/lessons';
 import { weakKeys, type KeyStats } from '../../engine/typing';
 import { TRIBES, eggSvg } from '../../game/dragons';
 import { claimNewAchievements, earnedIds, type Achievement } from '../../game/achievements';
@@ -160,6 +160,12 @@ function missedKeys(stats: KeyStats, known: Set<string>): string[] {
     .map(([k]) => k);
 }
 
+/** After a miss: how close it was, in kid words. */
+function missHint(accuracy: number, mark: number): string {
+  const need = Math.round(mark * 100);
+  return accuracy >= mark - 0.05 ? `${pct(accuracy)}, so close! ${need}% passes. Slow and steady.` : `${need}% correct passes. Slow and steady wins.`;
+}
+
 function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = [], seasonDone: string[] = [], better: Improvement[] = [], missed: string[] = []): void {
   const idx = LESSONS.indexOf(lesson);
   const next = LESSONS[idx + 1];
@@ -182,7 +188,7 @@ function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accur
   // One short line on how to get the next star, only when there is one to get.
   const hint =
     stars === 0
-      ? 'Get 90% correct to pass. Go slow!'
+      ? missHint(accuracy, passMark(lesson))
       : stars === 1
         ? '95% correct = second star'
         : stars === 2
@@ -488,7 +494,7 @@ export function playChallenge(c: Challenge) {
                 ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, improvementTitle(b), 'gold')),
                 fresh.length ? card(svg(medalSvg(fresh[0].medal, fresh[0].icon), 'ach-mini'), `+${fresh.length}`, 'Achievements', 'gold') : null,
               ),
-              stars === 0 ? h('p', { class: 'fine lr-hint' }, 'Get 90% correct to pass. Go slow!') : null,
+              stars === 0 ? h('p', { class: 'fine lr-hint' }, missHint(sum.accuracy, 0.9)) : null,
               finishBar(primary, [stars > 0 ? button('↻ Try again', () => go(playChallenge(c)), 'btn ghost small') : null, next || stars === 0 ? button('📚 Lessons', () => go(lessons), 'btn ghost small') : null], { nestGlow: !!reward.newEgg }),
             ),
           ),

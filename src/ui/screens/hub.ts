@@ -132,7 +132,7 @@ export const hub = (root: HTMLElement): (() => void) => {
     dailyDone ? 'div' : 'button',
     dailyDone ? { class: 'daily-card done', role: 'status' } : { class: 'daily-card go', type: 'button', onclick: dailyGo, 'aria-label': `Daily flight: ${daily.races} of ${DAILY_RACES} races or 1 ${nextLesson ? 'lesson' : 'word challenge'}. ${nextLesson ? 'Start a lesson' : challenge ? 'Start a word challenge' : 'Choose a race'}` },
     h('span', { class: 'daily-icon', 'aria-hidden': 'true', html: WING }),
-    h('span', { class: 'daily-text' }, h('strong', {}, 'Daily flight'), h('small', {}, dailyDone ? 'Done! See you tomorrow' : `${daily.races}/${DAILY_RACES} races or 1 ${nextLesson ? 'lesson' : 'word challenge'}`)),
+    h('span', { class: 'daily-text' }, h('strong', {}, 'Daily flight'), h('small', {}, dailyDone ? 'Practice done! See you tomorrow' : `${daily.races}/${DAILY_RACES} races or 1 ${nextLesson ? 'lesson' : 'word challenge'}`)),
     h('span', { class: 'daily-track', 'aria-hidden': 'true' }, ...dots),
     dailyDone ? h('span', { class: 'daily-end', 'aria-hidden': 'true' }, '✓') : h('span', { class: 'daily-go', 'aria-hidden': 'true' }, nextLesson ? '▶ Lesson' : challenge ? '▶ Words' : '▶ Race'),
   );
