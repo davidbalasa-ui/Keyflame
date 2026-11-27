@@ -274,7 +274,7 @@ describe('Duneskimmer by beating your starting speed', () => {
     recordRace(p, race(12), 3, touch);
     expect(p.startSpeed?.touch?.wpm).toBe(10);
     expect(p.startSpeed?.keyboard).toBeUndefined();
-    expect(milestoneText(MILESTONES.find((m) => m.id === 'speed')!, p)).toBe('Race at 15 WPM on touch');
+    expect(milestoneText(MILESTONES.find((m) => m.id === 'speed')!, p)).toBe('Race at 15 WPM on touch (5 faster than your start)');
   });
 
   it('a fast starting race never counts as beating the start', () => {

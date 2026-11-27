@@ -82,7 +82,7 @@ export const MILESTONES: Array<{ id: string; tribe: TribeId; label: string; goal
       const start = p.startSpeed?.[kind];
       if (!start) return null;
       const wpm = Math.min(SPEED_GOAL[kind], start.wpm + START_GAIN);
-      return `Race at ${wpm} WPM${kind === 'touch' ? ' on touch' : ''}`;
+      return `Race at ${wpm} WPM${kind === 'touch' ? ' on touch' : ''}${wpm < SPEED_GOAL[kind] ? ` (${START_GAIN} faster than your start)` : ''}`;
     },
     done: (p) => p.totals.bestWpm >= SPEED_GOAL.keyboard || p.totals.bestTouchWpm >= SPEED_GOAL.touch || beatStartSpeed(p),
   },
