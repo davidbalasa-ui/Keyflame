@@ -69,7 +69,7 @@ function memberArt(m: Member, cls: string): HTMLElement {
   return svg(dragonSvg(l?.tribe ?? 'emberback', l?.palette ?? 0, l?.stage ?? 'hatchling', '', l?.skin, l?.marking ?? 0, l?.stars ?? 0), cls);
 }
 
-const STATUS_LABEL: Record<Member['status'], string> = { lobby: 'Here', waiting: 'Ready!', racing: 'Racing', done: 'Finished' };
+const STATUS_LABEL: Record<Member['status'], string> = { lobby: 'Here', waiting: 'Ready!', racing: 'In a wing race', done: 'Finished' };
 
 function rosterChip(m: Member, me = false): HTMLElement {
   return h(
@@ -308,6 +308,7 @@ export function classLobby(code: string) {
         link.setStatus(me.status === 'waiting' ? 'lobby' : 'waiting');
       }, 'btn race-classmates');
       const hint = h('p', { class: 'fine lobby-hint', 'aria-live': 'polite' });
+      const status = h('p', { class: 'lobby-status', 'aria-live': 'polite' });
       const board = boardPanel(code, me.name);
       let boardSeen = new Set<string>();
 
@@ -317,7 +318,15 @@ export function classLobby(code: string) {
         roster.replaceChildren(rosterChip(me, true), ...riders.filter((m) => m.id !== me.id).map((m) => rosterChip(m)));
         const waiting = waitingRiders(members);
         const ready = me.status === 'waiting';
-        raceBtn.textContent = ready ? '✓ Ready! Tap to cancel' : '🏁 I’m ready!';
+        // Once ready, a clear status says so and the big button steps back to a small Cancel.
+        raceBtn.textContent = ready ? 'Cancel ready' : '🏁 I’m ready!';
+        raceBtn.classList.toggle('small', ready);
+        // Only riders who could join count: classmates mid-race or just finished can't yet.
+        const eligible = riders.filter((m) => m.status === 'lobby' || m.status === 'waiting');
+        status.replaceChildren(
+          ready ? h('strong', { class: 'lobby-ready' }, '✓ You’re ready!') : '',
+          eligible.length > 1 ? h('span', { class: 'fine' }, `${waiting.length} of ${eligible.length} ready`) : '',
+        );
         // A classmate just crossed the line: their new result is on its way to the board.
         const finishedNow = members.filter((m) => m.status === 'done').map((m) => m.id);
         if (finishedNow.some((id) => !boardSeen.has(id))) window.setTimeout(board.refresh, 2500);
@@ -354,7 +363,7 @@ export function classLobby(code: string) {
       main.replaceChildren(
         linkBanner(link),
         h('div', { class: 'lobby-head' }, h('h1', {}, '🏁 Wing race'), h('span', { class: 'lobby-chips' }, h('span', { class: 'class-code-chip' }, spacedCode(code)), h('span', { class: 'my-badge pop-in', 'aria-label': `Your badge ${profile().classBadge ?? ''}` }, `#${profile().classBadge ?? '?'}`))),
-        h('div', { class: 'lobby-race' }, raceBtn, hint),
+        h('div', { class: 'lobby-race' }, status, raceBtn, hint),
         h('h2', {}, 'Here now'),
         roster,
         board.el,
