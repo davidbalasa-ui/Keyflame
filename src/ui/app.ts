@@ -1,7 +1,7 @@
 // App state and screen switching.
 
-import { LS_KEY, MAX_PROFILES, NAME_ADJECTIVES, NAME_NOUNS, createProfile, loadSave, normalizeProfile, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
-import { setSoundEnabled } from './sound';
+import { LS_KEY, MAX_PROFILES, loadedSaveStamp, saveStampOf, NAME_ADJECTIVES, NAME_NOUNS, createProfile, loadSave, normalizeProfile, writeSave, type InputMode, type Profile, type SaveData } from '../save/store';
+import { setSoundEnabled, wireAudioUnlock } from './sound';
 import { grantSupporter } from '../game/supporter';
 import { countUsage } from './usage';
 
@@ -32,6 +32,7 @@ export async function startApp(root: HTMLElement, first: Screen): Promise<void> 
   else if (!state.save.profiles.some((x) => x.id === state.save.activeId)) playAsGuest();
   claimSupporterReturn();
   applySettings();
+  wireAudioUnlock();
   watchHardwareKeyboard();
   go(first);
 }
@@ -55,6 +56,11 @@ export function allRiders(): Profile[] {
 
 export function hasProfile(): boolean {
   return isGuest() || state.save.profiles.some((x) => x.id === state.save.activeId);
+}
+
+/** This visit's guest, playing or not. */
+export function guestRider(): Profile | null {
+  return state.guest;
 }
 
 /** True while the guest is playing: progress lasts for this visit only. */
@@ -103,9 +109,10 @@ export function keepGuest(name?: string): Profile | null {
   state.save.profiles.push(g);
   state.guest = null;
   state.save.activeId = g.id;
-  writeGuest();
-  persist();
   applyPendingSupporter();
+  // Saved at once, not after the usual short wait: the guest copy is gone now, so a reload
+  // right away must find the new rider.
+  void persistNow();
   countUsage('kept', g);
   return g;
 }
@@ -130,12 +137,16 @@ export function persist(): void {
   writeGuest();
   clearTimeout(pending);
   if (stale) return;
-  pending = window.setTimeout(() => void writeSave(state.save), 150);
+  pending = window.setTimeout(() => {
+    pending = undefined;
+    void writeSave(state.save);
+  }, 150);
 }
 
 export function persistNow(): Promise<void> {
   writeGuest();
   clearTimeout(pending);
+  pending = undefined;
   return stale ? Promise.resolve() : writeSave(state.save);
 }
 
@@ -144,11 +155,18 @@ const reloadIfStale = (): void => {
 };
 window.addEventListener('storage', (e) => {
   if (e.key !== LS_KEY || e.newValue === null || !state) return;
+  // Safari can deliver the last page's own save (written as it was left) to the page that
+  // replaced it, after that page has already loaded it. Only a newer save means another tab.
+  if (saveStampOf(e.newValue) <= loadedSaveStamp()) return;
   stale = true;
   clearTimeout(pending);
   reloadIfStale();
 });
 document.addEventListener('visibilitychange', reloadIfStale);
+// Leaving or reloading the page: write any save still waiting for its short delay.
+window.addEventListener('pagehide', () => {
+  if (pending !== undefined && state && !stale) void persistNow();
+});
 
 export function applySettings(): void {
   const s = hasProfile() ? profile().settings : null;
@@ -163,6 +181,8 @@ export function go(screen: Screen): void {
   state.cleanup?.();
   state.cleanup = null;
   state.root.replaceChildren();
+  // A screen that forgot to clean up its typing panel must not leave the typing layout on.
+  state.root.classList.remove('kb-typing');
   window.scrollTo(0, 0);
   state.cleanup = screen(state.root) ?? null;
   guardBack();

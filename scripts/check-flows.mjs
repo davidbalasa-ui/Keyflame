@@ -5,6 +5,8 @@
 //   grown rider (all 20 lessons passed, egg ready): Daily flight Go opens a word challenge,
 //              finish it -> next level opens, hatch the egg with taps, pick a name with
 //              the dice, Done, then rename it from the nest card, then get a new egg in one tap
+//   full basket (egg in the nest, 3 waiting): the Codex still sells eggs, the 4th waits too,
+//              and waiting eggs of one tribe show as one egg with a count
 // Sizes: iPad upright, iPad sideways and a phone.
 // BROWSER=webkit runs it in Safari's engine (what iPads use); the default is Chromium.
 // Run: npm run build && npm run check:flows   SHOTS=folder saves screenshots.
@@ -46,7 +48,7 @@ for (let i = 0; i < 50; i++) {
 }
 
 /** A rider who has passed all 20 lessons and has an egg ready to hatch. */
-function grownSave() {
+function grownSave(extra = {}) {
   const lessons = {};
   for (let i = 1; i <= 20; i++) lessons[`L${i}`] = { stars: 2, bestWpm: 15, bestAccuracy: 0.96 };
   const p = {
@@ -76,6 +78,7 @@ function grownSave() {
     setsClaimed: [],
     achievements: [],
     nestSeen: true,
+    ...extra,
   };
   return JSON.stringify({ version: 99, activeId: p.id, profiles: [p] });
 }
@@ -100,6 +103,17 @@ for (const size of SIZES) {
   const fresh = async (seed) => {
     const ctx = await browser.newContext({ viewport: { width: size.width, height: size.height }, hasTouch: true, isMobile: ENGINE !== 'firefox', userAgent: size.ua, serviceWorkers: 'block' });
     if (seed) await ctx.addInitScript((s) => localStorage.getItem('keyflame-save') || localStorage.setItem('keyflame-save', s), seed);
+    // Count sounds that really play (audio woken up by a tap, not left locked).
+    await ctx.addInitScript(() => {
+      window.__kfSounds = 0;
+      const Node = window.AudioScheduledSourceNode;
+      if (!Node) return;
+      const start = Node.prototype.start;
+      Node.prototype.start = function (...a) {
+        if (this.context.state === 'running') window.__kfSounds++;
+        return start.apply(this, a);
+      };
+    });
     const page = await ctx.newPage();
     page.on('pageerror', (e) => errors.push(e.message));
     page.on('dialog', (d) => d.dismiss());
@@ -146,6 +160,9 @@ for (const size of SIZES) {
       await page.waitForTimeout(3500);
       await typeAll(page, '.celebrate');
       await must(page, '.celebrate', 'no race results', 10000);
+      await page.waitForTimeout(800);
+      const sounds = await page.evaluate(() => window.__kfSounds);
+      if (!(sounds > 40)) throw new Error(`only ${sounds} sounds played in a whole race (audio stayed locked?)`);
       await page.mouse.click(5, 5);
       await must(page, '.celebrate .fin-go', 'no Race again button');
       await page.waitForTimeout(500);
@@ -181,10 +198,22 @@ for (const size of SIZES) {
       await must(page, '.egg-chip.ready', 'home does not say the egg is ready');
       await page.click('.hero-open');
       await must(page, '.hatch-screen', 'tapping the ready egg at home did not start the hatch');
+      // The egg sits down inside its nest: centered, its bottom tucked behind the front bowl.
+      const fit = await page.evaluate(() => {
+        const egg = document.querySelector('.hatch-tap .hatch-shell')?.getBoundingClientRect();
+        const front = document.querySelector('.hatch-tap .nest-layer.front')?.getBoundingClientRect();
+        if (!egg || !front || !egg.width) return 'no egg or nest on the hatch screen';
+        if (egg.bottom <= front.top || egg.top >= front.top) return 'the egg does not sit inside the nest';
+        if (Math.abs(egg.left + egg.width / 2 - (front.left + front.width / 2)) > 4) return 'the egg is not centered in the nest';
+        if (egg.width > window.innerWidth || egg.height > window.innerHeight * 0.75) return 'the egg is too big for the screen';
+        return '';
+      });
+      if (fit) throw new Error(fit);
       for (let i = 0; i < 6 && (await page.locator('.hatch-tap').count()); i++) {
         await page.click('.hatch-screen', { position: { x: Math.round(size.width / 2), y: Math.round(size.height / 2) } });
         await page.waitForTimeout(250);
       }
+      await must(page, '.reveal-title', 'the big reveal did not show the new dragon', 4000);
       await must(page, '.hatch-details', 'the dragon card did not show after hatching', 8000);
     });
     let picked = '';
@@ -220,6 +249,32 @@ for (const size of SIZES) {
       await page.click('.shop-egg:not([disabled])');
       await must(page, '.nest-panel .warmth', 'the new egg did not land in the nest');
       await must(page, '.egg-landed', 'the nest did not say the egg landed');
+    });
+    await ctx.close();
+  }
+  {
+    const tidefin = { id: 'tide1', tribe: 'tidefin', palette: 0, marking: 0, name: 'Wave', xp: 0, hatchedAt: Date.now() - 864e5 };
+    const { ctx, page } = await fresh(grownSave({ embers: 1000, nest: { tribe: 'tidefin', warmth: 10, seed: 7 }, basket: ['tidefin', 'tidefin', 'tidefin'], dragons: [tidefin], activeDragonId: 'tide1' }));
+    await step(page, 'with 3 eggs waiting the Codex still sells eggs', async () => {
+      await page.click('.tab-dragon');
+      await must(page, '.basket-egg .egg-count', 'three waiting eggs of one tribe do not show as one egg with a count');
+      await page.click('.seg-tabs .seg:not(.on)');
+      await must(page, '#tribe-tidefin .codex-buy', 'the Codex shows no egg to buy');
+      const buy = page.locator('#tribe-tidefin .codex-buy button');
+      if (await buy.isDisabled()) throw new Error('the egg button is disabled with 3 eggs waiting');
+      if (/full/i.test((await page.textContent('#tribe-tidefin .codex-buy')) ?? '')) throw new Error('the Codex still says the basket is full');
+      await buy.click();
+      await must(page, '.modal-backdrop', 'buying a 4th egg showed nothing');
+    });
+    await step(page, 'the 4th egg waits in the nest too', async () => {
+      await page.click('.modal-backdrop .row button:last-child');
+      await must(page, '.basket-egg', 'the nest shows no waiting eggs');
+      const count = await page.textContent('.basket-egg .egg-count');
+      if (count !== '×4') throw new Error(`the waiting eggs say "${count}", expected ×4`);
+      await page.click('.basket-egg');
+      await page.waitForTimeout(300);
+      const left = await page.textContent('.basket-egg .egg-count');
+      if (left !== '×4') throw new Error(`after a swap the waiting eggs say "${left}"`);
     });
     await ctx.close();
   }

@@ -49,6 +49,7 @@ describe('starting races', () => {
     expect(waitingRiders(all)).toHaveLength(9);
     expect(quickRacers(waitingRiders(all)).map((m) => m.id)).toEqual(['w0', 'w1', 'w2', 'w3', 'w4', 'w5'].slice(0, MAX_QUICK_RACERS));
     expect(teacherRacers([...all, member('r', 3, { status: 'racing' })]).map((m) => m.id)).not.toContain('r');
+    expect(teacherRacers([...all, member('d', 4, { status: 'done' })]).map((m) => m.id)).not.toContain('d');
     expect(teacherRacers(all).map((m) => m.id)).not.toContain('t');
   });
 

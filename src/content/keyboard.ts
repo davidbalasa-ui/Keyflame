@@ -67,8 +67,6 @@ export function fingerFor(ch: string): Finger {
   return FINGER_OF[baseKey(ch)] ?? 'right-pinky';
 }
 
-export const HOME_KEYS = new Set(['a', 's', 'd', 'f', 'j', 'k', 'l', ';']);
-
 /** What a symbol key types with shift on. */
 export const SHIFT_SYMBOL: Record<string, string> = { ';': ':', ',': '<', '.': '>', '/': '?' };
 

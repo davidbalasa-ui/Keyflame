@@ -54,18 +54,6 @@ export function classBoard(code: string): Promise<BoardRow[]> {
   return rpc<BoardRow[]>('class_board', { p_code: code });
 }
 
-export function postClassRace(code: string, r: { rider: string; wpm: number; accuracy: number; place: number; racers: number; touch: boolean }): Promise<boolean> {
-  return rpc<boolean>('post_class_race', {
-    p_code: code,
-    p_rider: r.rider,
-    p_wpm: Math.min(250, Math.max(0, r.wpm)),
-    p_accuracy: Math.min(1, Math.max(0, r.accuracy)),
-    p_place: Math.min(40, r.place),
-    p_racers: Math.min(40, r.racers),
-    p_touch: r.touch,
-  });
-}
-
 export function clearClassBoard(t: TeacherClass): Promise<boolean> {
   return rpc<boolean>('clear_class_board', { p_code: t.code, p_key: t.key });
 }
@@ -102,6 +90,11 @@ export type JoinStatus = 'ok' | 'none' | 'wrong' | 'locked' | 'removed';
  */
 export function joinBadge(seat: ClassSeat, word: number | null): Promise<JoinStatus> {
   return rpc<JoinStatus>('join_badge', { p_code: seat.code, p_badge: seat.badge, p_word: word, p_rider_key: seat.key, p_name: seat.name });
+}
+
+/** True when this device rides as a badge of a demo wing (one that unlocks everything to look around). */
+export function isDemoWing(seat: ClassSeat): Promise<boolean> {
+  return rpc<boolean>('demo_wing', { p_code: seat.code, p_badge: seat.badge, p_rider_key: seat.key });
 }
 
 export interface ActivityPost {

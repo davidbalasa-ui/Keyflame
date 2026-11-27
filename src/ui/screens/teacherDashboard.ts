@@ -191,9 +191,12 @@ const cardQr = (t: TeacherClass, badge: number, name: string, cls?: string): HTM
 const nameOf = (r: Row): string => r.student || r.rider?.name || 'Not joined yet';
 
 /** One badge up close: the teacher's name for it, progress, and Remove. */
+/** Family wings call them kids and the grown-up; classes call them students and the teacher. */
+const isFamily = (t: TeacherClass): boolean => (t as { kind?: string }).kind === 'family';
+
 function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement {
   const r = row.rider;
-  const nameInput = h('input', { type: 'text', class: 'label-input', maxlength: MAX_NAME, value: row.student, placeholder: 'Student name', autocomplete: 'off', 'aria-label': `Student name for badge ${row.badge}` });
+  const nameInput = h('input', { type: 'text', class: 'label-input', maxlength: MAX_NAME, value: row.student, placeholder: isFamily(t) ? 'Kid’s name' : 'Student name', autocomplete: 'off', 'aria-label': `${isFamily(t) ? 'Kid’s name' : 'Student name'} for badge ${row.badge}` });
   const body = h('div', {}, r ? h('p', { class: 'fine' }, 'Loading…') : h('p', { class: 'fine' }, `Badge ${row.badge} hasn’t joined yet. They scan this code, or type ${spacedCode(t.code)}, ${row.badge} and ${badgeWord(t.key, row.badge)}.`));
   const badgeInput = h('input', { type: 'text', inputmode: 'numeric', pattern: '[0-9]*', maxlength: 2, class: 'label-input badge-edit', value: String(row.badge), autocomplete: 'off', 'aria-label': 'Badge number' });
   const msg = h('p', { class: 'fine rs-msg', role: 'status' });
@@ -229,7 +232,7 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
       h(
         'div',
         { class: 'rs-edit' },
-        h('label', { class: 'rs-label' }, h('span', {}, 'Student name'), nameInput),
+        h('label', { class: 'rs-label' }, h('span', {}, isFamily(t) ? 'Kid’s name' : 'Student name'), nameInput),
         h('label', { class: 'rs-label rs-badge' }, h('span', {}, 'Badge'), badgeInput),
       ),
       h('small', { class: 'fine' }, 'Names stay on your device and in your locked backup. Keyflame only sees the number.'),
@@ -240,6 +243,14 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
         cardQr(t, row.badge, row.student),
         h('div', { class: 'rs-word' }, h('small', { class: 'fine' }, 'Secret word'), h('strong', {}, badgeWord(t.key, row.badge)), h('small', { class: 'fine' }, 'On the card. A new device needs it to join as this badge.')),
       ),
+      // Family wings often share one device: join this badge here without typing the card.
+      isFamily(t)
+        ? h('div', { class: 'row center' }, button(`▶ ${row.student || `Badge ${row.badge}`} plays here`, () => {
+            sheet.remove();
+            // Loaded on tap: this file is also used by tests that run without a browser.
+            void Promise.all([import('../app'), import('./wing')]).then(([{ go }, { wingScreen }]) => go(wingScreen({ join: { code: t.code, badge: row.badge, word: badgeWord(t.key, row.badge), name: row.student || undefined } })));
+          }, 'btn ghost small'))
+        : null,
       r
         ? h(
             'div',
@@ -254,9 +265,9 @@ function riderSheet(t: TeacherClass, row: Row, changed: () => void): HTMLElement
       h(
         'p',
         { class: 'center' },
-        button('Delete student', () => {
+        button(isFamily(t) ? 'Remove kid' : 'Delete student', () => {
           const who = nameOf(row);
-          if (!confirm(`Delete ${who} (badge ${row.badge})? ${r ? 'Their lessons and races in this class are deleted for good. ' : ''}Badge ${row.badge} won’t be given out again.`)) return;
+          if (!confirm(`${isFamily(t) ? 'Remove' : 'Delete'} ${who} (badge ${row.badge})? ${r ? `Their lessons and races in this ${isFamily(t) ? 'wing' : 'class'} are deleted for good. ` : ''}Badge ${row.badge} won’t be given out again.`)) return;
           const done = (): void => {
             setStudent(row.badge, '');
             writeRetired([...readRetired(), row.badge]);
@@ -298,12 +309,12 @@ function sortRows(rows: Row[], key: SortKey): Row[] {
   return out;
 }
 
-function riderTable(rows: Row[], sort: SortKey, open: (r: Row) => void): HTMLElement {
-  if (!rows.length) return h('p', { class: 'fine board-empty' }, 'No students yet. Add them below, then hand out badge numbers.');
+function riderTable(rows: Row[], sort: SortKey, open: (r: Row) => void, fam = false): HTMLElement {
+  if (!rows.length) return h('p', { class: 'fine board-empty' }, fam ? 'No kids yet. Add them below, then hand out badge numbers.' : 'No students yet. Add them below, then hand out badge numbers.');
   return h(
     'ul',
     { class: 'rider-table' },
-    h('li', { class: 'rt-head', 'aria-hidden': 'true' }, h('span', {}, 'Student'), h('span', {}, 'Lessons'), h('span', {}, 'Speed'), h('span', {}, 'Accuracy'), h('span', {}, 'Last active')),
+    h('li', { class: 'rt-head', 'aria-hidden': 'true' }, h('span', {}, fam ? 'Kid' : 'Student'), h('span', {}, 'Lessons'), h('span', {}, 'Speed'), h('span', {}, 'Accuracy'), h('span', {}, 'Last active')),
     ...sortRows(rows, sort).map((row) => {
       const r = row.rider;
       const notes = r ? riderNotes(r) : [];
@@ -367,16 +378,16 @@ export function classSheet(t: TeacherClass, roster: Roster): void {
     h(
       'div',
       { class: 'class-sheet' },
-      h('h1', {}, 'Keyflame class sheet'),
-      h('p', {}, 'Class code ', h('b', { class: 'cs-code' }, spacedCode(t.code)), ` · printed ${new Date().toLocaleDateString()}`),
-      h('p', { class: 'cs-keep' }, 'Keep this sheet safe. It is the paper copy of which badge belongs to which student.'),
+      h('h1', {}, isFamily(t) ? 'Keyflame family wing sheet' : 'Keyflame class sheet'),
+      h('p', {}, isFamily(t) ? 'Wing code ' : 'Class code ', h('b', { class: 'cs-code' }, spacedCode(t.code)), ` · printed ${new Date().toLocaleDateString()}`),
+      h('p', { class: 'cs-keep' }, `Keep this sheet safe. It is the paper copy of which badge belongs to which ${isFamily(t) ? 'kid' : 'student'}.`),
       h(
         'table',
         {},
-        h('thead', {}, h('tr', {}, h('th', {}, 'Badge'), h('th', {}, 'Word'), h('th', {}, 'Student'))),
+        h('thead', {}, h('tr', {}, h('th', {}, 'Badge'), h('th', {}, 'Word'), h('th', {}, isFamily(t) ? 'Kid' : 'Student'))),
         h('tbody', {}, ...rosterList(roster).map(([b, n]) => h('tr', {}, h('td', {}, String(b)), h('td', {}, badgeWord(t.key, b)), h('td', {}, n)))),
       ),
-      h('p', {}, 'Students: scan your badge card with the camera. Or open keyflame.org, tap Join a wing, and type the code, your badge number and your word.'),
+      h('p', {}, `${isFamily(t) ? 'Kids' : 'Students'}: scan your badge card with the camera. Or open keyflame.org, tap Join a wing, and type the code, your badge number and your word.`),
     ),
   );
 }
@@ -455,6 +466,7 @@ export function progressPanel(t: TeacherClass, rosterChanged: () => void): { el:
             refresh();
           }),
         ),
+        isFamily(t),
       ),
     );
   };
@@ -474,7 +486,7 @@ export function progressPanel(t: TeacherClass, rosterChanged: () => void): { el:
       });
   };
 
-  const addInput = h('input', { type: 'text', class: 'label-input', maxlength: MAX_NAME, placeholder: 'New student name', autocomplete: 'off', 'aria-label': 'New student name', enterkeyhint: 'done' });
+  const addInput = h('input', { type: 'text', class: 'label-input', maxlength: MAX_NAME, placeholder: isFamily(t) ? 'New kid’s name' : 'New student name', autocomplete: 'off', 'aria-label': isFamily(t) ? 'New kid’s name' : 'New student name', enterkeyhint: 'done' });
   const addMsg = h('small', { class: 'fine', role: 'status' });
   const add = (): void => {
     const name = addInput.value.trim();
@@ -501,23 +513,23 @@ export function progressPanel(t: TeacherClass, rosterChanged: () => void): { el:
     { class: 'progress-panel' },
     status,
     tiles,
-    h('section', { class: 'board-panel' }, h('h2', {}, 'Class speed by week'), chart),
+    h('section', { class: 'board-panel' }, h('h2', {}, isFamily(t) ? 'Speed by week' : 'Class speed by week'), chart),
     h(
       'section',
       { class: 'board-panel' },
       h(
         'div',
         { class: 'board-head' },
-        h('h2', {}, 'Students'),
+        h('h2', {}, isFamily(t) ? 'Kids' : 'Students'),
         button('Refresh', refresh, 'btn ghost small'),
         button('Badge cards', () => badgeCards(t, readRoster()), 'btn ghost small'),
         button('Export CSV', () => download(`keyflame-class-${t.code}.csv`, '\ufeff' + ridersCsv(rows(), LESSONS.length)), 'btn ghost small'),
       ),
       sortBar,
       table,
-      h('div', { class: 'add-student' }, addInput, button('Add student', add, 'btn small')),
+      h('div', { class: 'add-student' }, addInput, button(isFamily(t) ? 'Add a kid' : 'Add student', add, 'btn small')),
       addMsg,
-      h('p', { class: 'fine' }, 'Tap a student to see their lessons and speed over time, edit their name or badge number, or delete them. Speed is the average of their last five timed lessons and races.'),
+      h('p', { class: 'fine' }, isFamily(t) ? 'Tap a kid to see their lessons and speed over time, edit their name or badge number, or remove them. Speed is the average of their last five timed lessons and races.' : 'Tap a student to see their lessons and speed over time, edit their name or badge number, or delete them. Speed is the average of their last five timed lessons and races.'),
     ),
   );
   refresh();

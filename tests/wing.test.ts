@@ -103,3 +103,30 @@ describe('grown-up check', () => {
     expect(grownUpYear('', now)).toBe(false);
   });
 });
+
+describe('leaving a wing', () => {
+  it('takes the rider out of the wing but keeps every dragon, ember and waiting result', async () => {
+    const { leaveWing } = await import('../src/game/wing');
+    const p = createProfile('Ember Wing');
+    p.classCode = 'BCDFGH';
+    p.classBadge = 7;
+    p.classWord = 'FROG';
+    p.classKey = 'key-123';
+    p.wingName = 'Ava';
+    p.embers = 420;
+    p.classOutbox = [{ id: 'a1', at: 1, code: 'BCDFGH', badge: 7, a: { kind: 'lesson' } as never }];
+    const dragons = structuredClone(p.dragons);
+    leaveWing(p);
+    expect(p.classCode).toBeUndefined();
+    expect(p.classBadge).toBeUndefined();
+    expect(p.classWord).toBeUndefined();
+    expect(p.wingName).toBeUndefined();
+    expect(riderLabel(p)).toBe('Ember Wing');
+    expect(p.embers).toBe(420);
+    expect(p.dragons).toEqual(dragons);
+    expect(p.classKey).toBe('key-123');
+    expect(p.classOutbox).toHaveLength(1);
+    // After leaving, joining again is a normal "are these your dragons?" join.
+    expect(planJoin([p], p, false, { code: 'BCDFGH', badge: 7 })).toEqual({ kind: 'ask' });
+  });
+});

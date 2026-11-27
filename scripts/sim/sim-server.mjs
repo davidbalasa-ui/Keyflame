@@ -8,6 +8,7 @@ import { spawn, execSync } from 'node:child_process';
 import { createServer } from 'node:http';
 import { createRequire } from 'node:module';
 import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { startFakeSupabase } from '../fake-supabase.mjs';
 
 const require = createRequire(import.meta.url);
@@ -21,6 +22,18 @@ const ROSTER = JSON.parse(readFileSync(process.argv[2] ?? new URL('./roster.json
 mkdirSync(`${OUT}/shots`, { recursive: true });
 
 const api = await startFakeSupabase(API_PORT);
+
+// A test demo wing (all unlocked) on the fake server only, so testers can check the demo flow
+// without touching the real one. Its code and badge words go to sim-out/demo.txt.
+{
+  const sha = (t) => createHash('sha256').update(t, 'utf8').digest('hex');
+  const words = [...readFileSync(new URL('../../src/game/badgeWord.ts', import.meta.url), 'utf8').match(/BADGE_WORDS[^=]*=\s*\[([\s\S]*?)\]/)[1].matchAll(/'([A-Z]+)'/g)].map((m) => m[1]);
+  const key = 'sim-demo-teacher-key';
+  const code = 'SMDMWB';
+  await api.db.exec(`insert into public.classes (code, teacher_hash, kind) values ('${code}', '${sha(key)}', 'family'); insert into public.demo_wings (class_code) values ('${code}');`);
+  const lines = [1, 2, 3].map((b) => `badge ${b}: word ${words[parseInt(sha(`${sha(key)}:${b}`).slice(0, 2), 16)]}`);
+  writeFileSync(`${OUT}/demo.txt`, `Test demo wing (fake server only): code ${code}\n${lines.join('\n')}\n`);
+}
 if (!process.env.SKIP_BUILD) {
   execSync('npx vite build --outDir dist-sim --emptyOutDir', {
     stdio: 'ignore',
@@ -91,7 +104,7 @@ async function look(p) {
       n++;
       el.setAttribute('data-sim', String(n));
       const r = el.getBoundingClientRect();
-      const label = (el.getAttribute('aria-label') || el.innerText || el.value || el.placeholder || el.title || el.getAttribute('alt') || '').replace(/\s+/g, ' ').trim().slice(0, 70);
+      const label = (el.getAttribute('aria-label') || el.innerText || el.labels?.[0]?.innerText || el.value || el.placeholder || el.title || el.getAttribute('alt') || '').replace(/\s+/g, ' ').trim().slice(0, 70);
       const kind = el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' ? `box${el.value ? ` (has "${el.value.slice(0, 20)}")` : ' (empty)'}` : el.getAttribute('role') === 'switch' || el.type === 'checkbox' ? `switch ${el.checked || el.getAttribute('aria-checked') === 'true' ? 'ON' : 'off'}` : '';
       const where = r.bottom < 0 ? ' [above, scroll up]' : r.top > innerHeight ? ' [below, scroll down]' : '';
       items.push(`[${n}] ${label || '(no label)'}${kind ? ` ${kind}` : ''}${where}`);
@@ -262,6 +275,11 @@ async function run(who, cmd, args) {
       note = `Screenshot saved: ${process.cwd()}/${path}`;
       break;
     }
+    case 'reload':
+      await page.reload();
+      await page.waitForTimeout(1500);
+      note = 'Closed and reopened the game.';
+      break;
     case 'goto':
       await page.goto(`http://localhost:${GAME_PORT}/${args[0] ?? ''}`);
       await page.waitForTimeout(1200);

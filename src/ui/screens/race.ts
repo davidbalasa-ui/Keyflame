@@ -1,14 +1,15 @@
 import { buildRaceText } from '../../content/lessons';
+import { eggMeter } from '../eggMeter';
 import { playLaunch } from '../launch';
 import { COURSES, courseById, type Course } from '../../game/courses';
 import { TRIBES, dragonSvg, eggSvg, stageFor, type Stage, type TribeId } from '../../game/dragons';
-import { RIVAL_BONUS, activeDragon, capitalsKnown, hidesHints, perkText, perkTribe, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, knownLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
+import { RIVAL_BONUS, activeDragon, capitalsKnown, hidesHints, perkText, perkTribe, eggProgress, courseUnlocked, factsUnlocked, ghostProgress, ghostSpeeds, isTouch, keysToHatch, raceLetters, recordFact, recordRace, rivalSpeed } from '../../game/progress';
 import { FACTS, READING_LEVEL_LABEL, TOPIC_LABEL, factById, pickFact, type ReadingLevel } from '../../content/facts';
 import { computeWpm, weakKeys } from '../../engine/typing';
-import { applyRaceKey, finishTime, newRaceState, perkTuning } from '../../game/raceRules';
+import { applyRaceKey, finishTime, flapFor, newRaceState, perkTuning } from '../../game/raceRules';
 import { UNITS } from '../../content/lessons';
 import { go, inputMode, persist, profile } from '../app';
-import { button, h, pct, svg } from '../dom';
+import { button, h, pct, replay, svg } from '../dom';
 import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
 import { CONFETTI, ParticleField, TRAIL_COLORS } from '../particles';
@@ -179,9 +180,10 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   const tune = perkTuning(perkTribe(me));
   const best = touch ? p.totals.bestTouchWpm : p.totals.bestWpm;
   const words = best < (touch ? 14 : 20) ? 14 : 22;
-  const known = knownLetters(p);
+  // Race letters grow with the rider's speed, so fast typists don't keep seeing the same home-row lines.
+  const known = raceLetters(p, input);
   // Once every letter is learned, races are real facts instead of practice sentences.
-  const fact = live ? (live.factId ? factById(live.factId) ?? null : null) : factsUnlocked(p) ? pickFact(p.settings.readingLevel ?? 'younger', p.factsSeen, weakKeys(p.keyStats, [...known]), Math.random, touch) : null;
+  const fact = live ? (live.factId ? factById(live.factId) ?? null : null) : factsUnlocked(p, known) ? pickFact(p.settings.readingLevel ?? 'younger', p.factsSeen, weakKeys(p.keyStats, [...known]), Math.random, touch) : null;
   const text = live ? live.text : fact ? (capitalsKnown(p) ? fact.text : fact.text.toLowerCase()) : buildRaceText(known, words, Math.random, weakKeys(p.keyStats, [...known]));
   const len = text.length;
 
@@ -229,8 +231,12 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   const countdown = h('div', { class: 'countdown' }, h('div', {}, h('small', { class: 'taunt' }, live ? 'Class race!' : `${r.name}: “${r.taunt}”`), h('div', { class: 'count' }, '3')));
   const countEl = countdown.querySelector('.count') as HTMLElement;
   const meter = h('div', { class: 'flame-meter' }, h('span', {}));
+  // Class races leave the egg out: the class track already crowds the head.
+  const egg = live ? eggMeter(null) : eggMeter(p);
   const stats = h('div', { class: 'live-stats' });
   const track = h('div', { class: 'track' }, sky, countdown);
+  // On computers the track takes the height the typing panel leaves and shares it between the lanes (class races can have many).
+  track.style.setProperty('--lanes', String(lanes.children.length));
 
   let started = false;
   let finished = false;
@@ -241,10 +247,20 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
   let bgOffset = 0;
   let lastFrame = performance.now();
 
+  // Boxes are measured once at the top of each frame, before anything on the page changes.
+  // Measuring after moving racers made the browser lay out the page again for every racer,
+  // every frame, which is what made typing stutter in races on slower computers.
+  const boxes = new Map<HTMLElement, DOMRect>();
+  let fxBox: DOMRect | null = null;
+  const measure = (): void => {
+    fxBox = fx.canvas.getBoundingClientRect();
+    for (const el of trailOf.keys()) boxes.set(el, el.getBoundingClientRect());
+  };
   // Where a racer's tail is, in the particle canvas's coordinates.
   const tailOf = (el: HTMLElement): { x: number; y: number; w: number; h: number } => {
-    const a = el.getBoundingClientRect();
-    const b = fx.canvas.getBoundingClientRect();
+    if (!fxBox || !boxes.has(el)) measure();
+    const a = boxes.get(el)!;
+    const b = fxBox!;
     return { x: a.left - b.left + a.width * 0.07, y: a.top - b.top + a.height * 0.62, w: a.width, h: a.height };
   };
   const trailDebt = new Map<HTMLElement, number>();
@@ -275,9 +291,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       if (!res.correct) {
         const t = tailOf(meEl);
         fx.emit(t.x + t.w * 0.4, t.y - t.h * 0.1, { count: 6, colors: ['#ffffff', '#ced4da'], kind: 'puff', vx: -30, spread: 50, size: 7, life: 0.6 });
-        meEl.classList.remove('wobble-once');
-        void meEl.offsetWidth;
-        meEl.classList.add('wobble-once');
+        replay(meEl, 'wobble-once');
       }
       if (dashed) {
         sfx.dash();
@@ -285,9 +299,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
         const colors = trailOf.get(meEl) ?? CONFETTI;
         fx.emit(t.x, t.y, { count: 26, colors, kind: 'streak', vx: -420, spread: 90, size: 5, life: 0.5 });
         fx.emit(t.x + t.w * 0.3, t.y - t.h * 0.1, { count: 40, colors, kind: 'ember', vx: -160, spread: 160, size: 7, life: 0.9 });
-        meEl.classList.remove('dashing');
-        void meEl.offsetWidth;
-        meEl.classList.add('dashing');
+        replay(meEl, 'dashing');
       }
       (meter.firstChild as HTMLElement).style.width = pct(st.meter / tune.dashStreak);
       if (myProgress() >= 1) finish();
@@ -303,14 +315,17 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     const prev = shown.get(el) ?? prog;
     const next = prev + (prog - prev) * (1 - Math.exp(-dt / 110));
     shown.set(el, next);
-    el.style.transform = `translate3d(${(next * Math.max(0, trackW - el.offsetWidth)).toFixed(1)}px, 0, 0)`;
+    const move = `translate3d(${(next * Math.max(0, trackW - (boxes.get(el)?.width ?? el.offsetWidth))).toFixed(1)}px, 0, 0)`;
+    if (el.style.transform !== move) el.style.transform = move;
   };
 
   const frame = (now: number): void => {
     const dt = now - lastFrame;
     lastFrame = now;
+    // All reads first, then all writes (see measure).
     trackW = lanes.clientWidth - 14;
     fx.resize();
+    measure();
     if (started && !finished) {
       const t = now - raceStart;
       for (const g of ghosts) place(g.el, Math.min(1, ghostProgress(g.wpm, t, len) + 0.004 * Math.sin(t / 900 + g.phase)), dt);
@@ -318,8 +333,11 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       place(meEl, myProgress(), dt);
       live?.report(myProgress(), t);
       // Wings beat faster the faster you type.
-      const flap = `${Math.max(0.36, 0.75 - view.session.rollingWpm(now) / 90).toFixed(2)}s`;
+      // A few steps only: each change restyles every shape of the dragon, so a smooth
+      // change (a new value nearly every frame) made the browser redo it constantly.
+      const flap = flapFor(view.session.rollingWpm(now));
       if (flap !== shownFlap) meEl.style.setProperty('--flap', (shownFlap = flap));
+      egg.update(view.session.correct);
       const line = `${Math.round(raceWpm(now))} WPM · ${pct(view.session.accuracy())} accuracy`;
       if (stats.textContent !== line) stats.textContent = line;
       bgOffset += (0.02 + view.session.rollingWpm(now) / 600) * dt;
@@ -349,18 +367,18 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     n--;
     if (n > 0) {
       countEl.textContent = String(n);
-      sfx.click();
+      sfx.count();
     } else {
       clearInterval(cd);
       countEl.textContent = 'Fly!';
-      sfx.dash();
+      sfx.fly();
       stopLaunch();
       started = true;
       raceStart = performance.now();
       setTimeout(() => countdown.remove(), 600);
     }
   }, 900);
-  sfx.click();
+  sfx.count();
   view.focus();
 
   function finish(): void {
@@ -383,6 +401,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     const before = earnedIds(p);
     // Earlier speeds on the same kind of input, newest first, for the "faster than usual" reward.
     const prevWpms = p.races.filter((x) => isTouch(x.input) === isTouch(typedWith)).map((x) => x.wpm);
+    const lettersBefore = raceLetters(p, typedWith).size;
     const reward = recordRace(p, sum, placeNum, { input: typedWith, courseId: live ? 'class' : course.id, beatRival });
     countPlay('race', p);
     const better = payImprovements(p, sum, prevWpms);
@@ -392,7 +411,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     const fresh = claimNewAchievements(p, before);
     persist();
     refreshEmbers();
-    if (placeNum === 1) sfx.win();
+    sfx.finish();
     {
       const { w } = fx.size;
       const t = tailOf(meEl);
@@ -406,7 +425,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     if (reward.rivalFirstWin) rewards.push({ art: crownSvg(), title: `${r.name} beaten!`, value: 'Champion!', note: `+${RIVAL_BONUS} bonus embers`, tone: 'gold' });
     if (reward.warmthAdded && p.nest) {
       const ready = eggProgress(p) >= 1;
-      rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Tap 🐣 Hatch! below' : `${pct(eggProgress(p))} warm`, tone: 'warm' });
+      rewards.push({ art: eggSvg(p.nest.tribe, eggProgress(p), p.nest.seed), title: ready ? 'Ready to hatch!' : 'Egg warmth', value: reward.warmthAdded, note: ready ? 'Tap 🐣 Hatch! below' : `${keysToHatch(p)} more ${keysToHatch(p) === 1 ? 'key' : 'keys'} to hatch`, tone: 'warm' });
     }
     for (const c of reward.seasonDone ?? []) rewards.push({ art: medalSvg('gold', '🌟'), title: 'Season challenge', value: `+${CHALLENGE_EMBERS}`, note: c.text, tone: 'gold' });
     for (const b of better) rewards.push({ art: improvementArt(b), title: improvementTitle(b), value: b.embers, note: 'bonus embers', tone: 'gold' });
@@ -416,7 +435,13 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     else if (fresh.length > 1) rewards.push({ art: medalSvg(fresh[0].medal, '🏅'), title: 'New achievements', value: `+${fresh.length}`, note: 'See them in Progress', tone: 'gold' });
     if (reward.grewTo && me) rewards.push({ art: dragonSvg(me.tribe, me.palette, reward.grewTo, '', me.skin, me.marking), title: `${me.name} grew!`, value: 'Grew up!', note: `Now a ${reward.grewTo} dragon`, tone: 'grow' });
 
+    // The next course this rider has opened, if this isn't already the newest one.
+    const harder = live ? null : COURSES.slice(COURSES.indexOf(course) + 1).find((c) => courseUnlocked(p, c.id)) ?? null;
     const lines: string[] = [];
+    // Clean words and flame dashes push a racer ahead of the letters, so a race can end with
+    // a few words left. Say why, so it doesn't look like the game stopped taking keys.
+    if (!view.session.done) lines.push('🔥 Your flame dash flew you over the line early!');
+    if (!live && raceLetters(p, typedWith).size > lettersBefore) lines.push('You type fast! Your next races use more letters.');
     if (!reward.rivalFirstWin && !beatRival && !live) lines.push(`${r.name} flies at about ${Math.round(rivalSpeed(course.id, input))} WPM. You’ll catch them!`);
 
     const factCard = fact
@@ -444,10 +469,12 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
       extra: live ? h('div', {}, live.results(), factCard) : factCard,
       reducedMotion: p.settings.reducedMotion,
       actions: live
-        ? finishBar(button('🐉 Back to class', () => live.back()), [], { nestGlow: !!reward.newEgg, keepPrimary: true })
-        : finishBar(button('▶ Race again', () => go(race(course.id))), [
+        ? finishBar(button('🐉 Back to wing', () => live.back()), [], { nestGlow: !!reward.newEgg, keepPrimary: true })
+        : finishBar(harder && placeNum === 1 ? button(`▶ ${harder.name}`, () => go(race(harder.id))) : button('▶ Race again', () => go(race(course.id))), [
+            // A harder course is open: after a win it is the main button, otherwise it sits beside Race again.
+            harder ? (placeNum === 1 ? button('↻ Race again', () => go(race(course.id)), 'btn ghost small') : button(`▶ ${harder.name}`, () => go(race(harder.id)), 'btn ghost small')) : null,
             button('🗺 Courses', () => go(raceMap), 'btn ghost small'),
-            fact ? button('📖 Fact Book', () => go(codex), 'btn ghost small') : null,
+            fact ? button('📖 Fact Book', () => go(codex), 'btn ghost small fin-factbook') : null,
           ], { nestGlow: !!reward.newEgg }),
     });
     // Let the finish burst on the track play for a moment first.
@@ -461,7 +488,7 @@ function run(root: HTMLElement, course: Course, live?: LiveRace): () => void {
     h(
       'main',
       { class: 'race' },
-      h('div', { class: 'race-head' }, h('h1', {}, course.name), stats, h('div', { class: 'meter-wrap' }, h('small', {}, 'Flame dash'), meter)),
+      h('div', { class: 'race-head' }, h('h1', {}, course.name), stats, h('div', { class: 'race-meters' }, egg.el, h('div', { class: 'meter-wrap' }, h('small', {}, 'Flame dash'), meter))),
       track,
       me ? h('p', { class: 'fine perk-line' }, isStarglint(me) ? (hidesHints(me) ? 'Starglint’s special is on: no key hints!' : 'Starglint’s special is off. Turn it on in the nest.') : `${me.name}’s perk: ${perkText(me)}`) : null,
       view.el,

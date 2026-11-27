@@ -162,6 +162,8 @@ export interface Profile {
   improveDay?: { date: string; faster: number };
   /** Word challenge results by challenge id (after the 20 lessons). */
   challenges?: Record<string, LessonResult>;
+  /** A rider of the demo wing: everything unlocked to look around, never counted in usage. */
+  demo?: boolean;
 }
 
 export interface StartSpeed {
@@ -322,6 +324,7 @@ export function normalizeProfile(raw: unknown): Profile | null {
     startSpeed: cleanStartSpeed(r.startSpeed),
     lessonLog: Array.isArray(r.lessonLog) ? r.lessonLog.filter((x) => x && Number.isFinite(x.at) && Number.isFinite(x.accuracy) && (x.wpm === null || Number.isFinite(x.wpm))).slice(0, LESSON_LOG_MAX) : undefined,
     nestSeen: r.nestSeen === true ? true : undefined,
+    demo: r.demo === true ? true : undefined,
     challenges: r.challenges && typeof r.challenges === 'object' ? Object.fromEntries(Object.entries(r.challenges).filter(([k, v]) => /^C-[a-z]+-[123]$/.test(k) && v && Number.isInteger(v.stars))) : undefined,
     keysMastered: Array.isArray(r.keysMastered) ? [...new Set(r.keysMastered.filter((k) => typeof k === 'string' && k.length === 1))] : undefined,
     improveDay: r.improveDay && typeof r.improveDay.date === 'string' && Number.isInteger(r.improveDay.faster) ? { date: r.improveDay.date, faster: Math.max(0, r.improveDay.faster) } : undefined,
@@ -437,33 +440,59 @@ async function idbPut(value: SaveData): Promise<void> {
   });
 }
 
-export async function loadSave(): Promise<SaveData> {
+const stampOf = (raw: unknown): number => {
+  const t = raw && typeof raw === 'object' ? (raw as { writtenAt?: unknown }).writtenAt : undefined;
+  return typeof t === 'number' ? t : 0;
+};
+
+/** The writtenAt stamp of the copy loadSave picked last (0 for a fresh save). */
+let loadedStamp = 0;
+export const loadedSaveStamp = (): number => loadedStamp;
+
+/** The writtenAt stamp inside a save as stored in localStorage (0 if unreadable). */
+export function saveStampOf(json: string | null): number {
   try {
-    const fromDb = await idbGet();
-    if (fromDb) return migrate(fromDb);
+    return json ? stampOf(JSON.parse(json)) : 0;
+  } catch {
+    return 0;
+  }
+}
+
+export async function loadSave(): Promise<SaveData> {
+  let fromDb: unknown = null;
+  let fromLs: unknown = null;
+  try {
+    fromDb = await idbGet();
   } catch {
     // IndexedDB unavailable (private mode in some browsers); fall through.
   }
   try {
     const ls = localStorage.getItem(LS_KEY);
-    if (ls) return migrate(JSON.parse(ls));
+    if (ls) fromLs = JSON.parse(ls);
   } catch {
     // Corrupt or blocked; start fresh rather than crash.
   }
-  return emptySave();
+  // localStorage is written first and at once, so after a quick reload it can be newer than
+  // IndexedDB (whose write may not have finished). The newer copy wins; on a tie,
+  // localStorage, since every save writes it first.
+  const picked = fromDb && fromLs ? (stampOf(fromLs) >= stampOf(fromDb) ? fromLs : fromDb) : (fromDb ?? fromLs);
+  loadedStamp = stampOf(picked);
+  return picked ? migrate(picked) : emptySave();
 }
 
 export async function writeSave(data: SaveData): Promise<void> {
-  const copy = JSON.parse(JSON.stringify(data)) as SaveData;
-  try {
-    await idbPut(copy);
-  } catch {
-    // ignore, localStorage below still keeps a copy
-  }
+  const copy = { ...(JSON.parse(JSON.stringify(data)) as SaveData), writtenAt: Date.now() };
+  // localStorage first: it is written before this returns, so a reload right after a save
+  // (say, just after "Keep me") can't lose it.
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(copy));
   } catch {
-    // Storage full or blocked. Nothing more we can do on this device.
+    // Storage full or blocked; IndexedDB below may still work.
+  }
+  try {
+    await idbPut(copy);
+  } catch {
+    // ignore, localStorage above still keeps a copy
   }
 }
 

@@ -1,9 +1,9 @@
 import { LESSONS, UNITS, buildLessonText, buildTrickyText, buildWarmUp, warmUpDue, lessonsInUnit, starsFor, type Lesson } from '../../content/lessons';
-import { weakKeys } from '../../engine/typing';
+import { weakKeys, type KeyStats } from '../../engine/typing';
 import { TRIBES, eggSvg } from '../../game/dragons';
 import { claimNewAchievements, earnedIds, type Achievement } from '../../game/achievements';
 import { medalSvg } from './achievementsPage';
-import { challengesOpen, recordChallenge, knownLetters, activeDragon, applyPlacement, isTouch, placedThrough, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
+import { challengesOpen, recordChallenge, knownLetters, activeDragon, applyPlacement, isTouch, placedThrough, keysToHatch, lessonUnlocked, recordLesson, recordPractice } from '../../game/progress';
 import { reportToClass } from '../classTrack';
 import { PASSAGES } from '../../content/words';
 import { go, inputMode, persist, profile } from '../app';
@@ -16,6 +16,7 @@ import { withTabs } from '../tabBar';
 import { sfx } from '../sound';
 import { createTypingView } from '../typingView';
 import { createLessonFlight } from '../lessonFlight';
+import { eggMeter } from '../eggMeter';
 import { seasonAt } from '../../content/seasons';
 import { hub, refreshEmbers, topBar } from './hub';
 import { CHALLENGE_EMBERS } from '../../game/seasons';
@@ -84,6 +85,7 @@ export function playLesson(lesson: Lesson) {
     const text = warm ? `${warm} ${main}` : main;
     const warmRings = warm ? warm.split(' ').length : 0;
     const stats = h('div', { class: 'live-stats' });
+    const egg = eggMeter(p);
     let timer = 0;
     const relaxed = p.settings.relaxed;
     const input = inputMode();
@@ -97,6 +99,9 @@ export function playLesson(lesson: Lesson) {
       onKey: (r, s) => flight.update(s, r.correct),
       onFinish: (s) => {
         clearInterval(timer);
+        egg.update(s.correct);
+        // Show the last key's ring too: the counter refreshes only every 250 ms.
+        tick();
         const sum = s.summary();
         // Relaxed mode has no clock, so it can earn up to two stars.
         const stars = starsFor(lesson, relaxed ? 0 : sum.wpm, sum.accuracy);
@@ -111,7 +116,7 @@ export function playLesson(lesson: Lesson) {
         persist();
         refreshEmbers();
         if (stars > 0) sfx.win();
-        showResult(root, lesson, relaxed ? null : sum.wpm, sum.accuracy, stars, reward.embers, reward.newEgg ? TRIBES[reward.newEgg].name : null, reward.eggReady, fresh, reward.seasonDone?.map((c) => c.text), better);
+        showResult(root, lesson, relaxed ? null : sum.wpm, sum.accuracy, stars, reward.embers, reward.newEgg ? TRIBES[reward.newEgg].name : null, reward.eggReady, fresh, reward.seasonDone?.map((c) => c.text), better, missedKeys(sum.keyStats, new Set(lesson.keys)));
       },
     });
     // The flight follows the text the typing view really shows.
@@ -120,6 +125,7 @@ export function playLesson(lesson: Lesson) {
       const s = view.session;
       // No speed on screen during a lesson: accuracy is what counts here.
       stats.textContent = `◎ ${flight.clean}/${flight.rings} rings · ${pct(s.accuracy())} accuracy${relaxed ? ' · Relaxed' : ''}`;
+      egg.update(s.correct);
     };
     timer = window.setInterval(tick, 250);
     tick();
@@ -133,7 +139,7 @@ export function playLesson(lesson: Lesson) {
           ? h('p', { class: 'new-keys' }, 'New keys: ', ...lesson.newKeys.filter((k) => k !== ' ').map((k) => h('kbd', {}, k.toUpperCase())), lesson.id === 'L1' ? (input === 'keyboard' ? ' Rest your pointer fingers on the bumps on F and J.' : ' Hold your device with both hands and tap with your thumbs.') : '')
           : h('p', { class: 'new-keys' }, 'Keep your eyes on the screen, not your fingers.'),
         flight.el,
-        stats,
+        egg.el ? h('div', { class: 'lesson-stats-row' }, stats, egg.el) : stats,
         view.el,
       ),
     );
@@ -145,9 +151,19 @@ export function playLesson(lesson: Lesson) {
   };
 }
 
-function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = [], seasonDone: string[] = [], better: Improvement[] = []): void {
+/** The (up to two) letters missed most in this run, for a short practice after a missed lesson. */
+function missedKeys(stats: KeyStats, known: Set<string>): string[] {
+  return Object.entries(stats)
+    .filter(([k, st]) => st.misses > 0 && known.has(k) && /^[a-z;,./]$/.test(k))
+    .sort((a, b) => b[1].misses - a[1].misses)
+    .slice(0, 2)
+    .map(([k]) => k);
+}
+
+function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accuracy: number, stars: number, embers: number, newEgg: string | null, eggReady: boolean, fresh: Achievement[] = [], seasonDone: string[] = [], better: Improvement[] = [], missed: string[] = []): void {
   const idx = LESSONS.indexOf(lesson);
   const next = LESSONS[idx + 1];
+  const eggLeft = keysToHatch(profile());
   // Picture cards instead of sentences: one card per thing earned.
   const card = (icon: Child, value: string, label: string, cls = ''): HTMLElement =>
     h('div', { class: `lr-card ${cls}` }, h('span', { class: 'lr-icon', 'aria-hidden': 'true' }, icon), h('strong', {}, value), h('small', {}, label));
@@ -156,7 +172,7 @@ function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accur
     card('🎯', pct(accuracy), 'Correct'),
     wpm === null ? null : card('⚡', String(Math.round(wpm)), 'WPM'),
     newEgg ? card('🥚', 'New egg!', newEgg, 'gold') : null,
-    eggReady ? card('🐣', 'Ready!', 'Egg can hatch', 'gold') : null,
+    eggReady ? card('🐣', 'Ready!', 'Egg can hatch', 'gold') : eggLeft > 0 ? card('🥚', String(eggLeft), 'Keys to hatch') : null,
     // A key mastered from earlier typing, not one this lesson teaches, says so.
     ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, b.key && !lesson.keys.includes(b.key) ? `Bonus: ${improvementTitle(b)}` : improvementTitle(b), 'gold')),
     ...seasonDone.map((t) => card('🌟', `+${CHALLENGE_EMBERS}`, t, 'gold')),
@@ -174,12 +190,19 @@ function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accur
             ? 'Relaxed mode off = third star'
             : `${lesson.starWpm} WPM at 95% = third star`
           : null;
+  // A missed lesson offers a short drill on the letters missed most, which then comes back here.
+  const practice = stars === 0 && missed.length ? button(`🎯 Practice ${missed.map((k) => k.toUpperCase()).join(' and ')}`, () => go(keyPractice(missed, lesson))) : null;
+  // Far from passing: the practice comes first. Close: another try comes first.
+  const practiceFirst = !!practice && accuracy < 0.85;
   const primary =
     stars > 0 && next
       ? button('▶ Next lesson', () => go(playLesson(next)))
       : stars === 0
-        ? button('↻ Try again', () => go(playLesson(lesson)))
+        ? practiceFirst
+          ? practice!
+          : button('↻ Try again', () => go(playLesson(lesson)))
         : button('📚 All lessons', () => go(lessons));
+  if (practice && !practiceFirst) practice.className = 'btn ghost small';
   const modal = h(
     'div',
     { class: 'modal-backdrop' },
@@ -192,7 +215,7 @@ function showResult(root: HTMLElement, lesson: Lesson, wpm: number | null, accur
       hint ? h('p', { class: 'fine lr-hint' }, hint) : null,
       finishBar(
         primary,
-        [stars > 0 ? button('↻ Try again', () => go(playLesson(lesson)), 'btn ghost small') : null, stars > 0 && next ? button('📚 All lessons', () => go(lessons), 'btn ghost small') : null, stars === 0 ? button('📚 All lessons', () => go(lessons), 'btn ghost small') : null],
+        [stars > 0 || practiceFirst ? button('↻ Try again', () => go(playLesson(lesson)), 'btn ghost small') : null, practice && !practiceFirst ? practice : null, stars > 0 && next ? button('📚 All lessons', () => go(lessons), 'btn ghost small') : null, stars === 0 ? button('📚 All lessons', () => go(lessons), 'btn ghost small') : null],
         { nestGlow: !!newEgg },
       ),
     ),
@@ -207,7 +230,23 @@ export const placement = (root: HTMLElement): (() => void) => {
   const LIMIT = 60000;
   const stats = h('div', { class: 'live-stats' }, 'The clock starts on your first key.');
   let done = false;
-  const view = createTypingView({ text, input: inputMode(), showKeyboard: p.settings.showKeyboard, onFinish: () => finish() });
+  // Time is up the moment the minute ends, even between ticks of the clock below.
+  const timeUp = (): boolean => view.session.startedAt !== null && view.session.elapsedMs() >= LIMIT;
+  const view = createTypingView({
+    text,
+    input: inputMode(),
+    showKeyboard: p.settings.showKeyboard,
+    // Keys stop counting once the check is over, or once the minute is up.
+    enabled: () => {
+      if (done) return false;
+      if (timeUp()) {
+        finish();
+        return false;
+      }
+      return true;
+    },
+    onFinish: () => finish(),
+  });
   const timer = window.setInterval(() => {
     const s = view.session;
     if (s.startedAt === null) return;
@@ -220,7 +259,9 @@ export const placement = (root: HTMLElement): (() => void) => {
     if (done) return;
     done = true;
     clearInterval(timer);
-    const sum = view.session.summary();
+    stats.textContent = 'Time’s up!';
+    // Count no more than the minute, however late the clock noticed.
+    const sum = view.session.summary(Math.min(performance.now(), (view.session.startedAt ?? performance.now()) + LIMIT));
     recordPractice(p, sum);
     const units = applyPlacement(p, sum.wpm, sum.accuracy);
     // The class sees the check as its own line, never as lessons played.
@@ -270,11 +311,18 @@ export function trickyButton(): HTMLElement | null {
 }
 
 /** A 30-second-ish drill on the rider's tricky keys. It warms the egg but pays no embers. */
-export const trickyKeys = (root: HTMLElement): (() => void) => {
+export const trickyKeys = (root: HTMLElement): (() => void) => keyPractice()(root);
+
+/**
+ * The tricky-keys drill. With `focus`, it drills just those keys (the ones missed in a lesson);
+ * with `then`, its main button goes back to that lesson for another try.
+ */
+export const keyPractice = (focus?: string[], then?: Lesson) => (root: HTMLElement): (() => void) => {
   const p = profile();
-  const weak = trickyKeysOf(p);
+  const weak = focus?.length ? focus : trickyKeysOf(p);
   const keys = weak.length ? weak : ['f', 'j'];
-  const text = buildTrickyText(knownLetters(p), keys);
+  // After a missed lesson, the drill sticks to that lesson's own letters.
+  const text = buildTrickyText(then ? new Set(then.keys.filter((k) => /[a-z;,./]/.test(k))) : knownLetters(p), keys);
   const stats = h('div', { class: 'live-stats' });
   let timer = 0;
   const view = createTypingView({
@@ -284,6 +332,8 @@ export const trickyKeys = (root: HTMLElement): (() => void) => {
     onKey: (r, s) => flight.update(s, r.correct),
     onFinish: (s) => {
       clearInterval(timer);
+      // Show the last key's ring too: the counter refreshes only every 250 ms.
+      tick();
       const sum = s.summary();
       const reward = recordPractice(p, sum);
       const better = payImprovements(p, sum, null);
@@ -312,7 +362,9 @@ export const trickyKeys = (root: HTMLElement): (() => void) => {
               reward.warmthAdded ? card('🥚', `+${reward.warmthAdded}`, 'Egg warmth') : null,
               ...better.map((b) => card(svg(improvementArt(b), 'lr-art'), `+${b.embers}`, b.key && !keys.includes(b.key) ? `Bonus: ${improvementTitle(b)}` : improvementTitle(b), 'gold')),
             ),
-            finishBar(button('↻ Again', () => go(trickyKeys)), [button('📚 Lessons', () => go(lessons), 'btn ghost small')]),
+            then
+              ? finishBar(button(`▶ ${then.title}`, () => go(playLesson(then))), [button('↻ Again', () => go(keyPractice(focus, then)), 'btn ghost small'), button('📚 Lessons', () => go(lessons), 'btn ghost small')])
+              : finishBar(button('↻ Again', () => go(trickyKeys)), [button('📚 Lessons', () => go(lessons), 'btn ghost small')]),
           ),
         ),
       );
@@ -401,6 +453,8 @@ export function playChallenge(c: Challenge) {
       onKey: (r, s) => flight.update(s, r.correct),
       onFinish: (s) => {
         clearInterval(timer);
+        // Show the last key's ring too: the counter refreshes only every 250 ms.
+        tick();
         const sum = s.summary();
         const stars = starsFor(asLesson(c), relaxed ? 0 : sum.wpm, sum.accuracy);
         const before = earnedIds(p);

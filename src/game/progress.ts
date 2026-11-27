@@ -30,7 +30,10 @@ export function isTouch(input: InputMode | undefined): boolean {
   return input === 'touch' || input === 'device';
 }
 
-/** Puts an egg in the nest, or in the basket if the nest is busy. */
+/**
+ * Puts an egg in the nest, or in the basket if the nest is busy. The basket never
+ * fills up: waiting eggs move into the nest one at a time as each egg hatches.
+ */
 export function giveEgg(p: Profile, tribe: TribeId): void {
   if (p.nest) p.basket.push(tribe);
   else p.nest = { tribe, warmth: 0, seed: Math.floor(Math.random() * 1e9) };
@@ -115,9 +118,29 @@ export function activeDragon(p: Profile): OwnedDragon | null {
   return p.dragons.find((d) => d.id === p.activeDragonId) ?? p.dragons[0] ?? null;
 }
 
+/** The very first dragon hatches fast, so a new rider meets one after about a lesson and a race. */
+export const FIRST_HATCH_KEYS = 120;
+/** Keys the second egg needs at most, so the step after the first dragon is gentle. */
+export const SECOND_HATCH_KEYS = 600;
+
+/** Correct keys an egg of this tribe needs in this rider's nest. */
+export function hatchNeed(p: Profile, tribe: TribeId): number {
+  const hatched = p.dragons.filter((d) => !isStarglint(d)).length;
+  if (hatched === 0) return Math.min(FIRST_HATCH_KEYS, TRIBES[tribe].hatchKeys);
+  // The second egg is a step, not a cliff: from 120 keys straight to a 1500-key tribe egg
+  // felt like a wall to new kids in the 2026-11-24 playtest.
+  if (hatched === 1) return Math.min(SECOND_HATCH_KEYS, TRIBES[tribe].hatchKeys);
+  return TRIBES[tribe].hatchKeys;
+}
+
+/** Correct keys the egg in the nest still needs. */
+export function keysToHatch(p: Profile): number {
+  return p.nest ? Math.max(0, hatchNeed(p, p.nest.tribe) - p.nest.warmth) : 0;
+}
+
 export function eggProgress(p: Profile): number {
   if (!p.nest) return 0;
-  return Math.min(1, p.nest.warmth / TRIBES[p.nest.tribe].hatchKeys);
+  return Math.min(1, p.nest.warmth / hatchNeed(p, p.nest.tribe));
 }
 
 /** Shared bookkeeping for any finished typing session. */
@@ -129,7 +152,7 @@ function applySession(p: Profile, s: SessionSummary): Omit<TypingRewards, 'ember
 
   let warmthAdded = 0;
   if (p.nest) {
-    const need = TRIBES[p.nest.tribe].hatchKeys;
+    const need = hatchNeed(p, p.nest.tribe);
     warmthAdded = Math.min(s.correct, Math.max(0, need - p.nest.warmth));
     p.nest.warmth += warmthAdded;
   }
@@ -350,8 +373,19 @@ export function swapNestEgg(p: Profile, index: number, rand: () => number = Math
   if (!p.nest || !next) return false;
   const share = eggProgress(p);
   p.basket[index] = p.nest.tribe;
-  p.nest = { tribe: next, warmth: Math.ceil(share * TRIBES[next].hatchKeys), seed: Math.floor(rand() * 1e9) };
+  p.nest = { tribe: next, warmth: Math.ceil(share * hatchNeed(p, next)), seed: Math.floor(rand() * 1e9) };
   return true;
+}
+
+/** Waiting eggs grouped by tribe, in basket order, so a big basket stays one short row. */
+export function basketGroups(p: Profile): { tribe: TribeId; index: number; count: number }[] {
+  const groups: { tribe: TribeId; index: number; count: number }[] = [];
+  p.basket.forEach((tribe, index) => {
+    const g = groups.find((x) => x.tribe === tribe);
+    if (g) g.count++;
+    else groups.push({ tribe, index, count: 1 });
+  });
+  return groups;
 }
 
 /** Hatches and returns the dragon, new or evolved. */
@@ -370,7 +404,7 @@ export function canWarmWithEmbers(p: Profile): boolean {
 
 export function warmWithEmbers(p: Profile): boolean {
   if (!canWarmWithEmbers(p) || !p.nest) return false;
-  const need = TRIBES[p.nest.tribe].hatchKeys;
+  const need = hatchNeed(p, p.nest.tribe);
   p.embers -= WARM_PRICE;
   p.nest.warmth = Math.min(need, p.nest.warmth + Math.ceil(need * WARM_SHARE));
   return true;
@@ -391,9 +425,43 @@ export function knownLetters(p: Profile): Set<string> {
   return keys;
 }
 
-/** Races switch from practice sentences to real facts once every letter is learned. */
-export function factsUnlocked(p: Profile): boolean {
-  const known = knownLetters(p);
+/** Letters of the top row and the bottom row, which race text adds for fast typists. */
+const TOP_ROW = 'qwertyuiop';
+const BOTTOM_ROW = 'zxcvbnm,./';
+/** Keyboard WPM (at 92%+ accuracy) at which races add the top row, then every letter. Touch uses TOUCH_SPEED_FACTOR of these. */
+export const RACE_STEP_WPM = { top: 20, all: 28 };
+
+/**
+ * The rider's recent race speed on this kind of input: the average of their last three
+ * races with 92% accuracy or more. 0 before any such race.
+ */
+export function raceForm(p: Profile, input: InputMode): number {
+  const touch = isTouch(input);
+  const recent = p.races.filter((r) => isTouch(r.input) === touch && r.accuracy >= 0.92).slice(0, 3).map((r) => r.wpm);
+  return recent.length ? recent.reduce((a, b) => a + b, 0) / recent.length : 0;
+}
+
+/**
+ * Letters race text may use. Starts from the lessons the rider has reached, and grows
+ * with their speed: a rider who already types fast and accurately gets the top row, then
+ * every letter, so races stop repeating the few home-row sentences. Lessons still
+ * teach the letters in order.
+ */
+export function raceLetters(p: Profile, input: InputMode): Set<string> {
+  const keys = knownLetters(p);
+  const form = raceForm(p, input) / (isTouch(input) ? TOUCH_SPEED_FACTOR : 1);
+  if (form >= RACE_STEP_WPM.top) [...TOP_ROW].forEach((k) => keys.add(k));
+  // One lucky race opens the top row at most; every letter takes two fast, accurate races,
+  // so riders see the top-row step first instead of jumping straight to facts.
+  const touch = isTouch(input);
+  const fastRaces = p.races.filter((r) => isTouch(r.input) === touch && r.accuracy >= 0.92).length;
+  if (form >= RACE_STEP_WPM.all && fastRaces >= 2) [...BOTTOM_ROW].forEach((k) => keys.add(k));
+  return keys;
+}
+
+/** Races switch from practice sentences to real facts once every letter is learned (or opened by speed). */
+export function factsUnlocked(p: Profile, letters?: Set<string>): boolean {
+  const known = letters ?? knownLetters(p);
   return [...'abcdefghijklmnopqrstuvwxyz'].every((c) => known.has(c));
 }
 
@@ -458,4 +526,25 @@ export function placedThrough(units: number): string | null {
 /** Where a ghost is, 0 to 1, after `ms` of racing. */
 export function ghostProgress(wpm: number, ms: number, length: number): number {
   return Math.min(1, ((wpm * 5) / 60000) * ms / length);
+}
+
+/**
+ * The free egg the rider is closest to earning, with how far along they are: the next unit of
+ * lessons, or three accurate races. Null once both are done.
+ */
+export function nearestFreeEgg(p: Profile): { tribe: TribeId; text: string; done: number; need: number; lessons: boolean } | null {
+  const options: Array<{ tribe: TribeId; text: string; done: number; need: number; lessons: boolean }> = [];
+  const unit = UNITS.find((u) => !p.unitsRewarded.includes(u.id));
+  if (unit) {
+    const list = lessonsInUnit(unit.id);
+    const done = list.filter((l) => (p.lessons[l.id]?.stars ?? 0) > 0).length;
+    options.push({ tribe: unit.reward, text: `${done} of ${list.length} ${unit.title} lessons passed`, done, need: list.length, lessons: true });
+  }
+  if (!p.milestones.includes('accuracy')) {
+    const done = Math.min(3, p.races.filter((r) => r.accuracy >= 0.95).length);
+    options.push({ tribe: 'frostspine', text: `${done} of 3 races with 95% correct`, done, need: 3, lessons: false });
+  }
+  // Furthest along first; on a tie, lessons (they teach the keys).
+  options.sort((a, b) => b.done / b.need - a.done / a.need);
+  return options[0] ?? null;
 }

@@ -19,6 +19,24 @@ describe('tricky keys drill (KF-25)', () => {
       }
     }
   });
+  it('uses every named tricky key a few times, not just one of them', () => {
+    for (const idx of [6, 12, LESSONS.length - 1]) {
+      const known = new Set(LESSONS[idx].keys.filter((k) => k !== ' '));
+      for (const weak of [['j', 'f'], ['q', 'z'], ['x', 'j']].map((w) => w.filter((k) => known.has(k)))) {
+        for (let s = 1; s < 15; s++) {
+          const t = buildTrickyText(known, weak, seeded(s));
+          for (const k of weak) expect(t.split(k).length - 1).toBeGreaterThanOrEqual(3);
+          expect([...t].every((c) => c === ' ' || known.has(c))).toBe(true);
+        }
+      }
+    }
+  });
+  it('uses every key in the key-pattern fallback too, whatever the dice say', () => {
+    for (const rand of [() => 0, () => 0.999, seeded(5)]) {
+      const t = buildTrickyText(new Set(['f', 'j', 'd']), ['f', 'j', 'd'], rand);
+      for (const k of ['f', 'j', 'd']) expect(t.split(k).length - 1).toBeGreaterThanOrEqual(3);
+    }
+  });
   it('falls back to key patterns when few sentences fit', () => {
     const t = buildTrickyText(new Set(['f', 'j']), ['f', 'j'], seeded(3));
     expect(t).toMatch(/^[fj ]+$/);

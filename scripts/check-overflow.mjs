@@ -36,7 +36,17 @@ const SIZES = [
   // Computers: a school laptop and a full HD screen, with a mouse instead of touch.
   { name: 'PC 1366', width: 1366, height: 768, pc: true },
   { name: 'PC 1920', width: 1920, height: 1080, pc: true },
+  // Laptops with the browser's tab and bookmark bars showing: races and lessons must fit, keyboard and all.
+  { name: 'PC 1366 browser', width: 1366, height: 625, pc: true, fit: true },
+  { name: 'PC 1280 browser', width: 1280, height: 600, pc: true, fit: true },
+  // The same laptop with Windows display scaling at 125% and 150%, and both sides of 800px tall.
+  { name: 'PC 125%', width: 1093, height: 500, pc: true, fit: true },
+  { name: 'PC 150%', width: 911, height: 417, pc: true, fit: true },
+  { name: 'PC 800 tall', width: 1366, height: 800, pc: true, fit: true },
+  { name: 'PC 801 tall', width: 1366, height: 801, pc: true, fit: true },
 ];
+// ONLY=text runs just the sizes whose name contains it (for example ONLY=PC).
+if (process.env.ONLY) SIZES.splice(0, SIZES.length, ...SIZES.filter((s) => s.name.includes(process.env.ONLY)));
 const ENGINE = process.env.BROWSER === 'webkit' ? 'webkit' : 'chromium';
 const SHOTS = process.env.SHOTS;
 if (SHOTS) (await import('node:fs')).mkdirSync(SHOTS, { recursive: true });
@@ -90,15 +100,24 @@ const overflow = (page) =>
     return { scrollW: document.documentElement.scrollWidth, vw, wide };
   });
 
+// If the browser dies (WebKit can crash a page), say which size and screen it was on.
+let at = 'starting';
+process.on('uncaughtException', (e) => {
+  console.error(`check:overflow crashed at ${at}: ${String(e.message).split('\n')[0]}`);
+  process.exit(1);
+});
 const browser = await playwright[ENGINE].launch();
 const failures = [];
+const slow = [];
 for (const size of SIZES) {
   const { width, height } = size;
   const label = `${size.name} (${width}x${height})`;
+  if (process.env.CI) console.log(`checking ${label}`);
   const ctx = await browser.newContext({ viewport: { width, height }, hasTouch: !size.pc, isMobile: !size.pc && ENGINE !== 'firefox', deviceScaleFactor: size.pc ? 1 : 2 });
   const page = await ctx.newPage();
   await page.goto(URL);
   const check = async (name) => {
+    at = `${label} ${name}`;
     const o = await overflow(page);
     if (o.scrollW > o.vw) failures.push(`${label} ${name}: page is ${o.scrollW}px wide (${o.wide.join(', ') || 'unknown element'})`);
     if (name === 'hub') {
@@ -127,18 +146,46 @@ for (const size of SIZES) {
   await page.click('.modal .btn:not(.ghost)');
   await page.waitForTimeout(600); // let the save land before reloading
   for (const [name, clicks] of SCREENS) {
+    at = `${label} opening ${name}`;
     await page.goto(URL);
     await page.waitForSelector('.play-cards');
+    const opened = Date.now();
     try {
-      // WebKit on a busy CI runner can take a few seconds before the home tiles settle
-      // (seen at phone 320 and iPad mini), so give each tap 10 s and say what went wrong.
-      for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 10000 }));
+      // CI's WebKit paints in software, so a click on a heavy screen (the race map's five dragons)
+      // can take several seconds to be acknowledged even though the screen opens. Allow 15 s,
+      // and say when opening was slow, so a real slowdown still shows.
+      for (const sel of clicks) await (sel === GATE ? answerGate(page) : page.click(sel, { timeout: 15000 }));
+      const took = Date.now() - opened;
+      if (took > 3000) slow.push(`${label} ${name}: took ${(took / 1000).toFixed(1)} s to open`);
     } catch (e) {
-      failures.push(`${label} ${name}: could not open the screen (${String(e?.message ?? e).split('\n')[0]})`);
+      // Say why (covered, moving, gone), and keep a picture, so a failure here can be fixed, not re-run.
+      const why = String(e?.message ?? e).split('\n').map((l) => l.trim()).filter(Boolean).slice(-8).join(' / ');
+      // Where the thing to tap was, and what sat on top of its middle.
+      const where = await page
+        .evaluate((sel) => {
+          const el = document.querySelector(sel.split(' >> ')[0]);
+          if (!el) return 'not on the page';
+          const r = el.getBoundingClientRect();
+          const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          const tag = (n) => (n ? `${n.tagName.toLowerCase()}.${[...n.classList].join('.')}` : 'nothing');
+          return `at y ${Math.round(r.top)}-${Math.round(r.bottom)} of ${innerHeight} (page ${document.documentElement.scrollHeight}), on top: ${tag(top)}, body: ${document.body.className}`;
+        }, clicks.find((c) => c !== GATE) ?? 'body')
+        .catch((err) => `page gone: ${String(err.message).split('\n')[0]}`);
+      failures.push(`${label} ${name}: could not open the screen (${why || 'no reason given'}) [${where}]`);
+      if (SHOTS) await page.screenshot({ path: `${SHOTS}/FAILED-${size.name.replace(/\W+/g, '-')}-${name.replace(/\W+/g, '-')}.png` }).catch(() => undefined);
       continue;
     }
     await page.waitForTimeout(150);
     await check(name);
+    if (size.fit && (name === 'race' || name === 'lesson')) {
+      // The whole guide keyboard (space bar included) is on screen without scrolling.
+      const cut = await page.evaluate(() => {
+        const space = document.querySelector('.typing-view .keyboard .key-space')?.getBoundingClientRect();
+        const main = document.querySelector('main');
+        return !space || space.height < 20 || space.bottom > innerHeight || document.documentElement.scrollHeight > innerHeight + 1 || (main && main.scrollHeight > main.clientHeight + 1);
+      });
+      if (cut) failures.push(`${label} ${name}: the race or lesson needs scrolling, so the keyboard is cut off`);
+    }
   }
   if (size.tablet) {
     // A touch screen starts with the tap keyboard; one real key press should put it away.
@@ -156,8 +203,9 @@ for (const size of SIZES) {
 await browser.close();
 stop();
 
+if (slow.length) console.log(`Slow to open (not a failure):\n  ${slow.join("\n  ")}`);
 if (failures.length) {
   console.error('Sideways scrolling found:\n  ' + failures.join('\n  '));
   process.exit(1);
 }
-console.log(`${ENGINE}: no sideways scrolling on ${SCREENS.length + 4} screens at ${SIZES.length} sizes, the home screen fits without scrolling, and a real key press puts the tap keyboard away on tablets.`);
+console.log(`${ENGINE}: no sideways scrolling on ${SCREENS.length + 4} screens at ${SIZES.length} sizes, the home screen fits without scrolling, races and lessons fit short laptop screens, and a real key press puts the tap keyboard away on tablets.`);
